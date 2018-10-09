@@ -1,0 +1,7 @@
+dependencies {
+    compile project(':common')
+
+    compile wpilib() // Required by HFR
+
+    compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
+}

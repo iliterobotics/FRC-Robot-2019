@@ -1,0 +1,41 @@
+// Define available plugins. Note "apply false" prevents these from being applied immediately to the root project.
+// Plugins such as "java", "eclipse", "idea", etc. don't need to be defined here.
+
+plugins {
+	id "edu.wpi.first.GradleRIO" version "2019.0.0-alpha-3" apply false
+}
+
+allprojects {
+	apply plugin: "idea"
+	apply plugin: "eclipse"
+
+    dependencies {
+
+    }
+}
+
+subprojects {
+	apply plugin: "java"
+	apply plugin: "edu.wpi.first.GradleRIO"
+
+    repositories {
+		jcenter()
+		mavenCentral()
+		mavenLocal()
+		flatDir {
+			dirs './lib'
+		}
+	}
+
+	dependencies {
+		testCompile group: 'junit', name: 'junit', version: '4.12'
+		testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+
+        // Required for 254's utils (PolynomialRegression)
+		compile group: 'gov.nist.math', name: 'jama', version:'1.0.3'
+	}
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.9'
+}

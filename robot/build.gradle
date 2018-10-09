@@ -1,0 +1,44 @@
+apply plugin: "edu.wpi.first.GradleRIO"
+apply plugin: "application"
+
+def ROBOT_CLASS = "us.ilite.robot.Robot"
+
+mainClassName = ROBOT_CLASS
+
+// Define my targets (RoboRIO) and artifacts (deployable files)
+// This is added by GradleRIO's backing project EmbeddedTools.
+deploy {
+    targets {
+        target("roborio", edu.wpi.first.gradlerio.frc.RoboRIO) {
+            // Team can be overridden by command line, for use with VSCode
+            team = getTeamOrDefault(1885)
+        }
+    }
+    artifacts {
+        artifact('frcJava', edu.wpi.first.gradlerio.frc.FRCJavaArtifact) {
+            targets << "roborio"
+            // Debug can be overridden by command line, for use with VSCode
+            debug = getDebugOrDefault(false)
+        }
+    }
+}
+
+// Defining my dependencies. In this case, WPILib (+ friends), CTRE Toolsuite (Talon SRX)
+// and NavX.
+dependencies {
+    compile project(':common')
+
+    compile wpilib()
+    compile ctre()
+    compile navx()
+
+    compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
+}
+
+// Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
+// in order to make them all available at runtime. Also adding the manifest so WPILib
+// knows where to look for our Robot Class.
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_CLASS)
+}
