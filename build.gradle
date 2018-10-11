@@ -21,7 +21,7 @@ allprojects {
 
 subprojects {
 	apply plugin: "java" // All our code is written in Java
-	apply plugin: "com.diffplug.gradle.spotless" 
+//	apply plugin: "com.diffplug.gradle.spotless"
 	apply plugin: "edu.wpi.first.GradleRIO"
 
     repositories {
@@ -41,11 +41,11 @@ subprojects {
 		compile group: 'gov.nist.math', name: 'jama', version:'1.0.3'
 	}
 
-	spotless {
-		java {
-			googleJavaFormat() // Auto-format using Google's standards
-		}
-	}
+//	spotless {
+//		java {
+//			googleJavaFormat() // Auto-format using Google's standards
+//		}
+//	}
 
 }
 
