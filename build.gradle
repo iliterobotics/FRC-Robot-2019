@@ -1,11 +1,16 @@
-// Define available plugins. Note "apply false" prevents these from being applied immediately to the root project.
+// Make these plugins available for our project to use.
+// Note "apply false" prevents these from being applied immediately to the root project.
 // Plugins such as "java", "eclipse", "idea", etc. don't need to be defined here.
 
 plugins {
 	id "edu.wpi.first.GradleRIO" version "2019.0.0-alpha-3" apply false
+	id "com.diffplug.gradle.spotless" version "3.15.0" apply false
 }
 
+
+// Any configurations here are applied to the entire project
 allprojects {
+	// We want the entire project to be openable in an IDE
 	apply plugin: "idea"
 	apply plugin: "eclipse"
 
@@ -15,7 +20,8 @@ allprojects {
 }
 
 subprojects {
-	apply plugin: "java"
+	apply plugin: "java" // All our code is written in Java
+	apply plugin: "com.diffplug.gradle.spotless" 
 	apply plugin: "edu.wpi.first.GradleRIO"
 
     repositories {
@@ -23,7 +29,7 @@ subprojects {
 		mavenCentral()
 		mavenLocal()
 		flatDir {
-			dirs './lib'
+			dirs './lib' // The directory 'lib' is available as a source for dependencies - we put any JAR files here
 		}
 	}
 
@@ -34,6 +40,13 @@ subprojects {
         // Required for 254's utils (PolynomialRegression)
 		compile group: 'gov.nist.math', name: 'jama', version:'1.0.3'
 	}
+
+	spotless {
+		java {
+			googleJavaFormat() // Auto-format using Google's standards
+		}
+	}
+
 }
 
 task wrapper(type: Wrapper) {
