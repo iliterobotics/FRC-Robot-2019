@@ -40,7 +40,13 @@ public class LoopManager implements Runnable{
         mLoopList.setLoops(pLoops);
     }
 
-    public synchronized void start() {
+    /**
+     * For convenience, distill setRunningLoops() and start() to one call.
+     * @param pLoops Loops to run
+     */
+    public synchronized void start(Loop ... pLoops) {
+
+        setRunningLoops(pLoops);
 
         mLoopSafetyTimer.start();
         mLoopSafetyTimer.reset();
@@ -58,6 +64,10 @@ public class LoopManager implements Runnable{
         mLoopSafetyTimer.stop();
         checkTiming("Loop start exceeds specified loop period.");
 
+    }
+
+    public synchronized void start() {
+        start(mLoopList);
     }
 
     public synchronized void stop() {

@@ -2,6 +2,8 @@ package us.ilite.common.config;
 
 public class SystemSettings {
 
+    public static double    CONTROL_LOOP_PERIOD = 0.01;
+
     // =============================================================================
     // Drive Constants
     // =============================================================================

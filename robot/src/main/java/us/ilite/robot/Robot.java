@@ -5,8 +5,11 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Timer;
+import us.ilite.common.config.SystemSettings;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.commands.CommandQueue;
+import us.ilite.robot.loops.LoopList;
+import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.ExampleModule;
 import us.ilite.robot.modules.ModuleList;
 
@@ -19,6 +22,8 @@ public class Robot extends IterativeRobot {
     // Module declarations here
     private ExampleModule mExampleModule = new ExampleModule();
 
+    // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
+    private LoopManager mLoopManager = new LoopManager(SystemSettings.CONTROL_LOOP_PERIOD);
     private ModuleList mRunningModules = new ModuleList();
 
     private Clock mClock = new Clock();
@@ -26,20 +31,23 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void robotInit() {
+        Timer initTimer = new Timer();
+        initTimer.start();
         mLogger.info("Starting Robot Initialization...");
 
         Logger.setLevel(ELevel.INFO);
 
-        mLogger.info("Is Simulated: " + isSimulation());
-        
-        // Call power on init for each module
+        mRunningModules.setModules();
         mRunningModules.powerOnInit(mClock.getCurrentTime());
 
-        mLogger.info("Robot initialization finished.");
+        initTimer.stop();
+        mLogger.info("Robot initialization finished. Took: ", initTimer.get(), " seconds");
     }
 
-    // This contains code run in ALL robot modes.
-    // It's also important to note that this runs AFTER mode-specific code
+    /**
+     * This contains code run in ALL robot modes.
+     * It's also important to note that this runs AFTER mode-specific code
+     */
     @Override
     public void robotPeriodic() {
 //        mLogger.info(this.toString());
@@ -52,8 +60,9 @@ public class Robot extends IterativeRobot {
         mapInputsAndCachedSensors();
 
         mRunningModules.setModules(mExampleModule);
-
         mRunningModules.modeInit(mClock.getCurrentTime());
+
+        mLoopManager.start();
     }
 
     @Override
@@ -69,8 +78,9 @@ public class Robot extends IterativeRobot {
         mapInputsAndCachedSensors();
 
         mRunningModules.setModules(mExampleModule);
-
         mRunningModules.modeInit(mClock.getCurrentTime());
+
+        mLoopManager.start();
     }
 
     @Override
@@ -82,17 +92,21 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void disabledInit() {
-        teleopInit();
+        mRunningModules.shutdown(mClock.getCurrentTime());
+        mLoopManager.stop();
     }
 
     @Override
     public void disabledPeriodic() {
-        teleopPeriodic();
+
     }
 
     @Override
     public void testInit() {
+        mRunningModules.setModules(mExampleModule);
+        mRunningModules.modeInit(mClock.getCurrentTime());
 
+        mLoopManager.start();
     }
 
     @Override

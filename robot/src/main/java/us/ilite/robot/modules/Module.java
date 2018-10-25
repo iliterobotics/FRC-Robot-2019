@@ -40,6 +40,7 @@ public abstract class Module {
 
     /**
      * Optional design pattern for caching inputs to avoid hammering HAL/CAN.
+     * Depending on whether you're using the Codex or not, this may or may not be necessary.
      */
     public void mapInputs(double pNow) {
     }
