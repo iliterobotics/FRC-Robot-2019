@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.commands.CommandQueue;
-import us.ilite.robot.loops.LoopList;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.ExampleModule;
 import us.ilite.robot.modules.ModuleList;
@@ -27,7 +26,6 @@ public class Robot extends IterativeRobot {
     private ModuleList mRunningModules = new ModuleList();
 
     private Clock mClock = new Clock();
-    private Data mData = new Data().simulated();
 
     @Override
     public void robotInit() {

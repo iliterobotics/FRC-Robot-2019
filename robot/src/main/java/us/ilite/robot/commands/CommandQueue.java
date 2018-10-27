@@ -10,8 +10,6 @@ import java.util.Queue;
 public class CommandQueue implements ICommand {
 
     private ILog mLogger = Logger.createLog(CommandQueue.class);
-
-    private boolean firstRun = false;
     private Queue<ICommand> mCommandQueue = new LinkedList<>();
 
 
@@ -52,7 +50,6 @@ public class CommandQueue implements ICommand {
     public void setCommands(ICommand ... pCommands) {
         mCommandQueue.clear();
         mCommandQueue.addAll(Arrays.asList(pCommands));
-        firstRun = false;
     }
 
 }
