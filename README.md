@@ -39,16 +39,6 @@ logging - Contains logging code
 display - Contains display code
 ```
 
-
-## Setting up IntelliJ
-1. Clone this repository.
-1. Run `gradlew idea` in the repository you just cloned.
-    - On Windows, this is `gradlew.bat idea`
-    - On Linux, this is `./gradlew idea`
-1. Open the repository in IntelliJ.
-1. You're done.
-
-
 ## Building and Deploying
 - To build, run `gradlew build`
 - To deploy to the robot, run `gradlew deploy`
