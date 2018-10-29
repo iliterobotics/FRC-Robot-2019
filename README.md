@@ -128,10 +128,10 @@ To update your PR, just push to the branch you made before.
 
 ## Helpful Tips
 
-### IntelliJ Trouble?
+### VSCode Trouble?
 
-If you're having trouble with IntelliJ, run `gradlew clean cleanIdea idea`. This
-cleans your project and regenerates the IntelliJ project files.
+If you're having trouble with IntelliJ, run `gradlew clean build`. This
+deletes any compiled Java files and rebuilds the project.
 
 ### Tools
 
