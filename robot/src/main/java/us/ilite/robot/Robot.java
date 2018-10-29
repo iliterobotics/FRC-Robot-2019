@@ -26,6 +26,7 @@ public class Robot extends IterativeRobot {
     private ModuleList mRunningModules = new ModuleList();
 
     private Clock mClock = new Clock();
+    private Data mData = new Data().simulated();
 
     @Override
     public void robotInit() {
