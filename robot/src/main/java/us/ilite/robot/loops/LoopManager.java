@@ -2,13 +2,10 @@ package us.ilite.robot.loops;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
+
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
-import us.ilite.common.config.SystemSettings;
 import us.ilite.lib.drivers.Clock;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A class which uses the WPILIB Notifier mechanic to run our Modules on
@@ -119,8 +116,5 @@ public class LoopManager implements Runnable{
         if( mLoopSafetyTimer.get() > kLoopPeriodSeconds) {
             mLog.error(pMessage);
         }
-    }
-
-    private void mapSensors(double pNow) {
     }
 }
