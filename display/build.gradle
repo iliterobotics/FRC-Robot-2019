@@ -4,4 +4,6 @@ dependencies {
     compile wpilib() // Required by HFR
 
     compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
+    compile name: 'jfxrt'
+
 }
