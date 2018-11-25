@@ -1,4 +1,7 @@
 dependencies {
     compile wpilib() // Required by HFR
     compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
+	compile group: 'gov.nist.math', name: 'jama', version:'1.0.3' // Required for 254's utils (PolynomialRegression)
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
