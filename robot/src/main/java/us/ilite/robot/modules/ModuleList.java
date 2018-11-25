@@ -14,16 +14,13 @@ public class ModuleList extends Module {
     protected List<Module> mModules = new ArrayList<>();
 
     @Override
-    public void powerOnInit(double pNow) {
-        for(Module m : mModules) {
-            mLogger.info("Running power-on initialization for " + m.getClass().getSimpleName());
-            m.powerOnInit(pNow);
-        }
+    public void modeInit(double pNow) {
+        mModules.forEach(module -> module.modeInit(pNow));
     }
 
     @Override
-    public void modeInit(double pNow) {
-        mModules.forEach(module -> module.modeInit(pNow));
+    public void periodicInput(double pNow) {
+        mModules.forEach(module -> module.periodicInput(pNow));
     }
 
     @Override
