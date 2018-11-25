@@ -8,18 +8,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class SmartDashboardUtil {
 
     public static void deletePersistentKeys() {
-        SmartDashboard smartDashboard = new SmartDashboard();
-        for (String key : smartDashboard.getKeys()) {
-            if (smartDashboard.isPersistent(key)) {
-                smartDashboard.delete(key);
+        for (String key : SmartDashboard.getKeys()) {
+            if (SmartDashboard.isPersistent(key)) {
+                SmartDashboard.delete(key);
             }
         }
     }
 
     public static void deleteAllKeys() {
-        SmartDashboard smartDashboard = new SmartDashboard();
-        for (String key : smartDashboard.getKeys()) {
-            smartDashboard.delete(key);
+        for (String key : SmartDashboard.getKeys()) {
+            SmartDashboard.delete(key);
         }
     }
 }
