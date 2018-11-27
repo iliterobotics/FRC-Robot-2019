@@ -95,6 +95,7 @@ public class LoopManager implements Runnable{
             try {
                 if(mIsRunning) {
                     //mapSensors(mLatestTime);
+                    mLoopList.periodicInput(mClock.getCurrentTime());
                     mLoopList.loop(mClock.getCurrentTime());
                 }
             } catch (Throwable t) {

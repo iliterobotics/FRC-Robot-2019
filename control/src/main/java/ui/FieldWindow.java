@@ -11,8 +11,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import lib.geometry.Pose2d;
-import lib.geometry.Translation2d;
+import us.ilite.common.lib.geometry.Pose2d;
+import us.ilite.common.lib.geometry.Translation2d;
 import simulation.TrackingSimulation;
 
 import java.io.File;

@@ -1,11 +1,11 @@
 package odometry;
 
 import javafx.geometry.Pos;
-import lib.geometry.Pose2d;
-import lib.geometry.Rotation2d;
-import lib.geometry.Twist2d;
-import lib.util.InterpolatingDouble;
-import lib.util.InterpolatingTreeMap;
+import us.ilite.common.lib.geometry.Pose2d;
+import us.ilite.common.lib.geometry.Rotation2d;
+import us.ilite.common.lib.geometry.Twist2d;
+import us.ilite.common.lib.util.InterpolatingDouble;
+import us.ilite.common.lib.util.InterpolatingTreeMap;
 
 import java.util.ArrayList;
 import java.util.List;

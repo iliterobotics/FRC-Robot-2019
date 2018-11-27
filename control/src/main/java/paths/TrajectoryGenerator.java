@@ -2,17 +2,17 @@ package paths;
 
 import control.DriveController;
 import control.DriveMotionPlanner;
-import lib.geometry.Pose2d;
-import lib.geometry.Pose2dWithCurvature;
-import lib.geometry.Rotation2d;
-import lib.trajectory.DistanceView;
-import lib.trajectory.Trajectory;
-import lib.trajectory.TrajectoryUtil;
-import lib.trajectory.timing.DifferentialDriveDynamicsConstraint;
-import lib.trajectory.timing.TimedState;
-import lib.trajectory.timing.TimingConstraint;
-import lib.trajectory.timing.TimingUtil;
-import lib.util.Units;
+import us.ilite.common.lib.geometry.Pose2d;
+import us.ilite.common.lib.geometry.Pose2dWithCurvature;
+import us.ilite.common.lib.geometry.Rotation2d;
+import us.ilite.common.lib.trajectory.DistanceView;
+import us.ilite.common.lib.trajectory.Trajectory;
+import us.ilite.common.lib.trajectory.TrajectoryUtil;
+import us.ilite.common.lib.trajectory.timing.DifferentialDriveDynamicsConstraint;
+import us.ilite.common.lib.trajectory.timing.TimedState;
+import us.ilite.common.lib.trajectory.timing.TimingConstraint;
+import us.ilite.common.lib.trajectory.timing.TimingUtil;
+import us.ilite.common.lib.util.Units;
 import profiles.RobotProfile;
 
 import java.util.ArrayList;

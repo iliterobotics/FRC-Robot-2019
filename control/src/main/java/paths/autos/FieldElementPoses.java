@@ -1,6 +1,6 @@
 package paths.autos;
 
-import lib.geometry.Translation2d;
+import us.ilite.common.lib.geometry.Translation2d;
 
 public class FieldElementPoses {
 

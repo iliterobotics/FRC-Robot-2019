@@ -1,6 +1,6 @@
 package profiles;
 
-import lib.util.Units;
+import us.ilite.common.lib.util.Units;
 
 /**
  * The dynamics information for Team 254's 2018 robot, Lockdown.

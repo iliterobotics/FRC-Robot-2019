@@ -2,8 +2,8 @@ package ui;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import lib.geometry.Pose2d;
-import lib.geometry.Translation2d;
+import us.ilite.common.lib.geometry.Pose2d;
+import us.ilite.common.lib.geometry.Translation2d;
 
 import java.util.ArrayList;
 import java.util.List;

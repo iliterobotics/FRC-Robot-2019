@@ -1,6 +1,6 @@
 package ui;
 
-import lib.geometry.Pose2d;
+import us.ilite.common.lib.geometry.Pose2d;
 
 public interface ISimulationListener {
 

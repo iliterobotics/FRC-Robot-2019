@@ -3,6 +3,9 @@ package us.ilite.common.lib.util;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
@@ -11,9 +14,11 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 public class ReflectingCSVWriter<T> {
     ConcurrentLinkedDeque<String> mLinesToWrite = new ConcurrentLinkedDeque<>();
     PrintWriter mOutput = null;
+    Class<T> typeClass;
     Field[] mFields;
 
     public ReflectingCSVWriter(String fileName, Class<T> typeClass) {
+        this.typeClass = typeClass;
         mFields = typeClass.getFields();
         try {
             mOutput = new PrintWriter(fileName);
@@ -33,6 +38,21 @@ public class ReflectingCSVWriter<T> {
 
     public void add(T value) {
         StringBuffer line = new StringBuffer();
+
+        // If the class has no fields, attempt to use its own toCSV()
+        if(mFields.length <= 0) {
+            try {
+                Method method = value.getClass().getMethod("toCSV");
+                line.append(method.invoke(value));
+            } catch (NoSuchMethodException pE) {
+                pE.printStackTrace();
+            } catch (InvocationTargetException pE) {
+                pE.printStackTrace();
+            } catch (IllegalAccessException pE) {
+                pE.printStackTrace();
+            }
+        }
+
         for (Field field : mFields) {
             if (line.length() != 0) {
                 line.append(", ");

@@ -1,14 +1,14 @@
 package control;
 
-import lib.geometry.Pose2d;
-import lib.geometry.Pose2dWithCurvature;
-import lib.geometry.Rotation2d;
-import lib.physics.DCMotorTransmission;
-import lib.physics.DifferentialDrive;
-import lib.trajectory.TimedView;
-import lib.trajectory.Trajectory;
-import lib.trajectory.TrajectoryIterator;
-import lib.trajectory.timing.TimedState;
+import us.ilite.common.lib.geometry.Pose2d;
+import us.ilite.common.lib.geometry.Pose2dWithCurvature;
+import us.ilite.common.lib.geometry.Rotation2d;
+import us.ilite.common.lib.physics.DCMotorTransmission;
+import us.ilite.common.lib.physics.DifferentialDrive;
+import us.ilite.common.lib.trajectory.TimedView;
+import us.ilite.common.lib.trajectory.Trajectory;
+import us.ilite.common.lib.trajectory.TrajectoryIterator;
+import us.ilite.common.lib.trajectory.timing.TimedState;
 import odometry.Kinematics;
 import odometry.RobotStateEstimator;
 import profiles.RobotProfile;
@@ -46,8 +46,8 @@ public class DriveController {
 
     }
 
-    public DriveOutput getOutput(double pTimestamp, double pLeftAbsolutePos, double pRightAbsolutePos, double pHeadingDegrees) {
-        mRobotStateEstimator.update(pTimestamp, pLeftAbsolutePos, pRightAbsolutePos, Rotation2d.fromDegrees(pHeadingDegrees));
+    public DriveOutput getOutput(double pTimestamp, double pLeftAbsolutePos, double pRightAbsolutePos, Rotation2d pHeading) {
+        mRobotStateEstimator.update(pTimestamp, pLeftAbsolutePos, pRightAbsolutePos, pHeading);
 
         return mDriveMotionPlanner.update(pTimestamp, mRobotStateEstimator.getRobotState().getLatestFieldToVehiclePose());
     }

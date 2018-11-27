@@ -1,7 +1,7 @@
 package paths.autos;
 
-import lib.geometry.Pose2d;
-import lib.geometry.Rotation2d;
+import us.ilite.common.lib.geometry.Pose2d;
+import us.ilite.common.lib.geometry.Rotation2d;
 
 public class StartingPoses {
 

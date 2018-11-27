@@ -1,8 +1,8 @@
 package ui;
 
 import javafx.scene.canvas.GraphicsContext;
-import lib.geometry.Pose2d;
-import lib.geometry.Translation2d;
+import us.ilite.common.lib.geometry.Pose2d;
+import us.ilite.common.lib.geometry.Translation2d;
 
 public abstract class ADrawable {
 

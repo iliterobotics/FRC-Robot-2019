@@ -29,7 +29,9 @@ subprojects {
 		mavenCentral()
 		mavenLocal()
 		flatDir {
-			dirs './lib' // The directory 'lib' is available as a source for dependencies - we put any JAR files here
+			// The directory lib is available as a source for dependencies - we put any JAR files here
+			// The directory lib will always be one folder "above" a subproject folder - thus the ".."
+			dirs '../lib'
 		}
 	}
 

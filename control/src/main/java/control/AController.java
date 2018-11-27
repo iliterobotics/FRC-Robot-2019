@@ -1,11 +1,11 @@
 package control;
 
-import lib.geometry.Pose2d;
-import lib.geometry.Pose2dWithCurvature;
-import lib.physics.ChassisState;
-import lib.physics.DifferentialDrive;
-import lib.trajectory.TrajectoryIterator;
-import lib.trajectory.timing.TimedState;
+import us.ilite.common.lib.geometry.Pose2d;
+import us.ilite.common.lib.geometry.Pose2dWithCurvature;
+import us.ilite.common.lib.physics.ChassisState;
+import us.ilite.common.lib.physics.DifferentialDrive;
+import us.ilite.common.lib.trajectory.TrajectoryIterator;
+import us.ilite.common.lib.trajectory.timing.TimedState;
 
 public abstract class AController {
 
