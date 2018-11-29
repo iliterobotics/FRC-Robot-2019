@@ -1,1 +1,1 @@
-include "common", "robot", "display", "control"
+include "robot", "display", "control", "common"

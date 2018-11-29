@@ -27,13 +27,19 @@ wpi {
     ctreVersion = '5.3.1.0'
 }
 
+simulation() {
+    def test = "test"
+}
+
 // Defining my dependencies. In this case, WPILib (+ friends), CTRE Toolsuite (Talon SRX)
 // and NavX.
 dependencies {
+
+    print(project.configurations.getByName("simulation"))
+
     compile project(':common')
     compile project(':control')
 
-    compile wpilib()
     compile ctre()
     compile navx()
 
@@ -47,3 +53,4 @@ jar {
     from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_CLASS)
 }
+

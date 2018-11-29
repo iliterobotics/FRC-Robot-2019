@@ -10,6 +10,4 @@ sourceCompatibility = 1.8
 dependencies {
     compile project(':common')
 
-    // Required for 254's utils (PolynomialRegression)
-    compile group: 'gov.nist.math', name: 'jama', version:'1.0.3'
 }

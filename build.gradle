@@ -36,6 +36,8 @@ subprojects {
 	}
 
 	dependencies {
+		compile wpilib() // We can't build without this in every project
+
 		testCompile group: 'junit', name: 'junit', version: '4.12' // Basic Unit Testing
 		testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19' // Allows you to create mock objects using unit testing
 	}
