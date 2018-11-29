@@ -3,35 +3,23 @@ package us.ilite.robot.driverinput;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import org.ilite.frc.common.config.DriveTeamInputMap;
-import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.common.input.DriverInputUtils;
-import org.ilite.frc.common.input.EInputScale;
-import org.ilite.frc.common.types.ELogitech310;
-import org.ilite.frc.robot.commands.CubeSearch;
-import org.ilite.frc.robot.commands.CubeSearch.CubeSearchType;
-import org.ilite.frc.robot.commands.ICommand;
-import org.ilite.frc.robot.modules.Carriage;
-import org.ilite.frc.robot.modules.Carriage.CarriageState;
-import org.ilite.frc.robot.modules.DriveTrain;
-import org.ilite.frc.robot.modules.EElevatorGearState;
-import org.ilite.frc.robot.modules.Elevator;
-import org.ilite.frc.robot.modules.Elevator.ElevatorControlMode;
-import org.ilite.frc.robot.modules.EElevatorPosition;
-import org.ilite.frc.robot.modules.IModule;
-import org.ilite.frc.robot.modules.Intake;
-import org.ilite.frc.robot.modules.drivetrain.DrivetrainMessage;
-import org.ilite.frc.robot.modules.drivetrain.DrivetrainMode;
-
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.sun.javafx.util.Utils;
+import us.ilite.common.config.DriveTeamInputMap;
+import us.ilite.common.config.SystemSettings;
+import us.ilite.common.lib.util.Util;
+import us.ilite.common.types.drive.EDriveMode;
+import us.ilite.common.types.input.EInputScale;
+import us.ilite.robot.Data;
+import us.ilite.robot.commands.ICommand;
+import us.ilite.robot.modules.Drive;
+import us.ilite.robot.modules.DriveMessage;
+import us.ilite.robot.modules.Module;
 
-public class DriverInput implements IModule{
+public class DriverInput extends Module {
 
-	
-  protected final DriveTrain driveTrain;
-  private final Carriage mCarriage;
-  private final Elevator mElevatorModule;
-  private final Intake mIntake;
+  protected final Drive driveTrain;
   private boolean scaleInputs;
   private boolean currentDriverToggle, lastDriverToggle, currentOperatorToggle, lastOperatorToggle;
   
@@ -42,19 +30,16 @@ public class DriverInput implements IModule{
   
 	private Data mData;
 	
-	public DriverInput(DriveTrain pDrivetrain, Intake pIntake, Carriage pCarriage, Elevator pElevator, Data pData)
+	public DriverInput(Drive pDrivetrain, Data pData)
 	{
 	    this.driveTrain = pDrivetrain;
-	    this.mIntake = pIntake;
 		this.mData = pData;
-		mCarriage = pCarriage;
-		mElevatorModule = pElevator;
 		this.desiredCommandQueue = new LinkedList<>();
 		scaleInputs = false;
 	}
 	
 	@Override
-	public void initialize(double pNow) {
+	public void modeInit(double pNow) {
 		// TODO Auto-generated method stub
 		
 		canRunCommandQueue = lastCanRunCommandQueue == false;
@@ -62,7 +47,12 @@ public class DriverInput implements IModule{
 	}
 
 	@Override
-	public boolean update(double pNow) {
+	public void periodicInput(double pNow) {
+
+	}
+
+	@Override
+	public void update(double pNow) {
 //		if(mData.driverinput.get(DriveTeamInputMap.DRIVE_SNAIL_MODE) > 0.5)
 //		  scaleInputs = true;
 //		else
@@ -70,27 +60,17 @@ public class DriverInput implements IModule{
 		if(!canRunCommandQueue) {
 		  updateDriveTrain();
 		}
-		updateIntake();
-		updateElevator(pNow);
-		updateCarriage();
 		updateCommands();
-		return false;
+
 	}
 	
 	private void updateCommands() {
-		boolean leftButton = mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SEARCH_CUBE_LEFT_BTN);
-		boolean rightButton = mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SEARCH_CUBE_RIGHT_BTN);
 		
-		canRunCommandQueue = leftButton || rightButton;
+		//canRunCommandQueue = is a button triggered?
 
 		if(shouldInitializeCommandQueue()) {
-//			System.out.println("shouldInitializeCommandQueue() = true \\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\nsearching...!");
 			desiredCommandQueue.clear();
-			if(leftButton) {
-				desiredCommandQueue.add(new CubeSearch(driveTrain, mData, CubeSearchType.LEFT));
-			} else if(rightButton) {
-				desiredCommandQueue.add(new CubeSearch(driveTrain, mData, CubeSearchType.RIGHT));
-			}
+			//desiredCommandQueue.add(<command>);
 		}
 		lastCanRunCommandQueue = canRunCommandQueue;
 	}
@@ -114,7 +94,7 @@ public class DriverInput implements IModule{
 	      rotate *= SystemSettings.SNAIL_MODE_ROTATE_LIMITER;
 		}
 		
-		rotate = Utils.clamp(rotate, 0.7);
+		rotate = Util.limit(rotate, 0.7);
 		    //		System.out.println("ENGINE THROTTLE " + throttle);
 		desiredLeftOutput = throttle + rotate;
 		desiredRightOutput = throttle - rotate;
@@ -128,110 +108,21 @@ public class DriverInput implements IModule{
 //			System.out.println("LEFT: " + desiredLeftOutput +"\tRIGHT: " +  desiredRightOutput + "");
 //		}
 		
-		driveTrain.setDriveMessage(new DrivetrainMessage(desiredLeftOutput, desiredRightOutput, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+		driveTrain.setDriveMessage(new DriveMessage(desiredLeftOutput, desiredRightOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
 		
 	}
-	
-	private void updateIntake() {
-    double intakeSpeed = mData.operator.get(DriveTeamInputMap.OPERATOR_OPEN_LOOP_INTAKE_AXIS_1);
-    
-    // Retract the intake if we have the cube and aren't being overridden manually by the operator
-    if(mCarriage.getBeamBreak() && !mData.operator.isSet(DriveTeamInputMap.OPERATOR_HOLD_INTAKE_OUT)) {
-      mIntake.setIntakeRetracted(true);
-    }
-    
-    // Automatically retract when the climbing stick is moved
-    if(Math.abs(mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS)) > 0.1) {
-      mIntake.setIntakeRetracted(true);
-    }
-    
-    if(Math.abs(intakeSpeed) > 0.1) {
-      if(!mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_OUT_BTN) && mCarriage.getBeamBreak()) {
-        mIntake.setIntakeRetracted(true);
-      } else {
-        mIntake.setIntakeRetracted(false);
-      }
-      if(intakeSpeed > 0) {
-        mIntake.intakeIn(intakeSpeed);
-        mCarriage.setDesiredState(CarriageState.RESET);
-      } else {
-        mIntake.intakeOut(intakeSpeed);
-        mCarriage.setDesiredState(CarriageState.RESET);
-      }
-    } else if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_OUT_BTN)) {
-      // If we bring the intakes out, open the carriage so the cube won't get stuck
-        mIntake.setIntakeRetracted(false);
-        mCarriage.setDesiredState(CarriageState.RESET);
-    } else if (mData.operator.isSet(DriveTeamInputMap.OPERATOR_INTAKE_IN_BTN)) {
-      mIntake.setIntakeRetracted(true);
-    } else {
-      mIntake.turnOff();
-    }
-	}
-	
-	private void updateElevator(double pNow) {
-	  
-	  double climberAxis = mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS);
-	  climberAxis = EInputScale.EXPONENTIAL.map(climberAxis, 2d);
-	  
-	  // Safety to prevent elevator motors from burning out
-	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ZERO_ELEVATOR_INPUTS))
-	  {
-	    mElevatorModule.setElevControlMode(ElevatorControlMode.MANUAL);
-	    mElevatorModule.setPower(0);
-	    // TODO - also reset encoder
-	  }
-	  
-	  if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_SWITCH_BTN))
-	  {
-	  	mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
-	    mElevatorModule.setPosition(EElevatorPosition.SECOND_TAPE);
-	  }
-	  else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_SCALE))
-    {
-      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
-      mElevatorModule.setPosition(EElevatorPosition.THIRD_TAPE);
-    }
-    else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_SETPOINT_GROUND_BTN))
-    {
-      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.POSITION);
-      mElevatorModule.setPosition(EElevatorPosition.BOTTOM);
-    } else if( climberAxis != 0) {
-      if(Math.abs(climberAxis) > 0.1 && Math.abs(climberAxis) < 0.75) {
-        mElevatorModule.setGearState(EElevatorGearState.CLIMBING);
-        mElevatorModule.setElevControlMode(ElevatorControlMode.CLIMBER);
-      }
-      if(Math.abs(climberAxis) > 0.75) {
-        mElevatorModule.setGearState(EElevatorGearState.CLIMBING);
-        mElevatorModule.setElevControlMode(ElevatorControlMode.CLIMBER);
-        mElevatorModule.setPower(-mData.operator.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS));
-      }
-    } else {
-	    mElevatorModule.setGearState(EElevatorGearState.NORMAL);
-      mElevatorModule.setElevControlMode(Elevator.ElevatorControlMode.MANUAL);
-      mElevatorModule.setPower(-mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_DOWN_AXIS) +
-              mData.operator.get(DriveTeamInputMap.OPERATOR_ELEVATOR_UP_AXIS));
-    }
-	  
-	}
-  
-  private void updateCarriage() {
-    if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_KICK)) {
-      mCarriage.setDesiredState(CarriageState.KICKING);
-    } else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_RESET)) {
-      mCarriage.setDesiredState(CarriageState.RESET);
-    } else if(mData.operator.isSet(DriveTeamInputMap.OPERATOR_CARRIAGE_GRAB)) {
-      mCarriage.setDesiredState(CarriageState.GRAB_CUBE);
-    }
-  }
 	
 	@Override
 	public void shutdown(double pNow) {
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
+
+	@Override
+	public void checkModule(double pNow) {
+
+	}
+
 
 	public boolean shouldInitializeCommandQueue() {
 		return lastCanRunCommandQueue == false && canRunCommandQueue == true;

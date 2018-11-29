@@ -1,10 +1,9 @@
 package us.ilite.lib.drivers;
 
-import org.ilite.frc.common.util.FilteredAverage;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Ultrasonic;
+import us.ilite.common.lib.util.FilteredAverage;
 
 public class UltraSonicSensor {
 	private Ultrasonic mWpiUltrasonic;

@@ -1,8 +1,8 @@
 package us.ilite.robot;
 
-import us.ilite.common.lib.util.Units;
-import org.ilite.frc.common.config.SystemSettings;
 import profiles.RobotProfile;
+import us.ilite.common.config.SystemSettings;
+import us.ilite.common.lib.util.Units;
 
 public class MikeyProfile implements RobotProfile {
     @Override

@@ -5,6 +5,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.input.EDriverInputMode;
+import us.ilite.common.types.input.ELogitech310;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.util.SimpleNetworkTable;
 
@@ -22,6 +23,8 @@ public class Data {
 
     public Codex<Double, EGyro> imu = Codex.of.thisEnum(EGyro.class);
     public Codex<Double, EDriveData> drive = Codex.of.thisEnum(EDriveData.class);
+    public Codex<Double, ELogitech310> driverinput = Codex.of.thisEnum(ELogitech310.class);
+    public Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
 
    public Data simulated() {
        imu = Codex.of.thisEnum(EGyro.class);

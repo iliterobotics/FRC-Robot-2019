@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Talon;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.geometry.Rotation2d;
 import us.ilite.common.lib.util.Units;
+import us.ilite.lib.drivers.LazyTalonSRX;
 import us.ilite.lib.drivers.Pigeon;
 import us.ilite.lib.drivers.TalonSRXFactory;
 import us.ilite.robot.modules.DriveMessage;
