@@ -53,4 +53,10 @@ public class DriveMessage {
     return this;
   }
 
+  public DriveMessage setNeutralMode(NeutralMode pMode) {
+    this.leftNeutralMode = pMode;
+    this.rightNeutralMode = pMode;
+    return this;
+  }
+
 }
