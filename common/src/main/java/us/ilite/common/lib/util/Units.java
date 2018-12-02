@@ -43,15 +43,15 @@ public class Units {
         return tick_to_rotations(ticks) * SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE;
     }
 
-    public static double ticks_to_rpm(double ticks) {
+    public static double vel_ticks_to_rpm(double ticks) {
         return tick_to_rotations(ticks) * 60000;
     }
 
-    public static double ticks_to_fps(double ticks) {
+    public static double vel_ticks_to_fps(double ticks) {
         return tick_to_rotations(ticks) * SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE * (1.0 / 12.0) * 10.0;
     }
 
-    public static double ticks_to_rads(double ticks) {
+    public static double vel_ticks_to_rads(double ticks) {
         return tick_to_rotations(ticks) * 2 * Math.PI * 10.0;
     }
 

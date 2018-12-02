@@ -16,6 +16,10 @@ import us.ilite.lib.drivers.Pigeon;
 import us.ilite.lib.drivers.TalonSRXFactory;
 import us.ilite.robot.modules.DriveMessage;
 
+/**
+ * Provides an interface between high-level planning and logic in Drive and Talon SRX configuration and control.
+ * We might put our motor models here too - it would make a ton of sense, and we could just call setVelocity() or setAcceleration in Drive
+ */
 public class DriveHardware implements IHardware {
 
     private final ILog mLogger = Logger.createLog(DriveHardware.class);
@@ -187,11 +191,11 @@ public class DriveHardware implements IHardware {
     }
     
     public double getLeftVelInches() {
-        return Units.ticks_to_fps(mLeftMaster.getSelectedSensorVelocity(0)) / 12.0;
+        return Units.vel_ticks_to_fps(mLeftMaster.getSelectedSensorVelocity(0)) / 12.0;
     }
 
     public double getRightVelInches() {
-        return Units.ticks_to_fps(mRightMaster.getSelectedSensorVelocity(0)) / 12.0;
+        return Units.vel_ticks_to_fps(mRightMaster.getSelectedSensorVelocity(0)) / 12.0;
     }
 
 }
