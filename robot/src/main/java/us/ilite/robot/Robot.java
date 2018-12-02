@@ -37,7 +37,6 @@ public class Robot extends IterativeRobot {
         Logger.setLevel(ELevel.INFO);
 
         mRunningModules.setModules();
-        mRunningModules.powerOnInit(mClock.getCurrentTime());
 
         initTimer.stop();
         mLogger.info("Robot initialization finished. Took: ", initTimer.get(), " seconds");
@@ -68,6 +67,7 @@ public class Robot extends IterativeRobot {
     public void autonomousPeriodic() {
         mapInputsAndCachedSensors();
 
+        mRunningModules.periodicInput(mClock.getCurrentTime());
         mCommandQueue.update(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
     }
@@ -86,6 +86,7 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic() {
         mapInputsAndCachedSensors();
 
+        mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
     }
 

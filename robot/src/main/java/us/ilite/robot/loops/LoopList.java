@@ -15,16 +15,13 @@ public class LoopList extends Loop {
     protected List<Loop> mLoops = new ArrayList<>();
 
     @Override
-    public void powerOnInit(double pNow) {
-        for(Module m : mLoops) {
-            mLogger.info("Running power-on initialization for " + m.getClass().getSimpleName());
-            m.powerOnInit(pNow);
-        }
+    public void modeInit(double pNow) {
+        mLoops.forEach(module -> module.modeInit(pNow));
     }
 
     @Override
-    public void modeInit(double pNow) {
-        mLoops.forEach(module -> module.modeInit(pNow));
+    public void periodicInput(double pNow) {
+        mLoops.forEach(module -> module.periodicInput(pNow));
     }
 
     @Override

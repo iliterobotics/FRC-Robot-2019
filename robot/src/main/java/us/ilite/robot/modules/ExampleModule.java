@@ -13,18 +13,17 @@ public class ExampleModule extends Module {
     private Timer mTimer = new Timer();
     private boolean mOn = false;
 
-
-    @Override
-    public void powerOnInit(double pNow) {
-        mLog.error("POWER ON INIT");
-    }
-
     @Override
     public void modeInit(double pNow) {
         mLog.error("MODE INIT");
 
         mTimer.reset();
         mTimer.start();
+    }
+
+    @Override
+    public void periodicInput(double pNow) {
+        
     }
 
     @Override
