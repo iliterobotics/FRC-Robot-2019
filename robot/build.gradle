@@ -27,10 +27,6 @@ wpi {
     ctreVersion = '5.3.1.0'
 }
 
-simulation() {
-    def test = "test"
-}
-
 // Defining my dependencies. In this case, WPILib (+ friends), CTRE Toolsuite (Talon SRX)
 // and NavX.
 dependencies {

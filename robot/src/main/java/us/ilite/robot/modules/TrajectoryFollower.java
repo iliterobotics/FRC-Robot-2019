@@ -57,8 +57,8 @@ public class TrajectoryFollower extends Loop {
     @Override
     public void update(double pNow) {
 
-        leftVelRads = Units.ticks_to_rads(mDrive.getDriveHardware().getLeftVelTicks());
-        rightVelRads = Units.ticks_to_rads(mDrive.getDriveHardware().getRightVelTicks());
+        leftVelRads = Units.vel_ticks_to_rads(mDrive.getDriveHardware().getLeftVelTicks());
+        rightVelRads = Units.vel_ticks_to_rads(mDrive.getDriveHardware().getRightVelTicks());
 
         leftAccelRads = (leftVelRads - lastLeftVelRads) / (pNow - mLastTimeUpdated);
         rightAccelRads = (rightVelRads - lastRightVelRads) / (pNow - mLastTimeUpdated);
