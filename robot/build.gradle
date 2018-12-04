@@ -31,8 +31,6 @@ wpi {
 // and NavX.
 dependencies {
 
-    print(project.configurations.getByName("simulation"))
-
     compile project(':common')
     compile project(':control')
 
