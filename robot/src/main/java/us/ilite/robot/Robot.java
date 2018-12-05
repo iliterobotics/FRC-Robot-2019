@@ -1,8 +1,11 @@
 package us.ilite.robot;
 
+import java.util.Scanner;
+
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.config.SystemSettings;
@@ -32,9 +35,8 @@ public class Robot extends IterativeRobot {
     public void robotInit() {
         Timer initTimer = new Timer();
         initTimer.start();
+        Logger.setLevel(ELevel.DEBUG);
         mLogger.info("Starting Robot Initialization...");
-
-        Logger.setLevel(ELevel.INFO);
 
         mRunningModules.setModules();
 
@@ -48,14 +50,18 @@ public class Robot extends IterativeRobot {
      */
     @Override
     public void robotPeriodic() {
-//        mLogger.info(this.toString());
+        mLogger.info(this.toString());
+
+        Scanner keyboard = new Scanner(System.in);
+        String line = keyboard.nextLine();
+        mLogger.debug("You entered: " + line);
 
         mClock.cycleEnded();
     }
 
     @Override
     public void autonomousInit() {
-        mapInputsAndCachedSensors();
+        mapNonModuleInputs();
 
         mRunningModules.setModules(mExampleModule);
         mRunningModules.modeInit(mClock.getCurrentTime());
@@ -65,7 +71,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousPeriodic() {
-        mapInputsAndCachedSensors();
+        mapNonModuleInputs();
 
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mCommandQueue.update(mClock.getCurrentTime());
@@ -74,7 +80,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopInit() {
-        mapInputsAndCachedSensors();
+        mapNonModuleInputs();
 
         mRunningModules.setModules(mExampleModule);
         mRunningModules.modeInit(mClock.getCurrentTime());
@@ -84,7 +90,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void teleopPeriodic() {
-        mapInputsAndCachedSensors();
+        mapNonModuleInputs();
 
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
@@ -111,10 +117,14 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void testPeriodic() {
+        mapNonModuleInputs();
 
+        mRunningModules.periodicInput(mClock.getCurrentTime());
+        mRunningModules.checkModule(mClock.getCurrentTime());
+        mRunningModules.update(mClock.getCurrentTime());
     }
 
-    public void mapInputsAndCachedSensors() {
+    public void mapNonModuleInputs() {
 
     }
 
