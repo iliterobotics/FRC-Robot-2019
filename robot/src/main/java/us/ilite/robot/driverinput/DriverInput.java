@@ -5,11 +5,10 @@ import java.util.Queue;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.sun.javafx.util.Utils;
+
 import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.util.Util;
-import us.ilite.common.types.drive.EDriveMode;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.robot.Data;
 import us.ilite.robot.commands.ICommand;
