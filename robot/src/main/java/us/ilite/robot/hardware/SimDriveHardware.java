@@ -1,0 +1,117 @@
+package us.ilite.robot.hardware;
+
+import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.sensors.PigeonIMU;
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
+import control.DriveController;
+import us.ilite.common.config.SystemSettings;
+import us.ilite.common.lib.geometry.Rotation2d;
+import us.ilite.common.lib.physics.DCMotorTransmission;
+import us.ilite.common.lib.util.Units;
+import us.ilite.lib.drivers.Clock;
+import us.ilite.robot.modules.DriveMessage;
+
+public class SimDriveHardware implements IDriveHardware {
+
+    private final ILog mLogger = Logger.createLog(DriveHardware.class);
+
+    private ControlMode mLeftControlMode, mRightControlMode;
+    private NeutralMode mLeftNeutralMode, mRightNeutralMode;
+
+    private double mLeftVolts, mRightVolts;
+    private double mLeftPosInches, mRightPosInches;
+    private double mLeftVelInches, mRightVelInches;
+
+    private Clock mClock;
+    private double mLastTime = 0.0;
+    private DriveController mDriveController;
+    private DCMotorTransmission mLeftTransmission, mRightTransmission;
+
+    public SimDriveHardware(DriveController pDriveController, Clock pClock) {
+        mDriveController = pDriveController;
+        mClock = pClock;
+        mLeftTransmission = pDriveController.getLeftTransmission();
+        mRightTransmission = pDriveController.getRightTransmission();
+    }
+
+    @Override
+    public void init() {
+        zero();
+        mLeftControlMode = mRightControlMode = ControlMode.PercentOutput;
+        mLeftNeutralMode = mRightNeutralMode = NeutralMode.Coast;
+    }
+
+    @Override
+    public void zero() {
+        mDriveController.getRobotStateEstimator().reset();
+
+        mLeftPosInches = mRightPosInches = 0.0;
+
+        mLeftVolts = mRightVolts = 0.0;
+    }
+
+    public void set(DriveMessage pDriveMessage) {
+
+        mLeftVelInches = setMotor(mLeftTransmission, pDriveMessage.leftControlMode, pDriveMessage.leftOutput, pDriveMessage.leftDemandType, pDriveMessage.leftDemand);
+        mRightVelInches = setMotor(mRightTransmission, pDriveMessage.rightControlMode, pDriveMessage.rightOutput, pDriveMessage.rightDemandType, pDriveMessage.rightDemand);
+
+        double dt = mClock.getCurrentTime() - mLastTime;
+
+        mLeftPosInches = mLeftVelInches * dt;
+        mRightPosInches = mRightVelInches * dt;
+
+        mLastTime = mClock.getCurrentTime();
+    }
+
+    public double setMotor(DCMotorTransmission pTransmission, ControlMode pControlMode, double pOutput, DemandType pDemandType, double pDemand) {
+
+        double voltage = 0.0;
+
+        switch(pControlMode) {
+            case PercentOutput:
+                voltage = pOutput * 12.0;
+                break;
+            case Velocity:
+                voltage = pOutput / pTransmission.speed_per_volt();
+                break;
+        }
+
+        if(pDemandType == DemandType.ArbitraryFeedForward) {
+            voltage += pDemand;
+        }
+
+        return Units.meters_to_inches(pTransmission.free_speed_at_voltage(voltage));
+
+    }
+    
+    public Rotation2d getHeading() {
+        return mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().getRotation();
+    }
+
+    public double getLeftInches() {
+        return mLeftPosInches;
+    }
+
+    public double getRightInches() {
+        return mRightPosInches;
+    }
+
+    public double getLeftVelTicks() {
+        return mLeftVelInches / SystemSettings.DRIVETRAIN_WHEEL_DIAMETER * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN / 10;
+    }
+
+    public double getRightVelTicks() {
+        return mRightVelInches / SystemSettings.DRIVETRAIN_WHEEL_DIAMETER * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN / 10;
+    }
+
+    public double getLeftVelInches() {
+        return mLeftVelInches;
+    }
+
+    public double getRightVelInches() {
+        return mRightVelInches;
+    }
+
+}

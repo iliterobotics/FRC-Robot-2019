@@ -105,4 +105,12 @@ public class DriveController {
     public RobotProfile getRobotProfile() {
         return mRobotProfile;
     }
+
+    public DCMotorTransmission getLeftTransmission() {
+        return mLeftTransmission;
+    }
+
+    public DCMotorTransmission getRightTransmission() {
+        return mRightTransmission;
+    }
 }
