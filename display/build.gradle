@@ -1,5 +1,6 @@
 dependencies {
     compile project(':common')
+    compile project(':control')
 
     compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
     compile name: 'jfxrt'

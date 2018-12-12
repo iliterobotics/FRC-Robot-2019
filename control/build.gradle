@@ -1,7 +1,7 @@
 version '1.0-SNAPSHOT'
 
 apply plugin: 'application'
-mainClassName = 'Main'
+mainClassName = 'us.ilite.display.Main'
 
 apply from: 'plot.gradle'
 

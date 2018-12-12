@@ -1,4 +1,4 @@
-package simulation;
+package us.ilite.display.simulation;
 
 import control.DriveController;
 import control.DriveMotionPlanner;
@@ -12,10 +12,6 @@ import us.ilite.common.lib.trajectory.timing.TimedState;
 import us.ilite.common.lib.util.ReflectingCSVWriter;
 import us.ilite.common.lib.util.Units;
 import us.ilite.common.lib.util.Util;
-import odometry.RobotStateEstimator;
-import profiles.LockdownProfile;
-import ui.FieldWindow;
-import ui.ISimulationListener;
 
 import java.util.ArrayList;
 import java.util.List;
