@@ -1,7 +1,9 @@
+package us.ilite.display;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
-import simulation.TrackingSimulation;
-import ui.FieldWindow;
+import us.ilite.display.simulation.TrackingSimulation;
+import us.ilite.display.simulation.ui.FieldWindow;
 
 public class Main extends Application {
 

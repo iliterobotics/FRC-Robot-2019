@@ -1,9 +1,12 @@
-package simulation;
+package us.ilite.display.simulation;
 
 import control.DriveController;
 import control.DriveMotionPlanner;
-import javafx.application.Application;
-import javafx.stage.Stage;
+import odometry.RobotStateEstimator;
+import paths.TrajectoryGenerator;
+import paths.autos.NearScaleAuto;
+import profiles.LockdownProfile;
+import profiles.RobotProfile;
 import us.ilite.common.lib.geometry.Pose2d;
 import us.ilite.common.lib.geometry.Pose2dWithCurvature;
 import us.ilite.common.lib.geometry.Rotation2d;
@@ -12,17 +15,7 @@ import us.ilite.common.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import us.ilite.common.lib.trajectory.timing.TimedState;
 import us.ilite.common.lib.trajectory.timing.TimingConstraint;
 import us.ilite.common.lib.util.ReflectingCSVWriter;
-import odometry.Kinematics;
-import odometry.RobotState;
-import odometry.RobotStateEstimator;
-import paths.TrajectoryGenerator;
-import paths.autos.FarScaleAuto;
-import paths.autos.NearScaleAuto;
-import profiles.LockdownProfile;
-import profiles.RobotProfile;
-import ui.FieldWindow;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 

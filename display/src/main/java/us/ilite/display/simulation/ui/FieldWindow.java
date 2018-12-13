@@ -1,4 +1,4 @@
-package ui;
+package us.ilite.display.simulation.ui;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -13,7 +13,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import us.ilite.common.lib.geometry.Pose2d;
 import us.ilite.common.lib.geometry.Translation2d;
-import simulation.TrackingSimulation;
+import us.ilite.display.simulation.ISimulationListener;
+import us.ilite.display.simulation.TrackingSimulation;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -73,7 +74,7 @@ public class FieldWindow extends Application implements ISimulationListener {
         pauseButton.setOnAction(e -> pause());
 
         try {
-            fieldImage = new Image(new File("field.png").toURI().toURL().toExternalForm());
+            fieldImage = new Image(new File("display/field.png").toURI().toURL().toExternalForm());
         } catch (Exception pE) {
             pE.printStackTrace();
         }

@@ -1,4 +1,4 @@
-package ui;
+package us.ilite.display.simulation.ui;
 
 import javafx.scene.canvas.GraphicsContext;
 import us.ilite.common.lib.geometry.Pose2d;
