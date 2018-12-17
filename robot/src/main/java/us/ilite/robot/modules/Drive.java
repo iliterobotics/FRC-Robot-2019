@@ -2,9 +2,13 @@ package us.ilite.robot.modules;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
+import control.DriveController;
 import us.ilite.common.types.drive.EDriveData;
+import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.Data;
 import us.ilite.robot.hardware.DriveHardware;
+import us.ilite.robot.hardware.IDriveHardware;
+import us.ilite.robot.hardware.SimDriveHardware;
 import us.ilite.robot.loops.Loop;
 
 /**
@@ -16,15 +20,15 @@ public class Drive extends Loop {
 
 	private Data mData;
 
-	private DriveHardware mDriveHardware;
+	private IDriveHardware mDriveHardware;
 
 	private EDriveState mDriveState;
 	private DriveMessage mDriveMessage;
 
-	public Drive(Data data)
+	public Drive(Data data, DriveController pDriveController, Clock pClock)
 	{
 		this.mData = data;
-		this.mDriveHardware = new DriveHardware();
+		this.mDriveHardware = new SimDriveHardware(pDriveController, pClock);
 	}
 
 	@Override
@@ -80,7 +84,7 @@ public class Drive extends Loop {
 		this.mDriveState = pDriveState;
 	}
 
-	public synchronized DriveHardware getDriveHardware() {
+	public synchronized IDriveHardware getDriveHardware() {
 	    return mDriveHardware;
     }
 

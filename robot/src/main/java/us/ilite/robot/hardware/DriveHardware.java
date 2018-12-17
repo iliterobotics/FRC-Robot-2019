@@ -20,7 +20,7 @@ import us.ilite.robot.modules.DriveMessage;
  * Provides an interface between high-level planning and logic in Drive and Talon SRX configuration and control.
  * We might put our motor models here too - it would make a ton of sense, and we could just call setVelocity() or setAcceleration in Drive
  */
-public class DriveHardware implements IHardware {
+public class DriveHardware implements IDriveHardware {
 
     private final ILog mLogger = Logger.createLog(DriveHardware.class);
 
