@@ -1,3 +1,4 @@
+apply from: 'plot.gradle'
 dependencies {
     compile project(':common')
     compile project(':control')
