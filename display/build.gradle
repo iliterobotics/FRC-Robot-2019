@@ -1,4 +1,12 @@
+version '1.0-SNAPSHOT'
+
+apply plugin: 'application'
+mainClassName = 'us.ilite.display.Main'
+
 apply from: 'plot.gradle'
+
+sourceCompatibility = 1.8
+
 dependencies {
     compile project(':common')
     compile project(':control')

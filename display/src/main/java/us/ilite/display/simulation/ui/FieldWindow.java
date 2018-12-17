@@ -74,7 +74,7 @@ public class FieldWindow extends Application implements ISimulationListener {
         pauseButton.setOnAction(e -> pause());
 
         try {
-            fieldImage = new Image(new File("display/field.png").toURI().toURL().toExternalForm());
+            fieldImage = new Image(new File("field.png").toURI().toURL().toExternalForm());
         } catch (Exception pE) {
             pE.printStackTrace();
         }
