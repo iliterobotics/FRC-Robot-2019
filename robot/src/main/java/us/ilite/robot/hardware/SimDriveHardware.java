@@ -1,8 +1,6 @@
 package us.ilite.robot.hardware;
 
 import com.ctre.phoenix.motorcontrol.*;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.sensors.PigeonIMU;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import control.DriveController;
@@ -22,7 +20,9 @@ public class SimDriveHardware implements IDriveHardware {
 
     private double mLeftVolts, mRightVolts;
     private double mLeftPosInches, mRightPosInches;
-    private double mLeftVelInches, mRightVelInches;
+    private double mLastLeftVelInches, mLastRightVelInches = 0.0;
+    private double mLeftVelInches, mRightVelInches = 0.0;
+    private double mLeftAccelInches, mRightAccelInches = 0.0;
 
     private Clock mClock;
     private double mLastTime = 0.0;
@@ -56,13 +56,22 @@ public class SimDriveHardware implements IDriveHardware {
 
         mLeftVelInches = setMotor(mLeftTransmission, pDriveMessage.leftControlMode, pDriveMessage.leftOutput, pDriveMessage.leftDemandType, pDriveMessage.leftDemand);
         mRightVelInches = setMotor(mRightTransmission, pDriveMessage.rightControlMode, pDriveMessage.rightOutput, pDriveMessage.rightDemandType, pDriveMessage.rightDemand);
+        
+    }
+    
+    public void update(double pNow) {
+        double dt = pNow - mLastTime;
+        
+        mLeftAccelInches = (mLeftVelInches - mLastLeftVelInches) / dt;
+        mRightAccelInches = (mRightVelInches - mLastRightVelInches) / dt;
+        
+        mLeftPosInches = (mLeftVelInches * dt) + (0.5 * mLeftAccelInches * dt * dt);
+        mRightPosInches = (mRightVelInches * dt) + (0.5 * mRightAccelInches * dt * dt);
 
-        double dt = mClock.getCurrentTime() - mLastTime;
+        mLastLeftVelInches = mLeftVelInches;
+        mLastRightVelInches = mRightVelInches;
 
-        mLeftPosInches = mLeftVelInches * dt;
-        mRightPosInches = mRightVelInches * dt;
-
-        mLastTime = mClock.getCurrentTime();
+        mLastTime = pNow;
     }
 
     public double setMotor(DCMotorTransmission pTransmission, ControlMode pControlMode, double pOutput, DemandType pDemandType, double pDemand) {
