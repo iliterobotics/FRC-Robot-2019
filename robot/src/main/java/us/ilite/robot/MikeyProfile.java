@@ -37,7 +37,7 @@ public class MikeyProfile implements RobotProfile {
 
     @Override
     public double getWheelRadiusMeters() {
-        return Units.inches_to_meters(SystemSettings.DRIVETRAIN_WHEEL_DIAMETER / 2.0);
+        return Units.inches_to_meters(SystemSettings.kDriveWheelDiameterInches / 2.0);
     }
 
     @Override

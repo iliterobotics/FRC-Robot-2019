@@ -108,11 +108,11 @@ public class SimDriveHardware implements IDriveHardware {
     }
 
     public double getLeftVelTicks() {
-        return mLeftVelInches / SystemSettings.DRIVETRAIN_WHEEL_DIAMETER * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN / 10;
+        return mLeftVelInches / SystemSettings.kDriveWheelDiameterInches * SystemSettings.kDriveTicksPerRotation / 10;
     }
 
     public double getRightVelTicks() {
-        return mRightVelInches / SystemSettings.DRIVETRAIN_WHEEL_DIAMETER * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN / 10;
+        return mRightVelInches / SystemSettings.kDriveWheelDiameterInches * SystemSettings.kDriveTicksPerRotation / 10;
     }
 
     public double getLeftVelInches() {
@@ -121,6 +121,30 @@ public class SimDriveHardware implements IDriveHardware {
 
     public double getRightVelInches() {
         return mRightVelInches;
+    }
+
+    //TODO
+    @Override
+    public double getLeftCurrent() {
+        return 0;
+    }
+
+    //TODO
+    @Override
+    public double getRightCurrent() {
+        return 0;
+    }
+
+    //TODO
+    @Override
+    public double getLeftVoltage() {
+        return 0;
+    }
+
+    //TODO
+    @Override
+    public double getRightVoltage() {
+        return 0;
     }
 
 }

@@ -38,16 +38,16 @@ public class SystemSettings extends ConstantsBase {
     public static double kDriveClosedLoopVoltageRampRate = 0.0;
     public static double kDriveOpenLoopVoltageRampRate = 0.1;
     public static int kDriveCurrentLimitAmps = 40;
-    public static double  DRIVETRAIN_WHEEL_DIAMETER = 5.875;
-    public static double  DRIVETRAIN_WHEEL_DIAMETER_FEET = DRIVETRAIN_WHEEL_DIAMETER / 12.0;
-    public static double  DRIVETRAIN_WHEEL_CIRCUMFERENCE = DRIVETRAIN_WHEEL_DIAMETER * Math.PI;
+    public static double kDriveWheelDiameterInches = 5.875;
+    public static double  DRIVETRAIN_WHEEL_DIAMETER_FEET = kDriveWheelDiameterInches / 12.0;
+    public static double  DRIVETRAIN_WHEEL_CIRCUMFERENCE = kDriveWheelDiameterInches * Math.PI;
     public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
     public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
-    public static double  DRIVETRAIN_ENC_TICKS_PER_TURN = 1024;
+    public static double kDriveTicksPerRotation = 1024;
     public static double	DRIVETRAIN_EFFECTIVE_WHEELBASE = 25.5;
     public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = DRIVETRAIN_EFFECTIVE_WHEELBASE * Math.PI;
     public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360;
-    public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / DRIVETRAIN_WHEEL_DIAMETER;
+    public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / kDriveWheelDiameterInches;
 
     // =============================================================================
     // Input Constants

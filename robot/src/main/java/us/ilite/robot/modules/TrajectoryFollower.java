@@ -8,7 +8,6 @@ import control.DriveMotionPlanner;
 import control.DriveOutput;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.geometry.Pose2d;
-import us.ilite.common.lib.geometry.Rotation2d;
 import us.ilite.common.lib.util.ReflectingCSVWriter;
 import us.ilite.common.lib.util.Units;
 import us.ilite.robot.MikeyProfile;
@@ -99,7 +98,7 @@ public class TrajectoryFollower extends Loop {
     }
 
     private static double rotationsToInches(double rotations) {
-        return rotations * (SystemSettings.DRIVETRAIN_WHEEL_DIAMETER * Math.PI);
+        return rotations * (SystemSettings.kDriveWheelDiameterInches * Math.PI);
     }
 
     private static double rpmToInchesPerSecond(double rpm) {
@@ -107,7 +106,7 @@ public class TrajectoryFollower extends Loop {
     }
 
     private static double inchesToRotations(double inches) {
-        return inches / (SystemSettings.DRIVETRAIN_WHEEL_DIAMETER * Math.PI);
+        return inches / (SystemSettings.kDriveWheelDiameterInches * Math.PI);
     }
 
     private static double inchesPerSecondToRpm(double inches_per_second) {

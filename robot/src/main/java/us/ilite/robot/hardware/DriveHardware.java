@@ -93,6 +93,7 @@ public class DriveHardware implements IDriveHardware {
             switch(pDesiredControlMode) {
                 case PercentOutput:
                     controlMode = ControlMode.PercentOutput;
+                    configTalonForPercentOutput(pTalon);
                     break;
                 case Position:
                     controlMode = ControlMode.Position;
@@ -143,7 +144,7 @@ public class DriveHardware implements IDriveHardware {
     }
 
     private void configTalonForPercentOutput(TalonSRX talon) {
-
+        talon.configNeutralDeadband(0.04, 0);
     }
 
     private void configTalonForPosition(TalonSRX talon) {
@@ -161,6 +162,9 @@ public class DriveHardware implements IDriveHardware {
         talon.config_kI(SystemSettings.kDriveVelocityLoopSlot, SystemSettings.kDriveVelocity_kI, SystemSettings.kLongCANTimeoutMs);
         talon.config_kD(SystemSettings.kDriveVelocityLoopSlot, SystemSettings.kDriveVelocity_kD, SystemSettings.kLongCANTimeoutMs);
         talon.config_kF(SystemSettings.kDriveVelocityLoopSlot, SystemSettings.kDriveVelocity_kF, SystemSettings.kLongCANTimeoutMs);
+
+        talon.selectProfileSlot(SystemSettings.kDriveVelocityLoopSlot, 0);
+        talon.configNeutralDeadband(0.0, 0);
     }
 
     private void configTalonForMotionMagic(TalonSRX talon) {
@@ -196,6 +200,26 @@ public class DriveHardware implements IDriveHardware {
 
     public double getRightVelInches() {
         return Units.vel_ticks_to_fps(mRightMaster.getSelectedSensorVelocity(0)) / 12.0;
+    }
+
+    @Override
+    public double getLeftCurrent() {
+        return mLeftMaster.getOutputCurrent();
+    }
+
+    @Override
+    public double getRightCurrent() {
+        return mRightMaster.getOutputCurrent();
+    }
+
+    @Override
+    public double getLeftVoltage() {
+        return mLeftMaster.getMotorOutputVoltage();
+    }
+
+    @Override
+    public double getRightVoltage() {
+        return mRightMaster.getMotorOutputVoltage();
     }
 
 }

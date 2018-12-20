@@ -52,10 +52,6 @@ public class Robot extends IterativeRobot {
     public void robotPeriodic() {
         mLogger.info(this.toString());
 
-        Scanner keyboard = new Scanner(System.in);
-        String line = keyboard.nextLine();
-        mLogger.debug("You entered: " + line);
-
         mClock.cycleEnded();
     }
 

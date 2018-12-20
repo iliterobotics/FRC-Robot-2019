@@ -36,7 +36,7 @@ public class Units {
     }
 
     public static double tick_to_rotations(double ticks) {
-        return ticks / SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN;
+        return ticks / SystemSettings.kDriveTicksPerRotation;
     }
 
     public static double ticks_to_inches(double ticks) {
@@ -60,11 +60,11 @@ public class Units {
     }
 
     public static double fps_to_ticks(double fps) {
-        return fps * 12 * (1 / SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE) * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN * (1 / 1000) * (1 / 10);
+        return fps * 12 * (1 / SystemSettings.DRIVETRAIN_WHEEL_CIRCUMFERENCE) * SystemSettings.kDriveTicksPerRotation * (1 / 1000) * (1 / 10);
     }
 
     public static double rot_to_ticks(double rotations) {
-        return rotations * SystemSettings.DRIVETRAIN_ENC_TICKS_PER_TURN;
+        return rotations * SystemSettings.kDriveTicksPerRotation;
     }
 
     public static double inches_to_ticks(double inches) {

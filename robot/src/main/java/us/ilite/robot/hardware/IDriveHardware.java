@@ -15,4 +15,10 @@ public interface IDriveHardware extends IHardware {
     double getLeftVelInches();
     double getRightVelInches();
 
+    double getLeftCurrent();
+    double getRightCurrent();
+
+    double getLeftVoltage();
+    double getRightVoltage();
+
 }
