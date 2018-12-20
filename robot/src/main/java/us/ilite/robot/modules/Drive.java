@@ -5,12 +5,15 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import control.DriveController;
+import control.DriveMotionPlanner;
 import control.DriveOutput;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.lib.geometry.Pose2d;
 import us.ilite.common.lib.geometry.Pose2dWithCurvature;
 import us.ilite.common.lib.geometry.Rotation2d;
 import us.ilite.common.lib.trajectory.Trajectory;
 import us.ilite.common.lib.trajectory.timing.TimedState;
+import us.ilite.common.lib.util.ReflectingCSVWriter;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.drivers.Clock;
@@ -37,12 +40,20 @@ public class Drive extends Loop {
 	private DriveController mDriveController;
 	private Clock mClock;
 
+	ReflectingCSVWriter<DebugOutput> mDebugLogger;
+	ReflectingCSVWriter<DriveMotionPlanner> mMotionPlanLogger;
+	DebugOutput debugOutput;
+
 	public Drive(Data data, DriveController pDriveController, Clock pClock)
 	{
 		this.mData = data;
 		this.mDriveController = pDriveController;
 		this.mClock = pClock;
 		this.mDriveHardware = new DriveHardware();
+
+		mDebugLogger = new ReflectingCSVWriter<>("debug.csv", DebugOutput.class);
+		mMotionPlanLogger = new ReflectingCSVWriter<>("motion_plan.csv", DriveMotionPlanner.class);
+		debugOutput = new DebugOutput();
 	}
 
 	@Override
@@ -87,6 +98,8 @@ public class Drive extends Loop {
 	
 	@Override
 	public void shutdown(double pNow) {
+		mDebugLogger.flush();
+		mMotionPlanLogger.flush();
 		mDriveHardware.zero();
 	}
 
@@ -116,6 +129,19 @@ public class Drive extends Loop {
 					driveMessage.setDemand(DemandType.ArbitraryFeedForward, leftDemand, rightDemand);
 
 					setDriveMessage(driveMessage);
+
+					debugOutput.t = pNow;
+					debugOutput.targetLeftVel = output.left_velocity;
+					debugOutput.targetRightVel = output.right_velocity;
+					debugOutput.leftVel = mData.drive.get(EDriveData.LEFT_VEL_IPS);
+					debugOutput.rightVel = mData.drive.get(EDriveData.RIGHT_VEL_IPS);
+					debugOutput.targetX = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().translation_.x();
+					debugOutput.targetY = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().translation_.y();
+					debugOutput.x = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehicle().getValue().translation_.x();
+					debugOutput.y = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehicle().getValue().translation_.y();
+
+					mDebugLogger.add(debugOutput);
+//					mMotionPlanLogger.add(mDriveController.getDriveMotionPlanner());
 				}
 				break;
 			case NORMAL:
@@ -181,6 +207,14 @@ public class Drive extends Loop {
     public Drive simulated() {
 		this.mDriveHardware = new SimDriveHardware(mDriveController, mClock);
 		return this;
+	}
+
+	public static class DebugOutput {
+		public double t;
+		public double targetLeftVel, targetRightVel;
+		public double leftVel, rightVel;
+		public double targetX, targetY;
+		public double x, y;
 	}
 
 }
