@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/iliterobotics/FRC-Robot-2019.svg?branch=master)](https://travis-ci.org/iliterobotics/FRC-Robot-2019)
 # FRC-Robot
 
 This is the incubating software framework for ILITE's 2019 season.
