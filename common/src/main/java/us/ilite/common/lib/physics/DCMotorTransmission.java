@@ -38,7 +38,7 @@ public class DCMotorTransmission {
     public double free_speed_at_voltage(final double voltage) {
         if (voltage > Util.kEpsilon) {
             return Math.max(0.0, voltage - friction_voltage()) * speed_per_volt();
-        } else if (voltage < Util.kEpsilon) {
+        } else if (voltage < -Util.kEpsilon) {
             return Math.min(0.0, voltage + friction_voltage()) * speed_per_volt();
         } else {
             return 0.0;

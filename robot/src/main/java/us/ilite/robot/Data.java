@@ -11,10 +11,10 @@ import us.ilite.lib.util.SimpleNetworkTable;
 
 public class Data {
 
-    public static SimpleNetworkTable LOGGING_TABLE = new SimpleNetworkTable("LOGGING_TABLE");
-    public static SimpleNetworkTable SMART_DASHBOARD = new SimpleNetworkTable("SmartDashboard");
-    public static NetworkTable LIMELIGHT = NetworkTableInstance.getDefault().getTable("limelight");
-    public static SimpleNetworkTable DRIVER_CONTROL_TABLE = new SimpleNetworkTable("DRIVER_CONTROL_TABLE") {
+    public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
+    public static SimpleNetworkTable kSmartDashboard = new SimpleNetworkTable("SmartDashboard");
+    public static NetworkTable kLimelight = NetworkTableInstance.getDefault().getTable("limelight");
+    public static SimpleNetworkTable kDriverControlSelection = new SimpleNetworkTable("DriverControlSelection") {
         @Override
         public void initKeys() {
             getInstance().getEntry(EDriverInputMode.class.getSimpleName()).setDefaultNumber(-1);

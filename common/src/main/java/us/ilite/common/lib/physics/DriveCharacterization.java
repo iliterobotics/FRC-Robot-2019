@@ -59,6 +59,11 @@ public class DriveCharacterization {
         return rv;
     }
 
+    public static CharacterizationConstants characterizeDriveVelocity(List<VelocityDataPoint> velocityData) {
+        CharacterizationConstants rv = getVelocityCharacterization(getVelocityData(velocityData));
+        return rv;
+    }
+
     private static CharacterizationConstants getVelocityCharacterization(double[][] points) {
         CharacterizationConstants constants = new CharacterizationConstants();
         if (points == null) {

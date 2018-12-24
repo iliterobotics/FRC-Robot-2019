@@ -1,19 +1,35 @@
 package us.ilite.robot;
 
-import java.util.Scanner;
-
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
+import control.DriveController;
+import control.DriveMotionPlanner;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Timer;
+import paths.TrajectoryGenerator;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.lib.geometry.Pose2d;
+import us.ilite.common.lib.geometry.Pose2dWithCurvature;
+import us.ilite.common.lib.geometry.Rotation2d;
+import us.ilite.common.lib.trajectory.Trajectory;
+import us.ilite.common.lib.trajectory.timing.CentripetalAccelerationConstraint;
+import us.ilite.common.lib.trajectory.timing.TimedState;
+import us.ilite.common.lib.trajectory.timing.TimingConstraint;
+import us.ilite.common.types.drive.EDriveData;
 import us.ilite.lib.drivers.Clock;
+import us.ilite.lib.util.SimpleNetworkTable;
+import us.ilite.robot.commands.CharacterizeDrive;
 import us.ilite.robot.commands.CommandQueue;
+import us.ilite.robot.commands.FollowTrajectory;
+import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
-import us.ilite.robot.modules.ExampleModule;
+import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.ModuleList;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class Robot extends IterativeRobot {
     
@@ -21,15 +37,17 @@ public class Robot extends IterativeRobot {
 
     private CommandQueue mCommandQueue = new CommandQueue();
 
-    // Module declarations here
-    private ExampleModule mExampleModule = new ExampleModule();
-
     // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
-    private LoopManager mLoopManager = new LoopManager(SystemSettings.CONTROL_LOOP_PERIOD);
+    private LoopManager mLoopManager = new LoopManager(SystemSettings.kControlLoopPeriod);
     private ModuleList mRunningModules = new ModuleList();
 
     private Clock mClock = new Clock();
-    private Data mData = new Data().simulated();
+    private Data mData = new Data();
+
+    // Module declarations here
+    private DriveController mDriveController = new DriveController(new StrongholdProfile(), SystemSettings.kControlLoopPeriod);
+    private Drive mDrive = new Drive(mData, mDriveController, mClock);
+    private DriverInput mDriverInput = new DriverInput(mDrive, mData);
 
     @Override
     public void robotInit() {
@@ -50,7 +68,7 @@ public class Robot extends IterativeRobot {
      */
     @Override
     public void robotPeriodic() {
-        mLogger.info(this.toString());
+//        mLogger.info(this.toString());
 
         mClock.cycleEnded();
     }
@@ -59,10 +77,32 @@ public class Robot extends IterativeRobot {
     public void autonomousInit() {
         mapNonModuleInputs();
 
-        mRunningModules.setModules(mExampleModule);
+        mRunningModules.setModules();
         mRunningModules.modeInit(mClock.getCurrentTime());
+        mRunningModules.periodicInput(mClock.getCurrentTime());
 
+        mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
+
+        mDriveController.setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
+//        mDriveController.getController().setGains(0.65, 0.175);
+        mDriveController.getController().setGains(2.0, 0.7);
+
+//        mDriveController.getController().setGains(0.0, 0.0);
+        TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
+        List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(70.0));
+        List<Pose2d> waypoints = Arrays.asList(new Pose2d[] {
+                new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)),
+                // new Pose2d(7.0 * 12.0, -7.0 * 12.0, Rotation2d.fromDegrees(-90.0))
+                new Pose2d(20.0 * 12.0, 0.0, Rotation2d.fromDegrees(0.0))
+        });
+        Trajectory<TimedState<Pose2dWithCurvature>> trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 30.0, 30.0, 12.0);
+
+
+        mCommandQueue.setCommands(new FollowTrajectory(trajectory, mDrive, true));
+//        mCommandQueue.setCommands(new CharacterizeDrive(mDrive, false, false));
+
+        mCommandQueue.init(mClock.getCurrentTime());
     }
 
     @Override
@@ -70,7 +110,7 @@ public class Robot extends IterativeRobot {
         mapNonModuleInputs();
 
         mRunningModules.periodicInput(mClock.getCurrentTime());
-        mCommandQueue.update(mClock.getCurrentTime());
+        if(!mCommandQueue.isFinished()) mCommandQueue.update(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
     }
 
@@ -78,9 +118,11 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         mapNonModuleInputs();
 
-        mRunningModules.setModules(mExampleModule);
+        mRunningModules.setModules(mDriverInput);
         mRunningModules.modeInit(mClock.getCurrentTime());
+        mRunningModules.periodicInput(mClock.getCurrentTime());
 
+        mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
     }
 
@@ -96,6 +138,7 @@ public class Robot extends IterativeRobot {
     public void disabledInit() {
         mRunningModules.shutdown(mClock.getCurrentTime());
         mLoopManager.stop();
+        mCommandQueue.shutdown(mClock.getCurrentTime());
     }
 
     @Override
@@ -105,8 +148,9 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void testInit() {
-        mRunningModules.setModules(mExampleModule);
+        mRunningModules.setModules();
         mRunningModules.modeInit(mClock.getCurrentTime());
+        mRunningModules.periodicInput(mClock.getCurrentTime());
 
         mLoopManager.start();
     }

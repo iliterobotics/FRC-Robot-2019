@@ -40,3 +40,5 @@ out/
 .vscode/
 
 .RHistory
+
+*.csv

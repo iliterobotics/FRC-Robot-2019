@@ -15,21 +15,23 @@ public class CommandQueue implements ICommand {
 
     @Override
     public void init(double pNow) {
+        // Initialize the first command
+        initCurrentCommand(pNow);
     }
 
     @Override
     public boolean update(double pNow) {
-        // Grab the next command
+        // Grab the current command
         ICommand mCurrentCommand = mCommandQueue.peek();
 
         // Check that we aren't at the end of the queue or that a null pointer won't occur
         if(mCurrentCommand != null) {
 
-            // Initialize the command
-            mCurrentCommand.init(pNow);
-
+            // If command finished
             if(mCurrentCommand.update(pNow)) {
+                mCurrentCommand.shutdown(pNow);
                 mCommandQueue.poll();
+                initCurrentCommand(pNow);
             }
 
         } else if(mCommandQueue.isEmpty()) {
@@ -38,13 +40,24 @@ public class CommandQueue implements ICommand {
             mLogger.error("Ran into null command.");
         }
 
+        if(isFinished()) {
+            return true;
+        }
 
         return false;
+    }
+
+    private void initCurrentCommand(double pNow) {
+        if(mCommandQueue.peek() != null) mCommandQueue.peek().init(pNow);
     }
 
     @Override
     public void shutdown(double pNow) {
 
+    }
+
+    public boolean isFinished() {
+        return mCommandQueue.isEmpty();
     }
 
     public void setCommands(ICommand ... pCommands) {

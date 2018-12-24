@@ -1,9 +1,15 @@
 package us.ilite.lib.util;
 
+import com.flybotix.hfr.codex.Codex;
+import com.flybotix.hfr.codex.CodexOf;
+import com.flybotix.hfr.util.lang.EnumUtils;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.robot.Data;
+
+import java.util.List;
 
 public class SimpleNetworkTable  {
     private NetworkTable netTable;
@@ -44,5 +50,38 @@ public class SimpleNetworkTable  {
     public synchronized NetworkTable getInstance() {
     		return netTable;
     }
-    
+
+
+
+    /**
+     * Provides a way to write every value of a codex to NetworkTables.
+     * @param pCodex The codex you want to dump to NetworkTables.
+     */
+    public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(Class<E> pEnumeration, Codex<V, E> pCodex, double pTime) {
+        writeCodexToSmartDashboard(pEnumeration.getSimpleName(), pCodex, pTime);
+    }
+
+    /**
+     *
+     * @param name Allows you to define a name for the codex so two of the same type can be written at once.
+     * @param pCodex The codex you want to dump to NetworkTables.
+     * @param pTime The current time.
+     */
+    public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(String name, Codex<V, E> pCodex, double pTime) {
+        List<E> enums = EnumUtils.getSortedEnums(pCodex.meta().getEnum());
+        for(E e : enums) {
+            Double value = (Double) pCodex.get(e);
+            if(e != null) logNumber(name, e, value);
+        }
+        logNumber(name, SystemSettings.kLoggingTimestampKey, pTime);
+    }
+
+    public static <E extends Enum<E>> void logNumber(String pName, E pEnumeration, Number pNumber) {
+        logNumber(pName, pEnumeration.toString(), pNumber);
+    }
+
+    public static <E extends Enum<E>> void logNumber(String pName, String key, Number pNumber) {
+        Data.kLoggingTable.putDouble(pName + "-" + key, (pNumber == null) ? 0 : pNumber.doubleValue());
+    }
+
 }

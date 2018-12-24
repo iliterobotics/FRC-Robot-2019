@@ -107,12 +107,12 @@ public class SimDriveHardware implements IDriveHardware {
         return mRightPosInches;
     }
 
-    public double getLeftVelTicks() {
-        return mLeftVelInches / SystemSettings.kDriveWheelDiameterInches * SystemSettings.kDriveTicksPerRotation / 10;
+    public int getLeftVelTicks() {
+        return (int)(mLeftVelInches / SystemSettings.kDriveWheelDiameterInches * SystemSettings.kDriveTicksPerRotation / 10);
     }
 
-    public double getRightVelTicks() {
-        return mRightVelInches / SystemSettings.kDriveWheelDiameterInches * SystemSettings.kDriveTicksPerRotation / 10;
+    public int getRightVelTicks() {
+        return (int)(mRightVelInches / SystemSettings.kDriveWheelDiameterInches * SystemSettings.kDriveTicksPerRotation / 10);
     }
 
     public double getLeftVelInches() {

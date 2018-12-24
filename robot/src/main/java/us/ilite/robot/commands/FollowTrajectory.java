@@ -4,7 +4,6 @@ import us.ilite.common.lib.geometry.Pose2dWithCurvature;
 import us.ilite.common.lib.trajectory.Trajectory;
 import us.ilite.common.lib.trajectory.timing.TimedState;
 import us.ilite.robot.modules.Drive;
-import us.ilite.robot.modules.TrajectoryFollower;
 
 public class FollowTrajectory implements ICommand {
 

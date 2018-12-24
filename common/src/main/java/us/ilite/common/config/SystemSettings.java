@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 public class SystemSettings extends ConstantsBase {
 
 
-    public static double CONTROL_LOOP_PERIOD = 0.015; // seconds
+    public static double kControlLoopPeriod = 0.015; // seconds
     public static TimeUnit SYSTEM_TIME_UNIT = TimeUnit.SECONDS;
 
     public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
@@ -15,17 +15,16 @@ public class SystemSettings extends ConstantsBase {
     //=============================================================================
     // Logging
     // =============================================================================
-    public static String LOGGING_TIMESTAMP_KEY = "TIME";
+    public static String kLoggingTimestampKey = "TIME";
 
     // =============================================================================
     // Talon Addresses
     // =============================================================================
-    public static  int kDriveLeftMasterTalonId = 10;
-    public static  int kDriveLeftMiddleTalonId = 11;
-    public static  int kDriveLeftRearTalonId = 12;
-    public static  int kDriveRightMasterTalonId = 7; // Temporarily switch Master and Rear IDs
-    public static  int kDriveRightMiddleTalonId = 6;
-    public static  int kDriveRightRearTalonId = 5;
+    // Encoders are on the rear Talons, so ID's are temporarily flipped around
+    public static  int kDriveLeftMasterTalonId = 1;
+    public static  int kDriveLeftRearTalonId = 3;
+    public static  int kDriveRightMasterTalonId = 2;
+    public static  int kDriveRightRearTalonId = 4;
 
     public static int kPigeonId = 3;
 
@@ -38,15 +37,15 @@ public class SystemSettings extends ConstantsBase {
     public static double kDriveClosedLoopVoltageRampRate = 0.0;
     public static double kDriveOpenLoopVoltageRampRate = 0.1;
     public static int kDriveCurrentLimitAmps = 40;
-    public static double kDriveWheelDiameterInches = 5.875;
+    public static double kDriveWheelDiameterInches = 6.0;
     public static double  DRIVETRAIN_WHEEL_DIAMETER_FEET = kDriveWheelDiameterInches / 12.0;
-    public static double  DRIVETRAIN_WHEEL_CIRCUMFERENCE = kDriveWheelDiameterInches * Math.PI;
+    public static double kDriveWheelCircumference = kDriveWheelDiameterInches * Math.PI;
     public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
     public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
     public static double kDriveTicksPerRotation = 1024;
-    public static double	DRIVETRAIN_EFFECTIVE_WHEELBASE = 25.5;
-    public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = DRIVETRAIN_EFFECTIVE_WHEELBASE * Math.PI;
-    public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360;
+    public static double kDriveEffectiveWheelbase = 24.0;
+    public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = kDriveEffectiveWheelbase * Math.PI;
+    public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360.0;
     public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / kDriveWheelDiameterInches;
 
     // =============================================================================
@@ -85,6 +84,9 @@ public class SystemSettings extends ConstantsBase {
     public static double kDriveVelocity_kP = 0.0;
     public static double kDriveVelocity_kI = 0.0;
     public static double kDriveVelocity_kD = 0.0;
+//    public static double kDriveVelocity_kP = 0.9;
+//    public static double kDriveVelocity_kI = 0.0;
+//    public static double kDriveVelocity_kD = 10.0;
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
 
     @Override

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Talon;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.geometry.Rotation2d;
+import us.ilite.common.lib.util.Conversions;
 import us.ilite.common.lib.util.Units;
 import us.ilite.lib.drivers.LazyTalonSRX;
 import us.ilite.lib.drivers.Pigeon;
@@ -26,7 +27,7 @@ public class DriveHardware implements IDriveHardware {
 
     private final PigeonIMU mGyro;
 
-    private final TalonSRX mLeftMaster, mRightMaster, mLeftMiddle, mRightMiddle, mLeftRear, mRightRear;
+    private final TalonSRX mLeftMaster, mRightMaster, mLeftRear, mRightRear;
     private ControlMode mLeftControlMode, mRightControlMode;
     private NeutralMode mLeftNeutralMode, mRightNeutralMode;
 
@@ -34,23 +35,22 @@ public class DriveHardware implements IDriveHardware {
         mGyro = new PigeonIMU(SystemSettings.kPigeonId);
 
         mLeftMaster = TalonSRXFactory.createDefaultTalon(SystemSettings.kDriveLeftMasterTalonId);
-        mLeftMiddle = TalonSRXFactory.createPermanentSlaveTalon(SystemSettings.kDriveLeftMiddleTalonId, SystemSettings.kDriveLeftMasterTalonId);
         mLeftRear = TalonSRXFactory.createPermanentSlaveTalon(SystemSettings.kDriveLeftRearTalonId, SystemSettings.kDriveLeftMasterTalonId);
 
         mRightMaster = TalonSRXFactory.createDefaultTalon(SystemSettings.kDriveRightMasterTalonId);
-        mRightMiddle = TalonSRXFactory.createPermanentSlaveTalon(SystemSettings.kDriveRightMiddleTalonId, SystemSettings.kDriveRightMasterTalonId);
         mRightRear = TalonSRXFactory.createPermanentSlaveTalon(SystemSettings.kDriveRightRearTalonId, SystemSettings.kDriveRightMasterTalonId);
 
         configureMaster(mLeftMaster, true);
         configureMaster(mRightMaster, false);
 
         mLeftMaster.setInverted(false);
-        mLeftMiddle.setInverted(false);
         mLeftRear.setInverted(false);
 
         mRightMaster.setInverted(true);
-        mRightMiddle.setInverted(true);
         mRightRear.setInverted(true);
+
+        mLeftMaster.setSensorPhase(false);
+        mRightMaster.setSensorPhase(false);
 
         configTalonForVelocity(mRightMaster);
         configTalonForVelocity(mLeftMaster);
@@ -179,27 +179,27 @@ public class DriveHardware implements IDriveHardware {
     }
 
     public double getLeftInches() {
-        return Units.ticks_to_inches(mLeftMaster.getSelectedSensorPosition(0));
+        return Conversions.ticksToInches(mLeftMaster.getSelectedSensorPosition(0));
     }
 
     public double getRightInches() {
-        return Units.ticks_to_inches(mRightMaster.getSelectedSensorPosition(0));
+        return Conversions.ticksToInches(mRightMaster.getSelectedSensorPosition(0));
     }
 
-    public double getLeftVelTicks() {
+    public int getLeftVelTicks() {
         return mLeftMaster.getSelectedSensorVelocity(0);
     }
 
-    public double getRightVelTicks() {
+    public int getRightVelTicks() {
         return mRightMaster.getSelectedSensorVelocity(0);
     }
     
     public double getLeftVelInches() {
-        return Units.vel_ticks_to_fps(mLeftMaster.getSelectedSensorVelocity(0)) / 12.0;
+        return Conversions.ticksPer100msToInchesPerSecond(mLeftMaster.getSelectedSensorVelocity(0));
     }
 
     public double getRightVelInches() {
-        return Units.vel_ticks_to_fps(mRightMaster.getSelectedSensorVelocity(0)) / 12.0;
+        return Conversions.ticksPer100msToInchesPerSecond(mRightMaster.getSelectedSensorVelocity(0));
     }
 
     @Override
