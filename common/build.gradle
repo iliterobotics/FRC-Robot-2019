@@ -1,4 +1,5 @@
 dependencies {
-    compile wpilib() // Required by HFR
     compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
+	compile group: 'gov.nist.math', name: 'jama', version:'1.0.3' // Required for 254's utils (PolynomialRegression)
+    compile name: 'json-simple-1.1.1'
 }

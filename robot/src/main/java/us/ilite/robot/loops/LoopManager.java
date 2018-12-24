@@ -37,16 +37,10 @@ public class LoopManager implements Runnable{
         mLoopList.setLoops(pLoops);
     }
 
-    /**
-     * For convenience, distill setRunningLoops() and start() to one call.
-     * @param pLoops Loops to run
-     */
-    public synchronized void start(Loop ... pLoops) {
+    public synchronized void start() {
 
-        setRunningLoops(pLoops);
-
-        mLoopSafetyTimer.start();
         mLoopSafetyTimer.reset();
+        mLoopSafetyTimer.start();
 
         if(!mIsRunning) {
             mLog.info("Starting control loop");
@@ -63,13 +57,10 @@ public class LoopManager implements Runnable{
 
     }
 
-    public synchronized void start() {
-        start(mLoopList);
-    }
-
     public synchronized void stop() {
 
         mLoopSafetyTimer.reset();
+        mLoopSafetyTimer.start();
 
         if(mIsRunning) {
             mLog.info("Stopping control loop");
@@ -90,11 +81,12 @@ public class LoopManager implements Runnable{
     public void run() {
 
         mLoopSafetyTimer.reset();
+        mLoopSafetyTimer.start();
 
         synchronized(mTaskLock) {
             try {
                 if(mIsRunning) {
-                    //mapSensors(mLatestTime);
+                    mLoopList.periodicInput(mClock.getCurrentTime());
                     mLoopList.loop(mClock.getCurrentTime());
                 }
             } catch (Throwable t) {
@@ -102,9 +94,9 @@ public class LoopManager implements Runnable{
             }
         }
 
+        checkTiming("Loop update exceeds specified loop period.");
         mClock.cycleEnded();
         mLoopSafetyTimer.stop();
-        checkTiming("Loop update exceeds specified loop period.");
 
     }
 

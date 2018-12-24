@@ -24,7 +24,7 @@ public class Clock {
         if(hasTimeUpdatedThisCycle == false) {
             mCurrentTime = Timer.getFPGATimestamp();
             hasTimeUpdatedThisCycle = true;
-            mLogger.debug("Updated time to: " + mCurrentTime);
+//            mLogger.debug("Updated time to: " + mCurrentTime);
         }
 
         return mCurrentTime;
