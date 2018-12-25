@@ -36,7 +36,8 @@ public class DriveMotionPlanner implements CSVWritable {
     public enum PlannerMode {
         FEEDFORWARD_ONLY,
         FEEDBACK,
-        FEEDBACK_NO_DYNAMICS;
+        FEEDBACK_NO_DYNAMICS,
+        FEEDFORWARD_NO_DYNAMICS;
     }
 
     // Trajectory and errors are in inches
@@ -160,6 +161,14 @@ public class DriveMotionPlanner implements CSVWritable {
                         break;
                     case FEEDBACK_NO_DYNAMICS:
                         mOutput = mController.update(mCurrentTrajectory, mSetpoint, dynamics, prev_velocity_, current_state, mDt);
+                        // Only account for friction
+                        mOutput.left_feedforward_voltage = mDriveModel.left_transmission().friction_voltage();
+                        mOutput.right_feedforward_voltage = mDriveModel.right_transmission().friction_voltage();
+                        break;
+                    case FEEDFORWARD_NO_DYNAMICS:
+                        mOutput = new DriveOutput(dynamics.wheel_velocity.left, dynamics.wheel_velocity.right, dynamics
+                                .wheel_acceleration.left, dynamics.wheel_acceleration.right, dynamics.voltage
+                                .left, dynamics.voltage.right);
                         // Only account for friction
                         mOutput.left_feedforward_voltage = mDriveModel.left_transmission().friction_voltage();
                         mOutput.right_feedforward_voltage = mDriveModel.right_transmission().friction_voltage();
