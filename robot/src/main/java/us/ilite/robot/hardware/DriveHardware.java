@@ -61,6 +61,8 @@ public class DriveHardware implements IDriveHardware {
         zero();
         mLeftControlMode = mRightControlMode = ControlMode.PercentOutput;
         mLeftNeutralMode = mRightNeutralMode = NeutralMode.Coast;
+
+        set(DriveMessage.kNeutral);
     }
 
     @Override
