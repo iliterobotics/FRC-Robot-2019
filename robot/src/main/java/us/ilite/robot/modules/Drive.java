@@ -114,7 +114,7 @@ public class Drive extends Loop {
 		switch(mDriveState) {
 			case PATH_FOLLOWING:
 				if(mDriveController.isDone()) {
-					setDriveMessage(DriveMessage.kNeutral);
+					setDriveMessage(DriveMessage.kNeutral.setNeutralMode(NeutralMode.Brake));
 				} else {
 					DriveOutput output = mDriveController.getOutput(
 							pNow,

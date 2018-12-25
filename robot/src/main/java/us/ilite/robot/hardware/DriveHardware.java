@@ -61,6 +61,8 @@ public class DriveHardware implements IDriveHardware {
         zero();
         mLeftControlMode = mRightControlMode = ControlMode.PercentOutput;
         mLeftNeutralMode = mRightNeutralMode = NeutralMode.Coast;
+
+        set(DriveMessage.kNeutral);
     }
 
     @Override
@@ -80,7 +82,9 @@ public class DriveHardware implements IDriveHardware {
         mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pDriveMessage.rightControlMode);
 
         mLeftNeutralMode = configForNeutralMode(mLeftMaster, mLeftNeutralMode, pDriveMessage.leftNeutralMode);
+        configForNeutralMode(mLeftRear, mLeftNeutralMode, pDriveMessage.leftNeutralMode);
         mRightNeutralMode = configForNeutralMode(mRightMaster, mRightNeutralMode, pDriveMessage.rightNeutralMode);
+        configForNeutralMode(mRightRear, mRightNeutralMode, pDriveMessage.rightNeutralMode);
 
         mLeftMaster.set(mLeftControlMode, pDriveMessage.leftOutput, pDriveMessage.leftDemandType, pDriveMessage.leftDemand);
         mRightMaster.set(mRightControlMode, pDriveMessage.rightOutput, pDriveMessage.rightDemandType, pDriveMessage.rightDemand);
