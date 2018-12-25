@@ -33,7 +33,7 @@ public class CharacterizeDrive implements ICommand {
     
     @Override
     public void init(double pNow) {
-        mCommandQueue.setCommands(mCollectVelocityData/*, mCollectAccelerationData*/);
+        mCommandQueue.setCommands(mCollectVelocityData, mCollectAccelerationData);
         mCommandQueue.init(pNow);
     }
 
@@ -44,8 +44,8 @@ public class CharacterizeDrive implements ICommand {
 
     @Override
     public void shutdown(double pNow) {
-        mLog.info("\nLeft:\n", DriveCharacterization.characterizeDriveVelocity(mLeftVelData));
-        mLog.info("\nRight:\n", DriveCharacterization.characterizeDriveVelocity(mRightVelData));
+        mLog.info("\nLeft:\n", DriveCharacterization.characterizeDrive(mLeftVelData, mLeftAccelData));
+        mLog.info("\nRight:\n", DriveCharacterization.characterizeDrive(mRightVelData, mRightAccelData));
         mCommandQueue.shutdown(pNow);
     }
 }
