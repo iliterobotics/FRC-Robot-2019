@@ -62,6 +62,7 @@ public class Drive extends Loop {
 
 	@Override
 	public void modeInit(double pNow) {
+		mDriveHardware.init();
 	  	setDriveMessage(DriveMessage.kNeutral);
 	  	setDriveState(EDriveState.NORMAL);
 	}
