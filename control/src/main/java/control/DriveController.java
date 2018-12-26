@@ -46,13 +46,13 @@ public class DriveController {
 
     }
 
-    public DriveOutput getOutput(double pTimestamp, double pLeftAbsolutePos, double pRightAbsolutePos, Rotation2d pHeading) {
+    public DriveOutput update(double pTimestamp, double pLeftAbsolutePos, double pRightAbsolutePos, Rotation2d pHeading) {
         mRobotStateEstimator.update(pTimestamp, pLeftAbsolutePos, pRightAbsolutePos, pHeading);
 
         return mDriveMotionPlanner.update(pTimestamp, mRobotStateEstimator.getRobotState().getLatestFieldToVehiclePose());
     }
 
-    public DriveOutput getOutput(double pTimestamp, double pLeftAbsolutePos, double pRightAbsolutePos) {
+    public DriveOutput update(double pTimestamp, double pLeftAbsolutePos, double pRightAbsolutePos) {
         mRobotStateEstimator.update(pTimestamp, pLeftAbsolutePos, pRightAbsolutePos);
 
         return mDriveMotionPlanner.update(pTimestamp, mRobotStateEstimator.getRobotState().getLatestFieldToVehiclePose());

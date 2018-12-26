@@ -63,7 +63,7 @@ public class DriveSimulation {
         for (; !mDriveController.isDone(); time += kDt) {
 
             Pose2d currentPose = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose();
-            DriveOutput output = mDriveController.getOutput(time, mWheelDisplacement.left, mWheelDisplacement.right);
+            DriveOutput output = mDriveController.update(time, mWheelDisplacement.left, mWheelDisplacement.right);
 
             mTrajectoryWriter.add(mDriveController.getDriveMotionPlanner());
             mOdometryWriter.add(currentPose);

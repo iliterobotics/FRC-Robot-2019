@@ -8,9 +8,7 @@ import com.flybotix.hfr.util.log.Logger;
 import control.DriveController;
 import control.DriveMotionPlanner;
 import control.DriveOutput;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.lib.geometry.Pose2d;
 import us.ilite.common.lib.geometry.Pose2dWithCurvature;
 import us.ilite.common.lib.geometry.Rotation2d;
 import us.ilite.common.lib.trajectory.Trajectory;
@@ -20,11 +18,9 @@ import us.ilite.common.lib.util.ReflectingCSVWriter;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.lib.util.SimpleNetworkTable;
 import us.ilite.robot.Data;
 import us.ilite.robot.hardware.DriveHardware;
 import us.ilite.robot.hardware.IDriveHardware;
-import us.ilite.robot.hardware.SimDriveHardware;
 import us.ilite.robot.loops.Loop;
 
 /**
@@ -115,7 +111,7 @@ public class Drive extends Loop {
 		switch(mDriveState) {
 			case PATH_FOLLOWING:
 				DriveOutput output;
-				output = mDriveController.getOutput(
+				output = mDriveController.update(
 						pNow,
 						mData.drive.get(EDriveData.LEFT_POS_INCHES),
 						mData.drive.get(EDriveData.RIGHT_POS_INCHES),
