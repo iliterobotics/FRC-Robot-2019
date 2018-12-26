@@ -114,39 +114,36 @@ public class Drive extends Loop {
 	public void loop(double pNow) {
 		switch(mDriveState) {
 			case PATH_FOLLOWING:
-				if(mDriveController.isDone()) {
-					setDriveMessage(DriveMessage.kNeutral.setNeutralMode(NeutralMode.Brake));
-				} else {
-					DriveOutput output = mDriveController.getOutput(
-							pNow,
-							mData.drive.get(EDriveData.LEFT_POS_INCHES),
-							mData.drive.get(EDriveData.RIGHT_POS_INCHES),
-							Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES)));
+				DriveOutput output;
+				output = mDriveController.getOutput(
+						pNow,
+						mData.drive.get(EDriveData.LEFT_POS_INCHES),
+						mData.drive.get(EDriveData.RIGHT_POS_INCHES),
+						Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES)));
 
-					DriveMessage driveMessage = new DriveMessage(
-							Conversions.radiansPerSecondToTicksPer100ms(output.left_velocity),
-							Conversions.radiansPerSecondToTicksPer100ms(output.right_velocity),
-							ControlMode.Velocity);
+				DriveMessage driveMessage = new DriveMessage(
+						Conversions.radiansPerSecondToTicksPer100ms(output.left_velocity),
+						Conversions.radiansPerSecondToTicksPer100ms(output.right_velocity),
+						ControlMode.Velocity);
 
-					double leftFeedForward = output.left_feedforward_voltage / 12.0;
-					double rightFeedforward = output.right_feedforward_voltage / 12.0;
+				double leftFeedForward = output.left_feedforward_voltage / 12.0;
+				double rightFeedforward = output.right_feedforward_voltage / 12.0;
 
-					double leftAccel = Conversions.radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
-					double rightAccel = Conversions.radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
+				double leftAccel = Conversions.radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
+				double rightAccel = Conversions.radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
 
-					double leftDemand = leftFeedForward + SystemSettings.kDriveVelocity_kD * leftAccel / 1023.0;
-					double rightDemand = rightFeedforward + SystemSettings.kDriveVelocity_kD * rightAccel / 1023.0;
+				double leftDemand = leftFeedForward + SystemSettings.kDriveVelocity_kD * leftAccel / 1023.0;
+				double rightDemand = rightFeedforward + SystemSettings.kDriveVelocity_kD * rightAccel / 1023.0;
 
-					driveMessage.setDemand(DemandType.ArbitraryFeedForward, leftDemand, rightDemand);
-					driveMessage.setNeutralMode(NeutralMode.Brake);
+				driveMessage.setDemand(DemandType.ArbitraryFeedForward, leftDemand, rightDemand);
+				driveMessage.setNeutralMode(NeutralMode.Brake);
 
-					setDriveMessage(driveMessage);
+				setDriveMessage(driveMessage);
 
-					debugOutput.log(pNow, output);
+				debugOutput.log(pNow, output);
 
-					mDebugLogger.add(debugOutput);
+				mDebugLogger.add(debugOutput);
 //					mMotionPlanLogger.add(mDriveController.getDriveMotionPlanner());
-				}
 				break;
 		}
 		mDriveHardware.set(mDriveMessage);
