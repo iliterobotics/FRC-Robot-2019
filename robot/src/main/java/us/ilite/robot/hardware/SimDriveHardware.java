@@ -147,4 +147,9 @@ public class SimDriveHardware implements IDriveHardware {
         return 0;
     }
 
+    @Override
+    public boolean checkHardware() {
+        return false;
+    }
+
 }

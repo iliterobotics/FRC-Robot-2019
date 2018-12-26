@@ -18,10 +18,13 @@ import us.ilite.common.lib.util.ReflectingCSVWriter;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.drivers.Clock;
+import us.ilite.lib.drivers.TalonSRXChecker;
 import us.ilite.robot.Data;
 import us.ilite.robot.hardware.DriveHardware;
 import us.ilite.robot.hardware.IDriveHardware;
 import us.ilite.robot.loops.Loop;
+
+import java.util.ArrayList;
 
 /**
  * Class for running all drive train control operations from both autonomous and
@@ -154,8 +157,8 @@ public class Drive extends Loop {
 	}
 
 	@Override
-	public void checkModule(double pNow) {
-
+	public boolean checkModule(double pNow) {
+        return mDriveHardware.checkHardware();
 	}
 
 	public DriveController getDriveController() {

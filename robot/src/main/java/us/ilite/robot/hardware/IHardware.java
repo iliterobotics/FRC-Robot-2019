@@ -11,5 +11,6 @@ public interface IHardware {
 
     void init();
     void zero();
+    boolean checkHardware();
 
 }

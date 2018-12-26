@@ -38,12 +38,12 @@ public class TalonSRXChecker {
         public double mSetValue;
     }
 
-    public static boolean CheckTalons(Module subsystem,
+    public static <E extends Module> boolean CheckTalons(Class<E> subsystem,
                                       ArrayList<TalonSRXConfig> talonsToCheck,
                                       CheckerConfig checkerConfig) {
         boolean failure = false;
         System.out.println("////////////////////////////////////////////////");
-        System.out.println("Checking subsystem " + subsystem.getClass()
+        System.out.println("Checking subsystem " + subsystem
                 + " for " + talonsToCheck.size() + " talons.");
 
         ArrayList<Double> currents = new ArrayList<>();

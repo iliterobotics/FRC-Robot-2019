@@ -226,4 +226,39 @@ public class DriveHardware implements IDriveHardware {
         return mRightMaster.getMotorOutputVoltage();
     }
 
+    @Override
+    public boolean checkHardware() {
+        boolean leftSide = TalonSRXChecker.CheckTalons(Drive.class,
+                new ArrayList<TalonSRXChecker.TalonSRXConfig>() {
+                    {
+                        add(new TalonSRXChecker.TalonSRXConfig("left_master", mLeftMaster));
+                        add(new TalonSRXChecker.TalonSRXConfig("left_slave", mLeftRear));
+                    }
+                }, new TalonSRXChecker.CheckerConfig() {
+                    {
+                        mCurrentFloor = 2;
+                        mCurrentEpsilon = 2.0;
+                        mRPMFloor = 1500;
+                        mRPMEpsilon = 250;
+                        mRPMSupplier = () -> mLeftMaster.getSelectedSensorVelocity(0);
+                    }
+                });
+        boolean rightSide = TalonSRXChecker.CheckTalons(Drive.class,
+                new ArrayList<TalonSRXChecker.TalonSRXConfig>() {
+                    {
+                        add(new TalonSRXChecker.TalonSRXConfig("right_master", mRightMaster));
+                        add(new TalonSRXChecker.TalonSRXConfig("right_slave", mRightRear));
+                    }
+                }, new TalonSRXChecker.CheckerConfig() {
+                    {
+                        mCurrentFloor = 2;
+                        mRPMFloor = 1500;
+                        mCurrentEpsilon = 2.0;
+                        mRPMEpsilon = 250;
+                        mRPMSupplier = () -> mRightMaster.getSelectedSensorVelocity(0);
+                    }
+                });
+        return leftSide && rightSide;
+    }
+
 }
