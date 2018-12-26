@@ -148,9 +148,10 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void testInit() {
-        mRunningModules.setModules();
+        mRunningModules.setModules(mDrive);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
+        mRunningModules.checkModule(mClock.getCurrentTime());
 
         mLoopManager.start();
     }
