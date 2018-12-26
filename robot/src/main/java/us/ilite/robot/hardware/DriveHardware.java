@@ -14,8 +14,12 @@ import us.ilite.common.lib.util.Conversions;
 import us.ilite.common.lib.util.Units;
 import us.ilite.lib.drivers.LazyTalonSRX;
 import us.ilite.lib.drivers.Pigeon;
+import us.ilite.lib.drivers.TalonSRXChecker;
 import us.ilite.lib.drivers.TalonSRXFactory;
+import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
+
+import java.util.ArrayList;
 
 /**
  * Provides an interface between high-level planning and logic in Drive and Talon SRX configuration and control.
@@ -81,10 +85,8 @@ public class DriveHardware implements IDriveHardware {
         mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pDriveMessage.leftControlMode);
         mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pDriveMessage.rightControlMode);
 
-        mLeftNeutralMode = configForNeutralMode(mLeftMaster, mLeftNeutralMode, pDriveMessage.leftNeutralMode);
-        configForNeutralMode(mLeftRear, mLeftNeutralMode, pDriveMessage.leftNeutralMode);
-        mRightNeutralMode = configForNeutralMode(mRightMaster, mRightNeutralMode, pDriveMessage.rightNeutralMode);
-        configForNeutralMode(mRightRear, mRightNeutralMode, pDriveMessage.rightNeutralMode);
+        mLeftNeutralMode = configForNeutralMode(mLeftNeutralMode, pDriveMessage.leftNeutralMode, mLeftMaster, mLeftRear);
+        mRightNeutralMode = configForNeutralMode(mRightNeutralMode, pDriveMessage.rightNeutralMode, mRightMaster, mRightRear);
 
         mLeftMaster.set(mLeftControlMode, pDriveMessage.leftOutput, pDriveMessage.leftDemandType, pDriveMessage.leftDemand);
         mRightMaster.set(mRightControlMode, pDriveMessage.rightOutput, pDriveMessage.rightDemandType, pDriveMessage.rightDemand);
@@ -121,9 +123,11 @@ public class DriveHardware implements IDriveHardware {
         return controlMode;
     }
 
-    private NeutralMode configForNeutralMode(TalonSRX pTalon, NeutralMode pCurrentNeutralMode, NeutralMode pDesiredNeutralMode) {
+    private NeutralMode configForNeutralMode(NeutralMode pCurrentNeutralMode, NeutralMode pDesiredNeutralMode, TalonSRX ... pTalons) {
         if(pCurrentNeutralMode != pDesiredNeutralMode) {
-            pTalon.setNeutralMode(pDesiredNeutralMode);
+            for(TalonSRX talon : pTalons) {
+                talon.setNeutralMode(pDesiredNeutralMode);
+            }
         }
 
         return pDesiredNeutralMode;
