@@ -112,7 +112,7 @@ public class DriveMotionPlanner implements CSVWritable {
 
         mDt = timestamp - mLastTime;
         // Advance the setpoint by the amount of time that has passed between this update and the last update.
-        TrajectorySamplePoint<TimedState<Pose2dWithCurvature>> sample_point = mCurrentTrajectory.advance(mDt);
+        TrajectorySamplePoint<TimedState<Pose2dWithCurvature>> sample_point = mCurrentTrajectory.advance(0.01);
 
         if (!mCurrentTrajectory.isDone()) {
 
