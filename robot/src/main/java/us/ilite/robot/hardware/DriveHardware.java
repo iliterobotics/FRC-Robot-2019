@@ -64,8 +64,9 @@ public class DriveHardware implements IDriveHardware {
     public void init() {
         zero();
         mLeftControlMode = mRightControlMode = ControlMode.PercentOutput;
-        mLeftNeutralMode = mRightNeutralMode = NeutralMode.Coast;
+        mLeftNeutralMode = mRightNeutralMode = NeutralMode.Brake;
 
+        setNeutralMode(NeutralMode.Brake); // Force neutral mode to Brake, clear existing setting
         set(DriveMessage.kNeutral);
     }
 
@@ -125,12 +126,16 @@ public class DriveHardware implements IDriveHardware {
 
     private NeutralMode configForNeutralMode(NeutralMode pCurrentNeutralMode, NeutralMode pDesiredNeutralMode, TalonSRX ... pTalons) {
         if(pCurrentNeutralMode != pDesiredNeutralMode) {
-            for(TalonSRX talon : pTalons) {
-                talon.setNeutralMode(pDesiredNeutralMode);
-            }
+            setNeutralMode(pDesiredNeutralMode);
         }
 
         return pDesiredNeutralMode;
+    }
+
+    private void setNeutralMode(NeutralMode pNeutralMode, TalonSRX ... pTalons) {
+        for(TalonSRX talon : pTalons) {
+            talon.setNeutralMode(pNeutralMode);
+        }
     }
 
     private void configureMaster(TalonSRX talon, boolean pIsLeft) {
