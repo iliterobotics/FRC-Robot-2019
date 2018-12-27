@@ -160,9 +160,8 @@ public class Robot extends IterativeRobot {
     public void testPeriodic() {
         mapNonModuleInputs();
 
-        mRunningModules.periodicInput(mClock.getCurrentTime());
-        mRunningModules.checkModule(mClock.getCurrentTime());
-        mRunningModules.update(mClock.getCurrentTime());
+//        mRunningModules.periodicInput(mClock.getCurrentTime());
+//        mRunningModules.update(mClock.getCurrentTime());
     }
 
     public void mapNonModuleInputs() {
