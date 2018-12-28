@@ -70,6 +70,7 @@ public class DriveController {
 
     public DriveController setTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> pTrajectory, boolean pResetToTrajectoryStart) {
         TrajectoryIterator<TimedState<Pose2dWithCurvature>> iterator = new TrajectoryIterator<>(new TimedView<>(pTrajectory));
+        mDriveMotionPlanner.reset();
         mDriveMotionPlanner.setTrajectory(iterator);
 
         if(pResetToTrajectoryStart) {
