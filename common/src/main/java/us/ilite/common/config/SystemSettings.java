@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 public class SystemSettings extends ConstantsBase {
 
 
-    public static double kControlLoopPeriod = 0.015; // seconds
+    public static double kControlLoopPeriod = 0.01; // seconds
     public static TimeUnit SYSTEM_TIME_UNIT = TimeUnit.SECONDS;
 
     public static double NETWORK_TABLE_UPDATE_RATE = 0.05;
@@ -83,9 +83,9 @@ public class SystemSettings extends ConstantsBase {
     public static int kDriveVelocityLoopSlot = 0;
     public static double kDriveVelocity_kP = 0.9;
     public static double kDriveVelocity_kI = 0.0;
-    public static double kDriveVelocity_kD = 10.0;
+    public static double kDriveVelocity_kD = 0.0;
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0) * 1.10; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
-    public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
+//    public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     @Override
     public String getFileLocation() {
         return "~/constants.txt";
