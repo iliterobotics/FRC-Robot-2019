@@ -4,12 +4,16 @@ import us.ilite.lib.drivers.IMU;
 import us.ilite.lib.drivers.Pigeon;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
+import us.ilite.common.lib.geometry.Rotation2d;
+import us.ilite.common.types.sensor.EGyro;
+import us.ilite.robot.Data;
 // import us.ilite.robot.modules.drivetrain.DrivetrainMode;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
 public class TurnToDegree implements ICommand {
-  private DriveTrain mDrivetrain;
+  private Drive mDrive;
   private Pigeon mPigeon;
   
   private static final int kMIN_ALIGNED_COUNT = 5;
@@ -20,29 +24,32 @@ public class TurnToDegree implements ICommand {
   private static final double kMIN_POWER = 0.05;
   private static final double kMAX_POWER = 1.0;
   
-  private double mInitialYaw, mTurnAngle, mTargetYaw;
+  private Rotation2d mInitialYaw, mTurnAngle, mTargetYaw;
   private double mError, mLastError, mTotalError;
   private double mLeftPower, mRightPower, mOutput = 0.0;
   private double mStartTime;
   private int mAlignedCount;
   private final double mAllowableError;
+  public Data mData;
   
-  public GyroTurn(DriveTrain pDrivetrain, Pigeon pPigeon, double pTurnAngle, double pAllowableError) {
-    this.mDrivetrain = pDrivetrain;
+  public TurnToDegree(Drive pDrive, Pigeon pPigeon, Rotation2d pTurnAngle, double pAllowableError, Data pData) {
+    this.mDrive = pDrive;
     this.mPigeon = pPigeon;
     
     this.mTurnAngle = pTurnAngle;
     this.mAllowableError = pAllowableError;
 
     this.mAlignedCount = 0;
+
+    this.mData = pData;
   }
 
   @Override
-  public void initialize(double pNow) {
+  public void init(double pNow) {
     mStartTime = pNow;
     
     mInitialYaw = getYaw();
-    mTargetYaw = IMU.getAngleSum(mInitialYaw, mTurnAngle);
+    mTargetYaw = mInitialYaw.rotateBy( mTurnAngle );
     
     this.mError = getError();
     this.mLastError = mError; // Calculate the initial error value
@@ -66,7 +73,7 @@ public class TurnToDegree implements ICommand {
     mLastError = mError;
 
     if ((Math.abs(mError) <= Math.abs(mAllowableError))) {
-      mDrivetrain.zeroOutputs();
+      mDrive.zero();
 //      mAlignedCount++;
       return true;
     }
@@ -74,7 +81,7 @@ public class TurnToDegree implements ICommand {
 //      mDrivetrain.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
       return true;
     }
-    mDrivetrain.setDriveMessage(new DrivetrainMessage(mLeftPower, mRightPower, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+    mDrive.setDriveMessage(new DriveMessage(mLeftPower, mRightPower, DrivetrainMode.PercentOutput, NeutralMode.Brake));
 //    if(mAlignedCount >= kMIN_ALIGNED_COUNT) {
 //      mDrivetrain.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
 //      return true;
@@ -88,8 +95,8 @@ public class TurnToDegree implements ICommand {
     return IMU.getAngleDistance(mTargetYaw, getYaw());
   }
   
-  private double getYaw() {
-    return -IMU.clampDegrees(mPigeon.getYaw());
+  private Rotation2d getYaw() {
+    return Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES));
   }
   
   @Override
