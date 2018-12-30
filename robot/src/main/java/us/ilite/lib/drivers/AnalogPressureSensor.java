@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.AnalogInput;
 
 public class AnalogPressureSensor {
 
+  // TODO This implementation is incomplete - see the Spirit-Bot repository for complete implementation
+
   public static final double PSI_PER_VOLTAGE = 1;
 
   public static final double LOW_VOLTAGE = 2.25;
