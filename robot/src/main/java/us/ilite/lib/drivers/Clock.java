@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 /**
  * @author Stephen Welch
- * Provides a consistent time between cycles.
+ * Provides a consistent time between cycles, so everything during the same cycle receives the same timestamp.
  * The cycleEnded() method must be called at the end of each robot cycle so we know when to update to the next time.
  */
 public class Clock {
@@ -22,8 +22,8 @@ public class Clock {
      */
     public double getCurrentTime() {
         if(hasTimeUpdatedThisCycle == false) {
-            mCurrentTime = Timer.getFPGATimestamp();
-            hasTimeUpdatedThisCycle = true;
+            mCurrentTime = Timer.getFPGATimestamp(); // Get the time from the RoboRIO's onboard FPGA
+            hasTimeUpdatedThisCycle = true; // Flag that time is updated
 //            mLogger.debug("Updated time to: " + mCurrentTime);
         }
 
