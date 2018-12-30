@@ -11,6 +11,10 @@ import us.ilite.robot.Data;
 
 import java.util.List;
 
+/**
+ * This provides a simple wrapper around NetworkTables and provides some utilities for
+ * use with our framework.
+ */
 public class SimpleNetworkTable  {
     private NetworkTable netTable;
     
