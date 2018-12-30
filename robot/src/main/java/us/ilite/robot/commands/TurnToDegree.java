@@ -25,7 +25,7 @@ public class TurnToDegree implements ICommand {
   private static final double kMAX_POWER = 1.0;
   
   private Rotation2d mInitialYaw, mTurnAngle, mTargetYaw;
-  private double mError, mLastError, mTotalError;
+  private Rotation2d mError, mLastError, mTotalError;
   private double mLeftPower, mRightPower, mOutput = 0.0;
   private double mStartTime;
   private int mAlignedCount;
@@ -59,9 +59,9 @@ public class TurnToDegree implements ICommand {
   public boolean update(double pNow) {
     
     mError = getError(); // Update error value
-    this.mTotalError += this.mError; // Update running error total
+    this.mTotalError = this.mTotalError.rotateBy(this.mError);; // Update running error total
     
-    mOutput = ((kP * mError) + (kI * mTotalError) + (kD * (mError - mLastError)));
+    mOutput = ((kP * mError.getDegrees()) + (kI * mTotalError.getDegrees()) + (kD * (mError.getDegrees() - mLastError.getDegrees())));
     
     int scalar = mOutput > 0 ? 1 : -1;
     if(Math.abs(mOutput) <= kMIN_POWER) mOutput = kMIN_POWER * scalar;
@@ -72,7 +72,7 @@ public class TurnToDegree implements ICommand {
     mRightPower = -mOutput;
     mLastError = mError;
 
-    if ((Math.abs(mError) <= Math.abs(mAllowableError))) {
+    if ((Math.abs(mError.getDegrees()) <= Math.abs(mAllowableError))) {
       mDrive.zero();
 //      mAlignedCount++;
       return true;
@@ -81,7 +81,7 @@ public class TurnToDegree implements ICommand {
 //      mDrivetrain.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
       return true;
     }
-    mDrive.setDriveMessage(new DriveMessage(mLeftPower, mRightPower, DrivetrainMode.PercentOutput, NeutralMode.Brake));
+    mDrive.setDriveMessage(new DriveMessage(mLeftPower, mRightPower, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
 //    if(mAlignedCount >= kMIN_ALIGNED_COUNT) {
 //      mDrivetrain.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
 //      return true;
@@ -91,8 +91,8 @@ public class TurnToDegree implements ICommand {
     return false;
   }
 
-  public double getError() {
-    return IMU.getAngleDistance(mTargetYaw, getYaw());
+  public Rotation2d getError() {
+    return mTargetYaw.rotateBy(getYaw());
   }
   
   private Rotation2d getYaw() {
