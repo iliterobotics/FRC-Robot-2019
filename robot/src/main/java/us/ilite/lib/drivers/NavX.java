@@ -4,6 +4,9 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.SerialPort.Port;
 
+/**
+ * Wrapper for the NavX IMU. This inherits all of the input processing done its parent IMU class.
+ */
 public class NavX extends IMU {
 	
 	private double initialAngle;
@@ -53,18 +56,7 @@ public class NavX extends IMU {
 	public double getAngleOffStart(){
 		return getAngleSum(getAngle(), -initialAngle);
 	}
-	
-	 public static double getAngleSum(double pRawValue1, double pRawValue2) {
-		    double sum = pRawValue1 + pRawValue2;
-		    if(sum > 180){
-		      sum = -360 + sum;
-		    } else if(sum < -180){
-		      sum = 360 + sum;
-		    }
-		    return sum;
-		  }
-	
-	
+
 	public void setInitialAngle(double yaw){
 		initialAngle = yaw;
 	}

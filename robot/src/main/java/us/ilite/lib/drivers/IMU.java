@@ -3,7 +3,11 @@ package us.ilite.lib.drivers;
 import us.ilite.common.lib.geometry.Rotation2d;
 import us.ilite.common.lib.util.FilteredAverage;
 
-public abstract  class IMU {
+/**
+ * Generic wrapper class to be used for any IMUs (NavX, Pigeon IMU, etc.) that pre-processes
+ * readings and handles collision detection. All IMUs should have a wrapper class extending this class.
+ */
+public abstract class IMU {
   public enum Axis {
     YAW,
     PITCH,
@@ -75,6 +79,16 @@ public abstract  class IMU {
     // Combines both axes to get vector magnitude
     return Math.sqrt(Math.pow(mJerkX, 2) + Math.pow(mJerkY, 2)) >= mCollisionThreshold_DeltaG;
 //    return Math.abs(mJerkX) >= mCollisionThreshold_DeltaG || Math.abs(mJerkY) >= mCollisionThreshold_DeltaG;
+  }
+
+  public static double getAngleSum(double pRawValue1, double pRawValue2) {
+    double sum = pRawValue1 + pRawValue2;
+    if(sum > 180){
+      sum = -360 + sum;
+    } else if(sum < -180){
+      sum = 360 + sum;
+    }
+    return sum;
   }
   
   public double getFilteredAccelX() {

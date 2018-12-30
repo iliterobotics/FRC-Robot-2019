@@ -1,6 +1,7 @@
 package us.ilite.lib.drivers;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.geometry.Rotation2d;
 
 public class Pigeon extends IMU{
@@ -35,7 +36,7 @@ public class Pigeon extends IMU{
 
     double currentAccelX = getRawAccelX();
     double currentAccelY = getRawAccelY();
-    
+    // TODO move all the duplicate code here into IMU
     mJerkX = (currentAccelX - mAccelerationX.getAverage()) / (pTimestampNow - mLastUpdate);
     mJerkY = (currentAccelY - mAccelerationY.getAverage()) / (pTimestampNow - mLastUpdate);
     
@@ -82,7 +83,7 @@ public class Pigeon extends IMU{
 			ypr[i] = 0;
 		}
 		mPigeon.setYaw(0d, 20);
-		mPigeon.setFusedHeading(0d, 20); //TODO - figure out CAN timeout defaults
+		mPigeon.setFusedHeading(0d, SystemSettings.kCANTimeoutMs);
 	}
 
 	public double getRawAccelX() {
