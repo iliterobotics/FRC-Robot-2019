@@ -18,6 +18,17 @@ import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.Module;
 
+/**
+ * Handles the translation of driver input to robot action. This class also allows us to
+ * run commands in teleop, temporarily taking away driver control. Control of each module
+ * is handled in a method called update[insert module name here](), and each is called in
+ * the update() method. The updateDrivetrain() method is intended to be overridden by a
+ * class extending DriverInput, which means we can switch control schemes (tank drive,
+ * arcade drive, split arcade drive, curvature drive, etc.) without changing code controlling
+ * other parts of the robot. Any interaction between modules, such as preventing collisions
+ * and automating tasks (such as retracting the intakes when the carriage is open and the beam
+ * break is broken) is also handled here, NOT in individual modules.
+ */
 public class DriverInput extends Module {
 
     protected final Drive driveTrain;
@@ -44,7 +55,6 @@ public class DriverInput extends Module {
 
     @Override
     public void modeInit(double pNow) {
-// TODO Auto-generated method stub
 
         canRunCommandQueue = lastCanRunCommandQueue = false;
 
@@ -62,6 +72,7 @@ public class DriverInput extends Module {
 //		  scaleInputs = true;
 //		else
 //		  scaleInputs = false;
+        // Only give the driver control if we aren't allowed to run a command.
         if (!canRunCommandQueue) {
             updateDriveTrain();
         }
@@ -73,6 +84,7 @@ public class DriverInput extends Module {
 
 //canRunCommandQueue = is a button triggered?
 
+        // If the driver has pressed a button indicating that we should run a command, add that command to the queue
         if (shouldInitializeCommandQueue()) {
             desiredCommandQueue.clear();
 //desiredCommandQueue.add(<command>);
@@ -122,7 +134,10 @@ public class DriverInput extends Module {
 
     }
 
-
+    /**
+     *
+     * @return Whether we have changed from "not wanting to run commands" to "wanting to run commands" since the last cycle.
+     */
     public boolean shouldInitializeCommandQueue() {
         return lastCanRunCommandQueue == false && canRunCommandQueue == true;
     }
