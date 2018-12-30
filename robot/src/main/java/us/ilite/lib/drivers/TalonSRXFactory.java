@@ -56,7 +56,11 @@ public class TalonSRXFactory {
         kSlaveConfiguration.PULSE_WIDTH_STATUS_FRAME_RATE_MS = 1000;
     }
 
-    // Create a CANTalon with the default (out of the box) configuration.
+    /**
+     * Create a CANTalon with the default (out of the box) configuration.
+     * @param id The ID the Talon should be created with.
+     * @return The configured TalonSRX object.
+     */
     public static TalonSRX createDefaultTalon(int id) {
         return createTalon(id, kDefaultConfiguration);
     }
