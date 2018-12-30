@@ -7,6 +7,12 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * Handles the initialization, updating, and shutdown of commands. Since CommandQueue is a
+ * command itself, it's guaranteed to have the same methods that a normal command does and
+ * can be used as a command itself (useful for defining a commonly used sequence of actions,
+ * like "put the elevator up and score a cube" or "lower the intake, raise the shooter and score a ball").
+ */
 public class CommandQueue implements ICommand {
 
     private ILog mLogger = Logger.createLog(CommandQueue.class);
@@ -29,6 +35,7 @@ public class CommandQueue implements ICommand {
 
             // If command finished
             if(mCurrentCommand.update(pNow)) {
+                // Shutdown the current command, grab the next one and initialize it.
                 mCurrentCommand.shutdown(pNow);
                 mCommandQueue.poll();
                 initCurrentCommand(pNow);
