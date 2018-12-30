@@ -9,6 +9,11 @@ import us.ilite.common.types.input.ELogitech310;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.util.SimpleNetworkTable;
 
+/**
+ * Central data store. Sensors should be read and cached here once to avoid massive overhead on CAN/DIO/AIO.
+ * Outpus may also be written to here and outputted at a later time. Frequently used Network Tables are
+ * statically defined here.
+ */
 public class Data {
 
     public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
