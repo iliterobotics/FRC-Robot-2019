@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.I2C.Port;
 
 public class LidarLite
 {
+	// TODO Kate and a few others spent a good amount of time trying to get this to work. If we need it, we should probably just use an Arduino instead.
 	//Example code:
 	//https://github.com/PulsedLight3D/LIDARLite_Basics
 	//https://books.google.com/books?id=pHeWWBY3cPEC&pg=PA402&lpg=PA402&dq=lidar+light+example+code&source=bl&ots=SUQp-ltY_q&sig=nIM9QGPjCILXEax58yyHsXLYiUA&hl=en&sa=X&ved=0ahUKEwiTlInOsvjYAhVR6GMKHWH2ARE4ChDoAQguMAE#v=onepage&q=lidar%20light%20example%20code&f=false
