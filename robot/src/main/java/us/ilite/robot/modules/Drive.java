@@ -195,10 +195,16 @@ public class Drive extends Loop {
 		
 		public void log(double time, DriveOutput output) {
 			t = time;
-			targetLeftVel = Conversions.rotationsToInches(output.left_velocity / (Math.PI * 2.0));
-			targetRightVel = Conversions.rotationsToInches(output.right_velocity / (Math.PI * 2.0));
-			leftVel = mData.drive.get(EDriveData.LEFT_VEL_IPS);
-			rightVel = mData.drive.get(EDriveData.RIGHT_VEL_IPS);
+
+//			targetLeftVel = Conversions.rotationsToInches(output.left_velocity / (Math.PI * 2.0));
+//			targetRightVel = Conversions.rotationsToInches(output.right_velocity / (Math.PI * 2.0));
+			targetLeftVel = output.left_velocity;
+			targetRightVel = output.right_velocity;
+//			leftVel = mData.drive.get(EDriveData.LEFT_VEL_IPS);
+//			rightVel = mData.drive.get(EDriveData.RIGHT_VEL_IPS);
+			leftVel = mData.drive.get(EDriveData.LEFT_VEL_IPS) / SystemSettings.kDriveWheelCircumference * Math.PI * 2.0;
+			rightVel = mData.drive.get(EDriveData.RIGHT_VEL_IPS) / SystemSettings.kDriveWheelCircumference * Math.PI * 2.0;
+
 			targetX = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().translation_.x();
 			targetY = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().translation_.y();
 			x = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehicle().getValue().translation_.x();
