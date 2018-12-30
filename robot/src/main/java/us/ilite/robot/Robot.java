@@ -49,6 +49,8 @@ public class Robot extends IterativeRobot {
     private Drive mDrive = new Drive(mData, mDriveController, mClock);
     private DriverInput mDriverInput = new DriverInput(mDrive, mData);
 
+    private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
+
     @Override
     public void robotInit() {
         Timer initTimer = new Timer();
@@ -57,6 +59,16 @@ public class Robot extends IterativeRobot {
         mLogger.info("Starting Robot Initialization...");
 
         mRunningModules.setModules();
+
+        TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
+        List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(30.0));
+        List<Pose2d> waypoints = Arrays.asList(new Pose2d[] {
+                new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)),
+                new Pose2d(8.0 * 12.0, -5.0 * 12.0, Rotation2d.fromDegrees(-90.0))
+//                new Pose2d(8.0 * 12.0, 0.0, Rotation2d.fromDegrees(0.0))
+        });
+        trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 60.0, 80.0, 12.0);
+
 
         initTimer.stop();
         mLogger.info("Robot initialization finished. Took: ", initTimer.get(), " seconds");
@@ -85,18 +97,10 @@ public class Robot extends IterativeRobot {
         mLoopManager.start();
 
         mDriveController.setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
+        /*
+        Other gains to try: (2.0, 0.7), (0.65, 0.175), (0.0, 0.0)
+         */
         mDriveController.getController().setGains(0.65, 0.175);
-//        mDriveController.getController().setGains(2.0, 0.7);
-
-//        mDriveController.getController().setGains(0.0, 0.0);
-        TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
-        List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(30.0));
-        List<Pose2d> waypoints = Arrays.asList(new Pose2d[] {
-                new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)),
-                 new Pose2d(8.0 * 12.0, -5.0 * 12.0, Rotation2d.fromDegrees(-90.0))
-//                new Pose2d(8.0 * 12.0, 0.0, Rotation2d.fromDegrees(0.0))
-        });
-        Trajectory<TimedState<Pose2dWithCurvature>> trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 60.0, 80.0, 12.0);
 
 
         mCommandQueue.setCommands(new FollowTrajectory(trajectory, mDrive, true));
