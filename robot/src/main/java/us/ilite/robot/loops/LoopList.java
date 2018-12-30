@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Calls the appropriate method on a given list of Loops. Similarly to ModuleList and CommandQueue,
+ * LoopList is a Loop itself, and is guaranteed to have the same methods a Loop does.
+ */
 public class LoopList extends Loop {
 
     ILog mLogger = Logger.createLog(LoopList.class);
