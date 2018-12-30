@@ -5,6 +5,10 @@ import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import us.ilite.common.lib.util.FilteredAverage;
 
+/**
+ * A wrapper class for an ultrasonic sensor that filters out noisy data
+ * using the FilteredAverage class.
+ */
 public class UltraSonicSensor {
 	private Ultrasonic mWpiUltrasonic;
 
