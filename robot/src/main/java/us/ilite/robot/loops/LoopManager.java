@@ -39,74 +39,47 @@ public class LoopManager implements Runnable{
 
     public synchronized void start() {
 
-        mLoopSafetyTimer.reset();
-        mLoopSafetyTimer.start();
-
         if(!mIsRunning) {
             mLog.info("Starting control loop");
             synchronized(mTaskLock) {
-                mLoopList.modeInit(mClock.getCurrentTime());
+                mLoopList.modeInit(Timer.getFPGATimestamp());
+                mLoopList.periodicInput(Timer.getFPGATimestamp());
                 mIsRunning = true;
             }
             mWpiNotifier.startPeriodic(kLoopPeriodSeconds);
         }
 
         mClock.cycleEnded();
-        mLoopSafetyTimer.stop();
-        checkTiming("Loop start exceeds specified loop period.");
 
     }
 
     public synchronized void stop() {
-
-        mLoopSafetyTimer.reset();
-        mLoopSafetyTimer.start();
-
+        
         if(mIsRunning) {
             mLog.info("Stopping control loop");
             mWpiNotifier.stop();
             synchronized(mTaskLock) {
                 mIsRunning = false;
-                mLoopList.shutdown(mClock.getCurrentTime());
+                mLoopList.shutdown(Timer.getFPGATimestamp());
             }
         }
 
         mClock.cycleEnded();
-        mLoopSafetyTimer.stop();
-        checkTiming("Loop stop exceeds specified loop period.");
-
     }
 
     @Override
     public void run() {
-
-        mLoopSafetyTimer.reset();
-        mLoopSafetyTimer.start();
-
         synchronized(mTaskLock) {
             try {
                 if(mIsRunning) {
-                    mLoopList.periodicInput(mClock.getCurrentTime());
-                    mLoopList.loop(mClock.getCurrentTime());
+                    mLoopList.periodicInput(Timer.getFPGATimestamp());
+                    mLoopList.loop(Timer.getFPGATimestamp());
                 }
             } catch (Throwable t) {
                 t.printStackTrace();
             }
         }
-
-        checkTiming("Loop update exceeds specified loop period.");
         mClock.cycleEnded();
-        mLoopSafetyTimer.stop();
-
     }
-
-    /**
-     * Prints an error message onscreen if our safety timer has measured a time greater than the specified period.
-     * @param pMessage
-     */
-    private void checkTiming(String pMessage) {
-        if( mLoopSafetyTimer.get() > kLoopPeriodSeconds) {
-            mLog.error(pMessage);
-        }
-    }
+    
 }

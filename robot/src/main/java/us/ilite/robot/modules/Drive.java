@@ -8,7 +8,6 @@ import com.flybotix.hfr.util.log.Logger;
 import control.DriveController;
 import control.DriveMotionPlanner;
 import control.DriveOutput;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.geometry.Pose2d;
 import us.ilite.common.lib.geometry.Pose2dWithCurvature;
@@ -20,12 +19,14 @@ import us.ilite.common.lib.util.ReflectingCSVWriter;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.drivers.Clock;
+import us.ilite.lib.drivers.TalonSRXChecker;
 import us.ilite.lib.util.SimpleNetworkTable;
 import us.ilite.robot.Data;
 import us.ilite.robot.hardware.DriveHardware;
 import us.ilite.robot.hardware.IDriveHardware;
-import us.ilite.robot.hardware.SimDriveHardware;
 import us.ilite.robot.loops.Loop;
+
+import java.util.ArrayList;
 
 /**
  * Class for running all drive train control operations from both autonomous and
@@ -62,6 +63,7 @@ public class Drive extends Loop {
 
 	@Override
 	public void modeInit(double pNow) {
+		mDriveHardware.init();
 	  	setDriveMessage(DriveMessage.kNeutral);
 	  	setDriveState(EDriveState.NORMAL);
 	}
@@ -74,23 +76,23 @@ public class Drive extends Loop {
 		mData.drive.set(EDriveData.RIGHT_VEL_IPS, mDriveHardware.getRightVelInches());
 //		mData.drive.set(EDriveData.LEFT_CURRENT, mDriveHardware.getLeftCurrent());
 //		mData.drive.set(EDriveData.RIGHT_CURRENT, mDriveHardware.getRightCurrent());
-//		mData.drive.set(EDriveData.LEFT_VOLTAGE, mDriveHardware.getLeftVoltage());
-//		mData.drive.set(EDriveData.RIGHT_VOLTAGE, mDriveHardware.getRightVoltage());
+		mData.drive.set(EDriveData.LEFT_VOLTAGE, mDriveHardware.getLeftVoltage());
+		mData.drive.set(EDriveData.RIGHT_VOLTAGE, mDriveHardware.getRightVoltage());
 		
-		mData.drive.set(EDriveData.LEFT_MESSAGE_OUTPUT, mDriveMessage.leftOutput);
-		mData.drive.set(EDriveData.RIGHT_MESSAGE_OUTPUT, mDriveMessage.rightOutput);
-		mData.drive.set(EDriveData.LEFT_MESSAGE_CONTROL_MODE, (double)mDriveMessage.leftControlMode.value);
-		mData.drive.set(EDriveData.RIGHT_MESSAGE_CONTROL_MODE, (double)mDriveMessage.rightControlMode.value);
-		mData.drive.set(EDriveData.LEFT_MESSAGE_NEUTRAL_MODE, (double)mDriveMessage.leftNeutralMode.value);
-		mData.drive.set(EDriveData.RIGHT_MESSAGE_NEUTRAL_MODE, (double)mDriveMessage.rightNeutralMode.value);
-		mData.drive.set(EDriveData.LEFT_MESSAGE_DEMAND_TYPE, (double)mDriveMessage.leftDemandType.value);
-		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND_TYPE, (double)mDriveMessage.rightDemandType.value);
+//		mData.drive.set(EDriveData.LEFT_MESSAGE_OUTPUT, mDriveMessage.leftOutput);
+//		mData.drive.set(EDriveData.RIGHT_MESSAGE_OUTPUT, mDriveMessage.rightOutput);
+//		mData.drive.set(EDriveData.LEFT_MESSAGE_CONTROL_MODE, (double)mDriveMessage.leftControlMode.value);
+//		mData.drive.set(EDriveData.RIGHT_MESSAGE_CONTROL_MODE, (double)mDriveMessage.rightControlMode.value);
+//		mData.drive.set(EDriveData.LEFT_MESSAGE_NEUTRAL_MODE, (double)mDriveMessage.leftNeutralMode.value);
+//		mData.drive.set(EDriveData.RIGHT_MESSAGE_NEUTRAL_MODE, (double)mDriveMessage.rightNeutralMode.value);
+//		mData.drive.set(EDriveData.LEFT_MESSAGE_DEMAND_TYPE, (double)mDriveMessage.leftDemandType.value);
+//		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND_TYPE, (double)mDriveMessage.rightDemandType.value);
 		mData.drive.set(EDriveData.LEFT_MESSAGE_DEMAND, mDriveMessage.leftDemand);
 		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND, mDriveMessage.rightDemand);
 
 		mData.imu.set(EGyro.YAW_DEGREES, mDriveHardware.getHeading().getDegrees());
 
-//		SimpleNetworkTable.writeCodexToSmartDashboard(EDriveData.class, mData.drive, mClock.getCurrentTime());
+		SimpleNetworkTable.writeCodexToSmartDashboard(EDriveData.class, mData.drive, mClock.getCurrentTime());
 	}
 
 	@Override
@@ -113,39 +115,36 @@ public class Drive extends Loop {
 	public void loop(double pNow) {
 		switch(mDriveState) {
 			case PATH_FOLLOWING:
-				if(mDriveController.isDone()) {
-					setDriveMessage(DriveMessage.kNeutral.setNeutralMode(NeutralMode.Brake));
-				} else {
-					DriveOutput output = mDriveController.getOutput(
-							pNow,
-							mData.drive.get(EDriveData.LEFT_POS_INCHES),
-							mData.drive.get(EDriveData.RIGHT_POS_INCHES),
-							Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES)));
+				DriveOutput output;
+				output = mDriveController.update(
+						pNow,
+						mData.drive.get(EDriveData.LEFT_POS_INCHES),
+						mData.drive.get(EDriveData.RIGHT_POS_INCHES),
+						Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES)));
 
-					DriveMessage driveMessage = new DriveMessage(
-							Conversions.radiansPerSecondToTicksPer100ms(output.left_velocity),
-							Conversions.radiansPerSecondToTicksPer100ms(output.right_velocity),
-							ControlMode.Velocity);
+				DriveMessage driveMessage = new DriveMessage(
+						Conversions.radiansPerSecondToTicksPer100ms(output.left_velocity),
+						Conversions.radiansPerSecondToTicksPer100ms(output.right_velocity),
+						ControlMode.Velocity);
 
-					double leftFeedForward = output.left_feedforward_voltage / 12.0;
-					double rightFeedforward = output.right_feedforward_voltage / 12.0;
+				double leftFeedForward = output.left_feedforward_voltage / 12.0;
+				double rightFeedforward = output.right_feedforward_voltage / 12.0;
 
-					double leftAccel = Conversions.radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
-					double rightAccel = Conversions.radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
+				double leftAccel = Conversions.radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
+				double rightAccel = Conversions.radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
 
-					double leftDemand = leftFeedForward + SystemSettings.kDriveVelocity_kD * leftAccel / 1023.0;
-					double rightDemand = rightFeedforward + SystemSettings.kDriveVelocity_kD * rightAccel / 1023.0;
+				double leftDemand = leftFeedForward + SystemSettings.kDriveVelocity_kD * leftAccel / 1023.0;
+				double rightDemand = rightFeedforward + SystemSettings.kDriveVelocity_kD * rightAccel / 1023.0;
 
-					driveMessage.setDemand(DemandType.ArbitraryFeedForward, leftDemand, rightDemand);
-					driveMessage.setNeutralMode(NeutralMode.Brake);
+				driveMessage.setDemand(DemandType.ArbitraryFeedForward, leftDemand, rightDemand);
+				driveMessage.setNeutralMode(NeutralMode.Brake);
 
-					setDriveMessage(driveMessage);
+				setDriveMessage(driveMessage);
 
-					debugOutput.log(pNow, output);
+				debugOutput.log(pNow, output);
 
-					mDebugLogger.add(debugOutput);
+				mDebugLogger.add(debugOutput);
 //					mMotionPlanLogger.add(mDriveController.getDriveMotionPlanner());
-				}
 				break;
 		}
 		mDriveHardware.set(mDriveMessage);
@@ -160,8 +159,8 @@ public class Drive extends Loop {
 	}
 
 	@Override
-	public void checkModule(double pNow) {
-
+	public boolean checkModule(double pNow) {
+        return mDriveHardware.checkHardware();
 	}
 
 	public DriveController getDriveController() {
@@ -195,17 +194,36 @@ public class Drive extends Loop {
 		public double leftVel, rightVel;
 		public double targetX, targetY;
 		public double x, y;
-		
+
+		public double leftAppliedVolts, rightAppliedVolts;
+
+		public double heading;
+
+		public Pose2d error;
+
 		public void log(double time, DriveOutput output) {
 			t = time;
-			targetLeftVel = Conversions.rotationsToInches(output.left_velocity / (Math.PI * 2.0));
-			targetRightVel = Conversions.rotationsToInches(output.right_velocity / (Math.PI * 2.0));
-			leftVel = mData.drive.get(EDriveData.LEFT_VEL_IPS);
-			rightVel = mData.drive.get(EDriveData.RIGHT_VEL_IPS);
+
+//			targetLeftVel = Conversions.rotationsToInches(output.left_velocity / (Math.PI * 2.0));
+//			targetRightVel = Conversions.rotationsToInches(output.right_velocity / (Math.PI * 2.0));
+			targetLeftVel = output.left_velocity;
+			targetRightVel = output.right_velocity;
+//			leftVel = mData.drive.get(EDriveData.LEFT_VEL_IPS);
+//			rightVel = mData.drive.get(EDriveData.RIGHT_VEL_IPS);
+			leftVel = mData.drive.get(EDriveData.LEFT_VEL_IPS) / SystemSettings.kDriveWheelCircumference * Math.PI * 2.0;
+			rightVel = mData.drive.get(EDriveData.RIGHT_VEL_IPS) / SystemSettings.kDriveWheelCircumference * Math.PI * 2.0;
+
 			targetX = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().translation_.x();
 			targetY = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().translation_.y();
 			x = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehicle().getValue().translation_.x();
 			y = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehicle().getValue().translation_.y();
+
+			leftAppliedVolts = mData.drive.get(EDriveData.LEFT_VOLTAGE);
+			rightAppliedVolts = mData.drive.get(EDriveData.RIGHT_VOLTAGE);
+
+			heading = mData.imu.get(EGyro.YAW_DEGREES);
+
+			error = mDriveController.getDriveMotionPlanner().error();
 		}
 	}
 

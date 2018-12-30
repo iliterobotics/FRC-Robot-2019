@@ -100,9 +100,4 @@ public class TalonTachCounter extends Loop {
 
     }
 
-    @Override
-    public void checkModule(double pNow) {
-
-    }
-
 }

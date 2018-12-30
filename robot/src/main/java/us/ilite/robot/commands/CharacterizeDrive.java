@@ -33,7 +33,7 @@ public class CharacterizeDrive implements ICommand {
     
     @Override
     public void init(double pNow) {
-        mCommandQueue.setCommands(mCollectVelocityData, mCollectAccelerationData);
+        mCommandQueue.setCommands(mCollectVelocityData, new Delay(3.0), mCollectAccelerationData);
         mCommandQueue.init(pNow);
     }
 

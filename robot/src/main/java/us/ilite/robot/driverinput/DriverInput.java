@@ -122,11 +122,6 @@ public class DriverInput extends Module {
 
     }
 
-    @Override
-    public void checkModule(double pNow) {
-
-    }
-
 
     public boolean shouldInitializeCommandQueue() {
         return lastCanRunCommandQueue == false && canRunCommandQueue == true;

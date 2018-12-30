@@ -85,18 +85,18 @@ public class Robot extends IterativeRobot {
         mLoopManager.start();
 
         mDriveController.setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
-//        mDriveController.getController().setGains(0.65, 0.175);
-        mDriveController.getController().setGains(2.0, 0.7);
+        mDriveController.getController().setGains(0.65, 0.175);
+//        mDriveController.getController().setGains(2.0, 0.7);
 
 //        mDriveController.getController().setGains(0.0, 0.0);
         TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
-        List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(70.0));
+        List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(30.0));
         List<Pose2d> waypoints = Arrays.asList(new Pose2d[] {
                 new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)),
-                // new Pose2d(7.0 * 12.0, -7.0 * 12.0, Rotation2d.fromDegrees(-90.0))
-                new Pose2d(20.0 * 12.0, 0.0, Rotation2d.fromDegrees(0.0))
+                 new Pose2d(8.0 * 12.0, -5.0 * 12.0, Rotation2d.fromDegrees(-90.0))
+//                new Pose2d(8.0 * 12.0, 0.0, Rotation2d.fromDegrees(0.0))
         });
-        Trajectory<TimedState<Pose2dWithCurvature>> trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 60.0, 60.0, 12.0);
+        Trajectory<TimedState<Pose2dWithCurvature>> trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 60.0, 80.0, 12.0);
 
 
         mCommandQueue.setCommands(new FollowTrajectory(trajectory, mDrive, true));
@@ -148,9 +148,10 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void testInit() {
-        mRunningModules.setModules();
+        mRunningModules.setModules(mDrive);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
+        mRunningModules.checkModule(mClock.getCurrentTime());
 
         mLoopManager.start();
     }
@@ -159,9 +160,8 @@ public class Robot extends IterativeRobot {
     public void testPeriodic() {
         mapNonModuleInputs();
 
-        mRunningModules.periodicInput(mClock.getCurrentTime());
-        mRunningModules.checkModule(mClock.getCurrentTime());
-        mRunningModules.update(mClock.getCurrentTime());
+//        mRunningModules.periodicInput(mClock.getCurrentTime());
+//        mRunningModules.update(mClock.getCurrentTime());
     }
 
     public void mapNonModuleInputs() {

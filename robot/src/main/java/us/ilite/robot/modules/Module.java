@@ -46,7 +46,9 @@ public abstract class Module {
     /**
      * Runs a self-test routine on this module's hardware.
      */
-    public abstract void checkModule(double pNow);
+    public boolean checkModule(double pNow) {
+        return true;
+    }
 
     /**
      * Zeroes sensors.

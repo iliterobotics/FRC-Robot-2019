@@ -7,10 +7,10 @@ import java.util.concurrent.TimeUnit;
 public class SystemSettings extends ConstantsBase {
 
 
-    public static double kControlLoopPeriod = 0.015; // seconds
+    public static double kControlLoopPeriod = 0.01; // seconds
     public static TimeUnit SYSTEM_TIME_UNIT = TimeUnit.SECONDS;
 
-    public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
+    public static double NETWORK_TABLE_UPDATE_RATE = 0.05;
 
     //=============================================================================
     // Logging
@@ -36,14 +36,14 @@ public class SystemSettings extends ConstantsBase {
     // =============================================================================
     public static double kDriveClosedLoopVoltageRampRate = 0.0;
     public static double kDriveOpenLoopVoltageRampRate = 0.1;
-    public static int kDriveCurrentLimitAmps = 40;
+    public static int kDriveCurrentLimitAmps = 80;
     public static double kDriveWheelDiameterInches = 6.0;
     public static double  DRIVETRAIN_WHEEL_DIAMETER_FEET = kDriveWheelDiameterInches / 12.0;
     public static double kDriveWheelCircumference = kDriveWheelDiameterInches * Math.PI;
     public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
     public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
     public static double kDriveTicksPerRotation = 1024;
-    public static double kDriveEffectiveWheelbase = 24.0;
+    public static double kDriveEffectiveWheelbase = 23.75;
     public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = kDriveEffectiveWheelbase * Math.PI;
     public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360.0;
     public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / kDriveWheelDiameterInches;
@@ -81,14 +81,11 @@ public class SystemSettings extends ConstantsBase {
     // =============================================================================
     public static int kDriveVelocityTolerance = 0;
     public static int kDriveVelocityLoopSlot = 0;
-    public static double kDriveVelocity_kP = 0.0;
+    public static double kDriveVelocity_kP = 1.0;
     public static double kDriveVelocity_kI = 0.0;
-    public static double kDriveVelocity_kD = 0.0;
-//    public static double kDriveVelocity_kP = 0.9;
-//    public static double kDriveVelocity_kI = 0.0;
-//    public static double kDriveVelocity_kD = 10.0;
+    public static double kDriveVelocity_kD = 10.0;
+//    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
-
     @Override
     public String getFileLocation() {
         return "~/constants.txt";
