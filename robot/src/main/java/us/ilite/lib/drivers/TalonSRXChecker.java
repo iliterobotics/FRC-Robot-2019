@@ -9,7 +9,16 @@ import us.ilite.robot.modules.Module;
 import java.util.ArrayList;
 import java.util.function.DoubleSupplier;
 
+/**
+ * This class allows us to test groups of TalonSRXs for differences in current draw,
+ * speed, and other critical parameters.
+ */
 public class TalonSRXChecker {
+
+    /**
+     * Defines a set of configurable values for a certain Talon's
+     * expected performance should be and those values' defaults.
+     */
     public static class CheckerConfig {
         public double mCurrentFloor = 5;
         public double mRPMFloor = 2000;
@@ -33,11 +42,24 @@ public class TalonSRXChecker {
         }
     }
 
+    /**
+     * Container class so we can put the Talon back to its initial configuration
+     * after we test it
+     */
     private static class StoredTalonSRXConfiguration {
         public ControlMode mMode;
         public double mSetValue;
     }
 
+    /**
+     *
+     * @param subsystem The class of the subsystem we are checking. Used so we can identify the subsystem in log output.
+     * @param talonsToCheck A list of Talons to check sequentially. The current and RPMs between these Talons will be verified to
+     *                      be within a minimum range of each other.
+     * @param checkerConfig The configuration to use for the check.
+     * @param <E> A class extending Module.
+     * @return True if the Talons passed the check, false if they did not.
+     */
     public static <E extends Module> boolean CheckTalons(Class<E> subsystem,
                                       ArrayList<TalonSRXConfig> talonsToCheck,
                                       CheckerConfig checkerConfig) {
