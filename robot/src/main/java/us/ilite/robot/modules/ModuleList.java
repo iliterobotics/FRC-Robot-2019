@@ -7,6 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Updates a given list of modules with their respective method calls. Like LoopList
+ * and CommandQueue, ModuleList is a module itself, and can be treated as such.
+ */
 public class ModuleList extends Module {
 
     ILog mLogger = Logger.createLog(ModuleList.class);
