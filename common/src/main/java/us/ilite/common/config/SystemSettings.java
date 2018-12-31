@@ -10,7 +10,7 @@ public class SystemSettings extends ConstantsBase {
     public static double kControlLoopPeriod = 0.01; // seconds
     public static TimeUnit SYSTEM_TIME_UNIT = TimeUnit.SECONDS;
 
-    public static double NETWORK_TABLE_UPDATE_RATE = 0.05;
+    public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
 
     //=============================================================================
     // Logging
@@ -43,7 +43,7 @@ public class SystemSettings extends ConstantsBase {
     public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
     public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
     public static double kDriveTicksPerRotation = 1024;
-    public static double kDriveEffectiveWheelbase = 23.75;
+    public static double kDriveEffectiveWheelbase = 23.75 * 1.025;
     public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = kDriveEffectiveWheelbase * Math.PI;
     public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360.0;
     public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / kDriveWheelDiameterInches;

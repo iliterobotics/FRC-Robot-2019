@@ -8,6 +8,9 @@ import com.flybotix.hfr.util.log.Logger;
 import control.DriveController;
 import control.DriveMotionPlanner;
 import control.DriveOutput;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.geometry.Pose2d;
 import us.ilite.common.lib.geometry.Pose2dWithCurvature;
@@ -57,15 +60,19 @@ public class Drive extends Loop {
 		this.mDriveHardware = new DriveHardware();
 
 		mDebugLogger = new ReflectingCSVWriter<>("/home/lvuser/debug.csv", DebugOutput.class);
-		mMotionPlanLogger = new ReflectingCSVWriter<>("/home/lvuser/motion_plan.csv", DriveMotionPlanner.class);
 		debugOutput = new DebugOutput();
 	}
 
 	@Override
 	public void modeInit(double pNow) {
+	    mLogger.info("Starting Drive initialization...");
+		Timer initTimer = new Timer();
+		initTimer.reset();
+		initTimer.start();
 		mDriveHardware.init();
 	  	setDriveMessage(DriveMessage.kNeutral);
 	  	setDriveState(EDriveState.NORMAL);
+	  	mLogger.info("Drive initialization took: ", initTimer.get(), " seconds.");
 	}
 
 	@Override
@@ -74,11 +81,17 @@ public class Drive extends Loop {
 		mData.drive.set(EDriveData.RIGHT_POS_INCHES, mDriveHardware.getRightInches());
 		mData.drive.set(EDriveData.LEFT_VEL_IPS, mDriveHardware.getLeftVelInches());
 		mData.drive.set(EDriveData.RIGHT_VEL_IPS, mDriveHardware.getRightVelInches());
+//        mData.drive.set(EDriveData.LEFT_POS_INCHES,0d);
+//        mData.drive.set(EDriveData.RIGHT_POS_INCHES, 0d);
+//        mData.drive.set(EDriveData.LEFT_VEL_IPS, 0d);
+//        mData.drive.set(EDriveData.RIGHT_VEL_IPS,0d);
 //		mData.drive.set(EDriveData.LEFT_CURRENT, mDriveHardware.getLeftCurrent());
 //		mData.drive.set(EDriveData.RIGHT_CURRENT, mDriveHardware.getRightCurrent());
-		mData.drive.set(EDriveData.LEFT_VOLTAGE, mDriveHardware.getLeftVoltage());
-		mData.drive.set(EDriveData.RIGHT_VOLTAGE, mDriveHardware.getRightVoltage());
-		
+//		mData.drive.set(EDriveData.LEFT_VOLTAGE, mDriveHardware.getLeftVoltage());
+//		mData.drive.set(EDriveData.RIGHT_VOLTAGE, mDriveHardware.getRightVoltage());
+ 		mData.drive.set(EDriveData.LEFT_VOLTAGE, 0.0);
+		mData.drive.set(EDriveData.RIGHT_VOLTAGE, 0.0);
+
 //		mData.drive.set(EDriveData.LEFT_MESSAGE_OUTPUT, mDriveMessage.leftOutput);
 //		mData.drive.set(EDriveData.RIGHT_MESSAGE_OUTPUT, mDriveMessage.rightOutput);
 //		mData.drive.set(EDriveData.LEFT_MESSAGE_CONTROL_MODE, (double)mDriveMessage.leftControlMode.value);
@@ -87,12 +100,14 @@ public class Drive extends Loop {
 //		mData.drive.set(EDriveData.RIGHT_MESSAGE_NEUTRAL_MODE, (double)mDriveMessage.rightNeutralMode.value);
 //		mData.drive.set(EDriveData.LEFT_MESSAGE_DEMAND_TYPE, (double)mDriveMessage.leftDemandType.value);
 //		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND_TYPE, (double)mDriveMessage.rightDemandType.value);
-		mData.drive.set(EDriveData.LEFT_MESSAGE_DEMAND, mDriveMessage.leftDemand);
-		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND, mDriveMessage.rightDemand);
+//		mData.drive.set(EDriveData.LEFT_MESSAGE_DEMAND, mDriveMessage.leftDemand);
+//		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND, mDriveMessage.rightDemand);
 
 		mData.imu.set(EGyro.YAW_DEGREES, mDriveHardware.getHeading().getDegrees());
+//        mData.imu.set(EGyro.YAW_DEGREES, 0d);
 
-		SimpleNetworkTable.writeCodexToSmartDashboard(EDriveData.class, mData.drive, mClock.getCurrentTime());
+
+//		SimpleNetworkTable.writeCodexToSmartDashboard(EDriveData.class, mData.drive, mClock.getCurrentTime());
 	}
 
 	@Override
@@ -107,7 +122,7 @@ public class Drive extends Loop {
 	@Override
 	public void shutdown(double pNow) {
 		mDebugLogger.flush();
-		mMotionPlanLogger.flush();
+//		mMotionPlanLogger.flush();
 		mDriveHardware.zero();
 	}
 
@@ -139,12 +154,11 @@ public class Drive extends Loop {
 				driveMessage.setDemand(DemandType.ArbitraryFeedForward, leftDemand, rightDemand);
 				driveMessage.setNeutralMode(NeutralMode.Brake);
 
-				setDriveMessage(driveMessage);
+				mDriveMessage = driveMessage;
 
-				debugOutput.log(pNow, output);
-
+				// Big overhead on logToCsv()!
+				debugOutput.logToCsv(pNow, output);
 				mDebugLogger.add(debugOutput);
-//					mMotionPlanLogger.add(mDriveController.getDriveMotionPlanner());
 				break;
 		}
 		mDriveHardware.set(mDriveMessage);
@@ -153,6 +167,7 @@ public class Drive extends Loop {
 	public void followPath(Trajectory<TimedState<Pose2dWithCurvature>> pPath, boolean pResetPoseToStart) {
 		if(mDriveState != EDriveState.PATH_FOLLOWING) {
 			mDriveState = EDriveState.PATH_FOLLOWING;
+			mDriveHardware.set(new DriveMessage(0.0, 0.0, ControlMode.Velocity)); // Force config
 		}
 
 		mDriveController.setTrajectory(pPath, pResetPoseToStart);
@@ -175,7 +190,7 @@ public class Drive extends Loop {
 		this.mDriveMessage = pDriveMessage;
 	}
 
-	public synchronized void setDriveState(EDriveState pDriveState) {
+	private void setDriveState(EDriveState pDriveState) {
 		this.mDriveState = pDriveState;
 	}
 
@@ -201,7 +216,7 @@ public class Drive extends Loop {
 
 		public Pose2d error;
 
-		public void log(double time, DriveOutput output) {
+		public void logToCsv(double time, DriveOutput output) {
 			t = time;
 
 //			targetLeftVel = Conversions.rotationsToInches(output.left_velocity / (Math.PI * 2.0));
@@ -215,8 +230,8 @@ public class Drive extends Loop {
 
 			targetX = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().translation_.x();
 			targetY = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().translation_.y();
-			x = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehicle().getValue().translation_.x();
-			y = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehicle().getValue().translation_.y();
+			x = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().translation_.x();
+			y = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().translation_.y();
 
 			leftAppliedVolts = mData.drive.get(EDriveData.LEFT_VOLTAGE);
 			rightAppliedVolts = mData.drive.get(EDriveData.RIGHT_VOLTAGE);
@@ -225,6 +240,19 @@ public class Drive extends Loop {
 
 			error = mDriveController.getDriveMotionPlanner().error();
 		}
+
+		public void logToLiveDashboard() {
+		    final NetworkTable livedashboard = NetworkTableInstance.getDefault().getTable("Live Dashboard");
+		    final Pose2d robotPose = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose();
+		    final Pose2d targetPose = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose();
+
+		    livedashboard.getEntry("Robot X").setDouble(robotPose.translation_.x());
+		    livedashboard.getEntry("Robot Y").setDouble(robotPose.translation_.y());
+		    livedashboard.getEntry("Robot Heading").setDouble(robotPose.rotation_.getDegrees());
+
+		    livedashboard.getEntry("Path X").setDouble(robotPose.translation_.x());
+		    livedashboard.getEntry("Path Y").setDouble(robotPose.translation_.y());
+        }
 	}
 
 }
