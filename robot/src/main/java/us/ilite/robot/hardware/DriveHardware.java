@@ -149,6 +149,7 @@ public class DriveHardware implements IDriveHardware {
 
     private void setNeutralMode(NeutralMode pNeutralMode, TalonSRX ... pTalons) {
         for(TalonSRX talon : pTalons) {
+            mLogger.info("Setting neutral mode to: ", pNeutralMode.name(), " for Talon ID ", talon.getDeviceID());
             talon.setNeutralMode(pNeutralMode);
         }
     }
