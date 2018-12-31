@@ -49,6 +49,8 @@ public class DriveHardware implements IDriveHardware {
 
         configureMaster(mLeftMaster, true);
         configureMaster(mRightMaster, false);
+        configureMaster(mLeftRear, true);
+        configureMaster(mRightRear, false);
 
         mLeftMaster.setInverted(false);
         mLeftRear.setInverted(false);
