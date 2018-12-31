@@ -10,7 +10,7 @@ public class SystemSettings extends ConstantsBase {
     public static double kControlLoopPeriod = 0.01; // seconds
     public static TimeUnit SYSTEM_TIME_UNIT = TimeUnit.SECONDS;
 
-    public static double NETWORK_TABLE_UPDATE_RATE = 0.05;
+    public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
 
     //=============================================================================
     // Logging
