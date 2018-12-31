@@ -7,9 +7,11 @@ import us.ilite.robot.modules.DriveMessage;
 import us.ilite.common.lib.geometry.Rotation2d;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.robot.Data;
+import control.PIDController;
 // import us.ilite.robot.modules.drivetrain.DrivetrainMode;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 public class TurnToDegree implements ICommand {
@@ -57,36 +59,23 @@ public class TurnToDegree implements ICommand {
   }
 
   public boolean update(double pNow) {
-    
-    mError = getError(); // Update error value
-    this.mTotalError = this.mTotalError.rotateBy(this.mError);; // Update running error total
-    
-    mOutput = ((kP * mError.getDegrees()) + (kI * mTotalError.getDegrees()) + (kD * (mError.getDegrees() - mLastError.getDegrees())));
-    
-    int scalar = mOutput > 0 ? 1 : -1;
-    if(Math.abs(mOutput) <= kMIN_POWER) mOutput = kMIN_POWER * scalar;
-    
-    if(Math.abs(mOutput) >= kMAX_POWER) mOutput = kMAX_POWER * scalar;
-    
+    mError = getError();
+    this.mTotalError = this.mTotalError.rotateBy(this.mError);
+    PIDController pid = new PIDController(kP, kI, kD);
+    pid.setOutputRange(kMIN_POWER, kMAX_POWER);
+    pid.setSetpoint(mTargetYaw.getDegrees());
+    mOutput = pid.calculate(getYaw().getDegrees(), pNow);
     mLeftPower = mOutput;
     mRightPower = -mOutput;
     mLastError = mError;
-
     if ((Math.abs(mError.getDegrees()) <= Math.abs(mAllowableError))) {
       mDrive.zero();
-//      mAlignedCount++;
       return true;
     }
     if(pNow - mStartTime > kTIMEOUT) {
-//      mDrivetrain.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
       return true;
     }
     mDrive.setDriveMessage(new DriveMessage(mLeftPower, mRightPower, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
-//    if(mAlignedCount >= kMIN_ALIGNED_COUNT) {
-//      mDrivetrain.setDriveMessage(new DrivetrainMessage(0.0, 0.0, DrivetrainMode.PercentOutput, NeutralMode.Brake));
-//      return true;
-//    }
-    
     System.out.printf("Target: %s Yaw: %s\n", mTargetYaw, getYaw());
     return false;
   }
