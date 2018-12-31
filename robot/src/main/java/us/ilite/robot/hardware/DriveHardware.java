@@ -75,7 +75,12 @@ public class DriveHardware implements IDriveHardware {
         mLeftControlMode = mRightControlMode = ControlMode.PercentOutput;
         mLeftNeutralMode = mRightNeutralMode = NeutralMode.Brake;
 
-        setNeutralMode(NeutralMode.Brake, mRightMaster, mRightRear, mLeftMaster, mLeftRear); // Force neutral mode to Brake, clear existing setting
+        // Bypass state machine in set() and configure directly
+        configTalonForPercentOutput(mLeftMaster);
+        configTalonForPercentOutput(mRightMaster);
+        setNeutralMode(mLeftNeutralMode, mRightMaster, mRightRear);
+        setNeutralMode(mLeftNeutralMode, mLeftMaster, mRightMaster);
+
         set(DriveMessage.kNeutral);
     }
 
