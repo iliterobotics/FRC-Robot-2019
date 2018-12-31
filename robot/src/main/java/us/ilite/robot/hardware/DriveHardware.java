@@ -21,6 +21,7 @@ import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Provides an interface between high-level planning and logic in Drive and Talon SRX configuration and control.
@@ -49,6 +50,8 @@ public class DriveHardware implements IDriveHardware {
 
         configureMaster(mLeftMaster, true);
         configureMaster(mRightMaster, false);
+        configureMaster(mLeftRear, true);
+        configureMaster(mRightRear, false);
 
         mLeftMaster.setInverted(false);
         mLeftRear.setInverted(false);
@@ -73,7 +76,12 @@ public class DriveHardware implements IDriveHardware {
         mLeftControlMode = mRightControlMode = ControlMode.PercentOutput;
         mLeftNeutralMode = mRightNeutralMode = NeutralMode.Brake;
 
-        setNeutralMode(NeutralMode.Brake, mRightMaster, mRightRear, mLeftMaster, mLeftRear); // Force neutral mode to Brake, clear existing setting
+        // Bypass state machine in set() and configure directly
+        configTalonForPercentOutput(mLeftMaster);
+        configTalonForPercentOutput(mRightMaster);
+        setNeutralMode(mLeftNeutralMode, mRightMaster, mRightRear);
+        setNeutralMode(mLeftNeutralMode, mLeftMaster, mRightMaster);
+
         set(DriveMessage.kNeutral);
     }
 
@@ -142,6 +150,7 @@ public class DriveHardware implements IDriveHardware {
 
     private void setNeutralMode(NeutralMode pNeutralMode, TalonSRX ... pTalons) {
         for(TalonSRX talon : pTalons) {
+            mLogger.info("Setting neutral mode to: ", pNeutralMode.name(), " for Talon ID ", talon.getDeviceID());
             talon.setNeutralMode(pNeutralMode);
         }
     }
