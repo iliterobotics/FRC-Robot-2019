@@ -1,9 +1,10 @@
+package control;
 /**
  * This class implements a PID Control Loop.
  * 
  * Does all computation synchronously (i.e. the calculate() function must be called by the user from his own thread)
  */
-public class SynchronousPIDF {
+public class PIDController {
     private double m_P; // factor for "proportional" control
     private double m_I; // factor for "integral" control
     private double m_D; // factor for "derivative" control
@@ -29,7 +30,7 @@ public class SynchronousPIDF {
                                      // then treat error for the proportional
                                      // term as 0
 
-    public SynchronousPIDF() {
+    public PIDController() {
     }
 
     /**
@@ -42,7 +43,7 @@ public class SynchronousPIDF {
      * @param Kd
      *            the derivative coefficient
      */
-    public SynchronousPIDF(double Kp, double Ki, double Kd) {
+    public PIDController(double Kp, double Ki, double Kd) {
         m_P = Kp;
         m_I = Ki;
         m_D = Kd;
@@ -61,7 +62,7 @@ public class SynchronousPIDF {
      * @param Kf
      *            the feed forward gain coefficient
      */
-    public SynchronousPIDF(double Kp, double Ki, double Kd, double Kf) {
+    public PIDController(double Kp, double Ki, double Kd, double Kf) {
         m_P = Kp;
         m_I = Ki;
         m_D = Kd;
