@@ -7,6 +7,7 @@ import com.flybotix.hfr.util.log.Logger;
 import control.DriveController;
 import control.DriveMotionPlanner;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import paths.TrajectoryGenerator;
 import us.ilite.common.config.SystemSettings;
@@ -31,7 +32,7 @@ import us.ilite.robot.modules.ModuleList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Robot extends IterativeRobot {
+public class Robot extends TimedRobot {
     
     private ILog mLogger = Logger.createLog(this.getClass());
 
@@ -43,6 +44,7 @@ public class Robot extends IterativeRobot {
 
     private Clock mClock = new Clock();
     private Data mData = new Data();
+    private Timer initTimer = new Timer();
 
     // Module declarations here
     private DriveController mDriveController = new DriveController(new StrongholdProfile(), SystemSettings.kControlLoopPeriod);
@@ -53,7 +55,7 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void robotInit() {
-        Timer initTimer = new Timer();
+        initTimer.reset();
         initTimer.start();
         Logger.setLevel(ELevel.DEBUG);
         mLogger.info("Starting Robot Initialization...");
@@ -61,10 +63,10 @@ public class Robot extends IterativeRobot {
         mRunningModules.setModules();
 
         TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
-        List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(30.0));
+        List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(/*new CentripetalAccelerationConstraint(30.0)*/);
         List<Pose2d> waypoints = Arrays.asList(new Pose2d[] {
                 new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)),
-                new Pose2d(8.0 * 12.0, -5.0 * 12.0, Rotation2d.fromDegrees(-90.0))
+                new Pose2d(8.0 * 12.0, -8.0 * 12.0, Rotation2d.fromDegrees(-90.0))
 //                new Pose2d(8.0 * 12.0, 0.0, Rotation2d.fromDegrees(0.0))
         });
         trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 60.0, 80.0, 12.0);
@@ -87,6 +89,11 @@ public class Robot extends IterativeRobot {
 
     @Override
     public void autonomousInit() {
+        initTimer.reset();
+        initTimer.start();
+        Logger.setLevel(ELevel.DEBUG);
+        mLogger.info("Starting Autonomous Initialization...");
+
         mapNonModuleInputs();
 
         mRunningModules.setModules();
@@ -100,13 +107,15 @@ public class Robot extends IterativeRobot {
         /*
         Other gains to try: (2.0, 0.7), (0.65, 0.175), (0.0, 0.0)
          */
-        mDriveController.getController().setGains(0.65, 0.175);
+        mDriveController.getController().setGains(2.0, 0.7);
 
 
         mCommandQueue.setCommands(new FollowTrajectory(trajectory, mDrive, true));
 //        mCommandQueue.setCommands(new CharacterizeDrive(mDrive, false, false));
-
         mCommandQueue.init(mClock.getCurrentTime());
+
+        initTimer.stop();
+        mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");
     }
 
     @Override
