@@ -81,9 +81,9 @@ public class SystemSettings extends ConstantsBase {
     // =============================================================================
     public static int kDriveVelocityTolerance = 0;
     public static int kDriveVelocityLoopSlot = 0;
-    public static double kDriveVelocity_kP = 1.0;
+    public static double kDriveVelocity_kP = /*1.0*/0.0;
     public static double kDriveVelocity_kI = 0.0;
-    public static double kDriveVelocity_kD = 10.0;
+    public static double kDriveVelocity_kD = /*10.0*/0.0;
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     @Override

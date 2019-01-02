@@ -109,6 +109,15 @@ public class DriveHardware implements IDriveHardware {
         mRightMaster.set(mRightControlMode, pDriveMessage.rightOutput, pDriveMessage.rightDemandType, pDriveMessage.rightDemand);
     }
 
+    /**
+     * Allows external users to request that our control mode be pre-configured instead of configuring on the fly.
+     * @param pControlMode
+     */
+    public void configureMode(ControlMode pControlMode) {
+        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pControlMode);
+        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pControlMode);
+    }
+
     private ControlMode configForControlMode(TalonSRX pTalon, ControlMode pCurrentControlMode, ControlMode pDesiredControlMode) {
         ControlMode controlMode = pCurrentControlMode;
 
