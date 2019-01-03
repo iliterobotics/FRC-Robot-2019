@@ -27,10 +27,11 @@ public class TurnToDegree implements ICommand {
   private static final double kMAX_POWER = 1.0;
   
   private Rotation2d mInitialYaw, mTurnAngle, mTargetYaw;
-  private Rotation2d mError, mLastError, mTotalError;
+  private double mError, mLastError, mTotalError;
   private double mLeftPower, mRightPower, mOutput = 0.0;
   private double mStartTime;
   private int mAlignedCount;
+  private PIDController pid;
   private final double mAllowableError;
   public Data mData;
   
@@ -49,26 +50,26 @@ public class TurnToDegree implements ICommand {
   @Override
   public void init(double pNow) {
     mStartTime = pNow;
-    
+
+    pid = new PIDController(kP, kI, kD);
+    pid.setOutputRange(kMIN_POWER, kMAX_POWER);
+    pid.setSetpoint(mTargetYaw.getDegrees());
     mInitialYaw = getYaw();
     mTargetYaw = mInitialYaw.rotateBy( mTurnAngle );
     
-    this.mError = getError();
+    this.mError = pid.getError();
     this.mLastError = mError; // Calculate the initial error value
     this.mTotalError = mError;
   }
 
   public boolean update(double pNow) {
-    mError = getError();
-    this.mTotalError = this.mTotalError.rotateBy(this.mError);
-    PIDController pid = new PIDController(kP, kI, kD);
-    pid.setOutputRange(kMIN_POWER, kMAX_POWER);
-    pid.setSetpoint(mTargetYaw.getDegrees());
+    mError = pid.getError();
+    this.mTotalError += this.mError;
     mOutput = pid.calculate(getYaw().getDegrees(), pNow);
     mLeftPower = mOutput;
     mRightPower = -mOutput;
     mLastError = mError;
-    if ((Math.abs(mError.getDegrees()) <= Math.abs(mAllowableError))) {
+    if ((Math.abs(mError) <= Math.abs(mAllowableError))) {
       mDrive.zero();
       return true;
     }
@@ -78,10 +79,6 @@ public class TurnToDegree implements ICommand {
     mDrive.setDriveMessage(new DriveMessage(mLeftPower, mRightPower, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
     System.out.printf("Target: %s Yaw: %s\n", mTargetYaw, getYaw());
     return false;
-  }
-
-  public Rotation2d getError() {
-    return mTargetYaw.rotateBy(getYaw());
   }
   
   private Rotation2d getYaw() {
