@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import paths.TrajectoryGenerator;
+import paths.autos.TestAuto;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.geometry.Pose2d;
 import us.ilite.common.lib.geometry.Pose2dWithCurvature;
@@ -57,19 +58,14 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         initTimer.reset();
         initTimer.start();
-        Logger.setLevel(ELevel.DEBUG);
+        Logger.setLevel(ELevel.ERROR);
         mLogger.info("Starting Robot Initialization...");
 
         mRunningModules.setModules();
 
         TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
         List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(/*new CentripetalAccelerationConstraint(30.0)*/);
-        List<Pose2d> waypoints = Arrays.asList(new Pose2d[] {
-                new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)),
-                new Pose2d(8.0 * 12.0, -8.0 * 12.0, Rotation2d.fromDegrees(-90.0))
-//                new Pose2d(8.0 * 12.0, 0.0, Rotation2d.fromDegrees(0.0))
-        });
-        trajectory = mTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryConstraints, 60.0, 80.0, 12.0);
+        trajectory = mTrajectoryGenerator.generateTrajectory(false, TestAuto.kPath, kTrajectoryConstraints, 60.0, 80.0, 12.0);
 
 
         initTimer.stop();
@@ -91,10 +87,8 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         initTimer.reset();
         initTimer.start();
-        Logger.setLevel(ELevel.DEBUG);
         mLogger.info("Starting Autonomous Initialization...");
 
-        mapNonModuleInputs();
 
         mRunningModules.setModules();
         mRunningModules.modeInit(mClock.getCurrentTime());
@@ -102,13 +96,6 @@ public class Robot extends TimedRobot {
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
-
-        mDriveController.setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
-        /*
-        Other gains to try: (2.0, 0.7), (0.65, 0.175), (0.0, 0.0)
-         */
-        mDriveController.getController().setGains(2.0, 0.7);
-
 
         mCommandQueue.setCommands(new FollowTrajectory(trajectory, mDrive, true));
 //        mCommandQueue.setCommands(new CharacterizeDrive(mDrive, false, false));
@@ -120,17 +107,14 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        mapNonModuleInputs();
-
         mRunningModules.periodicInput(mClock.getCurrentTime());
-        if(!mCommandQueue.isFinished()) mCommandQueue.update(mClock.getCurrentTime());
+        mCommandQueue.update(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
+//        mDrive.flushTelemetry();
     }
 
     @Override
     public void teleopInit() {
-        mapNonModuleInputs();
-
         mRunningModules.setModules(mDriverInput);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
@@ -141,14 +125,13 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        mapNonModuleInputs();
-
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
     }
 
     @Override
     public void disabledInit() {
+        mLogger.info("Disabled Initialization");
         mRunningModules.shutdown(mClock.getCurrentTime());
         mLoopManager.stop();
         mCommandQueue.shutdown(mClock.getCurrentTime());
@@ -156,7 +139,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
-
+        System.gc();
+        Timer.delay(0.01);
     }
 
     @Override
@@ -171,14 +155,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testPeriodic() {
-        mapNonModuleInputs();
 
 //        mRunningModules.periodicInput(mClock.getCurrentTime());
 //        mRunningModules.update(mClock.getCurrentTime());
-    }
-
-    public void mapNonModuleInputs() {
-
     }
 
     public String toString() {
