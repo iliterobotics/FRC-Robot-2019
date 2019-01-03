@@ -34,8 +34,19 @@ public class ModuleList extends Module {
     }
 
     @Override
-    public void checkModule(double pNow) {
-        mModules.forEach(module -> module.checkModule(pNow));
+    public boolean checkModule(double pNow) {
+        boolean allSuccessful = true;
+            for (Module module : mModules) {
+                boolean moduleSuccessful = module.checkModule(pNow);
+            allSuccessful = allSuccessful && moduleSuccessful;
+            if (!moduleSuccessful) {
+                mLogger.error("Self-check failure for module: ", module.getClass());
+            } else {
+                mLogger.warn("Self-check success for module: ", module.getClass());
+            }
+        }
+
+        return allSuccessful;
     }
 
     public void setModules(Module ... pModules) {

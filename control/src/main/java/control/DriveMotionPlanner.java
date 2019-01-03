@@ -1,5 +1,7 @@
 package control;
 
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
 import us.ilite.common.lib.geometry.Pose2d;
 import us.ilite.common.lib.geometry.Pose2dWithCurvature;
 import us.ilite.common.lib.geometry.Rotation2d;
@@ -21,7 +23,9 @@ import java.util.List;
  * Trajectory followers are entirely modular and can be switched at-will.
  */
 public class DriveMotionPlanner implements CSVWritable {
-    
+
+    private ILog mLog = Logger.createLog(DriveMotionPlanner.class);
+
     private final DifferentialDrive mDriveModel;
 
     private AController mController;
@@ -107,6 +111,7 @@ public class DriveMotionPlanner implements CSVWritable {
 
         // If DriveMotionPlanner has been reset and we haven't started the trajectory, set it to our timestamp.
         if (mCurrentTrajectory.getProgress() == 0.0 && !Double.isFinite(mLastTime)) {
+            mLog.info("Starting trajectory with timestamp: ", timestamp);
             mLastTime = timestamp;
         }
 

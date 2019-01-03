@@ -13,8 +13,8 @@ import us.ilite.robot.modules.DriveMessage;
 import java.util.List;
 
 public class CollectVelocityData implements ICommand {
-    private static final double kMaxPower = 0.25;
-    private static final double kRampRate = 0.02;
+    private static final double kMaxPower = 0.50;
+    private static final double kRampRate = 0.01;
     private final Drive mDriveTrain;
 
     private final ReflectingCSVWriter<DriveCharacterization.VelocityDataPoint> mLeftCSVWriter, mRightCSVWriter;
