@@ -50,6 +50,7 @@ public class LoopManager implements Runnable{
             mLog.info("Starting control loop");
             synchronized(mTaskLock) {
                 mLoopList.modeInit(Timer.getFPGATimestamp());
+                mLoopList.periodicInput(Timer.getFPGATimestamp());
                 mIsRunning = true;
             }
             mWpiNotifier.startPeriodic(kLoopPeriodSeconds);
@@ -85,6 +86,7 @@ public class LoopManager implements Runnable{
 //            loopTimer.start();
             double start = Timer.getFPGATimestamp();
             synchronized (mTaskLock) {
+
                 try {
                     if (mIsRunning) {
 //                        inputTimer.reset();
@@ -109,7 +111,7 @@ public class LoopManager implements Runnable{
             double dt = Timer.getFPGATimestamp() - start;
             numLoops++;
             SmartDashboard.putNumber("loop_dt", dt);
-            if (dt > SystemSettings.kControlLoopPeriod) {
+            if (dt > SystemSettings.kControlLoopPeriod + 0.01) {
                 mLog.error("Overrun: ", /*loopTimer.get()*/dt, " Input took: "/*, inputTimer.get()*/, " Update took: "/*,updateTimer.get()*/);
                 numOverruns++;
             }

@@ -47,7 +47,7 @@ public class StrongholdProfile implements RobotProfile {
 
     @Override
     public double getWheelbaseScrubFactor() {
-        return 1;
+        return 1.0;
     }
 
     @Override

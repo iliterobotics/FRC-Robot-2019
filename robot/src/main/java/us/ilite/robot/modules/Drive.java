@@ -8,6 +8,8 @@ import com.flybotix.hfr.util.log.Logger;
 import control.DriveController;
 import control.DriveMotionPlanner;
 import control.DriveOutput;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.geometry.Pose2d;
@@ -43,7 +45,7 @@ public class Drive extends Loop {
 	private Clock mClock;
 
 	ReflectingCSVWriter<DebugOutput> mDebugLogger = null;
-	DebugOutput debugOutput = null;
+	DebugOutput debugOutput = new DebugOutput();
 
 	public Drive(Data data, DriveController pDriveController, Clock pClock)
 	{
@@ -51,6 +53,7 @@ public class Drive extends Loop {
 		this.mDriveController = pDriveController;
 		this.mClock = pClock;
 		this.mDriveHardware = new DriveHardware();
+		this.mDriveHardware.init();
 	}
 
 	public void startCsvLogging() {
@@ -68,15 +71,16 @@ public class Drive extends Loop {
 	@Override
 	public void modeInit(double pNow) {
 
-		mDriveController.setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDFORWARD_ONLY);
+		mDriveController.setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
         // Other gains to try: (2.0, 0.7), (0.65, 0.175), (0.0, 0.0)
 		mDriveController.getController().setGains(2.0, 0.7);
 
-		mDriveHardware.init();
+		mDriveHardware.zero();
+
 	  	setDriveMessage(DriveMessage.kNeutral);
 	  	setDriveState(EDriveState.NORMAL);
 
-	  	startCsvLogging();
+//	  	startCsvLogging();
 	}
 
 	@Override
@@ -128,10 +132,8 @@ public class Drive extends Loop {
 	public void loop(double pNow) {
 		switch(mDriveState) {
 			case PATH_FOLLOWING:
-				DriveOutput output;
-
 				// Update controller - calculates new robot position and retrieves motion planner output
-				output = mDriveController.update(
+				DriveOutput output = mDriveController.update(
 						pNow,
 						mData.drive.get(EDriveData.LEFT_POS_INCHES),
 						mData.drive.get(EDriveData.RIGHT_POS_INCHES),
@@ -146,7 +148,7 @@ public class Drive extends Loop {
 				double leftAccel = Conversions.radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
 				double rightAccel = Conversions.radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
 
-				/**
+				/*
 				 * SP = setpoint, PV = process variable
 				 * CTRE only uses -kD * dPV/dt for derivative output, not kD * de/dt.
 				 * This is because SP (provided by robot @ x Hz) gets updated less frequently than PV (updated by Talon at 1000Hz),
@@ -168,6 +170,8 @@ public class Drive extends Loop {
 					debugOutput.update(pNow, output);
 					mDebugLogger.add(debugOutput);
 				}
+				debugOutput.update(pNow, output);
+				debugOutput.outputToLiveDashboard();
 
 				break;
 		}
@@ -225,16 +229,18 @@ public class Drive extends Loop {
 	}
 
 	public class DebugOutput {
-		public double t;
+		public final NetworkTable livedashboard = NetworkTableInstance.getDefault().getTable("Live Dashboard");
 
-		public double targetLeftVel, targetRightVel, leftVel, rightVel;
-		public double targetX, targetY, x, y;
+		public double t = 0.0;
 
-		public double leftAppliedVolts, rightAppliedVolts;
+		public double targetLeftVel = 0.0, targetRightVel = 0.0, leftVel = 0.0, rightVel = 0.0;
+		public double targetX = 0.0, targetY = 0.0, x = 0.0, y = 0.0;
 
-		public double heading;
+		public double leftAppliedVolts = 0.0, rightAppliedVolts = 0.0;
 
-		public Pose2d error;
+		public double heading = 0.0;
+
+		public Pose2d error = new Pose2d();
 
 		public void update(double time, DriveOutput output) {
 			t = time;
@@ -255,6 +261,21 @@ public class Drive extends Loop {
 			heading = mData.imu.get(EGyro.YAW_DEGREES);
 
 			error = mDriveController.getDriveMotionPlanner().error();
+		}
+
+		public void outputToLiveDashboard() {
+			final Pose2d robotPose = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose();
+			final Pose2d targetPose = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose();
+
+			livedashboard.getEntry("Robot X").setDouble(robotPose.translation_.x() / 12.0);
+			livedashboard.getEntry("Robot Y").setDouble((robotPose.translation_.y() + 13.5) / 12.0);
+			livedashboard.getEntry("Robot Heading").setDouble(robotPose.rotation_.getRadians());
+
+			livedashboard.getEntry("Path X").setDouble(targetPose.translation_.x() / 12.0);
+			livedashboard.getEntry("Path Y").setDouble((targetPose.translation_.y() + 13.5) / 12.0);
+
+			Data.kSmartDashboard.getEntry("Left Vel Error Inches").setDouble(targetLeftVel - leftVel);
+			Data.kSmartDashboard.getEntry("Right Vel Error Inches").setDouble(targetRightVel - rightVel);
 		}
 
 	}
