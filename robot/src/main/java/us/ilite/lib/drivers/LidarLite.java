@@ -1,11 +1,11 @@
 package us.ilite.lib.drivers;
 
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.I2C.Port;
+
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.I2C.Port;
 
 public class LidarLite
 {

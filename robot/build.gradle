@@ -32,8 +32,7 @@ wpi {
 dependencies {
 
     compile project(':common')
-    compile project(':control')
-
+    
     compile ctre()
     compile navx()
 

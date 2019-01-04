@@ -5,20 +5,20 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import control.DriveController;
-import control.DriveMotionPlanner;
-import control.DriveOutput;
+import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.util.ReflectingCSVWriter;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.lib.geometry.Pose2d;
-import us.ilite.common.lib.geometry.Pose2dWithCurvature;
-import us.ilite.common.lib.geometry.Rotation2d;
-import us.ilite.common.lib.trajectory.Trajectory;
-import us.ilite.common.lib.trajectory.timing.TimedState;
+import us.ilite.common.lib.control.DriveController;
+import us.ilite.common.lib.control.DriveMotionPlanner;
+import us.ilite.common.lib.control.DriveOutput;
 import us.ilite.common.lib.util.Conversions;
-import us.ilite.common.lib.util.ReflectingCSVWriter;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.drivers.Clock;
@@ -250,10 +250,10 @@ public class Drive extends Loop {
 			leftVel = mData.drive.get(EDriveData.LEFT_VEL_IPS);
 			rightVel = mData.drive.get(EDriveData.RIGHT_VEL_IPS);
 
-			targetX = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().translation_.x();
-			targetY = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().translation_.y();
-			x = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().translation_.x();
-			y = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().translation_.y();
+			targetX = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().x();
+			targetY = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().y();
+			x = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().getTranslation().x();
+			y = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().getTranslation().y();
 
 //			leftAppliedVolts = mData.drive.get(EDriveData.LEFT_VOLTAGE);
 //			rightAppliedVolts = mData.drive.get(EDriveData.RIGHT_VOLTAGE);
@@ -267,12 +267,12 @@ public class Drive extends Loop {
 			final Pose2d robotPose = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose();
 			final Pose2d targetPose = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose();
 
-			livedashboard.getEntry("Robot X").setDouble(robotPose.translation_.x() / 12.0);
-			livedashboard.getEntry("Robot Y").setDouble((robotPose.translation_.y() + 13.5) / 12.0);
-			livedashboard.getEntry("Robot Heading").setDouble(robotPose.rotation_.getRadians());
+			livedashboard.getEntry("Robot X").setDouble(robotPose.getTranslation().x() / 12.0);
+			livedashboard.getEntry("Robot Y").setDouble((robotPose.getTranslation().y() + 13.5) / 12.0);
+			livedashboard.getEntry("Robot Heading").setDouble(robotPose.getRotation().getRadians());
 
-			livedashboard.getEntry("Path X").setDouble(targetPose.translation_.x() / 12.0);
-			livedashboard.getEntry("Path Y").setDouble((targetPose.translation_.y() + 13.5) / 12.0);
+			livedashboard.getEntry("Path X").setDouble(targetPose.getTranslation().x() / 12.0);
+			livedashboard.getEntry("Path Y").setDouble((targetPose.getTranslation().y() + 13.5) / 12.0);
 
 			Data.kSmartDashboard.getEntry("Left Vel Error Inches").setDouble(targetLeftVel - leftVel);
 			Data.kSmartDashboard.getEntry("Right Vel Error Inches").setDouble(targetRightVel - rightVel);

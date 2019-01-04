@@ -1,6 +1,6 @@
 package us.ilite.robot.hardware;
 
-import us.ilite.common.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Rotation2d;
 import us.ilite.robot.modules.DriveMessage;
 
 public interface IDriveHardware extends IHardware {

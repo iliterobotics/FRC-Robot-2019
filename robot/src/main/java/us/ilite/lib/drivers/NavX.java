@@ -1,7 +1,6 @@
 package us.ilite.lib.drivers;
 
 import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj.SerialPort.Port;
 
 public class NavX extends IMU {
