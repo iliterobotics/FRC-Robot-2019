@@ -6,9 +6,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.util.ReflectingCSVWriter;
-import control.DriveController;
-import control.DriveMotionPlanner;
-import control.DriveOutput;
+import us.ilite.common.lib.control.DriveController;
+import us.ilite.common.lib.control.DriveMotionPlanner;
+import us.ilite.common.lib.DriveOutput;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.config.SystemSettings;
@@ -27,8 +27,8 @@ import us.ilite.robot.hardware.IDriveHardware;
 import us.ilite.robot.loops.Loop;
 
 /**
- * Class for running all drive train control operations from both autonomous and
- * driver-control
+ * Class for running all drive train us.ilite.common.lib.control operations from both autonomous and
+ * driver-us.ilite.common.lib.control
  */
 public class Drive extends Loop {
 	private final ILog mLogger = Logger.createLog(Drive.class);

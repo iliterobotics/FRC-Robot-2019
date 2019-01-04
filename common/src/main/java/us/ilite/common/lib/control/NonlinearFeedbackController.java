@@ -1,4 +1,4 @@
-package control;
+package us.ilite.common.lib.control;
 
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
@@ -7,6 +7,7 @@ import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.Util;
 import com.team254.lib.util.Units;
+import us.ilite.common.lib.DriveOutput;
 
 public class NonlinearFeedbackController extends AController {
 

@@ -18,7 +18,7 @@ import us.ilite.robot.modules.DriveMessage;
 import java.util.ArrayList;
 
 /**
- * Provides an interface between high-level planning and logic in Drive and Talon SRX configuration and control.
+ * Provides an interface between high-level planning and logic in Drive and Talon SRX configuration and us.ilite.common.lib.control.
  * We might put our motor models here too - it would make a ton of sense, and we could just call setVelocity() or setAcceleration in Drive
  */
 public class DriveHardware implements IDriveHardware {
@@ -104,7 +104,7 @@ public class DriveHardware implements IDriveHardware {
     }
 
     /**
-     * Allows external users to request that our control mode be pre-configured instead of configuring on the fly.
+     * Allows external users to request that our us.ilite.common.lib.control mode be pre-configured instead of configuring on the fly.
      * @param pControlMode
      */
     public void configureMode(ControlMode pControlMode) {
@@ -134,7 +134,7 @@ public class DriveHardware implements IDriveHardware {
                     configTalonForVelocity(pTalon);
                     break;
                 default:
-                    mLogger.error("Unimplemented control mode - defaulting to PercentOutput.");
+                    mLogger.error("Unimplemented us.ilite.common.lib.control mode - defaulting to PercentOutput.");
                     controlMode = ControlMode.PercentOutput;
                     break;
             }

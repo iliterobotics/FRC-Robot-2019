@@ -1,11 +1,10 @@
-package paths;
+package us.ilite.common.lib;
 
 import com.team254.lib.geometry.State;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.util.Util;
-import control.DriveController;
-import control.DriveMotionPlanner;
-import profiles.RobotProfile;
+import us.ilite.common.lib.control.DriveController;
+import us.ilite.common.lib.control.DriveMotionPlanner;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;

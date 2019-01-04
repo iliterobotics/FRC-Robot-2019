@@ -1,4 +1,4 @@
-package control;
+package us.ilite.common.lib.control;
 
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
@@ -9,9 +9,10 @@ import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
-import odometry.Kinematics;
-import odometry.RobotStateEstimator;
-import profiles.RobotProfile;
+import us.ilite.common.lib.DriveOutput;
+import us.ilite.common.lib.odometry.Kinematics;
+import us.ilite.common.lib.odometry.RobotStateEstimator;
+import us.ilite.common.lib.RobotProfile;
 
 /**
  * High level manager for pose tracking, path/trajectory following, and pose stabilization.

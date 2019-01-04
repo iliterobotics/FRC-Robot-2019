@@ -5,7 +5,7 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import control.DriveController;
+import us.ilite.common.lib.control.DriveController;
 import us.ilite.common.config.SystemSettings;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.physics.DCMotorTransmission;

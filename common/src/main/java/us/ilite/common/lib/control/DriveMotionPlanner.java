@@ -1,4 +1,4 @@
-package control;
+package us.ilite.common.lib.control;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -10,7 +10,8 @@ import com.team254.lib.trajectory.*;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.CSVWritable;
 import com.team254.lib.util.Units;
-import paths.TrajectoryGenerator;
+import us.ilite.common.lib.DriveOutput;
+import us.ilite.common.lib.TrajectoryGenerator;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

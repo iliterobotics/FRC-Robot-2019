@@ -1,4 +1,4 @@
-package paths.autos;
+package us.ilite.robot.auto.paths;
 
 import com.team254.lib.geometry.Translation2d;
 

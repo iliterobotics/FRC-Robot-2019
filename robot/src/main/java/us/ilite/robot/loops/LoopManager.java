@@ -46,7 +46,7 @@ public class LoopManager implements Runnable{
     public synchronized void start() {
 
         if(!mIsRunning) {
-            mLog.info("Starting control loop");
+            mLog.info("Starting us.ilite.common.lib.control loop");
             synchronized(mTaskLock) {
                 mLoopList.modeInit(Timer.getFPGATimestamp());
                 mLoopList.periodicInput(Timer.getFPGATimestamp());
@@ -62,7 +62,7 @@ public class LoopManager implements Runnable{
     public synchronized void stop() {
         
         if(mIsRunning) {
-            mLog.info("Stopping control loop");
+            mLog.info("Stopping us.ilite.common.lib.control loop");
             mWpiNotifier.stop();
             synchronized(mTaskLock) {
                 mIsRunning = false;

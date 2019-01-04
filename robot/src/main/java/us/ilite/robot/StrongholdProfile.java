@@ -1,6 +1,6 @@
 package us.ilite.robot;
 
-import profiles.RobotProfile;
+import us.ilite.common.lib.RobotProfile;
 import us.ilite.common.config.SystemSettings;
 import com.team254.lib.util.Units;
 

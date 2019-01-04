@@ -45,7 +45,7 @@ public class TalonSRXFactory {
     private static final Configuration kSlaveConfiguration = new Configuration();
 
     static {
-        // This control frame value seems to need to be something reasonable to avoid the Talon's
+        // This us.ilite.common.lib.control frame value seems to need to be something reasonable to avoid the Talon's
         // LEDs behaving erratically.  Potentially try to increase as much as possible.
         kSlaveConfiguration.CONTROL_FRAME_PERIOD_MS = 100;
         kSlaveConfiguration.MOTION_CONTROL_FRAME_PERIOD_MS = 1000;

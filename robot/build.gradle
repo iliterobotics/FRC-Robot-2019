@@ -32,7 +32,7 @@ wpi {
 dependencies {
 
     compile project(':common')
-    compile project(':control')
+    compile project(':us.ilite.common.lib.control')
 
     compile ctre()
     compile navx()

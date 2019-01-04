@@ -9,7 +9,7 @@ sourceCompatibility = 1.8
 
 dependencies {
     compile project(':common')
-    compile project(':control')
+    compile project(':us.ilite.common.lib.control')
 
     compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
     compile name: 'jfxrt'

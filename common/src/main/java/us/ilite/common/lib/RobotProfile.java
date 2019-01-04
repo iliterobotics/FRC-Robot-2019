@@ -1,4 +1,4 @@
-package profiles;
+package us.ilite.common.lib;
 
 /**
  * Stores dynamics information about our robot.

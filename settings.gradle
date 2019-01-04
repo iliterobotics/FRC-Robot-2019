@@ -1,1 +1,1 @@
-include "common", "control", "robot", "display"
+include "common", "us.ilite.common.lib.control", "robot", "display"

@@ -18,7 +18,7 @@ us.ilite.robot - Parent package for all robot code
     commands - Contains autonomous commands
     hardware - Contains hardware classes that allow modules to interface with hardware
     loops - Contains high-frequency loops running on the robot
-    modules - Contains the modules that control subsystems on the robot
+    modules - Contains the modules that us.ilite.common.lib.control subsystems on the robot
 ```
 
 ### Common

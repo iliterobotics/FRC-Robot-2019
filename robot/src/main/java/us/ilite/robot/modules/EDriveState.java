@@ -1,7 +1,7 @@
 package us.ilite.robot.modules;
 
 /**
- * Describes the different states the drivetrain may be in. If we do more Talon-based control (motion profiling, motion magic, etc.)
+ * Describes the different states the drivetrain may be in. If we do more Talon-based us.ilite.common.lib.control (motion profiling, motion magic, etc.)
  * that require us to keep track of our state for configuration purposes, we can add those states here.
  */
 public enum EDriveState {
