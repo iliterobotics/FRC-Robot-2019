@@ -1,21 +1,26 @@
 package us.ilite.robot.hardware;
 
+import java.util.ArrayList;
+
 import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import us.ilite.common.config.SystemSettings;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.Conversions;
+
+import us.ilite.common.config.SystemSettings;
+import us.ilite.common.lib.util.Conversions;
 import us.ilite.lib.drivers.TalonSRXChecker;
 import us.ilite.lib.drivers.TalonSRXFactory;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
-
-import java.util.ArrayList;
 
 /**
  * Provides an interface between high-level planning and logic in Drive and Talon SRX configuration and control.

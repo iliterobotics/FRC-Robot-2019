@@ -1,7 +1,8 @@
 package us.ilite.lib.drivers;
 
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.FilteredAverage;
+
+import us.ilite.common.lib.util.FilteredAverage;
 
 public abstract  class IMU {
   public enum Axis {

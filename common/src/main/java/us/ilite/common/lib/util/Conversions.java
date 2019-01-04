@@ -1,4 +1,4 @@
-package com.team254.lib.util;
+package us.ilite.common.lib.util;
 
 import us.ilite.common.config.SystemSettings;
 
