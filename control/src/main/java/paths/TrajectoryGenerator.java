@@ -1,5 +1,8 @@
 package paths;
 
+import com.team254.lib.geometry.State;
+import com.team254.lib.trajectory.TrajectoryIterator;
+import com.team254.lib.util.Util;
 import control.DriveController;
 import control.DriveMotionPlanner;
 import profiles.RobotProfile;
@@ -174,6 +177,20 @@ public class TrajectoryGenerator {
         }
 
         return new Trajectory<>(timedRotationStates);
+    }
+
+    public static <S extends State<S>> boolean isReversed(TrajectoryIterator<TimedState<S>> trajectoryIterator) {
+        boolean reversed = false;
+        for (int i = 0; i < trajectoryIterator.trajectory().length(); ++i) {
+            if (trajectoryIterator.trajectory().getState(i).velocity() > Util.kEpsilon) {
+                reversed = false;
+                break;
+            } else if (trajectoryIterator.trajectory().getState(i).velocity() < -Util.kEpsilon) {
+                reversed = true;
+                break;
+            }
+        }
+        return reversed;
     }
 
 }

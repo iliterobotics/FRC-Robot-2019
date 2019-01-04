@@ -5,13 +5,12 @@ import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.State;
 import com.team254.lib.physics.DifferentialDrive;
 import com.team254.lib.trajectory.*;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.CSVWritable;
-import com.team254.lib.util.Util;
 import com.team254.lib.util.Units;
+import paths.TrajectoryGenerator;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -63,24 +62,10 @@ public class DriveMotionPlanner implements CSVWritable {
         mLastTime = Double.POSITIVE_INFINITY;
     }
 
-    public static <S extends State<S>> boolean isReversed(TrajectoryIterator<TimedState<S>> trajectoryIterator) {
-        boolean reversed = false;
-        for (int i = 0; i < trajectoryIterator.trajectory().length(); ++i) {
-            if (trajectoryIterator.trajectory().getState(i).velocity() > Util.kEpsilon) {
-                reversed = false;
-                break;
-            } else if (trajectoryIterator.trajectory().getState(i).velocity() < -Util.kEpsilon) {
-                reversed = true;
-                break;
-            }
-        }
-        return reversed;
-    }
-
     public void setTrajectory(final TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory) {
         mCurrentTrajectory = trajectory;
         mSetpoint = trajectory.getState();
-        mIsReversed = isReversed(trajectory);
+        mIsReversed = TrajectoryGenerator.isReversed(trajectory);
         mIsTurnInPlace = false;
     }
 
