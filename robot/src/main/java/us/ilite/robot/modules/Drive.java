@@ -27,8 +27,8 @@ import us.ilite.robot.hardware.IDriveHardware;
 import us.ilite.robot.loops.Loop;
 
 /**
- * Class for running all drive train us.ilite.common.lib.control operations from both autonomous and
- * driver-us.ilite.common.lib.control
+ * Class for running all drive train control operations from both autonomous and
+ * driver-control
  */
 public class Drive extends Loop {
 	private final ILog mLogger = Logger.createLog(Drive.class);

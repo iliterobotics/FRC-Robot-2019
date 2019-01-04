@@ -1,7 +1,7 @@
 package us.ilite.robot.modules;
 
 /**
- * The Module class defines how code written to us.ilite.common.lib.control a specific subsystem (shooter, elevator, arm, etc.).
+ * The Module class defines how code written to control a specific subsystem (shooter, elevator, arm, etc.).
  * It also contains optional design patterns to adhere to.
  * All methods are passed a time, which is expected to be consistent between all modules updated in the same [mode]Periodic() call.
  */
