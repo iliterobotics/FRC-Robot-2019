@@ -9,7 +9,6 @@ import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
-import us.ilite.common.lib.DriveOutput;
 import us.ilite.common.lib.odometry.Kinematics;
 import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.RobotProfile;

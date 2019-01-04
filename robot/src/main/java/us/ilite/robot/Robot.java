@@ -6,7 +6,7 @@ import com.flybotix.hfr.util.log.Logger;
 import us.ilite.common.lib.control.DriveController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-import us.ilite.common.lib.TrajectoryGenerator;
+import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
 import com.team254.lib.geometry.Pose2dWithCurvature;

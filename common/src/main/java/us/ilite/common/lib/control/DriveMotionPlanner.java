@@ -10,8 +10,7 @@ import com.team254.lib.trajectory.*;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.CSVWritable;
 import com.team254.lib.util.Units;
-import us.ilite.common.lib.DriveOutput;
-import us.ilite.common.lib.TrajectoryGenerator;
+import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

@@ -7,7 +7,6 @@ import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.Util;
 import com.team254.lib.util.Units;
-import us.ilite.common.lib.DriveOutput;
 
 public class NonlinearFeedbackController extends AController {
 

@@ -5,7 +5,6 @@ import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.physics.DifferentialDrive;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
-import us.ilite.common.lib.DriveOutput;
 
 public abstract class AController {
 

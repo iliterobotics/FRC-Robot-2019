@@ -8,7 +8,7 @@ import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.util.ReflectingCSVWriter;
 import us.ilite.common.lib.control.DriveController;
 import us.ilite.common.lib.control.DriveMotionPlanner;
-import us.ilite.common.lib.DriveOutput;
+import us.ilite.common.lib.control.DriveOutput;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.config.SystemSettings;

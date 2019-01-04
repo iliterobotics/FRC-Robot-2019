@@ -1,7 +1,7 @@
-package us.ilite.common.lib;
+package us.ilite.common.lib.control;
 
 /**
- * Contains all the information needed to us.ilite.common.lib.control the drivebase.
+ * Contains all the information needed to control the drivebase.
  */
 public class DriveOutput {
     public DriveOutput() {
