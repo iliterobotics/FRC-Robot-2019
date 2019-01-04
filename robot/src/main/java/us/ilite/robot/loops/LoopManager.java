@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.Data;
 
 /**
  * A class which uses the WPILIB Notifier mechanic to run our Modules on

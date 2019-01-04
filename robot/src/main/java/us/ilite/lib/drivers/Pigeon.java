@@ -1,7 +1,7 @@
 package us.ilite.lib.drivers;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
-import us.ilite.common.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Rotation2d;
 
 public class Pigeon extends IMU{
 

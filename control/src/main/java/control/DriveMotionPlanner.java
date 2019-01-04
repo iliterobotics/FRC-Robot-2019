@@ -2,17 +2,16 @@ package control;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import us.ilite.common.lib.geometry.Pose2d;
-import us.ilite.common.lib.geometry.Pose2dWithCurvature;
-import us.ilite.common.lib.geometry.Rotation2d;
-import us.ilite.common.lib.physics.ChassisState;
-import us.ilite.common.lib.physics.DCMotorTransmission;
-import us.ilite.common.lib.physics.DifferentialDrive;
-import us.ilite.common.lib.trajectory.*;
-import us.ilite.common.lib.trajectory.timing.TimedState;
-import us.ilite.common.lib.util.CSVWritable;
-import us.ilite.common.lib.util.Units;
-import profiles.RobotProfile;
+import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.State;
+import com.team254.lib.physics.DifferentialDrive;
+import com.team254.lib.trajectory.*;
+import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.util.CSVWritable;
+import com.team254.lib.util.Util;
+import com.team254.lib.util.Units;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -52,7 +51,7 @@ public class DriveMotionPlanner implements CSVWritable {
     boolean mIsTurnInPlace = false;
 
     // Rad / s. Taken from previous dynamics output (for now)
-    ChassisState prev_velocity_ = new ChassisState();
+    DifferentialDrive.ChassisState prev_velocity_ = new DifferentialDrive.ChassisState();
     double mLastTime = Double.POSITIVE_INFINITY;
     double mDt = 0.0;
 
@@ -64,10 +63,24 @@ public class DriveMotionPlanner implements CSVWritable {
         mLastTime = Double.POSITIVE_INFINITY;
     }
 
+    public static <S extends State<S>> boolean isReversed(TrajectoryIterator<TimedState<S>> trajectoryIterator) {
+        boolean reversed = false;
+        for (int i = 0; i < trajectoryIterator.trajectory().length(); ++i) {
+            if (trajectoryIterator.trajectory().getState(i).velocity() > Util.kEpsilon) {
+                reversed = false;
+                break;
+            } else if (trajectoryIterator.trajectory().getState(i).velocity() < -Util.kEpsilon) {
+                reversed = true;
+                break;
+            }
+        }
+        return reversed;
+    }
+
     public void setTrajectory(final TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory) {
         mCurrentTrajectory = trajectory;
         mSetpoint = trajectory.getState();
-        mIsReversed = TrajectoryUtil.isReversed(trajectory);
+        mIsReversed = isReversed(trajectory);
         mIsTurnInPlace = false;
     }
 
@@ -128,8 +141,8 @@ public class DriveMotionPlanner implements CSVWritable {
 
             if(mIsTurnInPlace) {
 
-                dynamics = mDriveModel.solveInverseDynamics(new ChassisState(0.0, mSetpoint.velocity()),
-                                                            new ChassisState(0.0, mSetpoint.acceleration()));
+                dynamics = mDriveModel.solveInverseDynamics(new DifferentialDrive.ChassisState(0.0, mSetpoint.velocity()),
+                                                            new DifferentialDrive.ChassisState(0.0, mSetpoint.acceleration()));
                 // Modify our setpoint to our current (x,y) position. This way we can use the controller without having it compensate for cross-track error.
                 mSetpoint = new TimedState<>(new Pose2dWithCurvature(current_state.getTranslation(),
                                                                                         mSetpoint.state().getRotation(),
@@ -151,8 +164,8 @@ public class DriveMotionPlanner implements CSVWritable {
 
                 // To obtain angular acceleration, we use theta = d / r, then use the 2nd derivative of curvature to calculate additional acceleration.
                 dynamics = mDriveModel.solveInverseDynamics(
-                        new ChassisState(velocity_m, velocity_m * curvature_m),
-                        new ChassisState(acceleration_m,
+                        new DifferentialDrive.ChassisState(velocity_m, velocity_m * curvature_m),
+                        new DifferentialDrive.ChassisState(acceleration_m,
                                 acceleration_m * curvature_m + velocity_m * velocity_m * dcurvature_ds_m));
 
                 switch(mPlannerMode) {

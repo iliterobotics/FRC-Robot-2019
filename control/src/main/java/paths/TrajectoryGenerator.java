@@ -2,24 +2,26 @@ package paths;
 
 import control.DriveController;
 import control.DriveMotionPlanner;
-import us.ilite.common.lib.geometry.Pose2d;
-import us.ilite.common.lib.geometry.Pose2dWithCurvature;
-import us.ilite.common.lib.geometry.Rotation2d;
-import us.ilite.common.lib.trajectory.DistanceView;
-import us.ilite.common.lib.trajectory.Trajectory;
-import us.ilite.common.lib.trajectory.TrajectoryUtil;
-import us.ilite.common.lib.trajectory.timing.DifferentialDriveDynamicsConstraint;
-import us.ilite.common.lib.trajectory.timing.TimedState;
-import us.ilite.common.lib.trajectory.timing.TimingConstraint;
-import us.ilite.common.lib.trajectory.timing.TimingUtil;
-import us.ilite.common.lib.util.Units;
 import profiles.RobotProfile;
+import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.trajectory.DistanceView;
+import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.TrajectoryUtil;
+import com.team254.lib.trajectory.timing.DifferentialDriveDynamicsConstraint;
+import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.trajectory.timing.TimingConstraint;
+import com.team254.lib.trajectory.timing.TimingUtil;
+import com.team254.lib.util.Units;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class TrajectoryGenerator {
+
+    private static final Pose2d flip = Pose2d.fromRotation(new Rotation2d(-1, 0, false));
 
     // Maximum delta between each trajectory point
     private static final double kMaxDx = 2.0;
@@ -64,7 +66,7 @@ public class TrajectoryGenerator {
         Trajectory<Pose2dWithCurvature> trajectory = TrajectoryUtil.trajectoryFromSplineWaypoints(
                 waypoints_maybe_flipped, kMaxDx, kMaxDy, kMaxDTheta);
 
-        trajectory = (reversed) ? TrajectoryUtil.flip(trajectory) : trajectory;
+        trajectory = (reversed) ? flip(trajectory) : trajectory;
 
         // Create the constraint that the robot must be able to traverse the trajectory without ever applying more
         // than the specified voltage.
@@ -121,7 +123,7 @@ public class TrajectoryGenerator {
 
         Trajectory<TimedState<Pose2dWithCurvature>> wheelTrajectory = generateTrajectory(false, wheelTravel, all_constraints, 0.0, end_vel, max_vel, max_accel, max_voltage);
 
-        Trajectory<TimedState<Rotation2d>> timedRotationDeltaTrajectory = TrajectoryUtil.distanceToRotation(wheelTrajectory,
+        Trajectory<TimedState<Rotation2d>> timedRotationDeltaTrajectory = distanceToRotation(wheelTrajectory,
                 initial_heading,
                 Units.meters_to_inches(mRobotProfile.getWheelbaseRadiusMeters()));
 
@@ -144,6 +146,34 @@ public class TrajectoryGenerator {
                                                                             double pEndVel, double pMaxVel, double pMaxAccel, double pMaxVoltage) {
         return generateTurnInPlaceTrajectory(Rotation2d.fromDegrees(pInitialHeadingDegrees), Rotation2d.fromDegrees(pFinalHeadingDegrees),
                 pTrajectoryConstraints, pEndVel, pMaxVel, pMaxAccel, pMaxVoltage);
+    }
+
+    public static Trajectory<Pose2dWithCurvature> flip(final Trajectory<Pose2dWithCurvature> trajectory) {
+        List<Pose2dWithCurvature> flipped = new ArrayList<>(trajectory.length());
+        for (int i = 0; i < trajectory.length(); ++i) {
+            flipped.add(new Pose2dWithCurvature(trajectory.getState(i).getPose().transformBy(flip), -trajectory
+                    .getState(i).getCurvature(), trajectory.getState(i).getDCurvatureDs()));
+        }
+        return new Trajectory<>(flipped);
+    }
+
+    public static Trajectory<TimedState<Rotation2d>> distanceToRotation(Trajectory<TimedState<Pose2dWithCurvature>> distanceTrajectory,
+                                                                        Rotation2d initial_heading,
+                                                                        double wheelbase_radius_inches) {
+        List<TimedState<Rotation2d>> timedRotationStates = new ArrayList<>();
+
+        for(int i = 0; i < distanceTrajectory.length(); i++) {
+            TimedState<Pose2dWithCurvature> timedState = distanceTrajectory.getState(i);
+            Rotation2d delta_heading = Rotation2d.fromRadians(timedState.state().getTranslation().x() / wheelbase_radius_inches);
+            Rotation2d absolute_heading = initial_heading.rotateBy(delta_heading);
+            TimedState<Rotation2d> timedRotationState = new TimedState<>(absolute_heading,
+                    timedState.t(),
+                    timedState.velocity() / wheelbase_radius_inches,
+                    timedState.acceleration() / wheelbase_radius_inches);
+            timedRotationStates.add(timedRotationState);
+        }
+
+        return new Trajectory<>(timedRotationStates);
     }
 
 }

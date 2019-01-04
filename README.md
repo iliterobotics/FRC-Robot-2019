@@ -13,7 +13,7 @@ the `robot` and `display` packages to both use code in the `common` package
 ### Robot
 The `robot` subproject contains code running on the actual robot.
 ```$xslt
-us.ilite.us.ilite.common.lib - Contains hardware drivers and utilities that are dependent on WPILib components.
+us.ilite.com.team254.lib - Contains hardware drivers and utilities that are dependent on WPILib components.
 us.ilite.robot - Parent package for all robot code
     commands - Contains autonomous commands
     hardware - Contains hardware classes that allow modules to interface with hardware
@@ -26,7 +26,7 @@ The `common` subproject contains code shared by the `robot` and `display` subpro
 as common data structures + more.
 ```$xslt
 config - contains constants, etc.
-us.ilite.common.lib - contains generic classes used from year-to-year
+com.team254.lib - contains generic classes used from year-to-year
     geometry - Contains geometry classes used to represent robot movement
     util - Utility classes that are not dependent of WPILib
 types - Contains enumerations defining common data structure used throughout other subprojects

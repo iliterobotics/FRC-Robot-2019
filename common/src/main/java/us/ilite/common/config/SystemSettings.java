@@ -1,6 +1,6 @@
 package us.ilite.common.config;
 
-import us.ilite.common.lib.util.ConstantsBase;
+import com.team254.lib.util.ConstantsBase;
 
 import java.util.concurrent.TimeUnit;
 

@@ -1,6 +1,4 @@
-package us.ilite.common.lib.util;
-
-import us.ilite.common.config.SystemSettings;
+package com.team254.lib.util;
 
 public class Units {
     public static double rpm_to_rads_per_sec(double rpm) {

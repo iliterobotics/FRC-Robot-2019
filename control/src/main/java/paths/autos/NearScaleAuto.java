@@ -1,8 +1,8 @@
 package paths.autos;
 
-import us.ilite.common.lib.geometry.Pose2d;
-import us.ilite.common.lib.geometry.Rotation2d;
-import us.ilite.common.lib.geometry.Translation2d;
+import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
 
 import java.util.Arrays;
 import java.util.List;

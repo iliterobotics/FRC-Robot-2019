@@ -1,13 +1,12 @@
 package control;
 
-import us.ilite.common.lib.geometry.*;
-import us.ilite.common.lib.physics.ChassisState;
-import us.ilite.common.lib.physics.DifferentialDrive;
-import us.ilite.common.lib.physics.WheelState;
-import us.ilite.common.lib.trajectory.TrajectoryIterator;
-import us.ilite.common.lib.trajectory.timing.TimedState;
-import us.ilite.common.lib.util.Units;
-import us.ilite.common.lib.util.Util;
+import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.physics.DifferentialDrive;
+import com.team254.lib.trajectory.TrajectoryIterator;
+import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.util.Util;
+import com.team254.lib.util.Units;
 
 public class NonlinearFeedbackController extends AController {
 
@@ -24,7 +23,7 @@ public class NonlinearFeedbackController extends AController {
     public DriveOutput update(TrajectoryIterator<TimedState<Pose2dWithCurvature>> pCurrentTrajectory,
                               TimedState<Pose2dWithCurvature> pSetpoint,
                               DifferentialDrive.DriveDynamics pDynamics,
-                              ChassisState pPrevVelocity,
+                              DifferentialDrive.ChassisState pPrevVelocity,
                               Pose2d pCurrentState,
                               double pDt) {
 
@@ -40,7 +39,7 @@ public class NonlinearFeedbackController extends AController {
         final double angle_error_rads = mError.getRotation().getRadians();
         final double sin_x_over_x = Util.epsilonEquals(angle_error_rads, 0.0, 1E-2) ?
                 1.0 : mError.getRotation().sin() / angle_error_rads;
-        final ChassisState adjusted_velocity = new ChassisState(
+        final DifferentialDrive.ChassisState adjusted_velocity = new DifferentialDrive.ChassisState(
                 pDynamics.chassis_velocity.linear * mError.getRotation().cos() +
                         k * Units.inches_to_meters(mError.getTranslation().x()),
                 pDynamics.chassis_velocity.angular + k * angle_error_rads +
@@ -56,7 +55,7 @@ public class NonlinearFeedbackController extends AController {
         pDynamics.chassis_acceleration.angular = pDt == 0 ? 0.0 : (pDynamics.chassis_velocity.angular - pPrevVelocity
                 .angular) / pDt;
 
-        WheelState feedforward_voltages = mDriveModel.solveInverseDynamics(pDynamics.chassis_velocity,
+        DifferentialDrive.WheelState feedforward_voltages = mDriveModel.solveInverseDynamics(pDynamics.chassis_velocity,
                 pDynamics.chassis_acceleration).voltage;
 
         return new DriveOutput(pDynamics.wheel_velocity.left, pDynamics.wheel_velocity.right, pDynamics.wheel_acceleration
