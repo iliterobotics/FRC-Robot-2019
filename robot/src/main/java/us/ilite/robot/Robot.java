@@ -130,8 +130,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
-        System.gc();
-        Timer.delay(0.01);
     }
 
     @Override
