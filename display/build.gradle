@@ -9,6 +9,7 @@ sourceCompatibility = 1.8
 
 dependencies {
     compile project(':common')
+    compile project(':robot')
 
     compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
     compile name: 'jfxrt'
