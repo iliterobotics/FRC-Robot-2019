@@ -8,6 +8,9 @@ import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.Util;
 import com.team254.lib.util.Units;
 
+/**
+ * Implementation from Team 254's 2018 robot code (https://github.com/Team254/FRC-2018-Public)
+ */
 public class NonlinearFeedbackController extends AController {
 
     private double mBeta;  // >0.

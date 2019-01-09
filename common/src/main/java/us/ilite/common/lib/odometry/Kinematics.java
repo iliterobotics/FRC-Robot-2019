@@ -8,7 +8,8 @@ import com.team254.lib.util.Units;
 
 /**
  * Provides forward and inverse kinematics equations for the robot modeling the wheelbase as a differential drive (with
- * a corrective factor to account for skidding).
+ * a corrective factor to account for skidding). 
+ * Port from Team 254's 2018 robot code (https://github.com/Team254/FRC-2018-Public) slightly modified to support a generic set of robot parameters.
  */
 
 public class Kinematics {

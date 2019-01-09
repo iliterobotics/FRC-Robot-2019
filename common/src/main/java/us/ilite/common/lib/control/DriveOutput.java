@@ -2,6 +2,8 @@ package us.ilite.common.lib.control;
 
 /**
  * Contains all the information needed to control the drivebase.
+ * Port from Team 254's 2018 robot code (https://github.com/Team254/FRC-2018-Public), 
+ * with some extra utility methods.
  */
 public class DriveOutput {
     public DriveOutput() {

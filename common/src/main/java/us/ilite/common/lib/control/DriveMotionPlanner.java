@@ -19,6 +19,9 @@ import java.util.List;
 /**
  * DriveMotionPlanner is responsible for generating both trajectories and the feedforward commands needed to follow them.
  * Trajectory followers are entirely modular and can be switched at-will.
+ * Port from Team 254's 2018 robot code (https://github.com/Team254/FRC-2018-Public) modified to support a generic 
+ * set of robot parameters, generic motion controllers, and additional planning modes. Trajectory generation has
+ * been moved out of this class and into TrajectoryGenerator
  */
 public class DriveMotionPlanner implements CSVWritable {
 
