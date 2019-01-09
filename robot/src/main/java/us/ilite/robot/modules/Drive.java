@@ -25,35 +25,47 @@ import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.Data;
 import us.ilite.robot.hardware.DriveHardware;
 import us.ilite.robot.hardware.IDriveHardware;
+import us.ilite.robot.hardware.SimDriveHardware;
 import us.ilite.robot.loops.Loop;
 
 /**
  * Class for running all drive train control operations from both autonomous and
- * driver-control
+ * driver-control.
+ * TODO Support for rotation trajectories
+ * TODO Turn-to-heading with Motion Magic
  */
 public class Drive extends Loop {
 	private final ILog mLogger = Logger.createLog(Drive.class);
 
 	private Data mData;
 
-	private DriveHardware mDriveHardware;
+	private IDriveHardware mDriveHardware;
 
 	private EDriveState mDriveState;
 	private DriveMessage mDriveMessage;
 
 	private DriveController mDriveController;
-	private Clock mClock;
+	private Clock mSimClock = null;
 
 	ReflectingCSVWriter<DebugOutput> mDebugLogger = null;
 	DebugOutput debugOutput = new DebugOutput();
 
-	public Drive(Data data, DriveController pDriveController, Clock pClock)
+	public Drive(Data data, DriveController pDriveController, Clock pSimClock, boolean pSimulated)
 	{
 		this.mData = data;
 		this.mDriveController = pDriveController;
-		this.mClock = pClock;
-		this.mDriveHardware = new DriveHardware();
+		if(pSimulated) {
+			this.mSimClock = pSimClock;
+			this.mDriveHardware = new SimDriveHardware(mSimClock, mDriveController.getRobotProfile());
+		} else {
+			this.mDriveHardware = new DriveHardware();
+		}
+
 		this.mDriveHardware.init();
+	}
+
+	public Drive(Data data, DriveController pDriveController) {
+		this(data, pDriveController, null, false);
 	}
 
 	public void startCsvLogging() {
@@ -170,8 +182,8 @@ public class Drive extends Loop {
 					debugOutput.update(pNow, output);
 					mDebugLogger.add(debugOutput);
 				}
-				debugOutput.update(pNow, output);
-				debugOutput.outputToLiveDashboard();
+				// debugOutput.update(pNow, output);
+				// debugOutput.outputToLiveDashboard();
 
 				break;
 		}
@@ -186,6 +198,9 @@ public class Drive extends Loop {
 		}
 
 		mDriveController.setTrajectory(pPath, pResetPoseToStart);
+		if(pResetPoseToStart) {
+			mDriveHardware.zero();
+		}
 	}
 
 	public void openLoop() {
@@ -226,6 +241,10 @@ public class Drive extends Loop {
     public Drive simulated() {
 //		this.mDriveHardware = new SimDriveHardware(mDriveController, mClock);
 		return this;
+	}
+
+	public Clock getSimClock() {
+		return mSimClock;
 	}
 
 	public class DebugOutput {

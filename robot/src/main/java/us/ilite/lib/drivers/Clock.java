@@ -2,6 +2,7 @@ package us.ilite.lib.drivers;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
+
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -15,6 +16,7 @@ public class Clock {
 
     private double mCurrentTime = 0.0;
     private boolean hasTimeUpdatedThisCycle = false;
+    private boolean mIsSimulated = false;
 
     /**
      *
@@ -22,9 +24,9 @@ public class Clock {
      */
     public double getCurrentTime() {
         if(hasTimeUpdatedThisCycle == false) {
-            mCurrentTime = Timer.getFPGATimestamp();
+            mCurrentTime = (mIsSimulated) ? System.currentTimeMillis() / 1000L : Timer.getFPGATimestamp();
             hasTimeUpdatedThisCycle = true;
-//            mLogger.debug("Updated time to: " + mCurrentTime);
+           mLogger.debug("Updated time to: " + mCurrentTime);
         }
 
         return mCurrentTime;
@@ -35,6 +37,19 @@ public class Clock {
      */
     public void cycleEnded() {
         hasTimeUpdatedThisCycle = false;
+    }
+
+    public void setTime(double time) {
+        if(mIsSimulated) {
+            mCurrentTime = time;
+        } else {
+            mLogger.error("Setting the current time is not allowed outside of simulation.");
+        }
+    }
+
+    public Clock simulated() {
+        mIsSimulated = true;
+        return this;
     }
 
 }
