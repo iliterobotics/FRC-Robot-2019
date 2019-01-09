@@ -19,9 +19,9 @@ dependencies {
 
     compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
     compile name: 'jfxrt'
-    // compile group: 'org.openjfx', name: 'javafx-base', version: JAVAFX_VER
-    // compile group: 'org.openjfx', name: 'javafx-graphics', version: JAVAFX_VER
-    // compile group: 'org.openjfx', name: 'javafx-controls', version: JAVAFX_VER
-    // compile group: 'org.openjfx', name: 'javafx-web', version: JAVAFX_VER
+
+    runtime group: "edu.wpi.first.ntcore", name: "ntcore-jni", version: "2019.+", classifier: "all"
+    compile group: "edu.wpi.first.ntcore", name: "ntcore-java", version: "2019.+"
+    compile group: "edu.wpi.first.wpiutil", name: "wpiutil-java", version: "2019.+"
 
 }
