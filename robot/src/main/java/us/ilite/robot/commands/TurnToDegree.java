@@ -4,7 +4,6 @@ import us.ilite.lib.drivers.IMU;
 import us.ilite.lib.drivers.Pigeon;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
-import us.ilite.common.lib.geometry.Rotation2d;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.robot.Data;
 import control.PIDController;
@@ -20,10 +19,10 @@ public class TurnToDegree implements ICommand {
   
   private static final int kMIN_ALIGNED_COUNT = 5;
   private static final double kTIMEOUT = 1.5;
-  private static final double kP = 0.0121;
-  private static final double kI = 0.0001;
-  private static final double kD = 0.08;
-  private static final double kMIN_POWER = 0.05;
+  private static final double kP = 0.03;
+  private static final double kI = 0.0;
+  private static final double kD = 0.0;
+  private static final double kMIN_POWER = 0.0; //0.066666667
   private static final double kMAX_POWER = 1.0;
   
   private Rotation2d mInitialYaw, mTurnAngle, mTargetYaw;
@@ -56,6 +55,7 @@ public class TurnToDegree implements ICommand {
     pid.setOutputRange(kMIN_POWER, kMAX_POWER);
     pid.setSetpoint(getYaw().rotateBy(mTargetYaw).getDegrees());
     pid.setInputRange( -180, 180 );
+    pid.setOutputRange( -1, 1 );
     mInitialYaw = getYaw();
     mTargetYaw = mInitialYaw.rotateBy( mTurnAngle );
     
