@@ -1,12 +1,12 @@
 package us.ilite.common.lib.odometry;
 
+import com.team254.frc2018.Kinematics;
+import com.team254.frc2018.RobotState;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Twist2d;
 
-/**
- * Port from Team 254's 2018 robot code (https://github.com/Team254/FRC-2018-Public) slightly modified to support a generic kinematics model.
- */
+
 public class RobotStateEstimator {
 
     private RobotState mRobotState;

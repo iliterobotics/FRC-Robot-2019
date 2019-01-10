@@ -9,8 +9,7 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.ReflectingCSVWriter;
 
-import us.ilite.common.lib.control.DriveMotionPlanner;
-import us.ilite.lib.drivers.Clock;
+import com.team254.frc2018.planners.DriveMotionPlanner;
 import us.ilite.robot.modules.Drive;
 
 public class DriveSimulation {
