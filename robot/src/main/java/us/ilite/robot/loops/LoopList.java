@@ -2,7 +2,6 @@ package us.ilite.robot.loops;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import us.ilite.robot.modules.Module;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,8 +34,19 @@ public class LoopList extends Loop {
     }
 
     @Override
-    public void checkModule(double pNow) {
-        mLoops.forEach(module -> module.checkModule(pNow));
+    public boolean checkModule(double pNow) {
+        boolean allSuccessful = true;
+        for (Loop loop : mLoops) {
+            boolean moduleSuccessful = loop.checkModule(pNow);
+            allSuccessful = allSuccessful && moduleSuccessful;
+            if (!moduleSuccessful) {
+                mLogger.error("Self-check failure for module: ", loop.getClass());
+            } else {
+                mLogger.warn("Self-check success for module: ", loop.getClass());
+            }
+        }
+
+        return allSuccessful;
     }
 
     @Override

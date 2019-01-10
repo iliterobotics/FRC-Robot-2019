@@ -1,15 +1,11 @@
 package us.ilite.robot.driverinput;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-
+import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Joystick;
 import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.lib.util.Util;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.robot.Data;
@@ -17,6 +13,9 @@ import us.ilite.robot.commands.ICommand;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.Module;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class DriverInput extends Module {
 
@@ -119,11 +118,6 @@ public class DriverInput extends Module {
     @Override
     public void shutdown(double pNow) {
 // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void checkModule(double pNow) {
 
     }
 

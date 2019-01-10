@@ -35,13 +35,9 @@ public class CommandQueue implements ICommand {
             }
 
         } else if(mCommandQueue.isEmpty()) {
-            mLogger.warn("Command queue is empty.");
+            return true;
         } else {
             mLogger.error("Ran into null command.");
-        }
-
-        if(isFinished()) {
-            return true;
         }
 
         return false;
@@ -54,10 +50,6 @@ public class CommandQueue implements ICommand {
     @Override
     public void shutdown(double pNow) {
 
-    }
-
-    public boolean isFinished() {
-        return mCommandQueue.isEmpty();
     }
 
     public void setCommands(ICommand ... pCommands) {

@@ -6,7 +6,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class DriveMessage {
 
-  public static final DriveMessage kNeutral = new DriveMessage(0.0, 0.0, ControlMode.PercentOutput);
+  public static final DriveMessage kNeutral = new DriveMessage(0.0, 0.0, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake);
 
   public final double leftOutput, rightOutput;
   public final ControlMode leftControlMode, rightControlMode;

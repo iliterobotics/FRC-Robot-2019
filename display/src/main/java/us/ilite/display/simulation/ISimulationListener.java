@@ -1,6 +1,6 @@
 package us.ilite.display.simulation;
 
-import us.ilite.common.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Pose2d;
 
 public interface ISimulationListener {
 

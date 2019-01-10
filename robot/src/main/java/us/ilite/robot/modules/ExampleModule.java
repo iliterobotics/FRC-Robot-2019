@@ -49,8 +49,8 @@ public class ExampleModule extends Module {
     }
 
     @Override
-    public void checkModule(double pNow) {
-
+    public boolean checkModule(double pNow) {
+        return false;
     }
 
 }

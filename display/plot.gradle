@@ -1,4 +1,4 @@
-import jdk.nashorn.internal.objects.Global
+// Credits to Jaci for the GNUPlot loading: https://github.com/GrappleRobotics/Pathfinder/blob/master/Pathfinder/plot.gradle
 
 task plot()
 

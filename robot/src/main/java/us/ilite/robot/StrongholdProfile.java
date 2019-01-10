@@ -1,38 +1,38 @@
 package us.ilite.robot;
 
-import profiles.RobotProfile;
+import us.ilite.common.lib.RobotProfile;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.lib.util.Units;
+import com.team254.lib.util.Units;
 
 public class StrongholdProfile implements RobotProfile {
     @Override
     public double getLeftVoltPerAccel() {
-        return 0.005948041266447381;
+        return 0.006004249716616279;
     }
 
     @Override
     public double getLeftVoltPerSpeed() {
-        return 0.20978019726529204;
+        return 0.1532122569317568;
     }
 
     @Override
     public double getLeftFrictionVoltage() {
-        return 0.629373421839725;
+        return 0.8889335719734218;
     }
 
     @Override
     public double getRightVoltPerAccel() {
-        return 0.0040906524377900015;
+        return 0.007596397142391264;
     }
 
     @Override
     public double getRightVoltPerSpeed() {
-        return 0.206559880661648;
+        return 0.1644602870912295;
     }
 
     @Override
     public double getRightFrictionVoltage() {
-        return 0.7315794648276989;
+        return 0.8655779296499259;
     }
 
     @Override
@@ -47,12 +47,12 @@ public class StrongholdProfile implements RobotProfile {
 
     @Override
     public double getWheelbaseScrubFactor() {
-        return 0;
+        return 1.0;
     }
 
     @Override
     public double getLinearInertia() {
-        return 20;
+        return 1;
     }
 
     @Override

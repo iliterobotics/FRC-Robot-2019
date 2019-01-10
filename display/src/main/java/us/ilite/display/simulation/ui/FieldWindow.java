@@ -1,5 +1,12 @@
 package us.ilite.display.simulation.ui;
 
+import java.io.File;
+import java.util.LinkedList;
+import java.util.Queue;
+
+import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Translation2d;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -11,14 +18,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import us.ilite.common.lib.geometry.Pose2d;
-import us.ilite.common.lib.geometry.Translation2d;
 import us.ilite.display.simulation.ISimulationListener;
 import us.ilite.display.simulation.TrackingSimulation;
-
-import java.io.File;
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class FieldWindow extends Application implements ISimulationListener {
 

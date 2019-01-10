@@ -2,7 +2,7 @@ package us.ilite.robot.commands;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import us.ilite.common.lib.physics.DriveCharacterization;
+import com.team254.lib.physics.DriveCharacterization;
 import us.ilite.robot.modules.Drive;
 
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ public class CharacterizeDrive implements ICommand {
     
     @Override
     public void init(double pNow) {
-        mCommandQueue.setCommands(mCollectVelocityData, mCollectAccelerationData);
+        mCommandQueue.setCommands(mCollectVelocityData, new Delay(3.0), mCollectAccelerationData);
         mCommandQueue.init(pNow);
     }
 
