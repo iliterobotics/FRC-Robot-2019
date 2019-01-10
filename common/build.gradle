@@ -10,5 +10,5 @@ dependencies {
     // Required for 254's utils (PolynomialRegression)
 	compile group: 'gov.nist.math', name: 'jama', version:'1.0.3'
     compile name: 'json-simple-1.1.1'
-    compile name: 'poof-2018-lib'
+    compile name: 'poof-power-up-lib'
 }

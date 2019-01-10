@@ -11,6 +11,9 @@ import us.ilite.common.lib.util.Conversions;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
+/**
+ * Straight port from Team 254's 2018 robot code: https://github.com/Team254/FRC-2018-Public
+ */
 public class CollectVelocityData implements ICommand {
     private static final double kMaxPower = 0.50;
     private static final double kRampRate = 0.01;

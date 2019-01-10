@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Provides access to a buffer of robot poses, as well as ways to interpolate and extrapolate them.
+ * Port from Team 254's 2018 robot code (https://github.com/Team254/FRC-2018-Public) slightly modified to support a generic kinematics model.
  */
 public class RobotState {
 
