@@ -19,10 +19,9 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
- * ConstantsBase
- * 
  * Base class for storing robot constants. Anything stored as a public static field will be reflected and be able to set
- * externally
+ * externally.
+ * Straight port from Team 254's 2018 robot code: https://github.com/Team254/FRC-2018-Public
  */
 public abstract class ConstantsBase {
     HashMap<String, Boolean> modifiedKeys = new HashMap<String, Boolean>();
