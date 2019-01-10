@@ -52,8 +52,10 @@ public class TurnToDegree implements ICommand {
     mStartTime = pNow;
 
     pid = new PIDController(kP, kI, kD);
+    pid.setContinuous();
     pid.setOutputRange(kMIN_POWER, kMAX_POWER);
-    pid.setSetpoint(mTargetYaw.getDegrees());
+    pid.setSetpoint(getYaw().rotateBy(mTargetYaw).getDegrees());
+    pid.setInputRange( -180, 180 );
     mInitialYaw = getYaw();
     mTargetYaw = mInitialYaw.rotateBy( mTurnAngle );
     
