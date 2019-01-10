@@ -51,8 +51,8 @@ public class DriverInput extends Module {
 
     @Override
     public void periodicInput(double pNow) {
-        ELogitech310.map(mData.driverinput, mDriverJoystick);
-        ELogitech310.map(mData.operatorinput, mOperatorJoystick);
+        //ELogitech310.map(mData.driverinput, mDriverJoystick);
+        //ELogitech310.map(mData.operatorinput, mOperatorJoystick);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class DriverInput extends Module {
 //		else
 //		  scaleInputs = false;
         if (!canRunCommandQueue) {
-            updateDriveTrain();
+            //updateDriveTrain();
         }
         updateCommands();
 
@@ -79,7 +79,7 @@ public class DriverInput extends Module {
         lastCanRunCommandQueue = canRunCommandQueue;
     }
 
-
+    /*
     private void updateDriveTrain() {
         double desiredLeftOutput, desiredRightOutput;
 
@@ -114,6 +114,7 @@ public class DriverInput extends Module {
         driveTrain.setDriveMessage(new DriveMessage(desiredLeftOutput, desiredRightOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
 
     }
+    */
 
     @Override
     public void shutdown(double pNow) {
