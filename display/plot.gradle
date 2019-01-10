@@ -1,3 +1,5 @@
+// Credits to Jaci for the GNUPlot loading: https://github.com/GrappleRobotics/Pathfinder/blob/master/Pathfinder/plot.gradle
+
 task plot()
 
 def plot_supported = true

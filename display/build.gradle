@@ -1,16 +1,27 @@
 version '1.0-SNAPSHOT'
 
 apply plugin: 'application'
+apply plugin: 'org.openjfx.javafxplugin'
 mainClassName = 'us.ilite.display.Main'
 
 apply from: 'plot.gradle'
 
 sourceCompatibility = 1.8
 
+javafx {
+    modules = [ 'javafx.controls', 'javafx.media', 'javafx.graphics', 'javafx.fxml' ]
+    version = "11.0.+"
+}
+
 dependencies {
     compile project(':common')
+    compile project(':robot')
 
     compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
     compile name: 'jfxrt'
+
+    runtime group: "edu.wpi.first.ntcore", name: "ntcore-jni", version: "2019.+", classifier: "all"
+    compile group: "edu.wpi.first.ntcore", name: "ntcore-java", version: "2019.+"
+    compile group: "edu.wpi.first.wpiutil", name: "wpiutil-java", version: "2019.+"
 
 }

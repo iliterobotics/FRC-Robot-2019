@@ -1,6 +1,7 @@
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2019.1.1" apply false
+    id 'org.openjfx.javafxplugin' version '0.0.5' apply false
 }
 
 // Set this to true to enable desktop support.
@@ -33,9 +34,6 @@ subprojects {
 
     dependencies {
         compile wpi.deps.wpilib()
-        compile wpi.deps.vendor.java()
-        nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
-        nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
         testCompile 'junit:junit:4.12'
     }
 

@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
 
     // Module declarations here
     private DriveController mDriveController = new DriveController(new StrongholdProfile(), SystemSettings.kControlLoopPeriod);
-    private Drive mDrive = new Drive(mData, mDriveController, mClock);
+    private Drive mDrive = new Drive(mData, mDriveController);
     private DriverInput mDriverInput = new DriverInput(mDrive, mData);
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
