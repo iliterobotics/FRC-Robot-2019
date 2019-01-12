@@ -16,11 +16,15 @@ public class Elevator extends Module {
 
     private boolean mInitialized;
     private boolean mAtBottom = true;
-    private boolean mAtTop;
+    private boolean mAtTop = false;
     private int mCurrentEncoderTicks;
-    private double mDesiredPower;
-    private boolean atDesiredPosition;
-    
+    private double mDesiredPower = 0;
+    private boolean mAtDesiredPosition;
+
+//TODO elevator state and position
+
+    EElevatorState mState = EElevatorState.STOP;
+    EElevatorPosition mPosition = EElevatorPosition.BOTTOM;
 
     
     
@@ -31,8 +35,10 @@ public class Elevator extends Module {
         
         mData = pData;
 
+
+
         //initialize motors
-        // mMasterElevator = TalonSRXFactory
+        mMasterElevator = TalonSRXFactory.createDefaultTalon(0);
 
     }
 
