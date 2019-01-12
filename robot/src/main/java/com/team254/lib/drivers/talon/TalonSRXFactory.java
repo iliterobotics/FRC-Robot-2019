@@ -1,4 +1,4 @@
-package com.team254.lib.drivers;
+package com.team254.lib.drivers.talon;
 
 import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.*;
