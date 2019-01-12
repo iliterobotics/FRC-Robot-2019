@@ -15,6 +15,7 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.drivers.talon.TalonSRXChecker;
 import com.team254.lib.drivers.talon.TalonSRXFactory;
+import com.team254.lib.drivers.talon.TalonSRXChecker.CheckerConfigBuilder;
 import com.team254.lib.geometry.Rotation2d;
 
 import us.ilite.common.config.SystemSettings;
@@ -270,30 +271,25 @@ public class DriveHardware implements IDriveHardware {
 
     @Override
     public boolean checkHardware() {
+
+        CheckerConfigBuilder checkerConfigBuilder = new CheckerConfigBuilder();
+        checkerConfigBuilder.setCurrentFloor(2);
+        checkerConfigBuilder.setCurrentEpsilon(2.0);
+        checkerConfigBuilder.setRPMFloor(1500);
+        checkerConfigBuilder.setRPMEpsilon(250);
+        checkerConfigBuilder.setRPMSupplier(()->mLeftMaster.getSelectedSensorVelocity(0));
+
         boolean leftSide = TalonSRXChecker.CheckTalons(Drive.class,
                 Arrays.asList(new TalonSRXChecker.TalonSRXConfig("left_master", mLeftMaster),
                     new TalonSRXChecker.TalonSRXConfig("left_slave", mLeftRear)),
-                new TalonSRXChecker.CheckerConfig() {
-                    {
-                        mCurrentFloor = 2;
-                        mCurrentEpsilon = 2.0;
-                        mRPMFloor = 1500;
-                        mRPMEpsilon = 250;
-                        mRPMSupplier = () -> mLeftMaster.getSelectedSensorVelocity(0);
-                    }
-                });
+                checkerConfigBuilder.build());
+
+        checkerConfigBuilder.setRPMSupplier(()->mRightMaster.getSelectedSensorVelocity(0));
+        
         boolean rightSide = TalonSRXChecker.CheckTalons(Drive.class,
                 Arrays.asList(new TalonSRXChecker.TalonSRXConfig("right_master", mRightMaster),
                         new TalonSRXChecker.TalonSRXConfig("right_slave", mRightRear)), 
-                new TalonSRXChecker.CheckerConfig() {
-                    {
-                        mCurrentFloor = 2;
-                        mRPMFloor = 1500;
-                        mCurrentEpsilon = 2.0;
-                        mRPMEpsilon = 250;
-                        mRPMSupplier = () -> mRightMaster.getSelectedSensorVelocity(0);
-                    }
-                });
+                checkerConfigBuilder.build());
         return leftSide && rightSide;
     }
 

@@ -19,11 +19,13 @@ import java.util.Queue;
 
 public class DriverInput extends Module {
 
+    private static final double DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
+
     protected final Drive driveTrain;
 
     private Queue<ICommand> desiredCommandQueue;
-    private boolean lastCanRunCommandQueue;
-    private boolean canRunCommandQueue;
+    private boolean lastRunCommandQueue;
+    private boolean runCommandQueue;
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
 
@@ -42,7 +44,7 @@ public class DriverInput extends Module {
     public void modeInit(double pNow) {
 // TODO Auto-generated method stub
 
-        canRunCommandQueue = lastCanRunCommandQueue = false;
+        runCommandQueue = lastRunCommandQueue = false;
 
     }
 
@@ -58,7 +60,7 @@ public class DriverInput extends Module {
 //		  scaleInputs = true;
 //		else
 //		  scaleInputs = false;
-        if (!canRunCommandQueue) {
+        if (!runCommandQueue) {
             updateDriveTrain();
         }
         updateCommands();
@@ -73,7 +75,7 @@ public class DriverInput extends Module {
             desiredCommandQueue.clear();
 //desiredCommandQueue.add(<command>);
         }
-        lastCanRunCommandQueue = canRunCommandQueue;
+        lastRunCommandQueue = runCommandQueue;
     }
 
 
@@ -87,9 +89,9 @@ public class DriverInput extends Module {
 
 //		if(mElevatorModule.decelerateHeight())
 //		{
-//		  throttle = Utils.clamp(throttle, 0.5);
+        // throttle = Utils.clamp(throttle, 0.5);
 //		}
-        if (mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > 0.5) {
+        if (mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
             throttle *= SystemSettings.SNAIL_MODE_THROTTLE_LIMITER;
             rotate *= SystemSettings.SNAIL_MODE_ROTATE_LIMITER;
         }
@@ -120,11 +122,11 @@ public class DriverInput extends Module {
 
 
     public boolean shouldInitializeCommandQueue() {
-        return lastCanRunCommandQueue == false && canRunCommandQueue == true;
+        return lastRunCommandQueue == false && runCommandQueue == true;
     }
 
     public boolean canRunCommandQueue() {
-        return canRunCommandQueue;
+        return runCommandQueue;
     }
 
     public Queue<ICommand> getDesiredCommandQueue() {

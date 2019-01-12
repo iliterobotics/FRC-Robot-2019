@@ -65,7 +65,7 @@ public class FieldWindow extends Application implements ISimulationListener {
         HBox bottomPane = new HBox();
         Scene scene = new Scene(root, 800, 600);
 
-        durationDisplay = new Text(new Double(0.0).toString());
+        durationDisplay = new Text("0.0");
         mouseXInches = new Text("X");
         mouseYInches = new Text("Y");
         playButton = new Button("Play");
@@ -86,8 +86,11 @@ public class FieldWindow extends Application implements ISimulationListener {
         fieldContext = fieldCanvas.getGraphicsContext2D();
 
         fieldCanvas.setOnMouseMoved(e -> {
-            mouseXInches.setText("X: " + new Double(e.getX() / fieldInchesToPixels.x()).toString());
-            mouseYInches.setText("Y: " + new Double(Math.abs(e.getY() - fieldCanvas.getHeight()) / fieldInchesToPixels.y()).toString());
+            double mouseXInchesVal = e.getX()/fieldInchesToPixels.x();
+            double mouseYInchesVal = Math.abs(e.getY() - fieldCanvas.getHeight()) / fieldInchesToPixels.y();
+
+            mouseXInches.setText("X: " + mouseXInchesVal);
+            mouseYInches.setText("Y: " + mouseYInchesVal);
         });
 
         reset();
