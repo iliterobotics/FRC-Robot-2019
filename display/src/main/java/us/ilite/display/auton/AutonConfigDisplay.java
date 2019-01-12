@@ -14,9 +14,9 @@ import java.util.List;
 // import us.ilite.frc.common.util.CSVLogger;
 
 import us.ilite.robot.auto.paths.*;
-import us.ilite.common.types.EStartingPosition;
-import us.ilite.common.types.ECargoAction;
-import us.ilite.common.types.EHatchAction;
+import us.ilite.common.types.auton.EStartingPosition;
+import us.ilite.common.types.auton.ECargoAction;
+import us.ilite.common.types.auton.EHatchAction;
 
 import com.flybotix.hfr.util.lang.EnumUtils;
 import com.google.gson.Gson;
