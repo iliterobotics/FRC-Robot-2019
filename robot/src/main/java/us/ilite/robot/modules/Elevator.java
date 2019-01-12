@@ -24,6 +24,9 @@ public class Elevator extends Module {
     private boolean mAtDesiredPosition;
     private boolean mDesiredDirectionUp, mDesiredDirectionDown;
 
+    //TODO need to figure out these encoder thresholds
+    private int mDownEncoderThreshold = 0, mUpEncoderThreshold = 0;
+
     EElevatorPosition mCurrentPosition = EElevatorPosition.BOTTOM;
 
     //TODO elevator state and position
@@ -103,7 +106,9 @@ public class Elevator extends Module {
         }
 
         if (mDesiredDirectionUp) {
-
+            shouldDecelerate(mCurrentEncoderTicks, mDesiredDirectionUp);
+        } else if (mDesiredDirectionDown) {
+            shouldDecelerate(mCurrentEncoderTicks, mDesiredDirectionUp);
         }
 
     }
@@ -121,8 +126,29 @@ public class Elevator extends Module {
         mMasterElevator.setSelectedSensorPosition(0, 0, SystemSettings.kCANTimeoutMs);
     }
 
-    private boolean shouldDecelerate( int pCurrentEncoderTicks, boolean pCurrentDirectionUp ) {
-        // if()
+    private void shouldDecelerate(int pCurrentEncoderTicks, boolean pCurrentDirectionUp) {
+        if (pCurrentDirectionUp) {
+            if (pCurrentEncoderTicks >= mUpEncoderThreshold) {
+                mState = EElevatorState.DECEL_TOP;
+            }
+        } else if (!pCurrentDirectionUp) {
+            if (pCurrentEncoderTicks >= mDownEncoderThreshold) {
+                mState = EElevatorState.DECEL_BOTTOM;
+            }
+        }
+
+    }
+    
+    public void toBottom() {
+        mPosition = EElevatorPosition.BOTTOM;
+    }
+
+    public void toTop() {
+        mPosition = EElevatorPosition.TOP;
+    }
+
+    public int getCurrentEncoderTicks() {
+        return mCurrentEncoderTicks;
     }
 
 }
