@@ -15,6 +15,8 @@ import java.util.List;
 
 import us.ilite.robot.auto.paths.*;
 import us.ilite.common.types.EStartingPosition;
+import us.ilite.common.types.ECargoAction;
+import us.ilite.common.types.EHatchAction;
 
 import com.flybotix.hfr.util.lang.EnumUtils;
 import com.google.gson.Gson;
@@ -50,7 +52,7 @@ public class AutonConfigDisplay extends Application {
 
   // private CSVLogger logger = new CSVLogger();
   
-  private Integer[] preferredCubeActions = new Integer[]{-1, -1, -1, -1};
+  // private Integer[] preferredCubeActions = new Integer[]{-1, -1, -1, -1};
   private double mDelay = 0.0;
   private static Integer mStartingPosition = EStartingPosition.values()[0].ordinal();
   // private static Integer mAutonPath = EDriverControlMode.values()[0].ordinal();
@@ -63,36 +65,37 @@ public class AutonConfigDisplay extends Application {
   }
   
   @Override
-  public void start(Stage primaryStage) throws Exception {
+  public void start(Stage primaryStage) throws Exception { //Starts Program
     BorderPane root = new BorderPane();
     Scene scene = new Scene(root, 800, 600);
-		
-    scene.getStylesheets().add(iliteCss);
-    scene.setOnMouseClicked(e -> {
-      if(scene.getStylesheets().contains(awesomeCss)) {
-        playSound("./airhorn.mp3");
-      }
-    });
     
-    Button send = new Button("Send"); //Send Button
-    send.setOnAction(e -> {
-      // sendData();
-    });
+    //This is dumb and changes background
+    // scene.getStylesheets().add(iliteCss);
+    // scene.setOnMouseClicked(e -> {
+    //   if(scene.getStylesheets().contains(awesomeCss)) {
+    //     playSound("./airhorn.mp3");
+    //   }
+    // });
     
-    Button mode = new Button("Enhanced Mode");
-    mode.setOnAction(e -> {
-      if(scene.getStylesheets().contains(awesomeCss)) {
-        mode.setText("Enhanced Mode");
-        scene.getStylesheets().clear();
-        scene.getStylesheets().add(iliteCss);
-      } else {
-        mode.setText("Judge's Mode");
-        scene.getStylesheets().clear();
-        scene.getStylesheets().add(awesomeCss);
-        setFieldImage("./field.png");
-      }
+    // Button send = new Button("Send"); //Send Button
+    // send.setOnAction(e -> {
+    //   // sendData();
+    // });
+    
+    // Button mode = new Button("Enhanced Mode");
+    // mode.setOnAction(e -> {
+    //   if(scene.getStylesheets().contains(awesomeCss)) {
+    //     mode.setText("Enhanced Mode");
+    //     scene.getStylesheets().clear();
+    //     scene.getStylesheets().add(iliteCss);
+    //   } else {
+    //     mode.setText("Judge's Mode");
+    //     scene.getStylesheets().clear();
+    //     scene.getStylesheets().add(awesomeCss);
+    //     setFieldImage("./field.png");
+    //   }
       
-    });
+    // });
     
     TextField delayText = new TextField();
     delayText.setOnAction(e -> {
