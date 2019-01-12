@@ -17,10 +17,12 @@ allprojects {
 }
 
 subprojects {
-
     apply plugin: "java"
     apply plugin: "edu.wpi.first.GradleRIO"
-
+    apply plugin: 'pmd'
+    pmd {
+        ignoreFailures = true
+    }
     // Maven central needed for JUnit
     repositories {
         mavenCentral()

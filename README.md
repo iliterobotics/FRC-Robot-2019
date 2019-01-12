@@ -153,3 +153,25 @@ You can run any of these with `./gradlew <insert-tool-name-here>`
 
 You can add "remotes" to github that refer to other people's robot code repos. This allows you to, for example, take a look at someone else's code to look over it, you would be able to `git checkout wesley/branch-that-breaks-everything` to see it. To add a remote, just do `git remote add <name_of_person> https://github.com/<username>/robot-code`. Once you've done this, you can use `git fetch <name_of_person>` to get updated code from other people's repos!
 
+# Static Code analyisis 
+Currently PMD is added to all of the sub projects in the root project's build.gradle, located at ./build.gradle. 
+The PMD plugin is applied to all sub projects. 
+## What is PMD
+![PMD](https://pmd.github.io/img/pmd_logo.png) is a static code analyizer. Documentation is located at: [PMD](https://pmd.github.io/)
+## How to run
+From the root project run: 
+```
+./gradlew clean check
+```
+##Ignore Failures
+By default, running PMD will cause the gradle task to fail if any errors are found. To turn that off, in the pmd block of the root project's build.gradle should be set to: 
+```
+pmd {
+   ignoreFailures = false
+}
+```
+##Results Location
+The results are located in the build directory in each of the sub projects: 
+./common/build/reports/pmd/main.html
+./display/build/reports/pmd/main/html
+./robot/build/reports/pmd/main/html
