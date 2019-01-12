@@ -6,8 +6,7 @@ import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.geometry.Rotation2d;
 
 import us.ilite.common.lib.RobotProfile;
-import us.ilite.common.lib.control.DriveController;
-import us.ilite.common.lib.odometry.Kinematics;
+import com.team254.frc2018.Kinematics;
 import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.util.Conversions;
 import us.ilite.lib.drivers.Clock;
