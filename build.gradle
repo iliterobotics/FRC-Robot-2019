@@ -30,6 +30,7 @@ subprojects {
                 // The directory lib will always be one folder "above" a subproject folder - thus the ".."
                 dirs '../lib'
             }
+	maven { url 'https://jitpack.io' }
     }
 
     dependencies {
