@@ -16,7 +16,7 @@ import com.team254.lib.util.ReflectingCSVWriter;
 
 import us.ilite.common.lib.RobotProfile;
 import us.ilite.common.lib.control.DriveController;
-import us.ilite.common.lib.control.DriveMotionPlanner;
+import com.team254.frc2018.planners.DriveMotionPlanner;
 import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.lib.drivers.Clock;

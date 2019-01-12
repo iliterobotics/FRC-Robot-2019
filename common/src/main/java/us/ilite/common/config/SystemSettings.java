@@ -2,7 +2,7 @@ package us.ilite.common.config;
 
 import java.util.concurrent.TimeUnit;
 
-import us.ilite.common.lib.util.ConstantsBase;
+import com.team254.lib.util.ConstantsBase;
 
 public class SystemSettings extends ConstantsBase {
 

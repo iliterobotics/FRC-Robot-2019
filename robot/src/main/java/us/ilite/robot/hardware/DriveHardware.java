@@ -17,8 +17,8 @@ import com.team254.lib.geometry.Rotation2d;
 
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.util.Conversions;
-import us.ilite.lib.drivers.TalonSRXChecker;
-import us.ilite.lib.drivers.TalonSRXFactory;
+import com.team254.lib.drivers.talon.TalonSRXChecker;
+import com.team254.lib.drivers.talon.TalonSRXFactory;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 

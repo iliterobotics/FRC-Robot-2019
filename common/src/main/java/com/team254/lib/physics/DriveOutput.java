@@ -1,4 +1,4 @@
-package us.ilite.common.lib.control;
+package com.team254.lib.physics;
 
 /**
  * Contains all the information needed to control the drivebase.
