@@ -1,8 +1,8 @@
 package us.ilite.robot;
 
 import com.flybotix.hfr.codex.Codex;
-import com.flybotix.hfr.io.CodexNetworkTables;
 
+import us.ilite.common.io.CodexNetworkTables;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
 
