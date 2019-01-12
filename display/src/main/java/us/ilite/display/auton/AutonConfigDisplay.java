@@ -1,16 +1,20 @@
-package org.ilite.frc.display.auton;
+package us.ilite.display.auton;
 
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
-import org.ilite.frc.common.config.SystemSettings;
-import org.ilite.frc.common.input.EDriverControlMode;
-import org.ilite.frc.common.types.ECross;
-import org.ilite.frc.common.types.ECubeAction;
-import org.ilite.frc.common.types.EStartingPosition;
-import org.ilite.frc.common.util.CSVLogger;
+// **2018 imports**
+// import us.ilite.frc.common.config.SystemSettings;
+// import us.ilite.frc.common.input.EDriverControlMode;
+// import us.ilite.frc.common.types.ECross;
+// import us.ilite.frc.common.types.ECubeAction;
+// import us.ilite.frc.common.types.EStartingPosition;
+// import us.ilite.frc.common.util.CSVLogger;
+
+import us.ilite.robot.auto.paths.*;
+import us.ilite.common.types.EStartingPosition;
 
 import com.flybotix.hfr.util.lang.EnumUtils;
 import com.google.gson.Gson;
@@ -44,16 +48,15 @@ import javafx.util.Callback;
 
 public class AutonConfigDisplay extends Application {
 
-  private CSVLogger logger = new CSVLogger();
+  // private CSVLogger logger = new CSVLogger();
   
   private Integer[] preferredCubeActions = new Integer[]{-1, -1, -1, -1};
   private double mDelay = 0.0;
-  private static Integer mCross = ECross.values()[0].ordinal();
   private static Integer mStartingPosition = EStartingPosition.values()[0].ordinal();
-  private static Integer mDriverControlMode = EDriverControlMode.values()[0].ordinal();
+  // private static Integer mAutonPath = EDriverControlMode.values()[0].ordinal();
   
-  private String awesomeCss = AutonConfigDisplay.class.getResource("AwesomeStyle.css").toExternalForm();
-	private String iliteCss = AutonConfigDisplay.class.getResource("ILITEStyle.css").toExternalForm();
+  // private String awesomeCss = AutonConfigDisplay.class.getResource("AwesomeStyle.css").toExternalForm();
+	// private String iliteCss = AutonConfigDisplay.class.getResource("ILITEStyle.css").toExternalForm();
 	
   public static void main(String[] pArgs) {
     launch(pArgs);
@@ -71,9 +74,9 @@ public class AutonConfigDisplay extends Application {
       }
     });
     
-    Button send = new Button("Send");
+    Button send = new Button("Send"); //Send Button
     send.setOnAction(e -> {
-      sendData();
+      // sendData();
     });
     
     Button mode = new Button("Enhanced Mode");
@@ -98,10 +101,9 @@ public class AutonConfigDisplay extends Application {
     Label delayLabel = new Label("Delay");
     
     HBox selectionBoxes = new HBox(
-    		labeledCheckboxDropdown(ECubeAction.class, preferredCubeActions),
-    		labeledDropdown(EStartingPosition.class),
-    		labeledDropdown(ECross.class),
-    		labeledDropdown(EDriverControlMode.class),
+        //This is the dropdown for selecting autonomous type
+    		// labeledDropdown(EStartingPosition.class),
+    		// labeledDropdown(EDriverControlMode.class),
     		delayLabel,
     		delayText);
     
@@ -110,7 +112,7 @@ public class AutonConfigDisplay extends Application {
     
     Thread dataSender = new Thread(() -> {
       while(!Thread.interrupted()) {
-        sendData();
+        // sendData();
         try {
           Thread.sleep(200);
         } catch (InterruptedException e1) {
@@ -120,7 +122,7 @@ public class AutonConfigDisplay extends Application {
     });
     dataSender.start();
     
-    logger.start();
+    // logger.start();
     
     selectionBoxes.setSpacing(10d);
     root.setCenter(selectionBoxes);
@@ -144,18 +146,18 @@ public class AutonConfigDisplay extends Application {
 	        event -> {
 	          System.out.println("Action triggered!");
 	          String enumName = pEnumeration.getSimpleName();
-  	        if(enumName.equals(ECross.class.getSimpleName())) {
-  	        	mCross = combo.getSelectionModel().getSelectedItem().ordinal();
-              System.out.println("Updating cross: " + mCross);
-  	        }
-  	        if(enumName.equals(EStartingPosition.class.getSimpleName())){
-  	        	mStartingPosition = combo.getSelectionModel().getSelectedItem().ordinal();
-  	        	System.out.println("Updating position: " + mStartingPosition);
-  	        }
-  	        if(enumName.equals(EDriverControlMode.class.getSimpleName())){
-              mDriverControlMode = combo.getSelectionModel().getSelectedItem().ordinal();
-              System.out.println("Updating controlmode: " + mStartingPosition);
-            }
+  	        // if(enumName.equals(ECross.class.getSimpleName())) {
+  	        // 	mCross = combo.getSelectionModel().getSelectedItem().ordinal();
+            //   System.out.println("Updating cross: " + mCross);
+  	        // }
+  	        // if(enumName.equals(EStartingPosition.class.getSimpleName())){
+  	        // 	mStartingPosition = combo.getSelectionModel().getSelectedItem().ordinal();
+  	        // 	System.out.println("Updating position: " + mStartingPosition);
+  	        // }
+  	        // if(enumName.equals(EDriverControlMode.class.getSimpleName())){
+            //   mDriverControlMode = combo.getSelectionModel().getSelectedItem().ordinal();
+            //   System.out.println("Updating controlmode: " + mStartingPosition);
+            // }
 	        }
 	    );
 	    combo.setValue(enums.get(0));
@@ -176,11 +178,11 @@ public class AutonConfigDisplay extends Application {
         public ObservableValue<Boolean> call(String item) {
             BooleanProperty observable = new SimpleBooleanProperty();
             observable.addListener(e -> {
-    					if(observable.get()) {
-    			      preferenceArray[listView.getItems().indexOf(item)] = ECubeAction.valueOf(item).ordinal();
-    					} else {
-    						preferenceArray[listView.getItems().indexOf(item)] = -1;
-    					}
+    					// if(observable.get()) {
+    			    //   preferenceArray[listView.getItems().indexOf(item)] = ECubeAction.valueOf(item).ordinal();
+    					// } else {
+    					// 	preferenceArray[listView.getItems().indexOf(item)] = -1;
+    					// }
     					System.out.println(Arrays.toString(preferenceArray));
             });
             return observable;
@@ -212,13 +214,13 @@ public class AutonConfigDisplay extends Application {
     return sb.toString();
   }
   
-  private void sendData() {
-    SystemSettings.AUTON_TABLE.putNumberArray(ECubeAction.class.getSimpleName(), preferredCubeActions);
-    SystemSettings.AUTON_TABLE.putDouble(SystemSettings.AUTO_DELAY_KEY, mDelay);
-    SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), mCross);
-    SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), mStartingPosition);
-    SystemSettings.DRIVER_CONTROL_TABLE.putNumber(EDriverControlMode.class.getSimpleName(), mDriverControlMode);
-  }
+  // private void sendData() {
+  //   SystemSettings.AUTON_TABLE.putNumberArray(ECubeAction.class.getSimpleName(), preferredCubeActions);
+  //   SystemSettings.AUTON_TABLE.putDouble(SystemSettings.AUTO_DELAY_KEY, mDelay);
+  //   SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), mCross);
+  //   SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), mStartingPosition);
+  //   SystemSettings.DRIVER_CONTROL_TABLE.putNumber(EDriverControlMode.class.getSimpleName(), mDriverControlMode);
+  // }
   
   private static void swapEntriesUp(ListView listView, Object[] outputArray) {
 	  ObservableList list = listView.getItems();

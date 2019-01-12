@@ -1,8 +1,10 @@
 package us.ilite.frc.common.types;
 
 public enum EStartingPosition {
-    MIDDLE,
-    BOTTOM,
+    MIDDLE_LEFT,
+	MIDDLE_RIGHT,
+    BOTTOM_LEFT,
+	BOTTOM_RIGHT,
 	UNKNOWN;
   public static EStartingPosition intToEnum(int num) {
     if(num == -1)return UNKNOWN;
