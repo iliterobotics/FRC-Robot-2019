@@ -1,6 +1,6 @@
 package us.ilite.robot.hardware;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -13,18 +13,20 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
+import com.team254.lib.drivers.talon.TalonSRXChecker;
+import com.team254.lib.drivers.talon.TalonSRXFactory;
 import com.team254.lib.geometry.Rotation2d;
 
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.util.Conversions;
-import com.team254.lib.drivers.talon.TalonSRXChecker;
-import com.team254.lib.drivers.talon.TalonSRXFactory;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
 /**
- * Provides an interface between high-level planning and logic in Drive and Talon SRX configuration and control.
- * We might put our motor models here too - it would make a ton of sense, and we could just call setVelocity() or setAcceleration in Drive
+ * Provides an interface between high-level planning and logic in Drive and
+ * Talon SRX configuration and control. We might put our motor models here too -
+ * it would make a ton of sense, and we could just call setVelocity() or
+ * setAcceleration in Drive
  */
 public class DriveHardware implements IDriveHardware {
 
@@ -269,12 +271,9 @@ public class DriveHardware implements IDriveHardware {
     @Override
     public boolean checkHardware() {
         boolean leftSide = TalonSRXChecker.CheckTalons(Drive.class,
-                new ArrayList<TalonSRXChecker.TalonSRXConfig>() {
-                    {
-                        add(new TalonSRXChecker.TalonSRXConfig("left_master", mLeftMaster));
-                        add(new TalonSRXChecker.TalonSRXConfig("left_slave", mLeftRear));
-                    }
-                }, new TalonSRXChecker.CheckerConfig() {
+                Arrays.asList(new TalonSRXChecker.TalonSRXConfig("left_master", mLeftMaster),
+                    new TalonSRXChecker.TalonSRXConfig("left_slave", mLeftRear)),
+                new TalonSRXChecker.CheckerConfig() {
                     {
                         mCurrentFloor = 2;
                         mCurrentEpsilon = 2.0;
@@ -284,12 +283,9 @@ public class DriveHardware implements IDriveHardware {
                     }
                 });
         boolean rightSide = TalonSRXChecker.CheckTalons(Drive.class,
-                new ArrayList<TalonSRXChecker.TalonSRXConfig>() {
-                    {
-                        add(new TalonSRXChecker.TalonSRXConfig("right_master", mRightMaster));
-                        add(new TalonSRXChecker.TalonSRXConfig("right_slave", mRightRear));
-                    }
-                }, new TalonSRXChecker.CheckerConfig() {
+                Arrays.asList(new TalonSRXChecker.TalonSRXConfig("right_master", mRightMaster),
+                        new TalonSRXChecker.TalonSRXConfig("right_slave", mRightRear)), 
+                new TalonSRXChecker.CheckerConfig() {
                     {
                         mCurrentFloor = 2;
                         mRPMFloor = 1500;

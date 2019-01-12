@@ -20,8 +20,6 @@ import java.util.Queue;
 public class DriverInput extends Module {
 
     protected final Drive driveTrain;
-    private boolean scaleInputs;
-    private boolean currentDriverToggle, lastDriverToggle, currentOperatorToggle, lastOperatorToggle;
 
     private Queue<ICommand> desiredCommandQueue;
     private boolean lastCanRunCommandQueue;
@@ -38,7 +36,6 @@ public class DriverInput extends Module {
         this.desiredCommandQueue = new LinkedList<>();
         this.mDriverJoystick = new Joystick(0);
         this.mOperatorJoystick = new Joystick(1);
-        scaleInputs = false;
     }
 
     @Override

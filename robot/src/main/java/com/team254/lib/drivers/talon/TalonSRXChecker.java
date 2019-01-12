@@ -1,13 +1,15 @@
 package com.team254.lib.drivers.talon;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team254.lib.util.Util;
+
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.robot.modules.Module;
-
-import java.util.ArrayList;
-import java.util.function.DoubleSupplier;
 
 public class TalonSRXChecker {
     public static class CheckerConfig {
@@ -39,16 +41,16 @@ public class TalonSRXChecker {
     }
 
     public static <E extends Module> boolean CheckTalons(Class<E> subsystem,
-                                      ArrayList<TalonSRXConfig> talonsToCheck,
+                                      List<TalonSRXConfig> talonsToCheck,
                                       CheckerConfig checkerConfig) {
         boolean failure = false;
         System.out.println("////////////////////////////////////////////////");
         System.out.println("Checking subsystem " + subsystem
                 + " for " + talonsToCheck.size() + " talons.");
 
-        ArrayList<Double> currents = new ArrayList<>();
-        ArrayList<Double> rpms = new ArrayList<>();
-        ArrayList<StoredTalonSRXConfiguration> storedConfigurations = new ArrayList<>();
+        List<Double> currents = new ArrayList<>();
+        List<Double> rpms = new ArrayList<>();
+        List<StoredTalonSRXConfiguration> storedConfigurations = new ArrayList<>();
 
         // Record previous configuration for all talons.
         for (TalonSRXConfig config : talonsToCheck) {

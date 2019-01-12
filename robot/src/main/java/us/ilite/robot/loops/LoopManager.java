@@ -19,22 +19,17 @@ public class LoopManager implements Runnable{
     private final double kLoopPeriodSeconds;
 
     private final Notifier mWpiNotifier;
-    private final Timer mLoopSafetyTimer;
     private final Clock mClock;
 
     private final LoopList mLoopList = new LoopList();
 
     private final Object mTaskLock = new Object();
     private boolean mIsRunning = false;
-    private Timer loopTimer = new Timer();
-    private Timer updateTimer = new Timer();
-    private Timer inputTimer = new Timer();
     private long numLoops = 0;
     private long numOverruns = 0;
 
     public LoopManager(double pLoopPeriodSeconds) {
         mWpiNotifier = new Notifier(this);
-        mLoopSafetyTimer = new Timer();
         mClock = new Clock();
         this.kLoopPeriodSeconds = pLoopPeriodSeconds;
     }
