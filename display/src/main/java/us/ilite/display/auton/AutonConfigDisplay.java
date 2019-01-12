@@ -77,10 +77,10 @@ public class AutonConfigDisplay extends Application {
     //   }
     // });
     
-    // Button send = new Button("Send"); //Send Button
-    // send.setOnAction(e -> {
-    //   // sendData();
-    // });
+    Button send = new Button("Send"); //Send Button
+    send.setOnAction(e -> {
+      sendData();
+    });
     
     // Button mode = new Button("Enhanced Mode");
     // mode.setOnAction(e -> {
@@ -110,8 +110,8 @@ public class AutonConfigDisplay extends Application {
     		delayLabel,
     		delayText);
     
-    HBox modeOptions = new HBox(mode, send);
-    modeOptions.setMargin(send, new Insets(0, 40, 0, 20));
+    HBox modeOptions = new HBox(send);
+    // modeOptions.setMargin(send, new Insets(0, 40, 0, 20));
     
     Thread dataSender = new Thread(() -> {
       while(!Thread.interrupted()) {
@@ -217,13 +217,13 @@ public class AutonConfigDisplay extends Application {
     return sb.toString();
   }
   
-  // private void sendData() {
+  private void sendData() {
   //   SystemSettings.AUTON_TABLE.putNumberArray(ECubeAction.class.getSimpleName(), preferredCubeActions);
   //   SystemSettings.AUTON_TABLE.putDouble(SystemSettings.AUTO_DELAY_KEY, mDelay);
   //   SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), mCross);
   //   SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), mStartingPosition);
   //   SystemSettings.DRIVER_CONTROL_TABLE.putNumber(EDriverControlMode.class.getSimpleName(), mDriverControlMode);
-  // }
+  }
   
   private static void swapEntriesUp(ListView listView, Object[] outputArray) {
 	  ObservableList list = listView.getItems();
