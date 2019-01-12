@@ -24,7 +24,11 @@ public class SystemSettings extends ConstantsBase {
     public static  int kDriveLeftMasterTalonId = 1;
     public static  int kDriveLeftRearTalonId = 3;
     public static  int kDriveRightMasterTalonId = 2;
-    public static  int kDriveRightRearTalonId = 4;
+    public static int kDriveRightRearTalonId = 4;
+    
+    //TODO Hypothetical elevator talons
+    // public static int kElevatorMasterTalonId
+    // public static int kElevatorFollowerTalonId
 
     public static int kPigeonId = 3;
 
@@ -75,6 +79,13 @@ public class SystemSettings extends ConstantsBase {
     public static double kDrivePosition_kI = 0;
     public static double kDrivePosition_kD = 0;
     public static double kDrivePosition_kF = 0;
+
+    // =============================================================================
+    // (Hypothetical) Elevator Constants
+    // =============================================================================
+
+    //TODO Actually change this please
+    public static int kTopEncoderTicks = 0;
 
     // =============================================================================
     // Closed-Loop Velocity Constants
