@@ -2,6 +2,7 @@ plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2019.1.1" apply false
     id 'org.openjfx.javafxplugin' version '0.0.5' apply false
+    id 'pmd'
 }
 
 // Set this to true to enable desktop support.
