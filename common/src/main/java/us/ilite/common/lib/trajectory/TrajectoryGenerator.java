@@ -5,7 +5,7 @@ import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.util.Util;
 import us.ilite.common.lib.RobotProfile;
 import us.ilite.common.lib.control.DriveController;
-import us.ilite.common.lib.control.DriveMotionPlanner;
+import com.team254.frc2018.planners.DriveMotionPlanner;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;

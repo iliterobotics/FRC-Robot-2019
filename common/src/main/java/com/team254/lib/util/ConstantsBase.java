@@ -1,4 +1,4 @@
-package us.ilite.common.lib.util;
+package com.team254.lib.util;
 
 import java.io.File;
 import java.io.FileReader;
