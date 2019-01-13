@@ -1,15 +1,19 @@
 package us.ilite.robot.commands;
 
+import java.util.List;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import us.ilite.common.lib.physics.DriveCharacterization;
+import com.team254.lib.physics.DriveCharacterization;
+import com.team254.lib.util.ReflectingCSVWriter;
+
 import us.ilite.common.lib.util.Conversions;
-import us.ilite.common.lib.util.ReflectingCSVWriter;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
-import java.util.List;
-
+/**
+ * Straight port from Team 254's 2018 robot code: https://github.com/Team254/FRC-2018-Public
+ */
 public class CollectAccelerationData implements ICommand {
     private static final double kPower = 0.5;
     private static final double kTotalTime = 2.0; //how long to run the test for

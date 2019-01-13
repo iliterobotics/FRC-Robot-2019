@@ -1,26 +1,26 @@
 package us.ilite.robot.hardware;
 
+import java.util.ArrayList;
+
 import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Talon;
+import com.team254.lib.geometry.Rotation2d;
+
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.lib.geometry.Rotation2d;
 import us.ilite.common.lib.util.Conversions;
-import us.ilite.common.lib.util.Units;
-import us.ilite.lib.drivers.LazyTalonSRX;
-import us.ilite.lib.drivers.Pigeon;
-import us.ilite.lib.drivers.TalonSRXChecker;
-import us.ilite.lib.drivers.TalonSRXFactory;
+import com.team254.lib.drivers.talon.TalonSRXChecker;
+import com.team254.lib.drivers.talon.TalonSRXFactory;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
-
-import java.util.ArrayList;
 
 /**
  * Provides an interface between high-level planning and logic in Drive and Talon SRX configuration and control.
@@ -49,6 +49,8 @@ public class DriveHardware implements IDriveHardware {
 
         configureMaster(mLeftMaster, true);
         configureMaster(mRightMaster, false);
+        configureMaster(mLeftRear, true);
+        configureMaster(mRightRear, false);
 
         mLeftMaster.setInverted(false);
         mLeftRear.setInverted(false);
@@ -73,7 +75,12 @@ public class DriveHardware implements IDriveHardware {
         mLeftControlMode = mRightControlMode = ControlMode.PercentOutput;
         mLeftNeutralMode = mRightNeutralMode = NeutralMode.Brake;
 
-        setNeutralMode(NeutralMode.Brake, mRightMaster, mRightRear, mLeftMaster, mLeftRear); // Force neutral mode to Brake, clear existing setting
+        // Bypass state machine in set() and configure directly
+        configTalonForPercentOutput(mLeftMaster);
+        configTalonForPercentOutput(mRightMaster);
+        setNeutralMode(mLeftNeutralMode, mRightMaster, mRightRear);
+        setNeutralMode(mLeftNeutralMode, mLeftMaster, mRightMaster);
+
         set(DriveMessage.kNeutral);
     }
 
@@ -99,6 +106,15 @@ public class DriveHardware implements IDriveHardware {
 
         mLeftMaster.set(mLeftControlMode, pDriveMessage.leftOutput, pDriveMessage.leftDemandType, pDriveMessage.leftDemand);
         mRightMaster.set(mRightControlMode, pDriveMessage.rightOutput, pDriveMessage.rightDemandType, pDriveMessage.rightDemand);
+    }
+
+    /**
+     * Allows external users to request that our control mode be pre-configured instead of configuring on the fly.
+     * @param pControlMode
+     */
+    public void configureMode(ControlMode pControlMode) {
+        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pControlMode);
+        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pControlMode);
     }
 
     private ControlMode configForControlMode(TalonSRX pTalon, ControlMode pCurrentControlMode, ControlMode pDesiredControlMode) {
@@ -142,6 +158,7 @@ public class DriveHardware implements IDriveHardware {
 
     private void setNeutralMode(NeutralMode pNeutralMode, TalonSRX ... pTalons) {
         for(TalonSRX talon : pTalons) {
+            mLogger.info("Setting neutral mode to: ", pNeutralMode.name(), " for Talon ID ", talon.getDeviceID());
             talon.setNeutralMode(pNeutralMode);
         }
     }

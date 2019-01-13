@@ -1,8 +1,8 @@
 package us.ilite.robot;
 
-import profiles.RobotProfile;
+import us.ilite.common.lib.RobotProfile;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.lib.util.Units;
+import com.team254.lib.util.Units;
 
 public class StrongholdProfile implements RobotProfile {
     @Override
@@ -47,7 +47,7 @@ public class StrongholdProfile implements RobotProfile {
 
     @Override
     public double getWheelbaseScrubFactor() {
-        return 1;
+        return 1.0;
     }
 
     @Override

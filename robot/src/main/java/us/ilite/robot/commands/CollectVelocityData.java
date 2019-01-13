@@ -1,17 +1,19 @@
 package us.ilite.robot.commands;
 
+import java.util.List;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import edu.wpi.first.wpilibj.Timer;
-import us.ilite.common.lib.physics.DriveCharacterization;
+import com.team254.lib.physics.DriveCharacterization;
+import com.team254.lib.util.ReflectingCSVWriter;
+
 import us.ilite.common.lib.util.Conversions;
-import us.ilite.common.lib.util.ReflectingCSVWriter;
-import us.ilite.common.lib.util.Units;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
-import java.util.List;
-
+/**
+ * Straight port from Team 254's 2018 robot code: https://github.com/Team254/FRC-2018-Public
+ */
 public class CollectVelocityData implements ICommand {
     private static final double kMaxPower = 0.50;
     private static final double kRampRate = 0.01;

@@ -2,7 +2,6 @@ package us.ilite.robot.loops;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import us.ilite.robot.modules.Module;
 
 import java.util.ArrayList;
 import java.util.Arrays;

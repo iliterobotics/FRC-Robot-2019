@@ -1,12 +1,13 @@
 package us.ilite.display.simulation.ui;
 
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-import us.ilite.common.lib.geometry.Pose2d;
-import us.ilite.common.lib.geometry.Translation2d;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Translation2d;
+
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
 public class DrawablePath extends ADrawable {
 
@@ -19,7 +20,7 @@ public class DrawablePath extends ADrawable {
 
     @Override
     public void draw(GraphicsContext gc, Pose2d pose, Translation2d aspectRatio) {
-        mPointList.add(pose.translation_);
+        mPointList.add(pose.getTranslation());
 
         gc.moveTo(mPointList.get(0).x(), mPointList.get(0).y());
         gc.setStroke(kLineColor);

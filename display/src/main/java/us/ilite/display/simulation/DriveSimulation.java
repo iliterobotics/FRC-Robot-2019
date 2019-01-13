@@ -1,93 +1,81 @@
 package us.ilite.display.simulation;
 
-import control.DriveController;
-import control.DriveMotionPlanner;
-import control.DriveOutput;
-import us.ilite.common.lib.geometry.Pose2d;
-import us.ilite.common.lib.geometry.Pose2dWithCurvature;
-import us.ilite.common.lib.geometry.Rotation2d;
-import us.ilite.common.lib.physics.WheelState;
-import us.ilite.common.lib.trajectory.Trajectory;
-import us.ilite.common.lib.trajectory.timing.TimedState;
-import us.ilite.common.lib.util.ReflectingCSVWriter;
-import us.ilite.common.lib.util.Units;
-import us.ilite.common.lib.util.Util;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.util.ReflectingCSVWriter;
+
+import com.team254.frc2018.planners.DriveMotionPlanner;
+import us.ilite.robot.modules.Drive;
 
 public class DriveSimulation {
     
     ReflectingCSVWriter<Pose2d> mOdometryWriter;
     ReflectingCSVWriter<DriveMotionPlanner> mTrajectoryWriter;
     
-    DriveController mDriveController;
-    WheelState mWheelDisplacement = new WheelState();
+    private Drive mDrive;
     private final double kDt;
     double time = 0.0;
 
     List<ISimulationListener> mSimulationListeners = new ArrayList<>();
 
-    public DriveSimulation(DriveController pDriveController, ReflectingCSVWriter<Pose2d> pOdometryWriter, ReflectingCSVWriter<DriveMotionPlanner> pTrajectoryWriter, double pDt) {
-        mDriveController = pDriveController;
+    public DriveSimulation(Drive pDrive, ReflectingCSVWriter<Pose2d> pOdometryWriter, ReflectingCSVWriter<DriveMotionPlanner> pTrajectoryWriter, double pDt) {
+        mDrive = pDrive;
         mOdometryWriter = pOdometryWriter;
         mTrajectoryWriter = pTrajectoryWriter;
         kDt = pDt;
     }
 
-    public double driveTrajectory(Trajectory<TimedState<Rotation2d>> pTrajectoryToDrive) {
-        double startTime = time;
+    // TODO Drive doesn't support rotations quite yet
+    // public double driveTrajectory(Trajectory<TimedState<Rotation2d>> pTrajectoryToDrive) {
+    //     double startTime = time;
 
-        mDriveController.setRotationTrajectory(pTrajectoryToDrive);
+    //     mDriveController.setRotationTrajectory(pTrajectoryToDrive);
 
-        simulate();
+    //     simulate();
 
-        System.out.println("Trajectory time: " + (time - startTime));
+    //     System.out.println("Trajectory time: " + (time - startTime));
 
-        return time - startTime;
-    }
+    //     return time - startTime;
+    // }
 
     public double driveTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> pTrajectoryToDrive, boolean pResetPoseToTrajectoryStart) {
         double startTime = time;
 
-        mDriveController.setTrajectory(pTrajectoryToDrive, pResetPoseToTrajectoryStart);
+        mDrive.modeInit(startTime);
+        mDrive.followPath(pTrajectoryToDrive, pResetPoseToTrajectoryStart);
 
-        simulate();
+        simulate(3.5);
 
         System.out.println("Trajectory time: " + (time - startTime));
 
         return time - startTime;
     }
 
-    private void simulate() {
-        for (; !mDriveController.isDone(); time += kDt) {
+    private void simulate(double pDurationSeconds) {
 
-            Pose2d currentPose = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose();
-            DriveOutput output = mDriveController.update(time, mWheelDisplacement.left, mWheelDisplacement.right);
+        for(; time < pDurationSeconds; time += kDt) {
+            mDrive.getSimClock().setTime(time);
+            mDrive.periodicInput(time);
+            mDrive.loop(time);
+            mDrive.periodicOutput(time);
 
-            mTrajectoryWriter.add(mDriveController.getDriveMotionPlanner());
+            Pose2d currentPose = mDrive.getDriveController().getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose();
+
+            mTrajectoryWriter.add(mDrive.getDriveController().getDriveMotionPlanner());
             mOdometryWriter.add(currentPose);
 
             mTrajectoryWriter.flush();
             mOdometryWriter.flush();
 
             mSimulationListeners.forEach(l -> l.update(time, currentPose));
-
-            if(Math.abs(output.left_feedforward_voltage) > 12.0 || Math.abs(output.right_feedforward_voltage) > 12.0) {
-                System.err.println("Warning: Output above 12.0 volts.");
-                // Limit velocity
-                output.left_velocity = Util.limit(output.left_velocity, 120.0);
-                output.right_velocity = Util.limit(output.right_velocity, 120.0);
-            }
-
-            // Our pose estimator expects input in inches, not radians. We happily oblige.
-            output = output.rads_to_inches(Units.meters_to_inches(mDriveController.getRobotProfile().getWheelRadiusMeters()));
-
-            // Update the total distance each wheel has traveled, in inches.
-            mWheelDisplacement = new WheelState(mWheelDisplacement.left + (output.left_velocity * kDt) + (0.5 * output.left_accel * kDt * kDt),
-                    mWheelDisplacement.right + (output.right_velocity * kDt) + (0.5 * output.right_accel * kDt * kDt));
-
         }
+        
+        mDrive.shutdown(time);
     }
 
     public void addListener(ISimulationListener pListener) {
@@ -95,7 +83,7 @@ public class DriveSimulation {
     }
 
     public void setPose(Pose2d pRobotPose) {
-        mDriveController.getRobotStateEstimator().reset(0.0, pRobotPose);
+        mDrive.getDriveController().getRobotStateEstimator().reset(0.0, pRobotPose);
     }
 
 }

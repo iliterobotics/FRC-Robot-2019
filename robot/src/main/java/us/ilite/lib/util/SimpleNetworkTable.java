@@ -1,15 +1,16 @@
 package us.ilite.lib.util;
 
+import java.util.List;
+
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
 import com.flybotix.hfr.util.lang.EnumUtils;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.robot.Data;
-
-import java.util.List;
 
 /**
  * This provides a simple wrapper around NetworkTables and provides some utilities for

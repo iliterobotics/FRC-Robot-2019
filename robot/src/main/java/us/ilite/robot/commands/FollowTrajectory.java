@@ -1,8 +1,8 @@
 package us.ilite.robot.commands;
 
-import us.ilite.common.lib.geometry.Pose2dWithCurvature;
-import us.ilite.common.lib.trajectory.Trajectory;
-import us.ilite.common.lib.trajectory.timing.TimedState;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.timing.TimedState;
 import us.ilite.robot.modules.Drive;
 
 public class FollowTrajectory implements ICommand {
