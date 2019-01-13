@@ -65,11 +65,11 @@ public class RobotStateEstimator {
         mLastRightPosition = pRightPosition;
     }
 
-    public void reset() {
+    public final void reset() {
         reset(0.0, new Pose2d());
     }
 
-    public void reset(double time, Pose2d field_to_vehicle) {
+    public final void reset(double time, Pose2d field_to_vehicle) {
         mRobotState.reset(time, field_to_vehicle);
         mLastTimestamp = 0.0;
         mLastLeftPosition = mLastRightPosition = 0.0;
