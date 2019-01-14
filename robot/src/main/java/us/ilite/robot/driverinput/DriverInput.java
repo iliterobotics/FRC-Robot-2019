@@ -93,7 +93,7 @@ public class DriverInput extends Module {
                 trackingType = ETrackingType.HATCH_TRACK;
             }
 
-            double pipelineNum = null;
+            double pipelineNum;
             if(trackingType != null) {
                 if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_LEFT)) {
                     pipelineNum = trackingType.getLeftPipelineNum();
