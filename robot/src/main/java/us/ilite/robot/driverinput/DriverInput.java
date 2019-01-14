@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.codex.Codex;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Joystick;
-import sun.security.krb5.internal.ETypeInfo;
 import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.ETrackingType;
