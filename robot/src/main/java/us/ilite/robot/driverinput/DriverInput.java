@@ -83,7 +83,7 @@ public class DriverInput extends Module {
 
         if (shouldInitializeCommandQueue()) {
             desiredCommandQueue.clear();
-            ETrackingType trackingType;
+            ETrackingType trackingType = null;
             // Switch the limelight to a pipeline and track
             if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN)) {
                 trackingType = ETrackingType.TARGET_TRACK;
