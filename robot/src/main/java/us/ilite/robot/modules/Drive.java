@@ -187,6 +187,8 @@ public class Drive extends Loop {
 				// debugOutput.outputToLiveDashboard();
 
 				break;
+			default:
+				mLogger.warn("Got drive state: " + mDriveState+" which is unhandled");
 		}
 		mDriveHardware.set(mDriveMessage);
 	}

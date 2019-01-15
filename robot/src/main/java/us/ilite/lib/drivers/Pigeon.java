@@ -1,5 +1,8 @@
 package us.ilite.lib.drivers;
 
+import java.util.List;
+import java.util.Collections;
+
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.team254.lib.geometry.Rotation2d;
 
@@ -10,8 +13,12 @@ public class Pigeon extends IMU{
 	private PigeonIMU mPigeon;
 
   //TODO - single value for now - could be VERY noisy
-  // others to try: {0.75, 0.25}, {0.6, 0.4}, {0.5, 0.3, 0.2}
-  private static final double[] kCollisionGains = {1.0};
+	// others to try: {0.75, 0.25}, {0.6, 0.4}, {0.5, 0.3, 0.2}
+	/**
+	 * Made this a singleton list because it is unmodifiable. When it was an array, it was possible for 
+	 * the value to be changed. 
+	 */
+	private static List<Double>kCollisionGains = Collections.singletonList(Double.valueOf(1.0));
 	
 	public Pigeon(PigeonIMU pPigeon, double pCollisionThreshold_DeltaG){
 		super(kCollisionGains);

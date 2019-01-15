@@ -1,6 +1,10 @@
 package us.ilite.lib.drivers;
 
+import java.util.List;
+
 import com.team254.lib.geometry.Rotation2d;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import us.ilite.common.lib.util.FilteredAverage;
 
@@ -12,12 +16,16 @@ public abstract  class IMU {
   }
 
   //Collision Threshold => Temporary Value
-  protected double mCollisionThreshold_DeltaG;
-  protected final FilteredAverage mAccelerationX;
-  protected final FilteredAverage mAccelerationY;
-  protected double mJerkX = 0d;
-  protected double mJerkY = 0d;
+  protected transient double mCollisionThreshold_DeltaG;
+  protected transient final FilteredAverage mAccelerationX;
+  protected transient final FilteredAverage mAccelerationY;
+  protected transient double mJerkX = 0d;
+  protected transient double mJerkY = 0d;
   protected double mLastUpdate = 0d;
+
+  public IMU(List<Double>pFilterGains) { 
+    this(ArrayUtils.toPrimitive(pFilterGains.toArray(new Double[0])));
+  }
   
   public IMU(double[] pFilterGains) {
     mAccelerationX = new FilteredAverage(pFilterGains);

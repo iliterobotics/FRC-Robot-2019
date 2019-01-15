@@ -21,16 +21,17 @@ import java.util.Queue;
 
 public class DriverInput extends Module {
 
+    private static final double DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
+
     protected final Drive driveTrain;
-    private boolean scaleInputs;
-    private boolean currentDriverToggle, lastDriverToggle, currentOperatorToggle, lastOperatorToggle;
 
     private Queue<ICommand> desiredCommandQueue;
-    private boolean lastCanRunCommandQueue;
-    private boolean canRunCommandQueue;
+    private boolean lastRunCommandQueue;
+    private boolean runCommandQueue;
+    private Joystick mDriverJoystick;
+    private Joystick mOperatorJoystick;
 
     private Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
-    private Joystick mDriverJoystick, mOperatorJoystick;
 
     private Data mData;
 
@@ -42,14 +43,13 @@ public class DriverInput extends Module {
         this.mOperatorInputCodex = mData.operatorinput;
         this.mDriverJoystick = new Joystick(0);
         this.mOperatorJoystick = new Joystick(1);
-        scaleInputs = false;
     }
 
     @Override
     public void modeInit(double pNow) {
 // TODO Auto-generated method stub
 
-        canRunCommandQueue = lastCanRunCommandQueue = false;
+        runCommandQueue = lastRunCommandQueue = false;
 
     }
 
@@ -65,7 +65,7 @@ public class DriverInput extends Module {
 //		  scaleInputs = true;
 //		else
 //		  scaleInputs = false;
-        if (!canRunCommandQueue) {
+        if (!runCommandQueue) {
             updateDriveTrain();
         }
         updateCommands();
@@ -74,10 +74,10 @@ public class DriverInput extends Module {
 
     private void updateCommands() {
 
-        canRunCommandQueue = false;
+        runCommandQueue = false;
         for(ELogitech310 l : SystemSettings.kTeleopCommandTriggers) {
             if(mDriverInputCodex.isSet(l)) {
-                canRunCommandQueue = true;
+                runCommandQueue = true;
             }
         }
 
@@ -105,8 +105,7 @@ public class DriverInput extends Module {
             // Set limelight pipeline
             // Add command to the queue
         }
-
-        lastCanRunCommandQueue = canRunCommandQueue;
+        lastRunCommandQueue = runCommandQueue;
     }
 
 
@@ -120,9 +119,9 @@ public class DriverInput extends Module {
 
 //		if(mElevatorModule.decelerateHeight())
 //		{
-//		  throttle = Utils.clamp(throttle, 0.5);
+        // throttle = Utils.clamp(throttle, 0.5);
 //		}
-        if (mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > 0.5) {
+        if (mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
             throttle *= SystemSettings.SNAIL_MODE_THROTTLE_LIMITER;
             rotate *= SystemSettings.SNAIL_MODE_ROTATE_LIMITER;
         }
@@ -155,11 +154,11 @@ public class DriverInput extends Module {
      * If we weren't running commands last cycle, initialize.
      */
     public boolean shouldInitializeCommandQueue() {
-        return lastCanRunCommandQueue == false && canRunCommandQueue == true;
+        return lastRunCommandQueue == false && runCommandQueue == true;
     }
 
     public boolean canRunCommandQueue() {
-        return canRunCommandQueue;
+        return runCommandQueue;
     }
 
     public Queue<ICommand> getDesiredCommandQueue() {

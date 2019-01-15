@@ -55,7 +55,7 @@ public class TrackingSimulation {
         kDt = pDt;
         mData = new Data();
         mClock = new Clock().simulated();
-        mDriveController = new DriveController(new StrongholdProfile(), 0.01);
+        mDriveController = new DriveController(new StrongholdProfile());
         mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
         mDrive = new Drive(mData, mDriveController, mClock, true);
         csvPoseWriter = new ReflectingCSVWriter<>("tracking.csv", Pose2d.class);
