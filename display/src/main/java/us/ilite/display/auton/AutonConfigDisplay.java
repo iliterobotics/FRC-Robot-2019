@@ -21,6 +21,7 @@ import us.ilite.common.types.auton.EHatchAction;
 import com.flybotix.hfr.util.lang.EnumUtils;
 import com.google.gson.Gson;
 
+import javafx.*;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
