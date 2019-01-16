@@ -116,6 +116,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
+        System.out.println("*****CodX     "+mData.getGyroCodexYaw());
+        mData.setGyroCodexTable(mData.getGyroCodexYaw()+.5);
+        System.out.println("*****NeTa     "+mData.getGyroNTHeading());
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
     }

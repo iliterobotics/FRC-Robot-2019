@@ -1,5 +1,7 @@
 package us.ilite.robot;
 
+import java.util.Collection;
+
 import com.flybotix.hfr.codex.Codex;
 
 import edu.wpi.first.networktables.NetworkTable;
@@ -15,21 +17,25 @@ public class Data {
     public Codex<Double, EGyro> imu = Codex.of.thisEnum(EGyro.class);
     public Codex<Double, EDriveData> drive = Codex.of.thisEnum(EDriveData.class);
 
+    private NetworkTableInstance inst;
+    private NetworkTableEntry gyroTest;
+    private NetworkTable gyroTable;
+
     public Data simulated() {
-       imu = Codex.of.thisEnum(EGyro.class);
-       drive = Codex.of.thisEnum(EDriveData.class);
+        imu = Codex.of.thisEnum(EGyro.class);
+        drive = Codex.of.thisEnum(EDriveData.class);
+        
+        registerCodices();
+        sendCodices();
+        
+        inst = NetworkTableInstance.getDefault();
+        gyroTable = inst.getTable("EGYRO");
+        gyroTest = gyroTable.getEntry("ID");
 
-       registerCodices();
-       sendCodices();
-
-       NetworkTableInstance inst = NetworkTableInstance.getDefault();
-       NetworkTable gyro = inst.getTable("EGYRO");
-       NetworkTableEntry gyroTest = gyro.getEntry("ID");
-       System.out.println("*****              "+gyroTest.getNumber(0)+"              *****");
-       return this;
+        return this;
     }
 
-  
+
     public void registerCodices() {
         cod.registerCodex(EGyro.class);
         cod.registerCodex(EDriveData.class);
@@ -40,4 +46,17 @@ public class Data {
         cod.send(drive);
     }
 
+    public void setGyroCodexTable(Double data) {
+        imu.set(0, data);
+    }
+    public Number getgyroCodexTable() {
+        return imu.get(0);
+    }
+    public Double getGyroCodexYaw() {
+        return imu.get(0);
+    }
+    public Number getGyroNTHeading() {
+        return gyroTest.getNumber(0);
+    }
+    
 }
