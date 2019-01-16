@@ -32,7 +32,14 @@ public class Data {
         gyroTable = inst.getTable("EGYRO");
         gyroTest = gyroTable.getEntry("ID");
 
-        return this;
+       registerCodices();
+       sendCodices();
+
+       NetworkTableInstance inst = NetworkTableInstance.getDefault();
+       NetworkTable gyro = inst.getTable("EGYRO");
+       NetworkTableEntry gyroTest = gyro.getEntry("ID");
+       System.out.println("*****              "+gyroTest.getNumber(0)+"              *****");
+       return this;
     }
 
 
