@@ -2,6 +2,9 @@ package us.ilite.robot;
 
 import com.flybotix.hfr.codex.Codex;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.io.CodexNetworkTables;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
@@ -19,6 +22,10 @@ public class Data {
        registerCodices();
        sendCodices();
 
+       NetworkTableInstance inst = NetworkTableInstance.getDefault();
+       NetworkTable gyro = inst.getTable("EGYRO");
+       NetworkTableEntry gyroTest = gyro.getEntry("ID");
+       System.out.println("*****              "+gyroTest.getNumber(0)+"              *****");
        return this;
     }
 
