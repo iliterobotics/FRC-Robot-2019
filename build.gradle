@@ -13,6 +13,9 @@ allprojects {
     // We want the entire project to be openable in an IDE
 	apply plugin: "idea"
 	apply plugin: "eclipse"
+	
+	sourceCompatibility = JavaVersion.VERSION_11
+	targetCompatibility = JavaVersion.VERSION_11
 
 }
 
