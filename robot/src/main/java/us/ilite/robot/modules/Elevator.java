@@ -2,6 +2,7 @@
 package us.ilite.robot.modules;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.team254.lib.util.Units;
 
 import us.ilite.common.config.SystemSettings;
 // import com.team254.lib.drivers.TalonSRXFactory;
@@ -23,6 +24,7 @@ public class Elevator extends Module {
     private double mDesiredPower = 0;
     private boolean mAtDesiredPosition;
     private boolean mDesiredDirectionUp, mDesiredDirectionDown;
+    private boolean mDesiredPositionAboveInitial = false;
 
     //TODO need to figure out these encoder thresholds
     private int mDownEncoderThreshold = 0, mUpEncoderThreshold = 0;
@@ -147,8 +149,74 @@ public class Elevator extends Module {
         mPosition = EElevatorPosition.TOP;
     }
 
+    double lastError = 0;
+    public void setPositon(EElevatorPosition pDesiredPosition) {
+        //TODO log dis
+        mDesiredPositionAboveInitial = (mCurrentEncoderTicks < pDesiredPosition.mEncoderThreshold);
+        
+        //Error describes the deficit of ticks between our current position and the position we are trying to get to.
+        double error = mPosition.mEncoderThreshold = mCurrentEncoderTicks;
+
+        //This is the value we used last year. Probably going to change and use the PID class
+        double kP = 1d / 2000d * 1.2;
+
+        mAtDesiredPosition = (Math.abs(error = lastError) <= SystemSettings.kELEVATOR_ENCODER_DEADBAND);
+        //If we make it to or beyond our position, then hold.
+        if (mAtDesiredPosition) {
+            mState = EElevatorState.HOLD;
+        } else {
+            mState = EElevatorState.NORMAL;
+
+            mDesiredPower = clamp(kP * error, mPosition.mSetPointPower);
+
+            lastError = error;
+        }
+
+    }
+
     public int getCurrentEncoderTicks() {
         return mCurrentEncoderTicks;
+    }
+
+    public void setPower( int pPower ) {
+        mDesiredPower = pPower;
+    }
+
+    //TODO idk if this is the best way to get the position
+    public boolean getDirection() {
+        return mDesiredDirectionUp;
+    }
+
+    public double getDesiredPower() {
+        return mDesiredPower;
+    }
+
+
+    //Getting voltage and current
+    public double getMasterVoltage() {
+        return mMasterElevator.getMotorOutputVoltage();
+    }
+
+    public double getFollowerVoltage() {
+        return mFollowerElevator.getMotorOutputVoltage();
+    }
+
+    public double getMasterCurrent() {
+        return mMasterElevator.getOutputCurrent();
+    }
+
+    public double getFollowerCurrent() {
+        return mFollowerElevator.getOutputCurrent();
+    }
+
+    public boolean finishedPositioning() {
+        return mAtDesiredPosition;
+    }
+
+    public static double clamp(double pVal, double pMaxMagnitude) {
+        double value = Math.abs(pVal);
+        value = Math.min(value, pMaxMagnitude);
+        return value * (pVal > 0d ? 1d : -1d);
     }
 
 }

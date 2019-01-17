@@ -87,6 +87,9 @@ public class SystemSettings extends ConstantsBase {
     //TODO Actually change this please
     public static int kTopEncoderTicks = 0;
 
+    //This is the value that it was last year. It will most likely change. 
+    public static int kELEVATOR_ENCODER_DEADBAND = 20;
+
     // =============================================================================
     // Closed-Loop Velocity Constants
     // =============================================================================

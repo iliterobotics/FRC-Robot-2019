@@ -7,9 +7,9 @@ public enum EElevatorPosition {
     MIDDLE(0d,0),
     TOP(0d,0);
 
-    double inches;
-    double mEncoderThreshold;
-    double mSetPointPower;
+    public double inches;
+    public double mEncoderThreshold;
+    public double mSetPointPower;
 
     //TODO implement PID
 
@@ -17,6 +17,14 @@ public enum EElevatorPosition {
         this.mSetPointPower = pPower;
         this.mEncoderThreshold = pEncoderThreshold;
 
+    }
+
+    public double getSetPointPower() {
+        return mSetPointPower;
+    }
+
+    public double mEncoderThreshold() {
+        return mEncoderThreshold;
     }
     
 }
