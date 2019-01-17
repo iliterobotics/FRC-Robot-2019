@@ -3,6 +3,7 @@ package us.ilite.robot;
 import java.util.Collection;
 
 import com.flybotix.hfr.codex.Codex;
+import com.flybotix.hfr.io.sender.ISendProtocol;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -18,24 +19,19 @@ public class Data {
     public Codex<Double, EDriveData> drive = Codex.of.thisEnum(EDriveData.class);
 
     private NetworkTableInstance inst;
-    private NetworkTableEntry gyroTest;
-    private NetworkTable gyroTable;
+    // private NetworkTableEntry gyroTest;
+    // private NetworkTable gyroTable;
 
-    public Data simulated() {
+    public Data() {
         imu = Codex.of.thisEnum(EGyro.class);
         drive = Codex.of.thisEnum(EDriveData.class);
         
+        inst = NetworkTableInstance.getDefault();
+        // gyroTable = inst.getTable("EGYRO"); //gyro table
+        // gyroTest = gyroTable.getEntry("ID"); //gyro id
+
         registerCodices();
         sendCodices();
-        
-        inst = NetworkTableInstance.getDefault();
-        gyroTable = inst.getTable("EGYRO"); //gyro table
-        gyroTest = gyroTable.getEntry("ID"); //gyro id
-
-       registerCodices();
-       sendCodices();
-
-       return this;
     }
 
 
@@ -56,7 +52,7 @@ public class Data {
         return imu.get(0); //index 0 is yaw
     }
     public Number getGyroNTHeading() { //WIP
-        return gyroTest.getNumber(0);
+        return null;
     }
     
 }

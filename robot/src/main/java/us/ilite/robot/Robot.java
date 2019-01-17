@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
     private ModuleList mRunningModules = new ModuleList();
 
     private Clock mClock = new Clock();
-    private Data mData = new Data().simulated();
+    private Data mData = new Data();
     private Timer initTimer = new Timer();
 
     // Module declarations here

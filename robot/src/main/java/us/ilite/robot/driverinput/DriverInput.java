@@ -39,8 +39,8 @@ public class DriverInput extends Module {
         this.driveTrain = pDrivetrain;
         this.mData = pData;
         this.desiredCommandQueue = new LinkedList<>();
-        this.mDriverInputCodex = mData.driverinput;
-        this.mOperatorInputCodex = mData.operatorinput;
+        // this.mDriverInputCodex = mData.driverinput;
+        // this.mOperatorInputCodex = mData.operatorinput;
         this.mDriverJoystick = new Joystick(0);
         this.mOperatorJoystick = new Joystick(1);
     }
@@ -66,7 +66,7 @@ public class DriverInput extends Module {
 //		else
 //		  scaleInputs = false;
         if (!runCommandQueue) {
-            updateDriveTrain();
+            // updateDriveTrain();
         }
         updateCommands();
 
