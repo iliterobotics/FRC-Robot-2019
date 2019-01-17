@@ -12,87 +12,40 @@ import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.util.Conversions;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.modules.DriveMessage;
+import us.ilite.robot.modules.EElevatorPosition;
 
 
 
-public class SimElevatorHardware implements IDriveHardware {
+public class SimElevatorHardware implements IElevatorHardware {
     
-
-    private final ILog mLogger = Logger.createLog(DriveHardware.class);
-
-    // private final SimTalonEncoder mEncoderEstimator;
+    private SimTalonEncoder mEncoderEstimator;
 
     public SimTalonEncoder mMasterSim = new SimTalonEncoder();
-    public SimTalonEncoder mFollowerSim = new SimTalonEncoder();
 
     private Clock mClock;
     private double mLastTime = 0d;
 
-    // public SimElevatorHardware
-
-
-    public void set(DriveMessage pDriveMessage) {
-
-    }
-
-    public void configureMode(ControlMode pControlMode) {
-
-    }
-
-    public Rotation2d getHeading() {
-        return null;
-    }
-
-    public double getLeftInches() {
-        return null;
-    }
-
-    public double getRightInches() {
-        return null;
-    }
-
-    public double getLeftVelInches() {
-        return null;
-    }
-
-    public double getRightVelInches() {
-        return null;
-    }
-
-    public int getLeftVelTicks() {
-        return null;
-    }
-
-    public int getRightVelTicks() {
-        return null;
-    }
-
-    public double getLeftCurrent() {
-
-    }
-
-    public double getRightCurrent() {
-
-    }
-
-    public double getLeftVoltage() {
-
-    }
-
-    public double getRightVoltage() {
-
+    public SimElevatorHardware(Clock pClock) {
+        this.mClock = pClock;
     }
 
     public void init() {
-
+        zero();
     }
 
     public void zero() {
+        mEncoderEstimator.zero();
 
+        mMasterSim.zero();
+
+    }
+    
+    public void set(EElevatorPosition pDesiredPosition) {
+        
     }
 
     public boolean checkHardware() {
-
+        return true;
     }
 
 }
