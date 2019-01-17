@@ -2,10 +2,12 @@ package us.ilite.robot.driverinput;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.flybotix.hfr.codex.Codex;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Joystick;
 import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.robot.Data;
@@ -19,16 +21,17 @@ import java.util.Queue;
 
 public class DriverInput extends Module {
 
+    private static final double DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
+
     protected final Drive driveTrain;
-    private boolean scaleInputs;
-    private boolean currentDriverToggle, lastDriverToggle, currentOperatorToggle, lastOperatorToggle;
 
     private Queue<ICommand> desiredCommandQueue;
-    private boolean lastCanRunCommandQueue;
-    private boolean canRunCommandQueue;
+    private boolean lastRunCommandQueue;
+    private boolean runCommandQueue;
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
 
+    private Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
 
     private Data mData;
 
@@ -36,16 +39,17 @@ public class DriverInput extends Module {
         this.driveTrain = pDrivetrain;
         this.mData = pData;
         this.desiredCommandQueue = new LinkedList<>();
+        this.mDriverInputCodex = mData.driverinput;
+        this.mOperatorInputCodex = mData.operatorinput;
         this.mDriverJoystick = new Joystick(0);
         this.mOperatorJoystick = new Joystick(1);
-        scaleInputs = false;
     }
 
     @Override
     public void modeInit(double pNow) {
 // TODO Auto-generated method stub
 
-        canRunCommandQueue = lastCanRunCommandQueue = false;
+        runCommandQueue = lastRunCommandQueue = false;
 
     }
 
@@ -61,7 +65,7 @@ public class DriverInput extends Module {
 //		  scaleInputs = true;
 //		else
 //		  scaleInputs = false;
-        if (!canRunCommandQueue) {
+        if (!runCommandQueue) {
             updateDriveTrain();
         }
         updateCommands();
@@ -70,13 +74,38 @@ public class DriverInput extends Module {
 
     private void updateCommands() {
 
-//canRunCommandQueue = is a button triggered?
+        runCommandQueue = false;
+        for(ELogitech310 l : SystemSettings.kTeleopCommandTriggers) {
+            if(mDriverInputCodex.isSet(l)) {
+                runCommandQueue = true;
+            }
+        }
 
         if (shouldInitializeCommandQueue()) {
             desiredCommandQueue.clear();
-//desiredCommandQueue.add(<command>);
+            ETrackingType trackingType = null;
+            // Switch the limelight to a pipeline and track
+            if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN)) {
+                trackingType = ETrackingType.TARGET_TRACK;
+            } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN)) {
+                trackingType = ETrackingType.CARGO_TRACK;
+            } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN)) {
+                trackingType = ETrackingType.HATCH_TRACK;
+            }
+
+            double pipelineNum;
+            if(trackingType != null) {
+                if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_LEFT)) {
+                    pipelineNum = trackingType.getLeftPipelineNum();
+                } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT)) {
+                    pipelineNum = trackingType.getRightPipelineNum();
+                }
+            }
+
+            // Set limelight pipeline
+            // Add command to the queue
         }
-        lastCanRunCommandQueue = canRunCommandQueue;
+        lastRunCommandQueue = runCommandQueue;
     }
 
 
@@ -90,9 +119,9 @@ public class DriverInput extends Module {
 
 //		if(mElevatorModule.decelerateHeight())
 //		{
-//		  throttle = Utils.clamp(throttle, 0.5);
+        // throttle = Utils.clamp(throttle, 0.5);
 //		}
-        if (mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > 0.5) {
+        if (mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
             throttle *= SystemSettings.SNAIL_MODE_THROTTLE_LIMITER;
             rotate *= SystemSettings.SNAIL_MODE_ROTATE_LIMITER;
         }
@@ -121,13 +150,15 @@ public class DriverInput extends Module {
 
     }
 
-
+    /**
+     * If we weren't running commands last cycle, initialize.
+     */
     public boolean shouldInitializeCommandQueue() {
-        return lastCanRunCommandQueue == false && canRunCommandQueue == true;
+        return lastRunCommandQueue == false && runCommandQueue == true;
     }
 
     public boolean canRunCommandQueue() {
-        return canRunCommandQueue;
+        return runCommandQueue;
     }
 
     public Queue<ICommand> getDesiredCommandQueue() {

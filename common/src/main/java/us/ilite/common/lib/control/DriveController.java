@@ -1,15 +1,18 @@
 package us.ilite.common.lib.control;
 
+import com.team254.frc2018.planners.DriveMotionPlanner;
+import com.team254.frc2018.planners.NonlinearFeedbackController;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.physics.DCMotorTransmission;
 import com.team254.lib.physics.DifferentialDrive;
+import com.team254.lib.physics.DriveOutput;
 import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
-import us.ilite.common.lib.odometry.Kinematics;
+import com.team254.frc2018.Kinematics;
 import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.RobotProfile;
 
@@ -17,8 +20,6 @@ import us.ilite.common.lib.RobotProfile;
  * High level manager for pose tracking, path/trajectory following, and pose stabilization.
  */
 public class DriveController {
-
-    private final double kDt;
 
     private final RobotProfile mRobotProfile;
     private final DCMotorTransmission mLeftTransmission, mRightTransmission;
@@ -29,7 +30,7 @@ public class DriveController {
     private final DriveMotionPlanner mDriveMotionPlanner;
     private final RobotStateEstimator mRobotStateEstimator;
 
-    public DriveController(RobotProfile pRobotProfile, double pDt) {
+    public DriveController(RobotProfile pRobotProfile) {
         mRobotProfile = pRobotProfile;
         // Invert our feedforward constants. Torque constant is kT = I * kA, where I is the robot modeled as a cylindrical load on the transmission and kA is the inverted feedforward.
         mLeftTransmission = new DCMotorTransmission(1 / mRobotProfile.getLeftVoltPerSpeed(), mRobotProfile.getCylindricalMoi() / mRobotProfile.getLeftVoltPerAccel(), mRobotProfile.getLeftFrictionVoltage());
@@ -41,8 +42,6 @@ public class DriveController {
         mController = new NonlinearFeedbackController(mDriveModel, 0.65, 0.175);
         mDriveMotionPlanner = new DriveMotionPlanner(mDriveModel, DriveMotionPlanner.PlannerMode.FEEDFORWARD_ONLY, mController);
         mRobotStateEstimator = new RobotStateEstimator(mKinematicModel);
-
-        kDt = pDt;
 
     }
 

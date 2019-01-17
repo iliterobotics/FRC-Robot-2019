@@ -2,6 +2,7 @@ plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2019.1.1" apply false
     id 'org.openjfx.javafxplugin' version '0.0.5' apply false
+    id 'pmd'
 }
 
 // Set this to true to enable desktop support.
@@ -12,14 +13,19 @@ allprojects {
     // We want the entire project to be openable in an IDE
 	apply plugin: "idea"
 	apply plugin: "eclipse"
+	
+	sourceCompatibility = JavaVersion.VERSION_11
+	targetCompatibility = JavaVersion.VERSION_11
 
 }
 
 subprojects {
-
     apply plugin: "java"
     apply plugin: "edu.wpi.first.GradleRIO"
-
+    apply plugin: 'pmd'
+    pmd {
+        ignoreFailures = true
+    }
     // Maven central needed for JUnit
     repositories {
         mavenCentral()
@@ -30,6 +36,7 @@ subprojects {
                 // The directory lib will always be one folder "above" a subproject folder - thus the ".."
                 dirs '../lib'
             }
+	maven { url 'https://jitpack.io' }
     }
 
     dependencies {

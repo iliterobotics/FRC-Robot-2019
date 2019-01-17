@@ -1,8 +1,13 @@
 package us.ilite.common.config;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import us.ilite.common.lib.util.ConstantsBase;
+import com.team254.lib.util.ConstantsBase;
+
+import us.ilite.common.types.ETrackingType;
+import us.ilite.common.types.input.ELogitech310;
 
 public class SystemSettings extends ConstantsBase {
 
@@ -58,6 +63,12 @@ public class SystemSettings extends ConstantsBase {
     public static int     JOYSTICK_PORT_DRIVER = 0;
     public static int     JOYSTICK_PORT_OPERATOR = 1;
     public static int     JOYSTICK_PORT_TESTER = 2;
+
+    public static int kLimelightDefaultPipeline = ETrackingType.TARGET_TRACK.getRightPipelineNum();
+    public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN, 
+                                                                            DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN,
+                                                                            DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN);
+    
 
     // =============================================================================
     // Motion Magic Constants

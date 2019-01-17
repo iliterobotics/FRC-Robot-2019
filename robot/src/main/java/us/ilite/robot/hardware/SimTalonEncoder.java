@@ -1,7 +1,5 @@
 package us.ilite.robot.hardware;
 
-import us.ilite.common.lib.util.Conversions;
-
 /**
  * Keeps track of an encoder's position, velocity, and acceleration based on
  * velocity

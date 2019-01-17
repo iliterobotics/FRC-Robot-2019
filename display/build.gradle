@@ -2,6 +2,7 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'application'
 apply plugin: 'org.openjfx.javafxplugin'
+
 mainClassName = 'us.ilite.display.Main'
 
 apply from: 'plot.gradle'
@@ -18,6 +19,7 @@ dependencies {
     compile project(':robot')
 
     compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
+
     compile name: 'jfxrt'
 
     runtime group: "edu.wpi.first.ntcore", name: "ntcore-jni", version: "2019.+", classifier: "all"

@@ -5,10 +5,11 @@ plugins {
 
 dependencies {
 
-    compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
+	implementation 'com.github.flybotix:highfrequencyrobots:2019.1.12'
 
     // Required for 254's utils (PolynomialRegression)
 	compile group: 'gov.nist.math', name: 'jama', version:'1.0.3'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
     compile name: 'json-simple-1.1.1'
     compile name: 'poof-power-up-lib'
 }
