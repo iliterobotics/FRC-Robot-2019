@@ -55,7 +55,9 @@ public class AutonConfigDisplay extends Application {
   
   // private Integer[] preferredCubeActions = new Integer[]{-1, -1, -1, -1};
   private double mDelay = 0.0;
-  private static Integer mStartingPosition = EStartingPosition.values()[0].ordinal();
+  private static Integer mStartingPosition;
+  private static Integer mCargoAction;
+  private static Integer mHatchAction;
   // private static Integer mAutonPath = EDriverControlMode.values()[0].ordinal();
   
   // private String awesomeCss = AutonConfigDisplay.class.getResource("AwesomeStyle.css").toExternalForm();
@@ -67,6 +69,8 @@ public class AutonConfigDisplay extends Application {
   
   @Override
   public void start(Stage primaryStage) throws Exception { //Starts Program
+    setDefaults();
+
     BorderPane root = new BorderPane();
     Scene scene = new Scene(root, 800, 600);
     
@@ -106,14 +110,15 @@ public class AutonConfigDisplay extends Application {
     
     HBox selectionBoxes = new HBox(
         //This is the dropdown for selecting autonomous type
-    		// labeledDropdown(EStartingPosition.class),
-    		// labeledDropdown(EDriverControlMode.class),
+    		labeledDropdown(EStartingPosition.class),
+        labeledDropdown(EHatchAction.class),
+        labeledDropdown(ECargoAction.class),
     		delayLabel,
     		delayText);
     
     HBox modeOptions = new HBox(send);
-    // modeOptions.setMargin(send, new Insets(0, 40, 0, 20));
-    
+    //modeOptions.setMargin(send, new Insets(0, 40, 0, 20));
+
     Thread dataSender = new Thread(() -> {
       while(!Thread.interrupted()) {
         // sendData();
@@ -149,22 +154,22 @@ public class AutonConfigDisplay extends Application {
 	    combo.setOnAction(
 	        event -> {
 	          System.out.println("Action triggered!");
-	          String enumName = pEnumeration.getSimpleName();
-  	        // if(enumName.equals(ECross.class.getSimpleName())) {
-  	        // 	mCross = combo.getSelectionModel().getSelectedItem().ordinal();
-            //   System.out.println("Updating cross: " + mCross);
-  	        // }
-  	        // if(enumName.equals(EStartingPosition.class.getSimpleName())){
-  	        // 	mStartingPosition = combo.getSelectionModel().getSelectedItem().ordinal();
-  	        // 	System.out.println("Updating position: " + mStartingPosition);
-  	        // }
-  	        // if(enumName.equals(EDriverControlMode.class.getSimpleName())){
-            //   mDriverControlMode = combo.getSelectionModel().getSelectedItem().ordinal();
-            //   System.out.println("Updating controlmode: " + mStartingPosition);
-            // }
+            String enumName = pEnumeration.getSimpleName();
+            if(enumName.equals(EStartingPosition.class.getSimpleName())){
+  	        	mStartingPosition = combo.getSelectionModel().getSelectedItem().ordinal();
+  	        	System.out.println("Updating position: " + mStartingPosition);
+  	        }
+  	        if(enumName.equals(ECargoAction.class.getSimpleName())) {
+  	        mCargoAction = combo.getSelectionModel().getSelectedItem().ordinal();
+              System.out.println("Updating cargo action: " + mCargoAction);
+  	        }
+  	        if(enumName.equals(EHatchAction.class.getSimpleName())){
+              mHatchAction = combo.getSelectionModel().getSelectedItem().ordinal();
+              System.out.println("Updating hatch action: " + mHatchAction);
+            }
 	        }
 	    );
-	    combo.setValue(enums.get(0));
+	    if(enums.size() > 0) combo.setValue(enums.get(0));
 	    VBox result = new VBox(label, combo);
 	    return result;
   }
@@ -280,4 +285,10 @@ public class AutonConfigDisplay extends Application {
     mediaPlayer.play();
   }
   
+  private void setDefaults() {
+    if(EStartingPosition.values().length > 0) mStartingPosition = EStartingPosition.values()[0].ordinal();
+    if(ECargoAction.values().length > 0) mCargoAction = ECargoAction.values()[0].ordinal();
+    if(EHatchAction.values().length > 0) mHatchAction = EHatchAction.values()[0].ordinal();
+  }
+
 }
