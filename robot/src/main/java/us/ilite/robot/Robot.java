@@ -43,6 +43,8 @@ public class Robot extends TimedRobot {
     private Drive mDrive = new Drive(mData, mDriveController);
     private DriverInput mDriverInput = new DriverInput(mDrive, mData);
 
+    private UltrasonicSensor mUltrasonicSensor = new UltrasonicSensor();
+
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
 
     @Override
@@ -118,6 +120,8 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
+        Syste.out.println( mUltrasonicSensor.getDistanceInches() );
+
     }
 
     @Override
