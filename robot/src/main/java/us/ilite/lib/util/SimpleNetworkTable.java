@@ -34,6 +34,20 @@ public class SimpleNetworkTable {
         netTable.getEntry(key).forceSetNumberArray(value);
     }
 
+    /**
+     *
+     * @param name Allows you to define a name for the codex so two of the same type can be written at once.
+     * @param pCodex The codex you want to dump to NetworkTables.
+     * @param pTime The current time.
+     */
+    public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(String name, Codex<V, E> pCodex, double pTime) {
+        Class<E> enumClass = pCodex.meta().getEnum();
+        E [] enumConstants = enumClass.getEnumConstants();
+        for(E e : enumConstants) {
+            Double value = (Double) pCodex.get(e);
+            if(e != null) logNumber(name, e, value);
+        }
+        logNumber(name, SystemSettings.kLoggingTimestampKey, pTime);
     public synchronized void putString(String key, String value) {
         netTable.getEntry(key).forceSetString(value);
     }

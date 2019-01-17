@@ -62,6 +62,7 @@ public class Drive extends Loop {
 		}
 
 		this.mDriveHardware.init();
+		startCsvLogging();
 	}
 
 	public Drive(Data data, DriveController pDriveController) {
@@ -69,7 +70,7 @@ public class Drive extends Loop {
 	}
 
 	public void startCsvLogging() {
-		mDebugLogger = new ReflectingCSVWriter<>("/home/lvuser/debug.csv", DebugOutput.class);
+		mDebugLogger = new ReflectingCSVWriter<>("~/debug.csv", DebugOutput.class);
 		debugOutput = new DebugOutput();
 	}
 
@@ -186,6 +187,8 @@ public class Drive extends Loop {
 				// debugOutput.outputToLiveDashboard();
 
 				break;
+			default:
+				mLogger.warn("Got drive state: " + mDriveState+" which is unhandled");
 		}
 		mDriveHardware.set(mDriveMessage);
 	}

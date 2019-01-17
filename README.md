@@ -3,19 +3,27 @@
 
 This is the incubating software framework for ILITE's 2019 season.
 
+## Credits
+- Team 254 for their 2018 robot code, which can be found [here](https://github.com/Team254/FRC-2018-Public). We make heavy use of `com.team254.lib`, as well as extended versions of their motion planning and odometry code.  
+- Jaci for [GradleRIO](https://github.com/wpilibsuite/GradleRIO), as well as the [GNUPlot integration](https://github.com/GrappleRobotics/Pathfinder/blob/master/Pathfinder/plot.gradle)
+- Jesse for the [highfrequencyrobots](https://github.com/flybotix/highfrequencyrobots) project, which allows us to define data structures for robot telemetry as well as internal use.
+- Team 1678 for their excellent README section on contributing code with Git, which can be found [here](https://github.com/frc1678/robot-code-public)
+
 ## Project Structure
 
 The project consists of three subprojects: `robot`, `display`, and `common`.
 By separating code into subprojects, we can ensure that `robot` doesn't accidentally
-call JavaFX libraries from the `display` project, and vice-versa. Instead, we can allow
+call JavaFX libraries from the `display` project, and vice-versa. Instead, we allow
 the `robot` and `display` packages to both use code in the `common` package
 
 ### Robot
 The `robot` subproject contains code running on the actual robot.
 ```$xslt
-us.ilite.com.team254.lib - Contains hardware drivers and utilities that are dependent on WPILib components.
+com.team254.lib - Contains hardware drivers and utilities from 254.
+us.ilite.lib - Contains hardware drivers and utilites we've written from year-to-year.
 us.ilite.robot - Parent package for all robot code
     commands - Contains autonomous commands
+    driverinput - Contains the base class handling driver input and any additional control schemes
     hardware - Contains hardware classes that allow modules to interface with hardware
     loops - Contains high-frequency loops running on the robot
     modules - Contains the modules that control subsystems on the robot
@@ -25,11 +33,11 @@ us.ilite.robot - Parent package for all robot code
 The `common` subproject contains code shared by the `robot` and `display` subprojects, such
 as common data structures + more.
 ```$xslt
-config - contains constants, etc.
-com.team254.lib - contains generic classes used from year-to-year
-    geometry - Contains geometry classes used to represent robot movement
-    util - Utility classes that are not dependent of WPILib
-types - Contains enumerations defining common data structure used throughout other subprojects
+com.team254.lib - Contains math, modeling, and utility classes from 254
+us.ilite.common.config - Contains constants, etc.
+us.ilite.common.io - Contains extensions of the highfrequencyrobots framework that rely on NetworkTables
+us.ilite.lib - Contains utilities, etc. we use from year-to-year
+us.ilite.common.types - Contains enumerations defining common data structures to be used throughout other subprojects
 ```
 
 ### Display
@@ -40,13 +48,12 @@ logging - Contains logging code
 display - Contains display code
 ```
 
-## VSCode
-Install VSCode from [here](https://code.visualstudio.com/Download)
+## VSCode and the WPILib Dev Environment
+You can find the instructions [here](https://wpilib.screenstepslive.com/s/currentCS/m/getting_started/l/999999-installing-c-and-java-development-tools-for-frc).
 
 ### Extensions
 You'll need the following extensions:
 #### Mandatory
-- Java Extension Pack - Provides Java support for VSCode.
 - VS Live Share - Edit code together in real-time, or review code with a bunch of people.
 - Gradle Language Support - Provides language support for Gradle. Lets us better edit gradle files.
 #### Optional
@@ -57,32 +64,30 @@ You'll need the following extensions:
 - A nice-looking theme
 
 ### Setting up the JDK
-You'll have to provide VSCode with the location of your JDK installation. If you don't have
-the JDK installed, click [here](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+You should've already set the location of your JDK installation in the above tutorial. If you need to set it again, here are the instructions.
 1. Navigate to `File -> Preferences -> Settings`
 1. Search for "jdk" in the search bar
 1. Click `Java Configuration` on the left-hand sidebar. The only setting visible should be `Java: Home`
 1. Click on `Edit in settings.json`
-1. The right-hand side stores any settings made by the user. Add a line like this: `"java.home": "/Path/To/JDK/Installation",`
-    - If you don't know where your JDK installation is, it's probably in `C:/Program Files/Java/jdk1.x.x_xxx`, where the `x`'s are version numbers specific to your installation.
-1. You're done! Wait a bit for the Java Language Server to start up and recognize your project (you should see a little spinning icon at the bottom of your screen),
-then test it out by clicking on a variable type (like `Module` or `Drive` or `Double`) and pressing <kbd>F12</kbd>. If all goes well, you should be taken to the definition of that class.
+1. The right-hand side stores any settings made by the user. Add a line like this at the end of the file: `"java.home": "/Path/To/JDK/Installation"`
+    - If you don't know where your JDK installation is, it's probably in `C:\Users\<Your Username>\frc2019\jdk`.
+1. You're done! Wait a bit for the Java Language Server to start up and recognize your project (you should see a little spinning icon at the bottom left of your screen), then test it out by clicking on a variable type (like `Module` or `Drive` or `Double`) and pressing <kbd>F12</kbd>. If all goes well, you should be taken to the definition of that class.
 
 ### Opening Projects
 It's pretty easy. `File -> Open Folder...`, then navigate to the repository you have cloned (The folder named `FRC-Robot-YYYY`). 
 
 ### Want to learn more?
-[Setting up Java and VSCode](https://code.visualstudio.com/docs/java/java-tutorial)
-
 [Code Navigation](https://code.visualstudio.com/docs/editor/editingevolved)
 
 [Basic Editing](https://code.visualstudio.com/docs/editor/codebasics)
 
 
 ## Building and Deploying
-- To build, run `gradlew build`
-- To deploy to the robot, run `gradlew deploy`
+- Run these commands from Git Bash
+- To build, run `./gradlew build`
+- To deploy to the robot, run `./gradlew deploy`
     - Remember to **build** before you **deploy**
+- To do both at once, run `./gradlew build deploy`
 
 
 ## Contributing
@@ -131,7 +136,7 @@ To update your PR, just push to the branch you made before.
 
 ### VSCode Trouble?
 
-If you're having trouble with IntelliJ, run `gradlew clean build`. This
+If you're having trouble with IntelliJ, run `./gradlew clean build`. This
 deletes any compiled Java files and rebuilds the project.
 
 ### Tools
@@ -147,9 +152,31 @@ You can run any of these with `./gradlew <insert-tool-name-here>`
 - You can also see this from the driver station
 
 #### OutlineViewer
-- Like ShuffleBoard, but you can only view raw values and can't set values. Useful for fast debugging.
+- Like ShuffleBoard, but you can only view raw values and can't set values. Useful for fast debugging. Lets you run a NetworkTables server locally without extra code **or** a robot.
 
 ### Other remotes
 
 You can add "remotes" to github that refer to other people's robot code repos. This allows you to, for example, take a look at someone else's code to look over it, you would be able to `git checkout wesley/branch-that-breaks-everything` to see it. To add a remote, just do `git remote add <name_of_person> https://github.com/<username>/robot-code`. Once you've done this, you can use `git fetch <name_of_person>` to get updated code from other people's repos!
 
+# Static Code analyisis 
+Currently PMD is added to all of the sub projects in the root project's build.gradle, located at ./build.gradle. 
+The PMD plugin is applied to all sub projects. 
+## What is PMD
+![PMD](https://pmd.github.io/img/pmd_logo.png) is a static code analyizer. Documentation is located at: [PMD](https://pmd.github.io/)
+## How to run
+From the root project run: 
+```
+./gradlew clean check
+```
+##Ignore Failures
+By default, running PMD will cause the gradle task to fail if any errors are found. To turn that off, in the pmd block of the root project's build.gradle should be set to: 
+```
+pmd {
+   ignoreFailures = false
+}
+```
+##Results Location
+The results are located in the build directory in each of the sub projects: 
+./common/build/reports/pmd/main.html
+./display/build/reports/pmd/main/html
+./robot/build/reports/pmd/main/html
