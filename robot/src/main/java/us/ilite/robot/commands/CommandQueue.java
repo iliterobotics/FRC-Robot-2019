@@ -34,7 +34,7 @@ public class CommandQueue implements ICommand {
                 initCurrentCommand(pNow);
             }
 
-        } else if(mCommandQueue.isEmpty()) {
+        } else if(isDone()) {
             return true;
         } else {
             mLogger.error("Ran into null command.");
@@ -55,6 +55,14 @@ public class CommandQueue implements ICommand {
     public void setCommands(ICommand ... pCommands) {
         mCommandQueue.clear();
         mCommandQueue.addAll(Arrays.asList(pCommands));
+    }
+
+    public void clear() {
+        mCommandQueue.clear();
+    }
+
+    public boolean isDone() {
+        return mCommandQueue.isEmpty();
     }
 
 }

@@ -20,6 +20,7 @@ import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.ModuleList;
+import us.ilite.robot.modules.Superstructure;
 
 import java.util.Arrays;
 import java.util.List;
@@ -39,9 +40,10 @@ public class Robot extends TimedRobot {
     private Timer initTimer = new Timer();
 
     // Module declarations here
+    private Superstructure mSuperstructure;
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
-    private DriverInput mDriverInput = new DriverInput(mDrive, mData);
+    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData);
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
 

@@ -68,7 +68,9 @@ public class SystemSettings extends ConstantsBase {
     public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN, 
                                                                             DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN,
                                                                             DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN);
-    
+    public static List<ELogitech310> kAutonOverrideTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_THROTTLE_AXIS,
+                                                                            DriveTeamInputMap.DRIVER_TURN_AXIS);
+    public static double kAutonOverrideAxisThreshold = 0.3;
 
     // =============================================================================
     // Motion Magic Constants

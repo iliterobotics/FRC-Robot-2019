@@ -15,6 +15,7 @@ import us.ilite.robot.commands.ICommand;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.Module;
+import us.ilite.robot.modules.Superstructure;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -24,10 +25,8 @@ public class DriverInput extends Module {
     private static final double DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
 
     protected final Drive driveTrain;
+    protected final Superstructure mSuperstructure;
 
-    private Queue<ICommand> desiredCommandQueue;
-    private boolean lastRunCommandQueue;
-    private boolean runCommandQueue;
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
 
@@ -35,10 +34,10 @@ public class DriverInput extends Module {
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Data pData) {
+    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData) {
         this.driveTrain = pDrivetrain;
+        this.mSuperstructure = pSuperstructure;
         this.mData = pData;
-        this.desiredCommandQueue = new LinkedList<>();
         this.mDriverInputCodex = mData.driverinput;
         this.mOperatorInputCodex = mData.operatorinput;
         this.mDriverJoystick = new Joystick(0);
@@ -48,8 +47,6 @@ public class DriverInput extends Module {
     @Override
     public void modeInit(double pNow) {
 // TODO Auto-generated method stub
-
-        runCommandQueue = lastRunCommandQueue = false;
 
     }
 
@@ -65,49 +62,28 @@ public class DriverInput extends Module {
 //		  scaleInputs = true;
 //		else
 //		  scaleInputs = false;
-        if (!runCommandQueue) {
+
+        /*
+        If we aren't already running commands and the driver is pressing a button that triggers a command,
+        set the superstructure command queue based off of buttons
+        */
+        if(!mSuperstructure.isRunningCommands() && isDriverAllowingCommands()) {
+            updateVision();
+        /*
+        If we're already running commands and the driver releases the button that triggers the command,
+        stop running commands.
+        */
+        } else if(mSuperstructure.isRunningCommands() && !isDriverAllowingCommands()) {
+            mSuperstructure.stopRunningCommands();
+        } else if(mSuperstructure.isRunningCommands() && isAutoOverridePressed()) {
+            mSuperstructure.stopRunningCommands();
+        }
+
+        if (!mSuperstructure.isRunningCommands()) {
             updateDriveTrain();
-        }
-        updateCommands();
+        } 
 
     }
-
-    private void updateCommands() {
-
-        runCommandQueue = false;
-        for(ELogitech310 l : SystemSettings.kTeleopCommandTriggers) {
-            if(mDriverInputCodex.isSet(l)) {
-                runCommandQueue = true;
-            }
-        }
-
-        if (shouldInitializeCommandQueue()) {
-            desiredCommandQueue.clear();
-            ETrackingType trackingType = null;
-            // Switch the limelight to a pipeline and track
-            if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN)) {
-                trackingType = ETrackingType.TARGET_TRACK;
-            } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN)) {
-                trackingType = ETrackingType.CARGO_TRACK;
-            } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN)) {
-                trackingType = ETrackingType.HATCH_TRACK;
-            }
-
-            double pipelineNum;
-            if(trackingType != null) {
-                if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_LEFT)) {
-                    pipelineNum = trackingType.getLeftPipelineNum();
-                } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT)) {
-                    pipelineNum = trackingType.getRightPipelineNum();
-                }
-            }
-
-            // Set limelight pipeline
-            // Add command to the queue
-        }
-        lastRunCommandQueue = runCommandQueue;
-    }
-
 
     private void updateDriveTrain() {
         double desiredLeftOutput, desiredRightOutput;
@@ -144,26 +120,59 @@ public class DriverInput extends Module {
 
     }
 
+    /**
+     * Commands the superstructure to start vision tracking depending on
+     * button presses.
+     */
+    protected void updateVision() {
+
+        ETrackingType trackingType = null;
+        // Switch the limelight to a pipeline and track
+        if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN)) {
+            trackingType = ETrackingType.TARGET_TRACK;
+        } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN)) {
+            trackingType = ETrackingType.CARGO_TRACK;
+        } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN)) {
+            trackingType = ETrackingType.HATCH_TRACK;
+        }
+
+        double pipelineNum;
+        if(trackingType != null) {
+            if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_LEFT)) {
+                pipelineNum = trackingType.getLeftPipelineNum();
+            } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT)) {
+                pipelineNum = trackingType.getRightPipelineNum();
+            }
+            //mSuperstructure.setCommands(<Commands here>)
+            //mSuperstructure.startRunningCommands();
+        }
+
+    }
+
+    public boolean isDriverAllowingCommands() {
+        boolean runCommands = false;
+        for(ELogitech310 l : SystemSettings.kTeleopCommandTriggers) {
+            if(mDriverInputCodex.isSet(l)) {
+                runCommands = true;
+            }
+        }
+        return runCommands;
+    }
+
+    public boolean isAutoOverridePressed() {
+        boolean autonOverride = false;
+        for(ELogitech310 l : SystemSettings.kAutonOverrideTriggers) {
+            if(mDriverInputCodex.get(l) > SystemSettings.kAutonOverrideAxisThreshold) {
+                autonOverride = true;
+            }
+        }
+        return autonOverride;
+    }
+
     @Override
     public void shutdown(double pNow) {
 // TODO Auto-generated method stub
 
     }
-
-    /**
-     * If we weren't running commands last cycle, initialize.
-     */
-    public boolean shouldInitializeCommandQueue() {
-        return lastRunCommandQueue == false && runCommandQueue == true;
-    }
-
-    public boolean canRunCommandQueue() {
-        return runCommandQueue;
-    }
-
-    public Queue<ICommand> getDesiredCommandQueue() {
-        return desiredCommandQueue;
-    }
-
 
 }
