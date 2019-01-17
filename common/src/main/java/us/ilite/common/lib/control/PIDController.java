@@ -1,4 +1,4 @@
-package control;
+package us.ilite.common.lib.control;
 /**
  * This class implements a PID Control Loop.
  * 
