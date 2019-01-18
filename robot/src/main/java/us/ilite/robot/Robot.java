@@ -122,6 +122,7 @@ public class Robot extends TimedRobot {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
         System.out.println( mUltrasonicSensor.getDistanceInches() );
+        System.out.println("Voltage: " + mUltrasonicSensor.getVoltage());
 
     }
 

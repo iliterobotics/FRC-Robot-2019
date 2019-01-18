@@ -16,8 +16,11 @@ public class UltrasonicSensor
     public double getDistanceInches()
     {
         double volts = mUltrasonicSensor.getVoltage();
-        mDistanceInch = volts * 45 * 0.0393701;
+        mDistanceInch = volts * 9.83 * 0.0393701;
         return mDistanceInch;
     }
 
+    public double getVoltage(){
+        return mUltrasonicSensor.getVoltage();
+    }
 }
