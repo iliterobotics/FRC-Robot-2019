@@ -1,20 +1,21 @@
-import org.ilite.frc.commor.config.SystemSettings;
+package us.ilite.robot.modules;
+import us.ilite.common.config.SystemSettings;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.Ultrasonic.
+import edu.wpi.first.wpilibj.Ultrasonic;
 
-public class UltrasonicSensor implements IModule 
+public class UltrasonicSensor 
 {
     private AnalogInput mUltrasonicSensor;
     private double mDistanceInch;
 
     public UltrasonicSensor()
     {
-        mUltrasonicSensor = new AnalogInput( SystemSettings.ULTRASONIC_PORT );
+        mUltrasonicSensor = new AnalogInput(SystemSettings.ULTRASONIC_PORT );
     }
 
     public double getDistanceInches()
     {
-        double volts = AnalogInput.getVoltage();
+        double volts = mUltrasonicSensor.getVoltage();
         mDistanceInch = volts * 45 * 0.0393701;
         return mDistanceInch;
     }
