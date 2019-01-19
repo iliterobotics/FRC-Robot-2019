@@ -11,6 +11,9 @@ import com.team254.lib.util.Util;
  * Does all computation synchronously (i.e. the calculate() function must be called by the user from his own thread)
  */
 public class PIDController {
+
+    private ILog mLogger = Logger.createLog(this.getClass());
+
     private double m_P; // factor for "proportional" control
     private double m_I; // factor for "integral" control
     private double m_D; // factor for "derivative" control
@@ -35,8 +38,6 @@ public class PIDController {
                                      // deadband
                                      // then treat error for the proportional
                                      // term as 0
-
-    private ILog mLogger = Logger.createLog(this.getClass());
 
     /**
      * Allocate a PID object with the given constants for P, I, D

@@ -15,7 +15,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 public class TurnToDegree implements ICommand {
 
-  ILog mLog = Logger.createLog(TurnToDegree.class);
+  private ILog mLogger = Logger.createLog(this.getClass());
 
   private Drive mDrive;
   
@@ -71,12 +71,12 @@ public class TurnToDegree implements ICommand {
     }
     if ( mAlignedCount >= kMIN_ALIGNED_COUNT || pNow - mStartTime > kTIMEOUT) {
       mDrive.setDriveMessage(new DriveMessage(0.0, 0.0, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
-      mLog.info("Turn finished");
+      mLogger.info("Turn finished");
       return true;
     }
     mDrive.setDriveMessage(new DriveMessage(mOutput, -mOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
     Data.kSmartDashboard.putDouble("turn_error", pid.getError());
-    System.out.printf("Target: %s Yaw: %s\n", mTargetYaw, getYaw());
+    mLogger.info("Target: %s Yaw: %s\n", mTargetYaw, getYaw());
     return false;
   }
   
