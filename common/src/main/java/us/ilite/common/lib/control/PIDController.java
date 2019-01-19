@@ -30,9 +30,6 @@ public class PIDController {
                                      // then treat error for the proportional
                                      // term as 0
 
-    public PIDController() {
-    }
-
     /**
      * Allocate a PID object with the given constants for P, I, D
      *
@@ -63,9 +60,7 @@ public class PIDController {
      *            the feed forward gain coefficient
      */
     public PIDController(double Kp, double Ki, double Kd, double Kf) {
-        m_P = Kp;
-        m_I = Ki;
-        m_D = Kd;
+        this( Kp, Ki, Kd );
         m_F = Kf;
     }
 
