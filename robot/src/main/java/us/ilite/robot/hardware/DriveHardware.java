@@ -222,7 +222,7 @@ public class DriveHardware implements IDriveHardware {
     }
 
     public Rotation2d getHeading() {
-        return Rotation2d.fromDegrees(mGyro.getFusedHeading());
+        return Rotation2d.fromDegrees(mGyro.getFusedHeading()).inverse();
     }
 
     public double getLeftInches() {
