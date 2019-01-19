@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.flybotix.hfr.codex.Codex;
-import com.flybotix.hfr.io.CodexNetworkTables;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.io.CodexNetworkTablesParser;
@@ -25,6 +24,7 @@ public class LoggedData {
         loggedCodexes.forEach(c -> c.parseFromNetworkTables());
     }
 
+    //Testing purposes only
     public static void main(String[] args) {
         NetworkTableInstance.getDefault().startClientTeam(1885);
         LoggedData loggedData = new LoggedData();

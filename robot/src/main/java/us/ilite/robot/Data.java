@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import com.flybotix.hfr.codex.Codex;
+import com.flybotix.hfr.codex.CodexOf;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -20,7 +23,7 @@ import us.ilite.lib.util.SimpleNetworkTable;
 
 public class Data {
 
-    private static final String LOG_PATH_FORMAT = "./logs/%s-log.csv";
+    private static final String LOG_PATH_FORMAT = "./logs/%s/%s.csv"; //month day year
 
     public LoggedData loggedData = new LoggedData();
 
@@ -30,10 +33,10 @@ public class Data {
     public Codex<Double, ELogitech310> driverinput = Codex.of.thisEnum(ELogitech310.class);
     public Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
 
-    public static NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    public static NetworkTableInstance kInst = NetworkTableInstance.getDefault();
     public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
     public static SimpleNetworkTable kSmartDashboard = new SimpleNetworkTable("SmartDashboard");
-    public static NetworkTable kLimelight = inst.getTable("limelight");
+    public static NetworkTable kLimelight = kInst.getTable("limelight");
     public static SimpleNetworkTable kDriverControlSelection = new SimpleNetworkTable("DriverControlSelection") {
         @Override
         public void initKeys() {
@@ -49,20 +52,24 @@ public class Data {
     public void registerCodices() { //registers/makes codex table with 
         mCodexNT.registerCodex(EGyro.class);
         mCodexNT.registerCodex(EDriveData.class);
+        mCodexNT.registerCodex(ELogitech310.class);
     }
     
     public void sendCodices() { //sends codex tables to NT
         mCodexNT.send(imu);
         mCodexNT.send(drive);
+        // mCodexNT.send(driverinput);
+        // mCodexNT.send(operatorinput);
     }
 
     /**
-     * Writes codex to CSV into the LOG_PATH_FORMAT path
+     * Writes codex to CSV int_PATH_FORMAT path
      * @param cod codex to be manipulated
-     * @param pLogName the log file name
+     * @param pLogNag file name
      */
-    public <E> void codexToCSV(Codex<Double, ?> cod, String pLogName) { //Fix generic/wildcard
-        File log = new File(String.format(LOG_PATH_FORMAT, pLogName));
+    public <E extends Enum<E> & CodexOf<V>> void codexToCSV(Codex<Double, V> cod, String pLogName) { //Fix generic/wildcard
+        String time = new SimpleDateFormat("MM-dd-YYYY-HH-mm").format(Calendar.getInstance().getTime());
+        File log = new File(String.format(LOG_PATH_FORMAT, time, pLogName));
         try {
             handleCreation(log);
             Writer logger = new BufferedWriter(new FileWriter(log));
