@@ -42,6 +42,8 @@ public class Arm extends Module
         double i_gain = 0.001; //adjust
       
         double error = pGoal - pTheta;
+
+        //example PID from online - needs editing
         //double deriv = pTheta - this.getGlobal("last_x");
         //double integral = this.getGlobal("integral") + error;
       
