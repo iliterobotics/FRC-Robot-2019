@@ -1,5 +1,9 @@
 package us.ilite.common.lib.control;
 
+import com.flybotix.hfr.util.log.ELevel;
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
+
 import com.team254.lib.util.Util;
 /**
  * This class implements a PID Control Loop.
@@ -31,6 +35,8 @@ public class PIDController {
                                      // deadband
                                      // then treat error for the proportional
                                      // term as 0
+
+    private ILog mLogger = Logger.createLog(this.getClass());
 
     /**
      * Allocate a PID object with the given constants for P, I, D
@@ -229,7 +235,7 @@ public class PIDController {
      */
     public void setInputRange(double minimumInput, double maximumInput) {
         if (minimumInput > maximumInput) {
-            System.out.println("Lower bound is greater than upper bound");
+            mLogger.debug("Lower bound is greater than upper bound");
         }
         m_minimumInput = minimumInput;
         m_maximumInput = maximumInput;
@@ -246,7 +252,7 @@ public class PIDController {
      */
     public void setOutputRange(double minimumOutput, double maximumOutput) {
         if (minimumOutput > maximumOutput) {
-            System.out.println("Lower bound is greater than upper bound");
+            mLogger.debug("Lower bound is greater than upper bound");
         }
         m_minimumOutput = minimumOutput;
         m_maximumOutput = maximumOutput;
