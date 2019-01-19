@@ -103,5 +103,5 @@ public class SystemSettings extends ConstantsBase {
     }
 
 
-    public static final int ULTRASONIC_PORT = 0;
+    public static final int ULTRASONIC_PORT = 2;
 }

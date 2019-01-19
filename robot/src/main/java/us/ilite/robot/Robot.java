@@ -121,9 +121,8 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
-        System.out.println( mUltrasonicSensor.getDistanceInches() );
-        System.out.println("Voltage: " + mUltrasonicSensor.getVoltage());
-
+        Data.kSmartDashboard.putDouble("ultrasonic_distance", mUltrasonicSensor.getDistanceInches());
+        Data.kSmartDashboard.putDouble("ultrasonic_voltage", mUltrasonicSensor.getVoltage());
     }
 
     @Override
