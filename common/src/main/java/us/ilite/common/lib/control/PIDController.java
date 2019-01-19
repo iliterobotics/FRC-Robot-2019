@@ -79,8 +79,9 @@ public class PIDController {
      *            time passed since previous call to calculate
      */
     public double calculate(double input, double dt) {
-        if (dt < 1E-6)
+        if (dt < 1E-6) {
             dt = 1E-6;
+        }
         m_last_input = input;
         m_error = m_setpoint - input;
         
