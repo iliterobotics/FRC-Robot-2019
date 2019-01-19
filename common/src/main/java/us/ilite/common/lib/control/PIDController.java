@@ -41,10 +41,7 @@ public class PIDController {
      *            the derivative coefficient
      */
     public PIDController(double Kp, double Ki, double Kd) {
-        m_P = Kp;
-        m_I = Ki;
-        m_D = Kd;
-        m_F = 0;
+        this( Kp, Ki, Kd, 0d );
     }
 
     /**
@@ -60,7 +57,9 @@ public class PIDController {
      *            the feed forward gain coefficient
      */
     public PIDController(double Kp, double Ki, double Kd, double Kf) {
-        this( Kp, Ki, Kd );
+        m_P = Kp;
+        m_I = Ki;
+        m_D = Kd;
         m_F = Kf;
     }
 
