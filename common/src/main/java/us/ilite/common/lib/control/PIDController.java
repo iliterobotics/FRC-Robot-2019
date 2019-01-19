@@ -127,9 +127,7 @@ public class PIDController {
      *            Differential coefficient
      */
     public void setPID(double p, double i, double d) {
-        m_P = p;
-        m_I = i;
-        m_D = d;
+        setPID( p, i, d, 0d );
     }
 
     /**
