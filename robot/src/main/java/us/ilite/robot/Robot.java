@@ -10,12 +10,14 @@ import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
 import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.FollowTrajectory;
+import us.ilite.robot.commands.TurnToDegree;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.Drive;
@@ -49,7 +51,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         initTimer.reset();
         initTimer.start();
-        Logger.setLevel(ELevel.ERROR);
+        Logger.setLevel(ELevel.INFO);
         mLogger.info("Starting Robot Initialization...");
 
         mRunningModules.setModules();
@@ -88,8 +90,11 @@ public class Robot extends TimedRobot {
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
 
-        mCommandQueue.setCommands(new FollowTrajectory(trajectory, mDrive, true));
+        // mCommandQueue.setCommands(new FollowTrajectory(trajectory, mDrive, true));
 //        mCommandQueue.setCommands(new CharacterizeDrive(mDrive, false, false));
+        mCommandQueue.setCommands(
+            new TurnToDegree(mDrive, Rotation2d.fromDegrees(90.0), 2.5, mData), 
+            new TurnToDegree(mDrive, Rotation2d.fromDegrees(-90.0), 2.5, mData));
         mCommandQueue.init(mClock.getCurrentTime());
 
         initTimer.stop();
