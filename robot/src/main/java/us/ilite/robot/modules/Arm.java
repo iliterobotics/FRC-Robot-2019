@@ -37,13 +37,14 @@ public class Arm extends Module
 
     public double returnPID(double pTheta, double pGoal)
     {
-        double p_gain = 0.4; //adjust
-        double d_gain = 6.5; //adjust
-        double i_gain = 0.001; //adjust
+        double p_gain = 0.0; //adjust
+        double d_gain = 0.0; //adjust
+        double i_gain = 0.0; //adjust
       
         double error = pGoal - pTheta;
 
-        //example PID from online - needs editing
+        //example PID from online - needs editing (or we could use the PID class):
+
         //double deriv = pTheta - this.getGlobal("last_x");
         //double integral = this.getGlobal("integral") + error;
       
@@ -60,12 +61,15 @@ public class Arm extends Module
         switch( pPoint )
         {
             case FULLY_OUT:
+            //while ( !button to change position is pressed ){}
             break;
 
             case FULLY_UP:
+            //while ( !button to change position is pressed ){}
             break;
 
             case FULLY_DOWN:
+            //while ( !button to change position is pressed ){}
             break;
         }
       }
