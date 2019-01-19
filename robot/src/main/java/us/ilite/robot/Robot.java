@@ -20,7 +20,6 @@ import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.ModuleList;
-import us.ilite.robot.modules.UltrasonicSensor;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,8 +42,6 @@ public class Robot extends TimedRobot {
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
     private DriverInput mDriverInput = new DriverInput(mDrive, mData);
-
-    private UltrasonicSensor mUltrasonicSensor = new UltrasonicSensor();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
 
@@ -121,8 +118,6 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
-        Data.kSmartDashboard.putDouble("ultrasonic_distance", mUltrasonicSensor.getDistanceInches());
-        Data.kSmartDashboard.putDouble("ultrasonic_voltage", mUltrasonicSensor.getVoltage());
     }
 
     @Override
