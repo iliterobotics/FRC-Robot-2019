@@ -46,6 +46,7 @@ public class DriverHUD extends Application {
     Image pad2 = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\pad.png");
     Image stick = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\stick.png");
     Image stick2 = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\stick.png");
+    Image dpad = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\dpad.png");
 
     //Init pressed images
     Image apressed = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\apressed.png");
@@ -115,6 +116,8 @@ public class DriverHUD extends Application {
             Image xImage = xbtn;
             Image yImage = ybtn;
 
+            int frames = 0;
+
             int x = (int)350;
             int y = (int)170;
             // y
@@ -129,6 +132,9 @@ public class DriverHUD extends Application {
 
             int magnitudeH = 0;
             int magnitudeV = 0;
+
+            int movex = -120;
+            int movey = -60;
             
 
             public void handle(long currentNanoTime) {
@@ -194,21 +200,36 @@ public class DriverHUD extends Application {
                     gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
                 }
 
-                gc.drawImage(aImage, bx, by, 100, 100);
-                gc.drawImage(bImage, x, y, 100, 100);
-                gc.drawImage(xImage, yx, yy, 100, 100);
-                gc.drawImage(yImage, xx, xy, 100, 100);
+                //Draw face buttons
+                // gc.drawImage(aImage, bx + movex, by + movey, 100, 100);
+                // gc.drawImage(bImage, x + movex, y + movey, 100, 100);
+                // gc.drawImage(xImage, yx + movex, yy + movey, 100, 100);
+                // gc.drawImage(yImage, xx + movex, xy + movey, 100, 100);
 
+                if (frames % 20d == 0) {
+                    gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+                }
+                
+                display(gc, aImage, 10d, bx + movex, by + movey, 100, 100, frames); 
+                display(gc, bImage, 20d, x + movex, y + movey, 100, 100, frames); 
+                display(gc, xImage, 20d, yx + movex, yy + movey, 100, 100, frames);
+                display(gc, yImage, 20d, xx + movex, xy + movey, 100, 100, frames);
+            
+
+                //Draw sticks
                 gc.drawImage(pad, canvas.getWidth() / 2 + 200, canvas.getHeight() / 2, 200, 200);
                 gc.drawImage(stick, canvas.getWidth() / 2 + 250 + (magnitudeH),
                         canvas.getHeight() / 2 + 50 + magnitudeV, 100, 100);
 
                 gc.drawImage(pad2, canvas.getWidth() / 2, canvas.getHeight() / 2, 200, 200);
                 gc.drawImage(stick2, canvas.getWidth() / 2 + 50, canvas.getHeight() / 2 + 50, 100, 100);
+                //Draw dpads
+                gc.drawImage(dpad, canvas.getWidth() / 2 - 250, canvas.getHeight() / 2 + 50);
                 
                 
-
-                System.out.printf("X: %s     Y: %s\n", x, y);
+                frames++;
+               
             }
         }.start();
 
@@ -218,6 +239,18 @@ public class DriverHUD extends Application {
 
     public static void main(String[] args) {
         launch(args);
+
+    }
+
+    //20 is minimum
+    public void display(GraphicsContext gc, Image img, double interval, int x, int y, int w, int h, int currentFrames) {
+
+        if (currentFrames % interval == 0) {
+            gc.drawImage(img, x, y, w, h);
+        }
+
+        System.out.println(currentFrames % interval == 0);
+
     }
 
 }
