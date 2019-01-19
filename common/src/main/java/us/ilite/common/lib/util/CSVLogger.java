@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.input.ELogitech310;
 // import org.ilite.frc.common.types.EElevator;
-import us.ilite.common.types.input.ELogitech310;
 // import org.ilite.frc.common.types.EPigeon;
 // import org.ilite.frc.common.types.EPowerDistPanel;
 
@@ -30,7 +30,9 @@ public class CSVLogger extends Thread{
   private static final String LOG_PATH_FORMAT = "./logs/%s-log.csv";
   
   private Map<String, Writer> mCodexWriters = new HashMap<>();
-  private Map<String, List<String>> mCodexKeys = new HashMap<>(); // Contains a mapping of codex names to codex keys. Used to retrieve codex data dumped by the robot from NetworkTables
+  
+  // Contains a mapping of codex names to codex keys. Used to retrieve codex data dumped by the robot from NetworkTables
+  private Map<String, List<String>> mCodexKeys = new HashMap<>();
   
   public CSVLogger() {
     putInMatrix("operator", ELogitech310.class);
@@ -60,22 +62,20 @@ public class CSVLogger extends Thread{
   public <E extends Enum<E>> void putAllInMatrix(Class<E> ... pEnumerations) {
     for(Class<E> enumeration : pEnumerations) putInMatrix(enumeration);
   }
-  
+
   private void writeHeaderToCsv(Map<String, List<String>> pCodexKeys, Map<String, Writer> pCodexWriters) {
-    
     try {
-      for(String key : pCodexKeys.keySet()) {       
+      for(String key : pCodexKeys.keySet()) {
         pCodexKeys.get(key).add("TIME");
         pCodexKeys.get(key).add("TIME RECEIVED");
         
-        pCodexWriters.get(key).append(SystemUtils.toCsvRow(pCodexKeys.get(key)) + "\n");
+        pCodexWriters.get(key).append(toCsvRow(pCodexKeys.get(key)) + "\n");
         pCodexWriters.get(key).flush();
       }
     } catch (Exception e) {
         System.err.println("Error writing log headers.");
         e.printStackTrace();
     }
-    
   }
   
   private void writeMapEntry(Entry<String, List<String>> pEntry, Map<String, Writer> pCodexWriters) throws IOException {
@@ -85,7 +85,7 @@ public class CSVLogger extends Thread{
     rowList.set(rowList.size() - 1, Long.toString(System.currentTimeMillis() / 1000));
     
     Writer writer = pCodexWriters.get(pEntry.getKey());
-    writer.append(SystemUtils.toCsvRow(rowList) + "\n");
+    writer.append(toCsvRow(rowList) + "\n");
     writer.flush();
   }
   
@@ -114,7 +114,8 @@ public class CSVLogger extends Thread{
   }
   
   private String retrieveStringValue(String pLogName, String pKey) {
-    return SystemSettings.LOGGING_TABLE.getEntry(pLogName + "-" + pKey).getNumber(-1).toString();
+    // return SystemSettings.LOGGING_TABLE.getEntry(pLogName + "-" + pKey).getNumber(-1).toString();
+    return "";
   }
   
   @Override
@@ -128,5 +129,13 @@ public class CSVLogger extends Thread{
         System.err.println("Thread sleep interrupted.");
       }
     }
+  }
+
+  public static String toCsvRow(List<String> l) {
+    return l.stream()
+            .map(value -> value.toString())
+            .map(value -> value.replaceAll("\"", "\"\""))
+            .map(value -> Stream.of("\"", ",").anyMatch(value::contains) ? "\"" + value + "\"" : value)
+            .collect(Collectors.joining(","));
   }
 }

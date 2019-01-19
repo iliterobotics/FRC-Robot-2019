@@ -43,6 +43,8 @@ public class DriverInput extends Module {
         // this.mOperatorInputCodex = mData.operatorinput;
         this.mDriverJoystick = new Joystick(0);
         this.mOperatorJoystick = new Joystick(1);
+        this.mDriverInputCodex = mData.driverinput;
+        this.mOperatorInputCodex = mData.operatorinput;
     }
 
     @Override
@@ -55,8 +57,8 @@ public class DriverInput extends Module {
 
     @Override
     public void periodicInput(double pNow) {
-        //ELogitech310.map(mData.driverinput, mDriverJoystick);
-        //ELogitech310.map(mData.operatorinput, mOperatorJoystick);
+        ELogitech310.map(mData.driverinput, mDriverJoystick);
+        ELogitech310.map(mData.operatorinput, mOperatorJoystick);
     }
 
     @Override
@@ -66,7 +68,7 @@ public class DriverInput extends Module {
 //		else
 //		  scaleInputs = false;
         if (!runCommandQueue) {
-            // updateDriveTrain();
+            updateDriveTrain();
         }
         updateCommands();
 
@@ -108,7 +110,6 @@ public class DriverInput extends Module {
         lastRunCommandQueue = runCommandQueue;
     }
 
-    /*
     private void updateDriveTrain() {
         double desiredLeftOutput, desiredRightOutput;
 
@@ -143,7 +144,6 @@ public class DriverInput extends Module {
         driveTrain.setDriveMessage(new DriveMessage(desiredLeftOutput, desiredRightOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
 
     }
-    */
 
     @Override
     public void shutdown(double pNow) {
