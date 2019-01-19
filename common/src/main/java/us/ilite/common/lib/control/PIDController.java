@@ -91,6 +91,7 @@ public class PIDController {
             }
         }
 
+        // update totalError
         if ((m_error * m_P < m_maximumOutput) && (m_error * m_P > m_minimumOutput)) {
             m_totalError += m_error * dt;
         } else {
