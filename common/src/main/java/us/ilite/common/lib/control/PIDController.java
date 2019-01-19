@@ -1,4 +1,6 @@
 package us.ilite.common.lib.control;
+
+import com.team254.lib.util.Util;
 /**
  * This class implements a PID Control Loop.
  * 
@@ -105,11 +107,12 @@ public class PIDController {
                 + m_F * m_setpoint);
         m_prevError = m_error;
 
-        if (m_result > m_maximumOutput) {
-            m_result = m_maximumOutput;
-        } else if (m_result < m_minimumOutput) {
-            m_result = m_minimumOutput;
-        }
+        // if (m_result > m_maximumOutput) {
+        //     m_result = m_maximumOutput;
+        // } else if (m_result < m_minimumOutput) {
+        //     m_result = m_minimumOutput;
+        // }
+        m_result = Util.limit( m_result, m_maximumOutput );
         return m_result;
     }
 
@@ -258,8 +261,7 @@ public class PIDController {
      *            the desired setpoint
      */
     public void setSetpoint(double setpoint) {
-        m_setpoint = Math.min( m_maximumInput, setpoint );
-        m_setpoint = Math.max( m_minimumInput, setpoint );
+        m_setpoint = Util.limit( setpoint, m_maximumInput );
     }
 
     /**

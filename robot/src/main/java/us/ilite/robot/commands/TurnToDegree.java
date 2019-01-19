@@ -47,7 +47,6 @@ public class TurnToDegree implements ICommand {
 
   @Override
   public void init(double pNow) {
-    mLog.info("Starting bro! :)) <3333");
     mStartTime = pNow;
 
     mInitialYaw = getYaw();
