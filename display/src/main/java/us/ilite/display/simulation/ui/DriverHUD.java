@@ -56,6 +56,8 @@ public class DriverHUD extends Application {
     Image stick = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\stick.png");
     Image stick2 = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\stick.png");
     Image dpad = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\dpad.png");
+    Image bar = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\redbar.png");
+    Image sideBar = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\redbar.png");
     Image robotIsometirc = new Image(
             "file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\2018Robot_iso.png");
 
@@ -90,6 +92,8 @@ public class DriverHUD extends Application {
     KeyImage bButton = new KeyImage(bbtn, bpressed, refreshRate, 111, 392);
     KeyImage xButton = new KeyImage(xbtn, xpressed, refreshRate, 111, 392);
     KeyImage yButton = new KeyImage(ybtn, ypressed, refreshRate, 111, 392);
+
+    KeyImage redBar = new KeyImage(bar, bar, refreshRate, 303, 300);
     
     KeyImage robot = new KeyImage(robotIsometirc, robotSide, refreshRate, 328, 0);
     
@@ -130,7 +134,7 @@ public class DriverHUD extends Application {
         scene.setOnKeyPressed( e -> inputs.add( e.getCode().toString() ));
         scene.setOnKeyReleased(e -> inputs.remove(e.getCode().toString()));
         scene.setOnMousePressed(e -> System.out.println(e.getSceneX() + ", " + e.getSceneY()));
-        // scene.setOnMouseDragged(e -> robot.setXY(e.getSceneX(), e.getSceneY()));
+        scene.setOnMouseDragged(e -> redBar.setXY(e.getSceneX(), e.getSceneY()));
 
         final long startTime = System.nanoTime();
         gc.setFill(Color.BLACK);
@@ -225,6 +229,7 @@ public class DriverHUD extends Application {
                 // display(gc, yButton.getImage(), yButton.getDisplayRate(), yButton.getX(), yButton.getY(), 100, 100, frames);
 
                 display(gc, robot.getImage(), robot.getDisplayRate(), robot.getX(), robot.getY(), 300, 300, frames);
+                display(gc, redBar.getImage(), redBar.getDisplayRate(), redBar.getX(), redBar.getY(), 350, 20, frames);
             
 
                 //Draw sticks
@@ -246,11 +251,7 @@ public class DriverHUD extends Application {
 
     }
 
-    public static void main(String[] args) {
-        launch(args);
- 
-    }
-
+   
     //When the refresh rate is larger than the interval, the result is blinking.
     private void display(GraphicsContext gc, Image img, double interval, double x, double y, int w, int h,
             int currentFrames) {
@@ -264,5 +265,13 @@ public class DriverHUD extends Application {
     private void refresh(GraphicsContext gc) {
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
+
+
+
+    public static void main(String[] args) {
+        launch(args);
+ 
+    }
+
 
 }
