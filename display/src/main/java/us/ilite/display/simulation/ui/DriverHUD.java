@@ -16,6 +16,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -24,7 +28,9 @@ import us.ilite.common.types.input.ELogitech310;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.scene.paint.CycleMethod;
+import javafx.scene.layout.Border;
 
 
 
@@ -35,6 +41,9 @@ import java.util.Set;
 import us.ilite.common.types.input.ELogitech310;
 
 public class DriverHUD extends Application {
+
+    double mouseX = 0;
+    double mouseY = 0;
 
 
     //Initalize Image
@@ -47,117 +56,125 @@ public class DriverHUD extends Application {
     Image stick = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\stick.png");
     Image stick2 = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\stick.png");
     Image dpad = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\dpad.png");
+    Image robotIsometirc = new Image(
+            "file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\2018Robot_iso.png");
 
     //Init pressed images
     Image apressed = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\apressed.png");
     Image bpressed = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\bpressed.png");
     Image xpressed = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\xpressed.png");
     Image ypressed = new Image("file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\ypressed.png");
-    
-   
-    //Initalize Key Buttons
-    // KeyButtons aKey = new KeyButtons( abtn, ELogitech310.A_BTN );
-    // KeyButtons bKey = new KeyButtons( bbtn, ELogitech310.B_BTN );
-    // KeyButtons xKey = new KeyButtons( xbtn, ELogitech310.X_BTN );
-    // KeyButtons yKey = new KeyButtons(ybtn, ELogitech310.Y_BTN);
+
+    Image robotSide = new Image(
+            "file:display\\src\\main\\java\\us\\ilite\\display\\simulation\\ui\\2018Robot_side.png");
+
+    //Init vars
+    Canvas canvas = new Canvas(1000, 500);
+    private double refreshRate = 5d;
+
+    //Init text
+    Text stateLabel = new Text("Robot State: ");
     
 
-    private String state = "";
-    private String realState = "";
+
+
+
+    int magnitudeH = 0;
+    int magnitudeV = 0;
+
+    
+    
+   
+    //Initalize Key Images
+    KeyImage aButton = new KeyImage(abtn, apressed, refreshRate, 51, 353 );
+    KeyImage bButton = new KeyImage(bbtn, bpressed, refreshRate, 111, 392);
+    KeyImage xButton = new KeyImage(xbtn, xpressed, refreshRate, 111, 392);
+    KeyImage yButton = new KeyImage(ybtn, ypressed, refreshRate, 111, 392);
+    
+    KeyImage robot = new KeyImage(robotIsometirc, robotSide, refreshRate, 328, 0);
+    
 
     public void start(Stage stage) {
 
         BorderPane root = new BorderPane();
         Scene scene = new Scene(root);
-        Canvas canvas = new Canvas(1000, 500);
+        
+        stateLabel.setY(306);
+        stateLabel.setX(332);
 
-        // Initialize images
+        root.getChildren().add(stateLabel);
 
-        // Gradients
+
+        // Gradients. Pretty cool but I might take them out in favor of css
         Stop[] stops = new Stop[] { new Stop(0, Color.PURPLE), new Stop(1, Color.GREEN) };
         LinearGradient linear = new LinearGradient(0, 0, 1, 0, true, CycleMethod.NO_CYCLE, stops);
 
+        //Rectangle that has the gradient's design
         Rectangle rect = new Rectangle(0, 0, canvas.getWidth(), canvas.getHeight());
-        rect.setFill(linear);
+        rect.setFill(Color.BLACK);
         root.getChildren().add(rect);
 
-        // Draw Images
+        // Initialize GraphicsContext (Essentially the graphics of the canvas)
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        // gc.drawImage( abtn, canvas.getWidth()/2, canvas.getHeight()/2 );
 
         root.setCenter(canvas);
 
         stage.setScene(scene);
 
+        //Hashset records button inputs
         HashSet<String> inputs = new HashSet<>();
-        ArrayList<KeyButtons> registered = new ArrayList<>();
+        // ArrayList<KeyButtons> registered = new ArrayList<>();
 
-        //Draw button images
-       
-        // gc.drawImage(bbtn, 30, 30);
-        // gc.drawImage(xbtn, 50, 30);
-        // gc.drawImage(ybtn, 70, 30);
 
+        //For testing purposes only.
         scene.setOnKeyPressed( e -> inputs.add( e.getCode().toString() ));
-
-        scene.setOnKeyReleased( e -> inputs.remove( e.getCode().toString() ) );
-
-        // registered.add( yKey );
+        scene.setOnKeyReleased(e -> inputs.remove(e.getCode().toString()));
+        scene.setOnMousePressed(e -> System.out.println(e.getSceneX() + ", " + e.getSceneY()));
+        // scene.setOnMouseDragged(e -> robot.setXY(e.getSceneX(), e.getSceneY()));
 
         final long startTime = System.nanoTime();
-        gc.setFill(linear);
+        gc.setFill(Color.BLACK);
         
 
 
         new AnimationTimer() {
 
-            Image aImage = abtn;
-            Image bImage = bbtn;
-            Image xImage = xbtn;
-            Image yImage = ybtn;
+            // Image aImage = abtn;
+            // Image bImage = bbtn;
+            // Image xImage = xbtn;
+            // Image yImage = ybtn;
 
             int frames = 0;
 
-            int x = (int)350;
-            int y = (int)170;
-            // y
-            int yx = x - 200;
-            int yy = y;
-            //x
-            int xx = (int) (x + yx) / 2;
-            int xy = (int) 71;
-            //b
-            int bx = xx;
-            int by = xy + (Math.abs(xy - y) * 2);
-
-            int magnitudeH = 0;
-            int magnitudeV = 0;
-
-            int movex = -120;
-            int movey = -60;
+            
             
 
             public void handle(long currentNanoTime) {
                
+                //All testing stuff
                 if(inputs.contains("A")) {
-                    aImage = apressed;
+                    aButton.setImage(aButton.pressedImage());
+                    aButton.blink(refreshRate);
                 } else {
-                    aImage = abtn;
+                    aButton.setImage(aButton.NormalImage());
+                    aButton.stopBlinking(refreshRate);
                 }
                 if(inputs.contains("B")) {
-                    bImage = bpressed;
+                    bButton.setImage(bButton.pressedImage());
+                    robot.setImage(robotSide);
                 } else {
-                    bImage = bbtn;
+                    bButton.setImage(bButton.NormalImage());
+                    robot.setImage(robotIsometirc);
                 }
                 if(inputs.contains("X")) {
-                    xImage = xpressed;
+                    xButton.setImage(xButton.pressedImage());
                 } else {
-                    xImage = xbtn;
+                    xButton.setImage(xButton.NormalImage());
                 }
                 if(inputs.contains("Y")) {
-                    yImage = ypressed;
+                    yButton.setImage(yButton.pressedImage());
                 } else {
-                    yImage = ybtn;
+                    yButton.setImage(yButton.NormalImage());
                 }
 
                 if (inputs.contains("LEFT")) {
@@ -184,52 +201,44 @@ public class DriverHUD extends Application {
 
                 if (magnitudeH > 0 && magnitudeH >= 42) {
                     magnitudeH = 42;
-                    gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
                 }
                 if (magnitudeH < 0 && magnitudeH <= -42) {
                     magnitudeH = -42;
-                    gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
                 }
 
                 if (magnitudeV > 0 && magnitudeV >= 42) {
                     magnitudeV = 40;
-                    gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
                 }
                 if (magnitudeV < 0 && magnitudeV <= -42) {
                     magnitudeV = -40;
-                    gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
                 }
 
-                //Draw face buttons
-                // gc.drawImage(aImage, bx + movex, by + movey, 100, 100);
-                // gc.drawImage(bImage, x + movex, y + movey, 100, 100);
-                // gc.drawImage(xImage, yx + movex, yy + movey, 100, 100);
-                // gc.drawImage(yImage, xx + movex, xy + movey, 100, 100);
-
-                if (frames % 20d == 0) {
-                    gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-
+                
+                if (frames % refreshRate == 0) {
+                    refresh(gc);
                 }
                 
-                display(gc, aImage, 10d, bx + movex, by + movey, 100, 100, frames); 
-                display(gc, bImage, 20d, x + movex, y + movey, 100, 100, frames); 
-                display(gc, xImage, 20d, yx + movex, yy + movey, 100, 100, frames);
-                display(gc, yImage, 20d, xx + movex, xy + movey, 100, 100, frames);
+                //Draw buttons
+                display(gc, aButton.getImage(), aButton.getDisplayRate(), aButton.getX(), aButton.getY(), 100, 100, frames); 
+                // display(gc, bButton.getImage(), bButton.getDisplayRate(), bButton.getX(), bButton.getY(), 100, 100, frames); 
+                // display(gc, xButton.getImage(), xButton.getDisplayRate(), xButton.getX(), xButton.getY(), 100, 100, frames);
+                // display(gc, yButton.getImage(), yButton.getDisplayRate(), yButton.getX(), yButton.getY(), 100, 100, frames);
+
+                display(gc, robot.getImage(), robot.getDisplayRate(), robot.getX(), robot.getY(), 300, 300, frames);
             
 
                 //Draw sticks
-                gc.drawImage(pad, canvas.getWidth() / 2 + 200, canvas.getHeight() / 2, 200, 200);
-                gc.drawImage(stick, canvas.getWidth() / 2 + 250 + (magnitudeH),
-                        canvas.getHeight() / 2 + 50 + magnitudeV, 100, 100);
+                // gc.drawImage(pad, canvas.getWidth() / 2 + 200, canvas.getHeight() / 2, 200, 200);
+                // gc.drawImage(stick, canvas.getWidth() / 2 + 250 + (magnitudeH),
+                //         canvas.getHeight() / 2 + 50 + magnitudeV, 100, 100);
 
-                gc.drawImage(pad2, canvas.getWidth() / 2, canvas.getHeight() / 2, 200, 200);
-                gc.drawImage(stick2, canvas.getWidth() / 2 + 50, canvas.getHeight() / 2 + 50, 100, 100);
+                // gc.drawImage(pad2, canvas.getWidth() / 2, canvas.getHeight() / 2, 200, 200);
+                // gc.drawImage(stick2, canvas.getWidth() / 2 + 50, canvas.getHeight() / 2 + 50, 100, 100);
+
                 //Draw dpads
-                gc.drawImage(dpad, canvas.getWidth() / 2 - 250, canvas.getHeight() / 2 + 50);
-                
+                // gc.drawImage(dpad, canvas.getWidth() / 2 - 250, canvas.getHeight() / 2 + 50);
                 
                 frames++;
-               
             }
         }.start();
 
@@ -239,18 +248,21 @@ public class DriverHUD extends Application {
 
     public static void main(String[] args) {
         launch(args);
-
+ 
     }
 
-    //20 is minimum
-    public void display(GraphicsContext gc, Image img, double interval, int x, int y, int w, int h, int currentFrames) {
+    //When the refresh rate is larger than the interval, the result is blinking.
+    private void display(GraphicsContext gc, Image img, double interval, double x, double y, int w, int h,
+            int currentFrames) {
 
         if (currentFrames % interval == 0) {
             gc.drawImage(img, x, y, w, h);
         }
 
-        System.out.println(currentFrames % interval == 0);
+    }
 
+    private void refresh(GraphicsContext gc) {
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
 }
