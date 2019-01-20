@@ -1,15 +1,6 @@
 package us.ilite.robot;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 import com.flybotix.hfr.codex.Codex;
-import com.flybotix.hfr.codex.CodexOf;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -22,8 +13,6 @@ import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.util.SimpleNetworkTable;
 
 public class Data {
-
-    private static final String LOG_PATH_FORMAT = "./logs/%s/%s.csv"; //month day year
 
     public LoggedData loggedData = new LoggedData();
 
@@ -49,42 +38,22 @@ public class Data {
         sendCodices();
     }
 
-    public void registerCodices() { //registers/makes codex table with 
+    /**
+     * Do this before sending codices to NetworkTables
+     */
+    public void registerCodices() {
         mCodexNT.registerCodex(EGyro.class);
         mCodexNT.registerCodex(EDriveData.class);
         mCodexNT.registerCodex(ELogitech310.class);
     }
     
-    public void sendCodices() { //sends codex tables to NT
+    /**
+     * Sends Codex entries into its corresponding NetworkTable
+     */
+    public void sendCodices() {
         mCodexNT.send(imu);
         mCodexNT.send(drive);
-        // mCodexNT.send(driverinput);
-        // mCodexNT.send(operatorinput);
-    }
-
-    /**
-     * Writes codex to CSV int_PATH_FORMAT path
-     * @param cod codex to be manipulated
-     * @param pLogNag file name
-     */
-    public <E extends Enum<E> & CodexOf<V>> void codexToCSV(Codex<Double, V> cod, String pLogName) { //Fix generic/wildcard
-        String time = new SimpleDateFormat("MM-dd-YYYY-HH-mm").format(Calendar.getInstance().getTime());
-        File log = new File(String.format(LOG_PATH_FORMAT, time, pLogName));
-        try {
-            handleCreation(log);
-            Writer logger = new BufferedWriter(new FileWriter(log));
-            logger.append(cod.getCSVHeader());
-            logger.append("\n"+cod.toCSV());
-            logger.close();
-        }
-        catch(IOException e) {
-            System.err.printf("Error");
-            e.printStackTrace();
-        }
-    }
-    
-    private void handleCreation(File pFile) throws IOException {
-        if(pFile.getParentFile().exists()) pFile.getParentFile().mkdir();
-        if(!pFile.exists()) pFile.createNewFile();
+        mCodexNT.send(driverinput);
+        mCodexNT.send(operatorinput);
     }
 }

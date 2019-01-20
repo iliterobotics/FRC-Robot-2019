@@ -116,14 +116,16 @@ public class Robot extends TimedRobot {
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
 
-        mData.codexToCSV(loggedData.imu, "EGyro");
+        //CodexNetworkTablesParser.codexToCSVHeader();
     }
 
     @Override
     public void teleopPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
-        mData.sendCodices();
+        
+        mData.sendCodices(); //Continually sends Codexes into NetworkTables
+        //CodexNetworkTablesParser.codexToCSVLog(System.currentTimeMillis()/1000);
     }
 
     @Override
