@@ -34,7 +34,7 @@ public class SparkMaxFactory {
         public int STATUS_1_PERIOD_MS = 20;
         public int STATUS_2_PERIOD_MS = 50;
         public double RAMP_RATE = 0.0;
-        public int SMART_CURRENT_LIMIT = 0;
+        public int SMART_CURRENT_LIMIT = 80;
         public double SECONDARY_CURRENT_LIMIT = 0.0;
     }
 
