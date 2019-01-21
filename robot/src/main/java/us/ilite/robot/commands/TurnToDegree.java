@@ -31,6 +31,7 @@ public class TurnToDegree implements ICommand {
   private Rotation2d mInitialYaw, mTurnAngle, mTargetYaw;
   private double mOutput = 0.0;
   private double mStartTime;
+  private double mPreviousTime;
   private int mAlignedCount;
   private PIDController pid;
   private final double mAllowableError;
@@ -58,11 +59,14 @@ public class TurnToDegree implements ICommand {
     pid.setInputRange( -180, 180 );
     pid.setOutputRange( -1, 1 );
 
-   mAlignedCount = 0;
+    mPreviousTime = pNow;
+
+    mAlignedCount = 0;
   }
 
   public boolean update(double pNow) {
-    mOutput = pid.calculate(getYaw().getDegrees(), pNow);
+    mOutput = pid.calculate(getYaw().getDegrees(), pNow - mPreviousTime);
+    mPreviousTime = pNow;
     mOutput += Math.signum(mOutput) * kFrictionFeedforward;
     if ((Math.abs(pid.getError()) <= Math.abs(mAllowableError))) {
      mAlignedCount++;
@@ -72,6 +76,7 @@ public class TurnToDegree implements ICommand {
     if ( mAlignedCount >= kMIN_ALIGNED_COUNT || pNow - mStartTime > kTIMEOUT) {
       mDrive.setDriveMessage(new DriveMessage(0.0, 0.0, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
       mLogger.info("Turn finished");
+      mPreviousTime = System.currentTimeMillis();
       return true;
     }
     mDrive.setDriveMessage(new DriveMessage(mOutput, -mOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
