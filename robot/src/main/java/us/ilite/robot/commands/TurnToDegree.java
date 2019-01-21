@@ -21,9 +21,9 @@ public class TurnToDegree implements ICommand {
   
   private static final int kMIN_ALIGNED_COUNT = 25;
   private static final double kTIMEOUT = 9999.9;
-  private static final double kP = 0.0046;
+  private static final double kP = 0.001;
   private static final double kI = 0.0;
-  private static final double kD = 1.3;
+  private static final double kD = 0.0;
   private static final double kMIN_POWER = 0.0; //0.066666667
   private static final double kMAX_POWER = 1.0;
   private static final double kFrictionFeedforward = 0.085;
@@ -55,8 +55,8 @@ public class TurnToDegree implements ICommand {
     pid = new PIDController(kP, kI, kD);
     pid.setContinuous(true);
     pid.setOutputRange(kMIN_POWER, kMAX_POWER);
-    pid.setSetpoint(mTargetYaw.getDegrees());
     pid.setInputRange( -180, 180 );
+    pid.setSetpoint(mTargetYaw.getDegrees());
     pid.setOutputRange( -1, 1 );
 
     mPreviousTime = pNow;
@@ -66,7 +66,6 @@ public class TurnToDegree implements ICommand {
 
   public boolean update(double pNow) {
     mOutput = pid.calculate(getYaw().getDegrees(), pNow - mPreviousTime);
-    mPreviousTime = pNow;
     mOutput += Math.signum(mOutput) * kFrictionFeedforward;
     if ((Math.abs(pid.getError()) <= Math.abs(mAllowableError))) {
      mAlignedCount++;
@@ -81,7 +80,8 @@ public class TurnToDegree implements ICommand {
     }
     mDrive.setDriveMessage(new DriveMessage(mOutput, -mOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
     Data.kSmartDashboard.putDouble("turn_error", pid.getError());
-    mLogger.info("Target: %s Yaw: %s\n", mTargetYaw, getYaw());
+    mLogger.info("Target: " + mTargetYaw + " Yaw: " + getYaw() + "\n");
+    mPreviousTime = pNow;
     return false;
   }
   
