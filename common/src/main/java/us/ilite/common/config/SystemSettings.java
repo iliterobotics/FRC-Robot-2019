@@ -101,7 +101,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Turn-To cPID constants
     // =============================================================================
-    public static double kTurnP = 0.0;
+    public static double kTurnP = 0.001;
     public static double kTurnI = 0.0;
     public static double kTurnD = 0.0;
     public static double kTurnF = 0.085;
