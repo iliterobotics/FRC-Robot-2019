@@ -9,6 +9,8 @@ package us.ilite.common.lib.util;
 
 import java.lang.reflect.Field;
 
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
 import com.google.gson.Gson;
 
 import edu.wpi.first.networktables.EntryListenerFlags;
@@ -23,6 +25,8 @@ import us.ilite.common.config.SystemSettings;
 public abstract class NetworkTablesConstantsBase {
 
     private static final NetworkTableInstance kNetworkTableInstance = NetworkTableInstance.getDefault();
+
+    private final ILog mLog = Logger.createLog(NetworkTablesConstantsBase.class);
     private final NetworkTable mTable;
     private final Field[] mDeclaredFields;
     private final Gson mGson;
@@ -41,8 +45,8 @@ public abstract class NetworkTablesConstantsBase {
 
                 try {
                     entry.setString(mGson.toJson(f.get(this)));
-                } catch (IllegalArgumentException | IllegalAccessException e) {
-                    System.err.println("Failed value write for " + entry.getName());
+                } catch (Exception e) {
+                    mLog.error("Failed value write for ", entry.getName());
                 }
             }
         }
@@ -57,7 +61,7 @@ public abstract class NetworkTablesConstantsBase {
                 } catch (IllegalArgumentException | IllegalAccessException e) {
                     // TODO Auto-generated catch block
                     // e.printStackTrace();
-                    System.err.println("Failed value retrieval for " + entry.getName());
+                    mLog.error("Failed value retrieval for ", entry.getName());
                 }
             }
         } 
