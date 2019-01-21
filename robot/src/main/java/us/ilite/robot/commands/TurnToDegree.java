@@ -60,11 +60,13 @@ public class TurnToDegree implements ICommand {
     pid.setOutputRange( -1, 1 );
 
     mPreviousTime = pNow;
-
+    System.out.println(mPreviousTime);
     mAlignedCount = 0;
   }
 
   public boolean update(double pNow) {
+    System.out.println("Update pNow: " + pNow + " Update mPreviousTime: " + mPreviousTime);
+    System.out.println("pNow - mPreviousTime = " + (pNow - mPreviousTime));
     mOutput = pid.calculate(getYaw().getDegrees(), pNow - mPreviousTime);
     mOutput += Math.signum(mOutput) * kFrictionFeedforward;
     if ((Math.abs(pid.getError()) <= Math.abs(mAllowableError))) {
