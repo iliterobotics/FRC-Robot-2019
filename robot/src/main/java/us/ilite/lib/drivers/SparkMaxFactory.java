@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package us.ilite.lib.drivers;
 
 import com.revrobotics.CANEncoder;
@@ -27,7 +20,7 @@ public class SparkMaxFactory {
 
     public static class Configuration {
         public int CAN_TIMEOUT = 100;
-        public int CONTROL_FRAME_PERIOD = 5;
+        public int CONTROL_FRAME_PERIOD = 10;
         public IdleMode IDLE_MODE = IdleMode.kBrake;
         public boolean IS_INVERTED = false;
         public int STATUS_0_PERIOD_MS = 10;
@@ -42,7 +35,7 @@ public class SparkMaxFactory {
     private static final Configuration kSlaveConfiguration = new Configuration();
 
     static {
-        kSlaveConfiguration.CONTROL_FRAME_PERIOD = 100;
+        // kSlaveConfiguration.CONTROL_FRAME_PERIOD = 100;
     }
 
     public CANSparkMax createDefaultSparkMax(int pId, MotorType pMotorType) {
