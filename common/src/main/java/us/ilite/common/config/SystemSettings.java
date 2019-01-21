@@ -7,14 +7,14 @@ import java.util.concurrent.TimeUnit;
 
 import com.team254.lib.util.ConstantsBase;
 
+import us.ilite.common.lib.util.NetworkTablesConstantsBase;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.ELogitech310;
 
-public class SystemSettings extends ConstantsBase {
+public class SystemSettings extends NetworkTablesConstantsBase {
 
 
     public static double kControlLoopPeriod = 0.01; // seconds
-    public static TimeUnit SYSTEM_TIME_UNIT = TimeUnit.SECONDS;
 
     public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
 
@@ -98,12 +98,6 @@ public class SystemSettings extends ConstantsBase {
     public static double kDriveVelocity_kD = 10.0;
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
-    @Override
-    public String getFileLocation() {
-        return "~/constants.txt";
-    }
-
-
     public static final int ULTRASONIC_PORT = 2;
 
 
