@@ -2,6 +2,7 @@ package us.ilite.robot.modules;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import us.ilite.common.config.SystemSettings;
 
 public class Limelight extends Module {
 
@@ -53,13 +54,15 @@ public class Limelight extends Module {
         mTable.getEntry("pipeline").setNumber(pipeline);
     }
 
-    public void setSnapshop(boolean snapshot) {
+    public void setSnapshot(boolean snapshot) {
         mTable.getEntry("snapshot").setBoolean(snapshot);
     }
 
     public void setStream(Stream stream) { 
         mTable.getEntry("stream").setNumber(stream.ordinal());
     }
+
+    
 
     public class TargetingData {
         public final boolean tv;
@@ -94,6 +97,154 @@ public class Limelight extends Module {
                 "}";
         }
     }
+
+    /**
+     * Calculate the distance to the currently tracked target.
+     * @param targetHeight
+     * @return Distance to target
+     */
+    public double calcTargetDistance( double targetHeight ) {
+        // d = h/(tan(Ac - ty)) - db
+        // hc = measured height of camera lens: SystemSettings.llCameraHeightIn
+        // ht = height of the target being tracked: targetHeight
+        // h = hc - ht = Height of triangle for distance calculation
+        // d = distance from robot bumper to center of target bottom, this is what we're calculating
+        // db = measured distance from camera lens to robot bumper: SystemSettings.llCameraToBumperIn
+        // Ac = camera angle needed for calculating the distance: SystemSettings.llCameraAngleDeg
+        // ty = Vertical Offset From Crosshair To Target (-20.5 degrees to 20.5 degrees) parameter from the limelight
+
+        // we read the lime light values from mCurrentTarget, but this may be null if update is not
+        // called for the first time
+
+        double d = -1.0; // < 0 for error  TODO throw an execption???
+
+        if (this.mCurrentTarget != null) {
+            d = (SystemSettings.llCameraHeightIn - targetHeight) / 
+                Math.tan( SystemSettings.llCameraAngleDeg - this.mCurrentTarget.ty ) - 
+                SystemSettings.llCameraToBumperIn;
+        }
+
+        return d;
+    }
+
+    /**
+     * Calculate the distance to the currently tracked target by target type
+     * @param target
+     * @return Distance to target
+     */
+    public double calcTargetDistance( SystemSettings.VisionTarget target ) {
+        return this.calcTargetDistance( target.getHeight() );
+    }
+
+
+    /**
+     * Calculate the approach angle to the currently tracked target.
+     * A value of 0 deg means we are perpendicular to the target,
+     * A negative angle means the robot is to the left of the target
+     * A positive angle means the robot is to the right of the target
+     * @return Approach angle to target
+     */
+    public double calcTargetApproachAngle() {
+        // ts = ts angle or skew parameter from the limelight
+
+        // we read the lime light values from mCurrentTarget, but this may be null if update is not
+        // called for the first time
+
+        double approachAngle = 0.0;  
+        
+        // TODO throw an execption on error???
+        if (this.mCurrentTarget != null) {
+            // For -90 < Ts < -45 use the right hand function. For -45 < Ts <= 0 use the left hand function.
+
+
+            // get the skew angle and figure out which conversion to use
+            double ts = this.mCurrentTarget.ts;
+
+            if ( ts <= 0.0 && ts > -45.0 ) {
+                // left hand angle
+                approachAngle = - SystemSettings.llLeftACoeff + ts*SystemSettings.llLeftBCoeff + ts*Math.pow(SystemSettings.llLeftCCoeff, 2.0);
+            }
+            // TODO should we verify the  -90 < Ts < -45 for right hand angles and throw an exception if we don't meet it?
+            else { 
+                // right hand angle
+                approachAngle = SystemSettings.llRightACoeff + ts*SystemSettings.llRightBCoeff + ts*Math.pow(SystemSettings.llRightCCoeff, 2.0);
+            }
+
+        }
+
+        return approachAngle;
+    }
+
+    public class Point {
+        double x;
+        double y;
+
+        Point(double x, double y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        /**
+         * @return the x
+         */
+        public double getX() {
+            return x;
+        }
+
+        /**
+         * @param x the x to set
+         */
+        public void setX(double x) {
+            this.x = x;
+        }
+
+        /**
+         * @return the y
+         */
+        public double getY() {
+            return y;
+        }
+
+        /**
+         * @param y the y to set
+         */
+        public void setY(double y) {
+            this.y = y;
+        }
+    }
+
+    /**
+     * Find the target as point (x,y) in front of the robot
+     * Returns (-1,-1) to indicate an error
+     * @param target
+     * @return
+     */
+    public Point calcTargetLocation( SystemSettings.VisionTarget target ) {
+        Point p = new Point(-1.0, -1.0);
+
+        double distance = this.calcTargetDistance( target );
+        double angle = this.calcTargetApproachAngle();
+
+        // is target to the left of the robot?
+        boolean bLeft = ( angle < 0 );
+
+        angle = Math.abs(angle);
+
+        // TODO Better error handling.  For now if we get a negative distance something went wrong
+        if ( distance < 0.0 ) {
+            return p;
+        }
+
+        // Calculate X with correct sign, negative if target is to the left of the robot
+        double x = distance * Math.sin( angle ) * ( bLeft ? -1.0 : 1.0 );
+        double y = distance * Math.cos( angle );
+
+        p.setX(x);
+        p.setY(y);
+
+        return p;
+    }
+
 
 
 }
