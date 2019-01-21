@@ -49,6 +49,9 @@ public class TurnToDegree implements ICommand {
 
   @Override
   public void init(double pNow) {
+    SystemSettings settings = new SystemSettings();
+    settings.loadFromNetworkTables();
+    settings.writeToNetworkTables();
     mStartTime = pNow;
 
     mInitialYaw = getYaw();

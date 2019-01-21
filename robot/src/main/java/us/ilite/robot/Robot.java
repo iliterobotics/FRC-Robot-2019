@@ -39,6 +39,8 @@ public class Robot extends TimedRobot {
     private Clock mClock = new Clock();
     private Data mData = new Data();
     private Timer initTimer = new Timer();
+    private SystemSettings mSettings = new SystemSettings();
+
 
     // Module declarations here
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
@@ -53,6 +55,8 @@ public class Robot extends TimedRobot {
         initTimer.start();
         Logger.setLevel(ELevel.INFO);
         mLogger.info("Starting Robot Initialization...");
+
+        mSettings.writeToNetworkTables();
 
         mRunningModules.setModules();
 
@@ -78,10 +82,12 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        
         initTimer.reset();
         initTimer.start();
         mLogger.info("Starting Autonomous Initialization...");
 
+        mSettings.loadFromNetworkTables();
 
         mRunningModules.setModules();
         mRunningModules.modeInit(mClock.getCurrentTime());
