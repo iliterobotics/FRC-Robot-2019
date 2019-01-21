@@ -1,6 +1,5 @@
 package us.ilite.common.lib.control;
 
-import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
@@ -260,17 +259,7 @@ public class PIDController {
      *            the desired setpoint
      */
     public void setSetpoint(double setpoint) {
-        if (m_maximumInput > m_minimumInput) {
-            if (setpoint > m_maximumInput) {
-                m_setpoint = m_maximumInput;	
-            } else if (setpoint < m_minimumInput) {	
-                m_setpoint = m_minimumInput;	
-            } else {	
-                m_setpoint = setpoint;	
-            }	
-        } else {	
-            m_setpoint = setpoint;	
-        }
+        m_setpoint = Util.limit(setpoint, m_minimumInput, m_maximumInput);
     }
 
     /**
