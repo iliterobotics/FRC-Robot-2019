@@ -13,7 +13,7 @@ import us.ilite.common.config.SystemSettings.VisionTarget;
 public class Limelight extends Module {
 
     private final NetworkTable mTable = NetworkTableInstance.getDefault().getTable("limelight");
-    public TargetingData mCurrentTarget = null;
+    public ITargetingData mCurrentTarget = null;
 
     @Override
     public void modeInit(double pNow) {
@@ -27,7 +27,7 @@ public class Limelight extends Module {
 
     @Override
     public void update(double pNow) {
-        mCurrentTarget = new TargetingData();
+        mCurrentTarget = new LimeLightTargetingData(mTable);
     }
 
     @Override
@@ -68,42 +68,6 @@ public class Limelight extends Module {
         mTable.getEntry("stream").setNumber(stream.ordinal());
     }
 
-    
-
-    public class TargetingData {
-        public final boolean tv;
-        public final double tx, ty, ta, ts, tl, tshort, tlong, thoriz, tvert;
-
-        public TargetingData() {
-            tv = mTable.getEntry("tv").getBoolean(false);
-            tx = mTable.getEntry("tx").getDouble(Double.MIN_VALUE);
-            ty = mTable.getEntry("ty").getDouble(Double.MIN_VALUE);
-            ta = mTable.getEntry("ta").getDouble(Double.MIN_VALUE);
-            ts = mTable.getEntry("ts").getDouble(Double.MIN_VALUE);
-            tl = mTable.getEntry("tl").getDouble(Double.MIN_VALUE);
-            tshort = mTable.getEntry("tshort").getDouble(Double.MIN_VALUE);
-            tlong = mTable.getEntry("tlong").getDouble(Double.MIN_VALUE);
-            thoriz = mTable.getEntry("thoriz").getDouble(Double.MIN_VALUE);
-            tvert = mTable.getEntry("tvert").getDouble(Double.MIN_VALUE);
-        }
-
-        @Override
-        public String toString() {
-            return "{" +
-                " tv='" + tv +
-                ", tx='" + tx +
-                ", ty='" + ty +
-                ", ta='" + ta +
-                ", ts='" + ts +
-                ", tl='" + tl +
-                ", tshort='" + tshort +
-                ", tlong='" + tlong +
-                ", thoriz='" + thoriz +
-                ", tvert='" + tvert +
-                "}";
-        }
-    }
-
     /**
      * Calculate the distance to the currently tracked target.
      * @param targetHeight
@@ -126,7 +90,7 @@ public class Limelight extends Module {
 
         if (this.mCurrentTarget != null) {
             d = (SystemSettings.llCameraHeightIn - targetHeight) / 
-                Math.tan( SystemSettings.llCameraAngleDeg - this.mCurrentTarget.ty ) - 
+                Math.tan( SystemSettings.llCameraAngleDeg - this.mCurrentTarget.getTy() ) - 
                 SystemSettings.llCameraToBumperIn;
         }
 
@@ -164,7 +128,7 @@ public class Limelight extends Module {
 
 
             // get the skew angle and figure out which conversion to use
-            double ts = this.mCurrentTarget.ts;
+            double ts = this.mCurrentTarget.getTs();
 
             if ( ts <= 0.0 && ts > -45.0 ) {
                 // left hand angle

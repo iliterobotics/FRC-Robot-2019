@@ -150,7 +150,7 @@ public class SystemSettings extends ConstantsBase {
         private final Optional<String> pipelineName;
 
         VisionTarget(double height) {
-            this(height, null));
+            this(height, null);
         }
         VisionTarget( double height, String pipelineName)  {
             this.height = height;
@@ -158,7 +158,7 @@ public class SystemSettings extends ConstantsBase {
         }
 
         /**
-         * @return the height
+         * @return the heightfE
          */
         public double getHeight() {
             return height;
