@@ -93,7 +93,9 @@ public class DriverHUD extends Application {
     KeyImage xButton = new KeyImage(xbtn, xpressed, refreshRate, 111, 392);
     KeyImage yButton = new KeyImage(ybtn, ypressed, refreshRate, 111, 392);
 
-    KeyImage redBar = new KeyImage(bar, bar, refreshRate, 303, 300);
+    KeyImage redBar = new KeyImage(bar, bar, refreshRate, 308, 300);
+    KeyImage rightBar = new KeyImage(sideBar, sideBar, refreshRate, 628, -38);
+    KeyImage leftBar = new KeyImage(sideBar, sideBar, refreshRate, 308.0, -40.0);
     
     KeyImage robot = new KeyImage(robotIsometirc, robotSide, refreshRate, 328, 0);
     
@@ -133,8 +135,8 @@ public class DriverHUD extends Application {
         //For testing purposes only.
         scene.setOnKeyPressed( e -> inputs.add( e.getCode().toString() ));
         scene.setOnKeyReleased(e -> inputs.remove(e.getCode().toString()));
-        scene.setOnMousePressed(e -> System.out.println(e.getSceneX() + ", " + e.getSceneY()));
-        scene.setOnMouseDragged(e -> redBar.setXY(e.getSceneX(), e.getSceneY()));
+        scene.setOnMouseReleased(e -> System.out.println(e.getSceneX() + ", " + e.getSceneY()));
+        scene.setOnMouseDragged(e -> leftBar.setXY(e.getSceneX(), e.getSceneY()));
 
         final long startTime = System.nanoTime();
         gc.setFill(Color.BLACK);
@@ -143,15 +145,7 @@ public class DriverHUD extends Application {
 
         new AnimationTimer() {
 
-            // Image aImage = abtn;
-            // Image bImage = bbtn;
-            // Image xImage = xbtn;
-            // Image yImage = ybtn;
-
             int frames = 0;
-
-            
-            
 
             public void handle(long currentNanoTime) {
                
@@ -229,7 +223,9 @@ public class DriverHUD extends Application {
                 // display(gc, yButton.getImage(), yButton.getDisplayRate(), yButton.getX(), yButton.getY(), 100, 100, frames);
 
                 display(gc, robot.getImage(), robot.getDisplayRate(), robot.getX(), robot.getY(), 300, 300, frames);
-                display(gc, redBar.getImage(), redBar.getDisplayRate(), redBar.getX(), redBar.getY(), 350, 20, frames);
+                display(gc, redBar.getImage(), redBar.getDisplayRate(), redBar.getX(), redBar.getY(), 340, 20, frames);
+                display(gc, rightBar.getImage(), rightBar.getDisplayRate(), rightBar.getX(), rightBar.getY(), 20, 350, frames);
+                display(gc, leftBar.getImage(), leftBar.getDisplayRate(), leftBar.getX(), leftBar.getY(), 20, 350, frames);
             
 
                 //Draw sticks
