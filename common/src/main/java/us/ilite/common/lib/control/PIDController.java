@@ -82,6 +82,9 @@ public class PIDController {
      *            time passed since previous call to calculate
      */
     public double calculate(double input, double dt) {
+        if ( dt == 0 ) {
+            throw new IllegalArgumentException();
+        }
         if (dt < 1E-6) {
             dt = 1E-6;
         }
