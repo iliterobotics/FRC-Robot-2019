@@ -104,4 +104,60 @@ public class SystemSettings extends ConstantsBase {
 
 
     public static final int ULTRASONIC_PORT = 2;
+
+
+    // =============================================================================
+    // LimeLight Camera Constants
+    // Note: These constants need to be recalculted for a specific robot geometry
+    // =============================================================================
+    public static double llCameraHeightIn = 58.0;
+    public static double llCameraToBumperIn = 10.0;
+    public static double llCameraAngleDeg = 28.55;
+
+    // Left angle coefficients for angle = a + bx + cx^2
+    //    a	0.856905324060421
+    //    b	-3.01414088331715
+    //    c	-0.0331854848038372
+    public static double llLeftACoeff = 0.856905324060421;
+    public static double llLeftBCoeff = -3.01414088331715;
+    public static double llLeftCCoeff = -0.0331854848038372;
+
+    // Right angle coefficients for angle = a + bx + cx^2
+    // a	-54.3943883842204
+    // b	-4.53956454545558
+    // c	-0.0437470770400814
+    public static double llRightACoeff = -54.3943883842204;
+    public static double llRightBCoeff = -4.53956454545558;
+    public static double llRightCCoeff = -0.0437470770400814;
+
+
+
+    // =============================================================================
+    // Target Constants
+    // Note: These constants need to be recalculted for the specific target geometry
+    // =============================================================================
+    // TODO These values are specific to the targets, not the camera, and may belong elsewhere
+    // The current target values assume the limelight processing stream is configured to target
+    // the bottom of the vision target
+    public enum VisionTarget {
+        HatchPort(25.6875), // height of the bottom of the reflective tape in inches for the hatch port
+        CargoPort(33.3125); // height of the bottom of the reflective tape in inches for the cargo port
+
+        private final double height;
+
+        VisionTarget( double height )  {
+            this.height = height;
+        }
+
+        /**
+         * @return the height
+         */
+        public double getHeight() {
+            return height;
+        }
+
+    }
+
+    
+
 }
