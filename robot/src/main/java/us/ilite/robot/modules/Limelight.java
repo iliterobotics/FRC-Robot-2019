@@ -1,5 +1,6 @@
 package us.ilite.robot.modules;
 
+import java.util.function.Function;
 import java.util.Optional;
 
 import com.team254.lib.geometry.Translation2d;
@@ -7,6 +8,7 @@ import com.team254.lib.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.config.SystemSettings.VisionTarget;
 
 public class Limelight extends Module {
 
@@ -179,27 +181,33 @@ public class Limelight extends Module {
         return approachAngle;
     }
 
+    public Optional<Translation2d> calcTargetLocation(SystemSettings.VisionTarget target) {
+        return calcTargetLocation(target, this::calcTargetDistance, (v)->this.calcTargetApproachAngle());
+    }
+
     /**
      * Find the target as point (x,y) in front of the robot
      * Returns (-1,-1) to indicate an error
-     * @param target
+     * @param target the target to look form
+     * @param distanceCalculator the calculating method used to calculate the distance of the target
+     * @param approachAngleCalculator the calculating method used to calculate the approach angle of 
+     * the target.
      * @return
      *  The target location. The optional will be empty if there was an error
      */
-    public Optional<Translation2d>  calcTargetLocation( SystemSettings.VisionTarget target ) {
-        
-
-        double distance = this.calcTargetDistance( target );
-        double angle = this.calcTargetApproachAngle();
+    protected Optional<Translation2d>  calcTargetLocation( SystemSettings.VisionTarget target, 
+        Function<VisionTarget,Double>distanceCalculator, Function<Void,Double> approachAngleCalculator)
+    {
+        double distance = distanceCalculator.apply(target);
+        if ( distance < 0.0 ) {
+            return Optional.empty();
+        }
+        double angle = approachAngleCalculator.apply(null);
 
         // is target to the left of the robot?
         boolean bLeft = ( angle < 0 );
 
         angle = Math.abs(angle);
-        
-        if ( distance < 0.0 ) {
-            return Optional.empty();
-        }
 
         // Calculate X with correct sign, negative if target is to the left of the robot
         double x = distance * Math.sin( angle ) * ( bLeft ? -1.0 : 1.0 );
