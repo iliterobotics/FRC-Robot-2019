@@ -115,8 +115,6 @@ public class Robot extends TimedRobot {
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
-
-        //CodexNetworkTablesParser.codexToCSVHeader();
     }
 
     @Override
@@ -124,8 +122,7 @@ public class Robot extends TimedRobot {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
         
-        mData.sendCodices(); //Continually sends Codexes into NetworkTables
-        //CodexNetworkTablesParser.codexToCSVLog(System.currentTimeMillis()/1000);
+        mData.sendCodices();
     }
 
     @Override

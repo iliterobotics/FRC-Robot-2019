@@ -29,16 +29,24 @@ public class LoggedData {
         loggedCodexes.forEach(c -> c.parseFromNetworkTables());
     }
 
+    public void logFromCodexToCSVHeader() {
+        loggedCodexes.forEach(c -> c.codexToCSVHeader());
+    }
+    public void logFromCodexToCSV() {
+        loggedCodexes.forEach(c -> c.codexToCSVLog(System.currentTimeMillis()/1000));
+    }
+
     //Testing purposes only
     public static void main(String[] args) {
         NetworkTableInstance.getDefault().startClientTeam(1885);
         LoggedData loggedData = new LoggedData();
-        
+        loggedData.logFromCodexToCSVHeader();
         Thread logger = new Thread() {
             public void run() {
                     while(true) {
                         loggedData.logFromNetworkTables();
-                        System.out.println(System.currentTimeMillis() + " " + loggedData.imu);
+                        loggedData.logFromCodexToCSV();
+                        // System.out.println(System.currentTimeMillis() + " " + loggedData.imu);
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
