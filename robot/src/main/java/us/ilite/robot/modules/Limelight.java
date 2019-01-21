@@ -1,5 +1,9 @@
 package us.ilite.robot.modules;
 
+import java.util.Optional;
+
+import com.team254.lib.geometry.Translation2d;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.config.SystemSettings;
@@ -175,52 +179,15 @@ public class Limelight extends Module {
         return approachAngle;
     }
 
-    public class Point {
-        double x;
-        double y;
-
-        Point(double x, double y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        /**
-         * @return the x
-         */
-        public double getX() {
-            return x;
-        }
-
-        /**
-         * @param x the x to set
-         */
-        public void setX(double x) {
-            this.x = x;
-        }
-
-        /**
-         * @return the y
-         */
-        public double getY() {
-            return y;
-        }
-
-        /**
-         * @param y the y to set
-         */
-        public void setY(double y) {
-            this.y = y;
-        }
-    }
-
     /**
      * Find the target as point (x,y) in front of the robot
      * Returns (-1,-1) to indicate an error
      * @param target
      * @return
+     *  The target location. The optional will be empty if there was an error
      */
-    public Point calcTargetLocation( SystemSettings.VisionTarget target ) {
-        Point p = new Point(-1.0, -1.0);
+    public Optional<Translation2d>  calcTargetLocation( SystemSettings.VisionTarget target ) {
+        
 
         double distance = this.calcTargetDistance( target );
         double angle = this.calcTargetApproachAngle();
@@ -229,20 +196,16 @@ public class Limelight extends Module {
         boolean bLeft = ( angle < 0 );
 
         angle = Math.abs(angle);
-
-        // TODO Better error handling.  For now if we get a negative distance something went wrong
+        
         if ( distance < 0.0 ) {
-            return p;
+            return Optional.empty();
         }
 
         // Calculate X with correct sign, negative if target is to the left of the robot
         double x = distance * Math.sin( angle ) * ( bLeft ? -1.0 : 1.0 );
         double y = distance * Math.cos( angle );
 
-        p.setX(x);
-        p.setY(y);
-
-        return p;
+        return Optional.of(new Translation2d(x,y));
     }
 
 
