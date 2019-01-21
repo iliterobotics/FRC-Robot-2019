@@ -5,6 +5,7 @@ import us.ilite.robot.modules.DriveMessage;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.robot.Data;
 import us.ilite.common.lib.control.PIDController;
+import us.ilite.common.config.SystemSettings;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.util.log.ILog;
@@ -21,13 +22,13 @@ public class TurnToDegree implements ICommand {
   
   private static final int kMIN_ALIGNED_COUNT = 25;
   private static final double kTIMEOUT = 9999.9;
-  private static final double kP = 0.003;
-  private static final double kI = 0.0;
-  private static final double kD = 0.0;
+  // private static final double kP = SystemSettings.kTurnP;
+  // private static final double kI = SystemSettings.kTurnI;
+  // private static final double kD = SystemSettings.kTurnD;
+  // private static final double kFrictionFeedforward = 0.085;
   private static final double kMIN_POWER = 0.0; //0.066666667
   private static final double kMAX_POWER = 1.0;
-  private static final double kFrictionFeedforward = 0.085;
-  
+ 
   private Rotation2d mInitialYaw, mTurnAngle, mTargetYaw;
   private double mOutput = 0.0;
   private double mStartTime;
@@ -52,7 +53,7 @@ public class TurnToDegree implements ICommand {
 
     mInitialYaw = getYaw();
     mTargetYaw = mInitialYaw.rotateBy( mTurnAngle );
-    pid = new PIDController(kP, kI, kD);
+    pid = new PIDController(SystemSettings.kTurnP, SystemSettings.kTurnI, SystemSettings.kTurnD);
     pid.setContinuous(true);
     pid.setOutputRange(kMIN_POWER, kMAX_POWER);
     pid.setInputRange( -180, 180 );
@@ -67,7 +68,7 @@ public class TurnToDegree implements ICommand {
     System.out.println("Update pNow: " + pNow + " Update mPreviousTime: " + mPreviousTime);
     System.out.println("pNow - mPreviousTime = " + (pNow + 1 - mPreviousTime));
     mOutput = pid.calculate(getYaw().getDegrees(), pNow + 1 - mPreviousTime);
-    mOutput += Math.signum(mOutput) * kFrictionFeedforward;
+    mOutput += Math.signum(mOutput) * SystemSettings.kTurnF;
     if ((Math.abs(pid.getError()) <= Math.abs(mAllowableError))) {
      mAlignedCount++;
     } else {
