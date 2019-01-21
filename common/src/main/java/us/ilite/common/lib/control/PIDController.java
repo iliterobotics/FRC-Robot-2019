@@ -218,15 +218,6 @@ public class PIDController {
     }
 
     /**
-     * Set the PID controller to consider the input to be continuous, Rather then using the max and min in as
-     * constraints, it considers them to be the same point and automatically calculates the shortest route to the
-     * setpoint.
-     */
-    public void setContinuous() {
-        this.setContinuous(true);
-    }
-
-    /**
      * Sets the maximum and minimum values expected from the input.
      *
      * @param minimumInput
