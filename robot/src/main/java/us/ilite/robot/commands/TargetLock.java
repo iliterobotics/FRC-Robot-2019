@@ -1,17 +1,21 @@
 package us.ilite.robot.commands;
 
+import java.util.Optional;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
+import us.ilite.robot.modules.ITargetingData;
 import us.ilite.robot.modules.Limelight;
+import us.ilite.robot.modules.targetData.ITargetDataProvider;
+import us.ilite.robot.modules.targetData.NoOpTargetDataProvider;
 import us.ilite.common.lib.control.PIDController;
 
 public class TargetLock implements ICommand{
     private Drive mDrive;
-    private Limelight mLimelight;
-    private Limelight.TargetingData mTargetingData;
+    private ITargetDataProvider mCamera;
     private PIDController mPID;
     private SearchDirection mCubeSearchType;
 
@@ -35,9 +39,13 @@ public class TargetLock implements ICommand{
 	}
 
     public TargetLock(Drive pDrive, double pAllowableError, SearchDirection pCubeSearchType) {
+        this(pDrive, pAllowableError, pCubeSearchType, NoOpTargetDataProvider.getDefault());
+    }
+    public TargetLock(Drive pDrive, double pAllowableError, SearchDirection pCubeSearchType, ITargetDataProvider pCamera) {
         this.mDrive = pDrive;
         this.mAllowableError = pAllowableError;
         this.mCubeSearchType = pCubeSearchType;
+        this.mCamera = pCamera;
     }
 
     @Override
@@ -52,18 +60,21 @@ public class TargetLock implements ICommand{
 
     @Override
     public boolean update(double pNow) {
-        mTargetingData = mLimelight.new TargetingData();
+        Optional<ITargetingData> currentData =  mCamera.getTargetingData();
 
-        if (Math.abs(mTargetingData.tx) < mAllowableError) return true;     //if x offset from crosshair is within acceptable error, command TargetLock is completed
+        if(currentData.isPresent()) {
+            ITargetingData currentTargetData = currentData.get();
+        if (Math.abs(currentTargetData.getTx()) < mAllowableError) return true;     //if x offset from crosshair is within acceptable error, command TargetLock is completed
 
-        if (mTargetingData.tv) {                                            //if there is a target in the limelight's pov, lock onto target using feedback loop
-            mOutput = mPID.calculate(mTargetingData.tx, pNow - mPreviousTime);
+        if (currentTargetData.getTv()) {                                            //if there is a target in the limelight's pov, lock onto target using feedback loop
+            mOutput = mPID.calculate(currentTargetData.getTx(), pNow - mPreviousTime);
 
             mDrive.setDriveMessage(new DriveMessage(mOutput, -mOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
         }   else {                                                          //if there is no target in the limelight's pov, continue turning in direction specified by SearchDirection
             mDrive.setDriveMessage(new DriveMessage(mCubeSearchType.turnScalar * kTURN_POWER, mCubeSearchType.turnScalar * kTURN_POWER, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
         }
         mPreviousTime = pNow;
+    }
         return false;                                                       //command has not completed
     }
 

@@ -24,4 +24,6 @@ public interface ITargetingData {
     
     public double getTvert();
 
+    public boolean getTv();
+
 }

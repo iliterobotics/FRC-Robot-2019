@@ -1,7 +1,5 @@
 package us.ilite.robot.hardware;
 
-import java.util.Arrays;
-
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -13,14 +11,12 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import com.team254.lib.drivers.talon.TalonSRXChecker;
-import com.team254.lib.drivers.talon.TalonSRXFactory;
 import com.team254.lib.drivers.talon.TalonSRXChecker.CheckerConfigBuilder;
+import com.team254.lib.drivers.talon.TalonSRXFactory;
 import com.team254.lib.geometry.Rotation2d;
 
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.util.Conversions;
-import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
 /**
@@ -286,7 +282,7 @@ public class DriveHardware implements IDriveHardware {
 
         checkerConfigBuilder.setRPMSupplier(()->mRightMaster.getSelectedSensorVelocity(0));
         
-        boolean rightSide = TalonSRXChecker.CheckTalons(Drive.class,
+        boolean rightSide = TalonSRXChecker.CheckTalons(Drive.class,r
                 Arrays.asList(new TalonSRXChecker.TalonSRXConfig("right_master", mRightMaster),
                         new TalonSRXChecker.TalonSRXConfig("right_slave", mRightRear)), 
                 checkerConfigBuilder.build());

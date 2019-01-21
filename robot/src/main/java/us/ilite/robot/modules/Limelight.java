@@ -9,8 +9,9 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.config.SystemSettings.VisionTarget;
+import us.ilite.robot.modules.targetData.ITargetDataProvider;
 
-public class Limelight extends Module {
+public class Limelight extends Module implements ITargetDataProvider{
 
     private final NetworkTable mTable = NetworkTableInstance.getDefault().getTable("limelight");
     public ITargetingData mCurrentTarget = null;
@@ -28,6 +29,11 @@ public class Limelight extends Module {
     @Override
     public void update(double pNow) {
         mCurrentTarget = new LimeLightTargetingData(mTable);
+    }
+
+    @Override
+    public Optional<ITargetingData> getTargetingData() {
+        return Optional.of(new LimeLightTargetingData(mTable));
     }
 
     @Override
