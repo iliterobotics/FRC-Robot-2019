@@ -115,6 +115,8 @@ public class Robot extends TimedRobot {
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
+
+        mData.loggedData.logFromCodexToCSVHeader();
     }
 
     @Override
@@ -123,6 +125,7 @@ public class Robot extends TimedRobot {
         mRunningModules.update(mClock.getCurrentTime());
         
         mData.sendCodices();
+        mData.loggedData.logFromCodexToCSV(System.currentTimeMillis()/1000);
     }
 
     @Override
