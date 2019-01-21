@@ -296,7 +296,7 @@ public class PIDController {
      *
      * @return true if the error is less than the tolerance
      */
-    public boolean onTarget(double tolerance) {
+    public boolean isOnTarget(double tolerance) {
         return m_last_input != Double.NaN && Math.abs(m_last_input - m_setpoint) < tolerance;
     }
 
