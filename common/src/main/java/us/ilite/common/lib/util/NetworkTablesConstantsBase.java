@@ -47,6 +47,7 @@ public abstract class NetworkTablesConstantsBase {
                     entry.setString(mGson.toJson(f.get(this)));
                 } catch (Exception e) {
                     mLog.error("Failed value write for ", entry.getName());
+                    mLog.exception(e);
                 }
             }
         }
@@ -59,9 +60,8 @@ public abstract class NetworkTablesConstantsBase {
                 try {
                     f.set(this, mGson.fromJson(entry.getString(""), f.getGenericType()));
                 } catch (IllegalArgumentException | IllegalAccessException e) {
-                    // TODO Auto-generated catch block
-                    // e.printStackTrace();
                     mLog.error("Failed value retrieval for ", entry.getName());
+                    mLog.exception(e);
                 }
             }
         } 
