@@ -104,4 +104,6 @@ public class SystemSettings extends ConstantsBase {
         return "~/constants.txt";
     }
 
+
+    public static final int ULTRASONIC_PORT = 2;
 }
