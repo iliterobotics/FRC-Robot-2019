@@ -8,22 +8,21 @@ public enum ETrackingType {
     Hatch - 5
     Add one to prioritize right-hand targets.
     */
-    TARGET_TRACK(1),
-    CARGO_TRACK(3),
-    HATCH_TRACK(5);
+    TARGET_LEFT(1),
+    TARGET_RIGHT(2),
+    CARGO_LEFT(3),
+    CARGO_RIGHT(4),
+    HATCH_LEFT(5),
+    HATCH_RIGHT(6);
 
-    private final int kLeftPipelineNum;
+    private final int kPipelineNum;
 
     private ETrackingType(int pPipelineNum) {
-        kLeftPipelineNum = pPipelineNum;
+        kPipelineNum = pPipelineNum;
     }
 
-    public int getLeftPipelineNum() {
-        return kLeftPipelineNum;
-    }
-
-    public int getRightPipelineNum() {
-        return kLeftPipelineNum + 1;
+    public int getPipeline() {
+        return kPipelineNum;
     }
 
 }

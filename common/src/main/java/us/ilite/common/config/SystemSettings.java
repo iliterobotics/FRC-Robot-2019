@@ -65,7 +65,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int     JOYSTICK_PORT_OPERATOR = 1;
     public static int     JOYSTICK_PORT_TESTER = 2;
 
-    public static int kLimelightDefaultPipeline = ETrackingType.TARGET_TRACK.getRightPipelineNum();
+    public static int kLimelightDefaultPipeline = ETrackingType.TARGET_LEFT.getPipeline();
     public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN, 
                                                                             DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN,
                                                                             DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN);

@@ -4,11 +4,12 @@ import java.util.Optional;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.flybotix.hfr.codex.Codex;
 
 import us.ilite.common.lib.control.PIDController;
+import us.ilite.common.types.ETargetingData;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
-import us.ilite.robot.modules.ITargetingData;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
 
 public class TargetLock implements ICommand {
@@ -36,9 +37,6 @@ public class TargetLock implements ICommand {
 		}
 	}
 
-    public TargetLock(Drive pDrive, double pAllowableError, SearchDirection pCubeSearchType) {
-        this(pDrive, pAllowableError, pCubeSearchType, ()->Optional.empty());
-    }
     public TargetLock(Drive pDrive, double pAllowableError, SearchDirection pCubeSearchType, ITargetDataProvider pCamera) {
         this.mDrive = pDrive;
         this.mAllowableError = pAllowableError;
@@ -58,22 +56,36 @@ public class TargetLock implements ICommand {
 
     @Override
     public boolean update(double pNow) {
-        Optional<ITargetingData> currentData =  mCamera.getTargetingData();
+        Codex<Double, ETargetingData> currentData = mCamera.getTargetingData();
 
-        if(currentData.isPresent()) {
-            ITargetingData currentTargetData = currentData.get();
-        if (Math.abs(currentTargetData.getTx()) < mAllowableError) return true;     //if x offset from crosshair is within acceptable error, command TargetLock is completed
+        // If one data element is set in the codex, they all are
+        if(currentData.isSet(ETargetingData.tx)) {
+            if(Math.abs(currentData.get(ETargetingData.tx)) < mAllowableError) {
+                //if x offset from crosshair is within acceptable error, command TargetLock is completed
+                return true;
+            }
 
-        if (currentTargetData.getTv()) {                                            //if there is a target in the limelight's pov, lock onto target using feedback loop
-            mOutput = mPID.calculate(currentTargetData.getTx(), pNow - mPreviousTime);
-
-            mDrive.setDriveMessage(new DriveMessage(mOutput, -mOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
-        }   else {                                                          //if there is no target in the limelight's pov, continue turning in direction specified by SearchDirection
-            mDrive.setDriveMessage(new DriveMessage(mCubeSearchType.turnScalar * kTURN_POWER, mCubeSearchType.turnScalar * kTURN_POWER, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
+            if(currentData.isSet(ETargetingData.tv)) {
+                //if there is a target in the limelight's pov, lock onto target using feedback loop
+                mOutput = mPID.calculate(currentData.get(ETargetingData.tx), pNow - mPreviousTime);
+                mDrive.setDriveMessage(new DriveMessage(mOutput, -mOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
+            } else {
+                //if there is no target in the limelight's pov, continue turning in direction specified by SearchDirection
+                mDrive.setDriveMessage(
+                    new DriveMessage(
+                        mCubeSearchType.turnScalar * kTURN_POWER, 
+                        mCubeSearchType.turnScalar * kTURN_POWER, 
+                        ControlMode.PercentOutput
+                    ).setNeutralMode(NeutralMode.Brake)
+                );
+            }
         }
+
+
         mPreviousTime = pNow;
-    }
-        return false;                                                       //command has not completed
+        
+         //command has not completed
+        return false;                                                      
     }
 
     @Override
