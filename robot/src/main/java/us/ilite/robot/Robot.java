@@ -1,14 +1,19 @@
 package us.ilite.robot;
 
+import com.flybotix.hfr.codex.CodexMetadata;
+import com.flybotix.hfr.codex.ICodexTimeProvider;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import us.ilite.common.lib.control.DriveController;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.io.Network;
+
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
@@ -42,11 +47,21 @@ public class Robot extends TimedRobot {
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
     private DriverInput mDriverInput = new DriverInput(mDrive, mData);
-
+    
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
 
     @Override
     public void robotInit() {
+        // Init static variables and get singleton instances first
+        ICodexTimeProvider provider = new ICodexTimeProvider() {
+            public long getTimestamp() {
+                return RobotController.getFPGATime() * 1000l;
+            }
+        };
+        CodexMetadata.overrideTimeProvider(provider);
+        Network.getInstance();
+
+        // Init the actual robot
         initTimer.reset();
         initTimer.start();
         Logger.setLevel(ELevel.ERROR);
