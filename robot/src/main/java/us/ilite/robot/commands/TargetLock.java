@@ -5,14 +5,13 @@ import java.util.Optional;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import us.ilite.common.lib.control.PIDController;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.ITargetingData;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
-import us.ilite.robot.modules.targetData.NoOpTargetDataProvider;
-import us.ilite.common.lib.control.PIDController;
 
-public class TargetLock implements ICommand{
+public class TargetLock implements ICommand {
     private Drive mDrive;
     private ITargetDataProvider mCamera;
     private PIDController mPID;
