@@ -8,7 +8,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.ITargetingData;
-import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
 import us.ilite.robot.modules.targetData.NoOpTargetDataProvider;
 import us.ilite.common.lib.control.PIDController;
@@ -39,7 +38,7 @@ public class TargetLock implements ICommand{
 	}
 
     public TargetLock(Drive pDrive, double pAllowableError, SearchDirection pCubeSearchType) {
-        this(pDrive, pAllowableError, pCubeSearchType, NoOpTargetDataProvider.getDefault());
+        this(pDrive, pAllowableError, pCubeSearchType, ()->Optional.empty());
     }
     public TargetLock(Drive pDrive, double pAllowableError, SearchDirection pCubeSearchType, ITargetDataProvider pCamera) {
         this.mDrive = pDrive;
