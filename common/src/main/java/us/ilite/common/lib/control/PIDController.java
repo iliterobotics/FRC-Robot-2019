@@ -21,7 +21,7 @@ public class PIDController {
     private boolean m_continuous = false;
 
     private double m_previousTime;
-    private double m_P;
+    private PIDGains mPIDGains;
     private double m_I;
     private double m_D;
     private double m_F;
@@ -52,8 +52,9 @@ public class PIDController {
      * @param Kd the derivative constant
      * @param KdefaultDT the default delta time (SystemSettings.kControlLoopPeriod)
      */
-    public PIDController(double Kp, double Ki, double Kd, double KdefaultDT) {
-        this( Kp, Ki, Kd, 0d, KdefaultDT );
+    public PIDController(PIDGains kPIDGains, double kDefaultDT) {
+        mPIDGains = kPIDGains;
+        mDefaultDT = kDefaultDT;
     }
 
     /**
@@ -102,7 +103,7 @@ public class PIDController {
         }
 
         // Only add to totalError if output isn't being saturated
-        if ((m_error * m_P < m_maximumOutput) && (m_error * m_P > m_minimumOutput)) {
+        if ((mError * mPIDGains.mP < mMaximumOutput) && (mError * mPIDGains.mP > mMinimumOutput)) {
             m_totalError += m_error * m_dt;
         } else {
             m_totalError = 0;
@@ -111,9 +112,9 @@ public class PIDController {
         // Don't blow away m_error so as to not break derivative
         double proportionalError = Math.abs(m_error) < m_deadband ? 0 : m_error;
 
-        m_result = (m_P * proportionalError + m_I * m_totalError + m_D * (m_error - m_prevError) / m_dt
-                + m_F * m_setpoint);
-        m_prevError = m_error;
+        mResult = (mPIDGains.mP * proportionalError + mPIDGains.mI * mTotalError + mPIDGains.mD * (mError - mPrevError) / mDt
+                + mPIDGains.mF * mSetpoint);
+        mPrevError = mError;
 
         m_result = Util.limit( m_result, m_maximumOutput );
         m_previousTime = absoluteTime;
@@ -154,9 +155,10 @@ public class PIDController {
         mPIDControl.set( EPIDControl.ERROR, m_error );
         mPIDControl.set( EPIDControl.CURRENT, m_inputForCodex );
         mPIDControl.set( EPIDControl.P_GAIN, m_P );
-        mPIDControl.set( EPIDControl.I_GAIN, m_I );
-        mPIDControl.set( EPIDControl.D_GAIN, m_D );
-        mPIDControl.set( EPIDControl.F_GAIN, m_F );
+        mPIDControl.set( EPIDControl.P_GAIN, mPIDGains.mP );
+        mPIDControl.set( EPIDControl.I_GAIN, mPIDGains.mI );
+        mPIDControl.set( EPIDControl.D_GAIN, mPIDGains.mD );
+        mPIDControl.set( EPIDControl.F_GAIN, mPIDGains.mF );
     }
 
     enum EPIDControl implements CodexOf<Double> {
@@ -216,8 +218,8 @@ public class PIDController {
         setPID( p, i, d, 0d );
     }
 
-    public void setPID(double p, double i, double d, double f) {
-        m_P = p;
+    public void setPIDGains( PIDGains newPIDGains ) {
+        mPIDGains = newPIDGains;
         m_I = i;
         m_D = d;
         m_F = f;
@@ -239,8 +241,8 @@ public class PIDController {
         return mPIDControl;
     }
 
-    public double getP() {
-        return m_P;
+    public PIDGains getPIDGains() {
+        return mPIDGains;
     }
 
     public double getI() {

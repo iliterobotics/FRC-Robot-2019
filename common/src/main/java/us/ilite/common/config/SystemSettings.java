@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.team254.lib.util.ConstantsBase;
 
+import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.util.NetworkTablesConstantsBase;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.ELogitech310;
@@ -101,9 +102,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static final int ULTRASONIC_PORT = 2;
     
     // =============================================================================
-    // Turn-To cPID constants
+    // Turn-To PID constants
     // =============================================================================
-    public static double kTurnP = 0.001;
-    public static double kTurnI = 0.0;
-    public static double kTurnD = 0.0;
-    public static double kTurnF = 0.085;}
+     public static PIDGains kPIDGains = new PIDGains( 0.001, 0.0, 0.0, 0.085 );
+}
