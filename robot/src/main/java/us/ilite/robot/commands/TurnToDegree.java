@@ -18,19 +18,19 @@ public class TurnToDegree implements ICommand {
 
   private ILog mLogger = Logger.createLog(this.getClass());
 
-  private Drive mDrive;
-  
-  private static final int kMIN_ALIGNED_COUNT = 25;
   private static final double kTIMEOUT = 9999.9;
-  private static final double kMIN_POWER = 0.0; //0.066666667
+  private static final double kMIN_POWER = 0.0;
   private static final double kMAX_POWER = 1.0;
- 
-  private Rotation2d mInitialYaw, mTurnAngle, mTargetYaw;
+  private static final int kMIN_ALIGNED_COUNT = 25;
+  private final double mAllowableError;
+
   private double mOutput = 0.0;
   private double mStartTime;
   private int mAlignedCount;
+
+  private Rotation2d mInitialYaw, mTurnAngle, mTargetYaw;
   private PIDController pid;
-  private final double mAllowableError;
+  private Drive mDrive;
   public Data mData;
   
   public TurnToDegree(Drive pDrive, Rotation2d pTurnAngle, double pAllowableError, Data pData) {
