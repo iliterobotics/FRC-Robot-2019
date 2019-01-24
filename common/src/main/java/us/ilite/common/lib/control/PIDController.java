@@ -52,32 +52,10 @@ public class PIDController {
                                      // then treat error for the proportional
                                      // term as 0
 
-    /**
-     * Allocate a PID object with the given constants for P, I, D
-     *
-     * @param Kp
-     *            the proportional coefficient
-     * @param Ki
-     *            the integral coefficient
-     * @param Kd
-     *            the derivative coefficient
-     */
     public PIDController(double Kp, double Ki, double Kd, double KdefaultDT) {
         this( Kp, Ki, Kd, 0d, KdefaultDT );
     }
 
-    /**
-     * Allocate a PID object with the given constants for P, I, D
-     *
-     * @param Kp
-     *            the proportional coefficient
-     * @param Ki
-     *            the integral coefficient
-     * @param Kd
-     *            the derivative coefficient
-     * @param Kf
-     *            the feed forward gain coefficient
-     */
     public PIDController(double Kp, double Ki, double Kd, double Kf, double KdefaultDT) {
         m_P = Kp;
         m_I = Ki;
@@ -86,15 +64,6 @@ public class PIDController {
         m_defaultDT = KdefaultDT;
     }
 
-    /**
-     * Read the input, calculate the output accordingly, and write to the output. This should be called at a constant
-     * rate by the user (ex. in a timed thread)
-     *
-     * @param input
-     *            the input
-     * @param absoluteTime
-     *            total time
-     */
     public double calculate(double input, double absoluteTime) {
         if ( m_dt == 0.0 ) {
             m_dt = m_defaultDT;
@@ -138,32 +107,10 @@ public class PIDController {
         return m_result;
     }
 
-    /**
-     * Set the PID controller gain parameters. Set the proportional, integral, and differential coefficients.
-     *
-     * @param p
-     *            Proportional coefficient
-     * @param i
-     *            Integral coefficient
-     * @param d
-     *            Differential coefficient
-     */
     public void setPID(double p, double i, double d) {
         setPID( p, i, d, 0d );
     }
 
-    /**
-     * Set the PID controller gain parameters. Set the proportional, integral, and differential coefficients.
-     *
-     * @param p
-     *            Proportional coefficient
-     * @param i
-     *            Integral coefficient
-     * @param d
-     *            Differential coefficient
-     * @param f
-     *            Feed forward coefficient
-     */
     public void setPID(double p, double i, double d, double f) {
         m_P = p;
         m_I = i;
@@ -171,59 +118,26 @@ public class PIDController {
         m_F = f;
     }
 
-    /**
-     * Get the Proportional coefficient
-     *
-     * @return proportional coefficient
-     */
     public double getP() {
         return m_P;
     }
 
-    /**
-     * Get the Integral coefficient
-     *
-     * @return integral coefficient
-     */
     public double getI() {
         return m_I;
     }
 
-    /**
-     * Get the Differential coefficient
-     *
-     * @return differential coefficient
-     */
     public double getD() {
         return m_D;
     }
 
-    /**
-     * Get the Feed forward coefficient
-     *
-     * @return feed forward coefficient
-     */
     public double getF() {
         return m_F;
     }
 
-    /**
-     * Return the current PID result This is always centered on zero and constrained the the max and min outs
-     *
-     * @return the latest calculated output
-     */
     public double get() {
         return m_result;
     }
 
-    /**
-     * Set the PID controller to consider the input to be continuous, Rather then using the max and min in as
-     * constraints, it considers them to be the same point and automatically calculates the shortest route to the
-     * setpoint.
-     *
-     * @param continuous
-     *            Set to true turns on continuous, false turns off continuous
-     */
     public void setContinuous(boolean continuous) {
         m_continuous = continuous;
     }
@@ -232,14 +146,7 @@ public class PIDController {
         m_deadband = deadband;
     }
 
-    /**
-     * Sets the maximum and minimum values expected from the input.
-     *
-     * @param minimumInput
-     *            the minimum value expected from the input
-     * @param maximumInput
-     *            the maximum value expected from the output
-     */
+
     public void setInputRange(double minimumInput, double maximumInput) {
         if (minimumInput > maximumInput) {
             mLogger.debug("Lower bound is greater than upper bound");
@@ -249,14 +156,7 @@ public class PIDController {
         setSetpoint(m_setpoint);
     }
 
-    /**
-     * Sets the minimum and maximum values to write.
-     *
-     * @param minimumOutput
-     *            the minimum value to write to the output
-     * @param maximumOutput
-     *            the maximum value to write to the output
-     */
+
     public void setOutputRange(double minimumOutput, double maximumOutput) {
         if (minimumOutput > maximumOutput) {
             mLogger.debug("Lower bound is greater than upper bound");
@@ -265,46 +165,26 @@ public class PIDController {
         m_maximumOutput = maximumOutput;
     }
 
-    /**
-     * Set the setpoint for the PID controller
-     *
-     * @param setpoint
-     *            the desired setpoint
-     */
+
     public void setSetpoint(double setpoint) {
         m_setpoint = Util.limit(setpoint, m_minimumInput, m_maximumInput);
     }
 
-    /**
-     * Returns the current setpoint of the PID controller
-     *
-     * @return the current setpoint
-     */
+
     public double getSetpoint() {
         return m_setpoint;
     }
 
-    /**
-     * Returns the current difference of the input from the setpoint
-     *
-     * @return the current error
-     */
+
     public double getError() {
         return m_error;
     }
 
-    /**
-     * Return true if the error is within the tolerance
-     *
-     * @return true if the error is less than the tolerance
-     */
     public boolean isOnTarget(double tolerance) {
         return m_last_input != Double.NaN && Math.abs(m_last_input - m_setpoint) < tolerance;
     }
 
-    /**
-     * Reset all internal terms.
-     */
+
     public void reset() {
         m_last_input = Double.NaN;
         m_prevError = 0;
@@ -317,23 +197,14 @@ public class PIDController {
         m_totalError = 0;
     }
 
-    public String toString() {
-        String lState = "";
-
-        lState += "Kp: " + m_P + "\n";
-        lState += "Ki: " + m_I + "\n";
-        lState += "Kd: " + m_D + "\n";
-
-        return lState;
-    }
-
-    public String getType() {
-        return "PIDController";
-    }
-
     enum EPIDControl implements CodexOf<Double> {
         ERROR,
         OUTPUT,
-        CURRENT;
+        CURRENT,
+
+        P_GAIN,
+        I_GAIN,
+        D_GAIN,
+        F_GAIN;
     }
 }
