@@ -14,6 +14,7 @@ import java.util.List;
 // import us.ilite.frc.common.util.CSVLogger;
 
 import us.ilite.robot.auto.paths.*;
+import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.auton.EStartingPosition;
 import us.ilite.common.types.auton.ECargoAction;
 import us.ilite.common.types.auton.EHatchAction;
@@ -87,8 +88,8 @@ public class AutonConfigDisplay extends Application {
       sendData();
     });
     
-    // Button mode = new Button("Enhanced Mode");
-    // mode.setOnAction(e -> {
+    Button mode = new Button("Enhanced Mode");
+    mode.setOnAction(e -> {
     //   if(scene.getStylesheets().contains(awesomeCss)) {
     //     mode.setText("Enhanced Mode");
     //     scene.getStylesheets().clear();
@@ -100,7 +101,7 @@ public class AutonConfigDisplay extends Application {
     //     setFieldImage("./field.png");
     //   }
       
-    // });
+    });
     
     TextField delayText = new TextField();
     delayText.setOnAction(e -> {
@@ -116,12 +117,12 @@ public class AutonConfigDisplay extends Application {
     		delayLabel,
     		delayText);
     
-    HBox modeOptions = new HBox(send);
-    //modeOptions.setMargin(send, new Insets(0, 40, 0, 20));
+    HBox modeOptions = new HBox(mode, send);
+    modeOptions.setMargin(send, new Insets(0, 40, 0, 20));
 
     Thread dataSender = new Thread(() -> {
       while(!Thread.interrupted()) {
-        // sendData();
+        sendData();
         try {
           Thread.sleep(200);
         } catch (InterruptedException e1) {
@@ -168,7 +169,7 @@ public class AutonConfigDisplay extends Application {
               System.out.println("Updating hatch action: " + mHatchAction);
             }
 	        }
-	    );
+      );
 	    if(enums.size() > 0) combo.setValue(enums.get(0));
 	    VBox result = new VBox(label, combo);
 	    return result;
@@ -224,7 +225,10 @@ public class AutonConfigDisplay extends Application {
   }
   
   private void sendData() {
-  //   SystemSettings.AUTON_TABLE.putNumberArray(ECubeAction.class.getSimpleName(), preferredCubeActions);
+    //  SystemSettings.AUTON_TABLE.putNumber(ECargoAction.class.getSimpleName(), mCargoAction);
+    //  SystemSettings.AUTON_TABLE.putNumber(EHatchAction.class.getSimpleName(), mHatchAction);
+    //  SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), mStartingPosition);
+
   //   SystemSettings.AUTON_TABLE.putDouble(SystemSettings.AUTO_DELAY_KEY, mDelay);
   //   SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), mCross);
   //   SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), mStartingPosition);

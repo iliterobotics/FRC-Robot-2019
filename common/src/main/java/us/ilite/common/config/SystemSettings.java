@@ -2,6 +2,11 @@ package us.ilite.common.config;
 
 import java.util.concurrent.TimeUnit;
 
+import us.ilite.common.types.auton.EHatchAction;
+import us.ilite.common.types.auton.ECargoAction;
+import us.ilite.common.types.auton.EStartingPosition;
+import us.ilite.common.lib.util.SimpleNetworkTable;
+
 import com.team254.lib.util.ConstantsBase;
 
 public class SystemSettings extends ConstantsBase {
@@ -12,7 +17,12 @@ public class SystemSettings extends ConstantsBase {
 
     public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
 
-    //=============================================================================
+    //==============================================================================
+    // Comms
+    // =============================================================================
+    // public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE");
+
+    //==============================================================================
     // Logging
     // =============================================================================
     public static String kLoggingTimestampKey = "TIME";
