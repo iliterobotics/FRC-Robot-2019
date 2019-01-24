@@ -14,9 +14,9 @@ import com.team254.lib.util.Util;
 
 public class PIDController {
 
-    private ILog mLogger = Logger.createLog(this.getClass());
+    private ILog mLogger = Logger.createLog( this.getClass() );
 
-    private Codex<Double, EPIDControl> mPIDControl = Codex.of.thisEnum(EPIDControl.class);
+    private Codex<Double, EPIDControl> mPIDControl = Codex.of.thisEnum( EPIDControl.class );
 
     private boolean mContinuous = false;
 
@@ -46,9 +46,9 @@ public class PIDController {
     /**
      * Constructs a PIDController object with a PIDGains object and defaultDT
      * @param kPIDGains PIDGains object holding PIDF values
-     * @param KdefaultDT the default delta time (SystemSettings.kControlLoopPeriod)
+     * @param KdefaultDT the default delta time ( SystemSettings.kControlLoopPeriod )
      */
-    public PIDController(PIDGains kPIDGains, double kDefaultDT) {
+    public PIDController( PIDGains kPIDGains, double kDefaultDT ) {
         mPIDGains = kPIDGains;
         mDefaultDT = kDefaultDT;
     }
@@ -56,10 +56,10 @@ public class PIDController {
     /**
      * Calculating output based on pid constants
      * @param input the current position
-     * @param absoluteTime the current time (pNow) 
+     * @param absoluteTime the current time ( pNow ) 
      * @return the output to apply
      */
-    public double calculate(double input, double absoluteTime) {
+    public double calculate( double input, double absoluteTime ) {
         mInputForCodex = input;
         if ( mDt == 0.0 ) {
             mDt = mDefaultDT;
@@ -71,9 +71,9 @@ public class PIDController {
         
 
         // Error continuity for rotational pid
-        if (mContinuous) {
-            if (Math.abs(mError) > (mMaximumInput - mMinimumInput) / 2) {
-                if (mError > 0) {
+        if ( mContinuous ) {
+            if ( Math.abs( mError ) > ( mMaximumInput - mMinimumInput ) / 2 ) {
+                if ( mError > 0 ) {
                     mError = mError - mMaximumInput + mMinimumInput;
                 } else {
                     mError = mError + mMaximumInput - mMinimumInput;
@@ -82,17 +82,17 @@ public class PIDController {
         }
 
         // Only add to totalError if output isn't being saturated
-        if ((mError * mPIDGains.mP < mMaximumOutput) && (mError * mPIDGains.mP > mMinimumOutput)) {
+        if ( ( mError * mPIDGains.mP < mMaximumOutput ) && ( mError * mPIDGains.mP > mMinimumOutput ) ) {
             mTotalError += mError * mDt;
         } else {
             mTotalError = 0;
         }
 
         // Don't blow away mError so as to not break derivative
-        double proportionalError = Math.abs(mError) < mDeadband ? 0 : mError;
+        double proportionalError = Math.abs( mError ) < mDeadband ? 0 : mError;
 
-        mResult = (mPIDGains.mP * proportionalError + mPIDGains.mI * mTotalError + mPIDGains.mD * (mError - mPrevError) / mDt
-                + mPIDGains.mF * mSetpoint);
+        mResult = ( mPIDGains.mP * proportionalError + mPIDGains.mI * mTotalError + mPIDGains.mD * ( mError - mPrevError ) / mDt
+                + mPIDGains.mF * mSetpoint );
         mPrevError = mError;
 
         mResult = Util.limit( mResult, mMaximumOutput );
@@ -108,8 +108,8 @@ public class PIDController {
      * @param tolerance the threshold to check if error is within
      * @return true when error is within -tolerance and tolerance
      */
-    public boolean isOnTarget(double tolerance) {
-        return mLastInput != Double.NaN && Math.abs(mLastInput - mSetpoint) < tolerance;
+    public boolean isOnTarget( double tolerance ) {
+        return mLastInput != Double.NaN && Math.abs( mLastInput - mSetpoint ) < tolerance;
     }
 
     /**
@@ -151,41 +151,41 @@ public class PIDController {
     // Setters //
     // ####### //
     /**
-     * Sets the input (Starting distance) range
+     * Sets the input ( Starting distance ) range
      * @param minimumInput the minimum input
      * @param maximumInput the maximum input
      */
-    public void setInputRange(double minimumInput, double maximumInput) {
-        if (minimumInput > maximumInput) {
-            mLogger.debug("Lower bound is greater than upper bound");
+    public void setInputRange( double minimumInput, double maximumInput ) {
+        if ( minimumInput > maximumInput ) {
+            mLogger.debug( "Lower bound is greater than upper bound" );
         }
         mMinimumInput = minimumInput;
         mMaximumInput = maximumInput;
-        setSetpoint(mSetpoint);
+        setSetpoint( mSetpoint );
     }
     
     /**
-     * Sets the (pid calculation) output range
+     * Sets the ( pid calculation ) output range
      * @param minimumOutput the minimum output
      * @param maximumOutput the maximum output
      */
-    public void setOutputRange(double minimumOutput, double maximumOutput) {
-        if (minimumOutput > maximumOutput) {
-            mLogger.debug("Lower bound is greater than upper bound");
+    public void setOutputRange( double minimumOutput, double maximumOutput ) {
+        if ( minimumOutput > maximumOutput ) {
+            mLogger.debug( "Lower bound is greater than upper bound" );
         }
         mMinimumOutput = minimumOutput;
         mMaximumOutput = maximumOutput;
     }
 
-    public void setSetpoint(double setpoint) {
-        mSetpoint = Util.limit(setpoint, mMinimumInput, mMaximumInput);
+    public void setSetpoint( double setpoint ) {
+        mSetpoint = Util.limit( setpoint, mMinimumInput, mMaximumInput );
     }
 
     /**
      * Enables or disables continuous for rotational pid
      * @param continuous true to enable continuous, false to disable continuous
      */
-    public void setContinuous(boolean continuous) {
+    public void setContinuous( boolean continuous ) {
         mContinuous = continuous;
     }
 
@@ -194,7 +194,7 @@ public class PIDController {
         logToCodex();
     }
 
-    public void setDeadband(double deadband) {
+    public void setDeadband( double deadband ) {
         mDeadband = deadband;
     }
 
