@@ -6,6 +6,8 @@
 
 package us.ilite.common.lib.control;
 
+import com.flybotix.hfr.codex.Codex;
+import com.flybotix.hfr.codex.CodexOf;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
@@ -18,6 +20,8 @@ import com.team254.lib.util.Util;
 public class PIDController {
 
     private ILog mLogger = Logger.createLog(this.getClass());
+
+    private Codex<Double, EPIDControl> mPIDControl = Codex.of.thisEnum(EPIDControl.class);
 
     private double m_previousTime;
     private double m_defaultDT;
@@ -126,13 +130,11 @@ public class PIDController {
                 + m_F * m_setpoint);
         m_prevError = m_error;
 
-        // if (m_result > m_maximumOutput) {
-        //     m_result = m_maximumOutput;
-        // } else if (m_result < m_minimumOutput) {
-        //     m_result = m_minimumOutput;
-        // }
         m_result = Util.limit( m_result, m_maximumOutput );
         m_previousTime = absoluteTime;
+        mPIDControl.set( EPIDControl.OUTPUT, m_P );
+        mPIDControl.set( EPIDControl.ERROR, m_error );
+        mPIDControl.set( EPIDControl.CURRENT, input );
         return m_result;
     }
 
@@ -315,7 +317,7 @@ public class PIDController {
         m_totalError = 0;
     }
 
-    public String getState() {
+    public String toString() {
         String lState = "";
 
         lState += "Kp: " + m_P + "\n";
@@ -327,5 +329,11 @@ public class PIDController {
 
     public String getType() {
         return "PIDController";
+    }
+
+    enum EPIDControl implements CodexOf<Double> {
+        ERROR,
+        OUTPUT,
+        CURRENT;
     }
 }
