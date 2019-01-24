@@ -4,10 +4,10 @@ jdk: openjdk11
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install libstdc++6
+  - sudo apt-get dist-upgrade -y
 
 script:
-  - ./gradlew build --stacktrace
+  - ./gradlew clean build --refresh-dependencies --stacktrace
 
 notifications:
   email:
