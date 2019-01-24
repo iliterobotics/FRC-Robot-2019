@@ -35,8 +35,6 @@ public class Robot extends TimedRobot {
     
     private ILog mLogger = Logger.createLog(this.getClass());
 
-    private CommandQueue mCommandQueue = new CommandQueue();
-
     // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
     private LoopManager mLoopManager = new LoopManager(SystemSettings.kControlLoopPeriod);
     private ModuleList mRunningModules = new ModuleList();
@@ -93,17 +91,16 @@ public class Robot extends TimedRobot {
         initTimer.start();
         mLogger.info("Starting Autonomous Initialization...");
 
+        mSuperstructure.startCommands(new FollowTrajectory(trajectory, mDrive, true));
+//        mCommandQueue.startCommands(new CharacterizeDrive(mDrive, false, false));
 
-        mRunningModules.setModules();
+        // Init modules after commands are set
+        mRunningModules.setModules(mSuperstructure);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
-
-        mCommandQueue.setCommands(new FollowTrajectory(trajectory, mDrive, true));
-//        mCommandQueue.startCommands(new CharacterizeDrive(mDrive, false, false));
-        mCommandQueue.init(mClock.getCurrentTime());
 
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");
@@ -112,7 +109,6 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
-        mCommandQueue.update(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
 //        mDrive.flushTelemetry();
     }
@@ -141,7 +137,6 @@ public class Robot extends TimedRobot {
         mLogger.info("Disabled Initialization");
         mRunningModules.shutdown(mClock.getCurrentTime());
         mLoopManager.stop();
-        mCommandQueue.shutdown(mClock.getCurrentTime());
     }
 
     @Override
