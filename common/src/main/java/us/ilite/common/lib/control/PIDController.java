@@ -18,60 +18,39 @@ public class PIDController {
 
     private Codex<Double, EPIDControl> mPIDControl = Codex.of.thisEnum(EPIDControl.class);
 
-    private boolean m_continuous = false;
+    private boolean mContinuous = false;
 
-    private double m_previousTime;
+    private double mPreviousTime;
     private PIDGains mPIDGains;
-    private double m_I;
-    private double m_D;
-    private double m_F;
-    private double m_dt;
-    private double m_maximumOutput = 1.0;
-    private double m_minimumOutput = -1.0;
-    private double m_maximumInput = 0.0;
-    private double m_minimumInput = 0.0;
+    private double mDt;
+    private double mMaximumOutput = 1.0;
+    private double mMinimumOutput = -1.0;
+    private double mMaximumInput = 0.0;
+    private double mMinimumInput = 0.0;
 
-    private double m_prevError = 0.0;
-    private double m_totalError = 0.0;
-    private double m_setpoint = 0.0;
-    private double m_error = 100.0;
-    private double m_result = 0.0;
-    private double m_last_input = Double.NaN;
-    private double m_deadband = 0.0; // If the absolute error is less than
+    private double mPrevError = 0.0;
+    private double mTotalError = 0.0;
+    private double mSetpoint = 0.0;
+    private double mError = 100.0;
+    private double mResult = 0.0;
+    private double mLastInput = Double.NaN;
+    private double mDeadband = 0.0; // If the absolute error is less than
                                      // deadband
                                      // then treat error for the proportional
                                      // term as 0
-    private double m_inputForCodex;
-    private double m_defaultDT;
+    private double mInputForCodex;
+    private double mOutputForCodex;
+    private double mDefaultDT;
 
 
     /**
-     * Constructs a PIDController object with P, I, D and defaultDT
-     * @param Kp the proportional constant
-     * @param Ki the integral constant
-     * @param Kd the derivative constant
+     * Constructs a PIDController object with a PIDGains object and defaultDT
+     * @param kPIDGains PIDGains object holding PIDF values
      * @param KdefaultDT the default delta time (SystemSettings.kControlLoopPeriod)
      */
     public PIDController(PIDGains kPIDGains, double kDefaultDT) {
         mPIDGains = kPIDGains;
         mDefaultDT = kDefaultDT;
-    }
-
-    /**
-     * Constructs a PIDController object with P, I, D, F and defaultDT
-     * @param Kp the proportional constant
-     * @param Ki the integral constant
-     * @param Kd the derivative constant
-     * @param Kf the feed forward constant
-     * @param KdefaultDT the default delta time (SystemSettings.kControlLoopPeriod)
-     */
-    public PIDController(double Kp, double Ki, double Kd, double Kf, double KdefaultDT) {
-        m_P = Kp;
-        m_I = Ki;
-        m_D = Kd;
-        m_F = Kf;
-        m_defaultDT = KdefaultDT;
-        logToCodex();
     }
 
     /**
@@ -81,46 +60,47 @@ public class PIDController {
      * @return the output to apply
      */
     public double calculate(double input, double absoluteTime) {
-        m_inputForCodex = input;
-        if ( m_dt == 0.0 ) {
-            m_dt = m_defaultDT;
+        mInputForCodex = input;
+        if ( mDt == 0.0 ) {
+            mDt = mDefaultDT;
         } else {
-            m_dt = absoluteTime - m_previousTime;
+            mDt = absoluteTime - mPreviousTime;
         }
-        m_last_input = input;
-        m_error = m_setpoint - input;
+        mLastInput = input;
+        mError = mSetpoint - input;
         
 
         // Error continuity for rotational pid
-        if (m_continuous) {
-            if (Math.abs(m_error) > (m_maximumInput - m_minimumInput) / 2) {
-                if (m_error > 0) {
-                    m_error = m_error - m_maximumInput + m_minimumInput;
+        if (mContinuous) {
+            if (Math.abs(mError) > (mMaximumInput - mMinimumInput) / 2) {
+                if (mError > 0) {
+                    mError = mError - mMaximumInput + mMinimumInput;
                 } else {
-                    m_error = m_error + m_maximumInput - m_minimumInput;
+                    mError = mError + mMaximumInput - mMinimumInput;
                 }
             }
         }
 
         // Only add to totalError if output isn't being saturated
         if ((mError * mPIDGains.mP < mMaximumOutput) && (mError * mPIDGains.mP > mMinimumOutput)) {
-            m_totalError += m_error * m_dt;
+            mTotalError += mError * mDt;
         } else {
-            m_totalError = 0;
+            mTotalError = 0;
         }
 
-        // Don't blow away m_error so as to not break derivative
-        double proportionalError = Math.abs(m_error) < m_deadband ? 0 : m_error;
+        // Don't blow away mError so as to not break derivative
+        double proportionalError = Math.abs(mError) < mDeadband ? 0 : mError;
 
         mResult = (mPIDGains.mP * proportionalError + mPIDGains.mI * mTotalError + mPIDGains.mD * (mError - mPrevError) / mDt
                 + mPIDGains.mF * mSetpoint);
         mPrevError = mError;
 
-        m_result = Util.limit( m_result, m_maximumOutput );
-        m_previousTime = absoluteTime;
+        mResult = Util.limit( mResult, mMaximumOutput );
+        mPreviousTime = absoluteTime;
 
+        mOutputForCodex = mResult;
         logToCodex();
-        return m_result;
+        return mResult;
     }
 
     /**
@@ -129,32 +109,32 @@ public class PIDController {
      * @return true when error is within -tolerance and tolerance
      */
     public boolean isOnTarget(double tolerance) {
-        return m_last_input != Double.NaN && Math.abs(m_last_input - m_setpoint) < tolerance;
+        return mLastInput != Double.NaN && Math.abs(mLastInput - mSetpoint) < tolerance;
     }
 
     /**
      * Resets the input, previous error, total error, calculate() output, and setpoint
      */
     public void reset() {
-        m_last_input = Double.NaN;
-        m_prevError = 0;
-        m_totalError = 0;
-        m_result = 0;
-        m_setpoint = 0;
+        mLastInput = Double.NaN;
+        mPrevError = 0;
+        mTotalError = 0;
+        mResult = 0;
+        mSetpoint = 0;
     }
 
     /**
      * resets total error
      */
     public void resetIntegrator() {
-        m_totalError = 0;
+        mTotalError = 0;
     }
 
     public void logToCodex() {
-        mPIDControl.set( EPIDControl.OUTPUT, m_P );
-        mPIDControl.set( EPIDControl.ERROR, m_error );
-        mPIDControl.set( EPIDControl.CURRENT, m_inputForCodex );
-        mPIDControl.set( EPIDControl.P_GAIN, m_P );
+        mPIDControl.set( EPIDControl.CURRENT, mInputForCodex );
+        mPIDControl.set( EPIDControl.OUTPUT, mOutputForCodex );
+        mPIDControl.set( EPIDControl.GOAL, mSetpoint );
+        mPIDControl.set( EPIDControl.ERROR, mError );
         mPIDControl.set( EPIDControl.P_GAIN, mPIDGains.mP );
         mPIDControl.set( EPIDControl.I_GAIN, mPIDGains.mI );
         mPIDControl.set( EPIDControl.D_GAIN, mPIDGains.mD );
@@ -162,14 +142,9 @@ public class PIDController {
     }
 
     enum EPIDControl implements CodexOf<Double> {
-        ERROR,
-        OUTPUT,
-        CURRENT,
 
-        P_GAIN,
-        I_GAIN,
-        D_GAIN,
-        F_GAIN;
+        ERROR, OUTPUT, CURRENT, GOAL,
+        P_GAIN, I_GAIN, D_GAIN, F_GAIN,;
     }
 
     // ####### //
@@ -184,9 +159,9 @@ public class PIDController {
         if (minimumInput > maximumInput) {
             mLogger.debug("Lower bound is greater than upper bound");
         }
-        m_minimumInput = minimumInput;
-        m_maximumInput = maximumInput;
-        setSetpoint(m_setpoint);
+        mMinimumInput = minimumInput;
+        mMaximumInput = maximumInput;
+        setSetpoint(mSetpoint);
     }
     
     /**
@@ -198,12 +173,12 @@ public class PIDController {
         if (minimumOutput > maximumOutput) {
             mLogger.debug("Lower bound is greater than upper bound");
         }
-        m_minimumOutput = minimumOutput;
-        m_maximumOutput = maximumOutput;
+        mMinimumOutput = minimumOutput;
+        mMaximumOutput = maximumOutput;
     }
 
     public void setSetpoint(double setpoint) {
-        m_setpoint = Util.limit(setpoint, m_minimumInput, m_maximumInput);
+        mSetpoint = Util.limit(setpoint, mMinimumInput, mMaximumInput);
     }
 
     /**
@@ -211,23 +186,16 @@ public class PIDController {
      * @param continuous true to enable continuous, false to disable continuous
      */
     public void setContinuous(boolean continuous) {
-        m_continuous = continuous;
-    }
-
-    public void setPID(double p, double i, double d) {
-        setPID( p, i, d, 0d );
+        mContinuous = continuous;
     }
 
     public void setPIDGains( PIDGains newPIDGains ) {
         mPIDGains = newPIDGains;
-        m_I = i;
-        m_D = d;
-        m_F = f;
         logToCodex();
     }
 
     public void setDeadband(double deadband) {
-        m_deadband = deadband;
+        mDeadband = deadband;
     }
 
     // ####### //
@@ -245,27 +213,15 @@ public class PIDController {
         return mPIDGains;
     }
 
-    public double getI() {
-        return m_I;
-    }
-
-    public double getD() {
-        return m_D;
-    }
-
-    public double getF() {
-        return m_F;
-    }
-
     public double getOutput() {
-        return m_result;
+        return mResult;
     }
 
     public double getSetpoint() {
-        return m_setpoint;
+        return mSetpoint;
     }
 
     public double getError() {
-        return m_error;
+        return mError;
     }
 }
