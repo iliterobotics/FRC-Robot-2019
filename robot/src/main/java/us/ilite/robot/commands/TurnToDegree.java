@@ -45,9 +45,10 @@ public class TurnToDegree implements ICommand {
   @Override
   public void init(double pNow) {
     mStartTime = pNow;
-
     mInitialYaw = getYaw();
     mTargetYaw = mInitialYaw.rotateBy( mTurnAngle );
+
+    // PIDController configuration
     pid = new PIDController(SystemSettings.kTurnP, SystemSettings.kTurnI, SystemSettings.kTurnD, SystemSettings.kControlLoopPeriod);
     pid.setContinuous(true);
     pid.setOutputRange(kMIN_POWER, kMAX_POWER);
@@ -60,16 +61,22 @@ public class TurnToDegree implements ICommand {
   public boolean update(double pNow) {
     mOutput = pid.calculate(getYaw().getDegrees(), pNow);
     mOutput += Math.signum(mOutput) * SystemSettings.kTurnF;
+
+    // Keep track of time on target
     if ((Math.abs(pid.getError()) <= Math.abs(mAllowableError))) {
      mAlignedCount++;
     } else {
      mAlignedCount = 0;
     }
+
+    // End if on target for 25 counts
     if ( mAlignedCount >= kMIN_ALIGNED_COUNT || pNow - mStartTime > kTIMEOUT) {
       mDrive.setDriveMessage(new DriveMessage(0.0, 0.0, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
       mLogger.info("Turn finished");
       return true;
     }
+
+    // Apply output, log, and return false for unfinished
     mDrive.setDriveMessage(new DriveMessage(mOutput, -mOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
     Data.kSmartDashboard.putDouble("turn_error", pid.getError());
     mLogger.info("Target: " + mTargetYaw + " Yaw: " + getYaw() + "\n");
