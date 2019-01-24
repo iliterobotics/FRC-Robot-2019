@@ -24,9 +24,7 @@ public class Delay implements ICommand {
 
 	@Override
 	public boolean update(double pNow) {
-		mLog.info(pNow - triggeredTime);
 		if(pNow - triggeredTime < mDelayDuration) {
-			System.out.println("NOT FINISHED");
 			return false;
 		}
 		return true;
