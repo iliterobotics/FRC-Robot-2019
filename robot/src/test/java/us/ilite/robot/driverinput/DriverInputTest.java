@@ -61,7 +61,8 @@ public class DriverInputTest {
 
             // Verify that we asked the superstructure to stop running commands when override is triggered
             mData.driverinput.set(overrideButton, 1.0);
-            updateRobot();
+            // Update twice to verify that commands aren't reset twice
+            updateRobot(2);
             verify(mSuperstructure).stopRunningCommands();
 
             // Verify that superstructure is actually stopped
@@ -79,7 +80,8 @@ public class DriverInputTest {
     public void testTeleopDriverCommandHandling() {
         for(ELogitech310 commandTrigger : SystemSettings.kTeleopCommandTriggers) {
             mData.driverinput.set(commandTrigger, 1.0);
-            updateRobot();
+            // Update twice to verify that commands aren't reset twice
+            updateRobot(2);
 
             verify(mDriverInput).updateVisionCommands();
             assertTrue(mSuperstructure.isRunningCommands());
@@ -92,6 +94,10 @@ public class DriverInputTest {
         }
     }
 
+    /**
+     * Verify that when the driver starts a command while the superstructure is running one, the
+     * current command is overridden.
+     */
     @Test
     public void testAutonDriverCommandHandling() {
 
@@ -104,7 +110,8 @@ public class DriverInputTest {
 
             // If we press and release a button the command queue should get stopped
             mData.driverinput.set(commandTrigger, 1.0);
-            updateRobot();
+            // Update twice to verify that commands aren't reset twice
+            updateRobot(2);
             verify(mSuperstructure).stopRunningCommands();
             assertTrue(mSuperstructure.isRunningCommands());
 
@@ -121,6 +128,10 @@ public class DriverInputTest {
     private void updateRobot() {
         mModuleList.update(mClock.getCurrentTime());
         mClock.cycleEnded();
+    }
+
+    private void updateRobot(int times) {
+        for(int i = 1; i <= times; i++) updateRobot();
     }
 
     private void resetSpies() {
