@@ -15,6 +15,7 @@ public class CommandQueue implements ICommand {
 
     @Override
     public void init(double pNow) {
+        mLogger.info("Initializing command queue");
         // Initialize the first command
         initCurrentCommand(pNow);
     }
@@ -26,9 +27,9 @@ public class CommandQueue implements ICommand {
 
         // Check that we aren't at the end of the queue or that a null pointer won't occur
         if(mCurrentCommand != null) {
-
             // If command finished
             if(mCurrentCommand.update(pNow)) {
+                mLogger.info("Command finished.");
                 mCurrentCommand.shutdown(pNow);
                 mCommandQueue.poll();
                 initCurrentCommand(pNow);
@@ -44,7 +45,12 @@ public class CommandQueue implements ICommand {
     }
 
     private void initCurrentCommand(double pNow) {
-        if(mCommandQueue.peek() != null) mCommandQueue.peek().init(pNow);
+        if(mCommandQueue.peek() != null) {
+            mLogger.info("Initializing next command");
+            mCommandQueue.peek().init(pNow);
+        } else {
+            mLogger.info("Can't initialize next command: queue is empty");
+        }
     }
 
     @Override

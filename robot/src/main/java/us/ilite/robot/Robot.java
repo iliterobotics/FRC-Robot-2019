@@ -46,10 +46,10 @@ public class Robot extends TimedRobot {
     private Timer initTimer = new Timer();
 
     // Module declarations here
-    private Superstructure mSuperstructure;
+    private Superstructure mSuperstructure = new Superstructure();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
-    private DriverInput mDriverInput = new DriverInput(mDrive, mData);
+    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData);
     private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
@@ -102,7 +102,7 @@ public class Robot extends TimedRobot {
         mLoopManager.start();
 
         mCommandQueue.setCommands(new FollowTrajectory(trajectory, mDrive, true));
-//        mCommandQueue.setCommands(new CharacterizeDrive(mDrive, false, false));
+//        mCommandQueue.startCommands(new CharacterizeDrive(mDrive, false, false));
         mCommandQueue.init(mClock.getCurrentTime());
 
         initTimer.stop();

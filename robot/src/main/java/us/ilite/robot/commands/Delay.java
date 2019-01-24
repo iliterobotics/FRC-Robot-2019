@@ -1,10 +1,14 @@
 package us.ilite.robot.commands;
 
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
+
 public class Delay implements ICommand {
+	private ILog mLog = Logger.createLog(Delay.class);
+
 	private double mDelayDuration;
 	private double triggeredTime;
-	
-	
+
 	/**
 	 * @param pDelayDuration in seconds
 	 */
@@ -14,13 +18,15 @@ public class Delay implements ICommand {
 
 	@Override
 	public void init(double pNow) {
-	  triggeredTime = pNow;
-
+	  	triggeredTime = pNow;
+		mLog.info("Initializing delay with a duration of: ", mDelayDuration, " at: ", triggeredTime);
 	}
 
 	@Override
 	public boolean update(double pNow) {
+		mLog.info(pNow - triggeredTime);
 		if(pNow - triggeredTime < mDelayDuration) {
+			System.out.println("NOT FINISHED");
 			return false;
 		}
 		return true;

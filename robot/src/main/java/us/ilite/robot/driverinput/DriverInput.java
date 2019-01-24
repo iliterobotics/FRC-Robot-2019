@@ -3,6 +3,8 @@ package us.ilite.robot.driverinput;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.codex.Codex;
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Joystick;
 import us.ilite.common.config.DriveTeamInputMap;
@@ -11,21 +13,21 @@ import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.robot.Data;
-import us.ilite.robot.commands.ICommand;
+import us.ilite.robot.commands.Delay;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.Module;
 import us.ilite.robot.modules.Superstructure;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 public class DriverInput extends Module {
 
     private static final double DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
+    private ILog mLog = Logger.createLog(DriverInput.class);
 
     protected final Drive driveTrain;
     protected final Superstructure mSuperstructure;
+
+    private boolean mDriverStartedCommands;
 
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
@@ -34,20 +36,28 @@ public class DriverInput extends Module {
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData) {
+    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
         this.mSuperstructure = pSuperstructure;
         this.mData = pData;
         this.mDriverInputCodex = mData.driverinput;
         this.mOperatorInputCodex = mData.operatorinput;
-        this.mDriverJoystick = new Joystick(0);
-        this.mOperatorJoystick = new Joystick(1);
+        if(pSimulated) {
+            // Use a different joystick library?
+        } else {
+            this.mDriverJoystick = new Joystick(0);
+            this.mOperatorJoystick = new Joystick(1);
+        }
+    }
+
+    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData) {
+        this(pDrivetrain, pSuperstructure, pData, false);
     }
 
     @Override
     public void modeInit(double pNow) {
 // TODO Auto-generated method stub
-
+        mDriverStartedCommands = false;
     }
 
     @Override
@@ -58,27 +68,28 @@ public class DriverInput extends Module {
 
     @Override
     public void update(double pNow) {
-//		if(mData.driverinput.get(DriveTeamInputMap.DRIVE_SNAIL_MODE) > 0.5)
-//		  scaleInputs = true;
-//		else
-//		  scaleInputs = false;
-
         /*
         If we aren't already running commands and the driver is pressing a button that triggers a command,
         set the superstructure command queue based off of buttons
         */
-        if(!mSuperstructure.isRunningCommands() && isDriverAllowingCommands()) {
-            updateVision();
+        if(!mDriverStartedCommands && isDriverAllowingTeleopCommands()) {
+            mLog.warn("Requesting command start");
+            mDriverStartedCommands = true;
+            updateVisionCommands();
         /*
-        If we're already running commands and the driver releases the button that triggers the command,
+        If the driver started the commands that the superstructure is running and then released the button,
         stop running commands.
         */
-        } else if(mSuperstructure.isRunningCommands() && !isDriverAllowingCommands()) {
+        } else if(mSuperstructure.isRunningCommands() && mDriverStartedCommands && !isDriverAllowingTeleopCommands()) {
+            mLog.warn("Requesting command stop: driver no longer allowing commands");
+            mDriverStartedCommands = false;
             mSuperstructure.stopRunningCommands();
         } else if(mSuperstructure.isRunningCommands() && isAutoOverridePressed()) {
+            mLog.warn("Requesting command stop: override pressed");
             mSuperstructure.stopRunningCommands();
         }
 
+        // Teleop control
         if (!mSuperstructure.isRunningCommands()) {
             updateDriveTrain();
         } 
@@ -86,70 +97,62 @@ public class DriverInput extends Module {
     }
 
     private void updateDriveTrain() {
-        double desiredLeftOutput, desiredRightOutput;
+        if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_THROTTLE_AXIS) &&
+           mData.driverinput.isSet(DriveTeamInputMap.DRIVER_TURN_AXIS) &&
+           mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS)) {
+            double rotate = mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
+            double throttle = -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
 
-        double rotate = mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
-        rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
-        double throttle = -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
-//		throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
+//		    throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
+            rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
+            rotate = Util.limit(rotate, 0.7);
 
-//		if(mElevatorModule.decelerateHeight())
-//		{
-        // throttle = Utils.clamp(throttle, 0.5);
-//		}
-        if (mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
-            throttle *= SystemSettings.SNAIL_MODE_THROTTLE_LIMITER;
-            rotate *= SystemSettings.SNAIL_MODE_ROTATE_LIMITER;
+            if (mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
+                throttle *= SystemSettings.kSnailModePercentThrottleReduction;
+                rotate *= SystemSettings.kSnailModePercentRotateReduction;
+            }
+
+            DriveMessage driveMessage = DriveMessage.fromThrottleAndTurn(throttle, rotate);
+            driveMessage.setNeutralMode(NeutralMode.Brake);
+            driveMessage.setControlMode(ControlMode.PercentOutput);
+
+            driveTrain.setDriveMessage(driveMessage);
         }
-
-        rotate = Util.limit(rotate, 0.7);
-//		System.out.println("ENGINE THROTTLE " + throttle);
-        desiredLeftOutput = throttle + rotate;
-        desiredRightOutput = throttle - rotate;
-
-        int leftScalar = desiredLeftOutput < 0 ? -1 : 1;
-        int rightScalar = desiredRightOutput < 0 ? -1 : 1;
-        desiredLeftOutput = leftScalar * Math.min(Math.abs(desiredLeftOutput), 1);
-        desiredRightOutput = rightScalar * Math.min(Math.abs(desiredRightOutput), 1);
-
-//		if(Math.abs(desiredRightOutput) > 0.01 || Math.abs(desiredLeftOutput) > 0.01) {
-//			System.out.println("LEFT: " + desiredLeftOutput +"\tRIGHT: " +  desiredRightOutput + "");
-//		}
-
-        driveTrain.setDriveMessage(new DriveMessage(desiredLeftOutput, desiredRightOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
-
     }
 
     /**
      * Commands the superstructure to start vision tracking depending on
      * button presses.
      */
-    protected void updateVision() {
+    protected void updateVisionCommands() {
 
         ETrackingType trackingType = null;
         // Switch the limelight to a pipeline and track
         if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN)) {
-            trackingType = ETrackingType.TARGET_TRACK;
+            trackingType = ETrackingType.TARGET_LEFT;
         } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN)) {
-            trackingType = ETrackingType.CARGO_TRACK;
+            trackingType = ETrackingType.CARGO_LEFT;
         } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN)) {
-            trackingType = ETrackingType.HATCH_TRACK;
+            trackingType = ETrackingType.HATCH_LEFT;
         }
 
-        double pipelineNum;
-        if(trackingType != null) {
+        // If the driver selected a tracking enum and we won't go out of bounds
+        if(trackingType != null && trackingType.ordinal() < ETrackingType.values().length - 1) {
+            int trackingTypeOrdinal = trackingType.ordinal();
             if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_LEFT)) {
-                pipelineNum = trackingType.getLeftPipelineNum();
+                // If driver wants to seek left, we don't need to change anything
+                trackingType = ETrackingType.values()[trackingTypeOrdinal];
             } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT)) {
-                pipelineNum = trackingType.getRightPipelineNum();
+                // If driver wants to seek right, switch from "_LEFT" enum to "_RIGHT" enum
+                trackingType = ETrackingType.values()[trackingTypeOrdinal + 1];
             }
-            //mSuperstructure.setCommands(<Commands here>)
-            //mSuperstructure.startRunningCommands();
+            mSuperstructure.stopRunningCommands();
+            mSuperstructure.startCommands(new Delay(30)); // Placeholder
         }
 
     }
 
-    public boolean isDriverAllowingCommands() {
+    public boolean isDriverAllowingTeleopCommands() {
         boolean runCommands = false;
         for(ELogitech310 l : SystemSettings.kTeleopCommandTriggers) {
             if(mDriverInputCodex.isSet(l)) {
@@ -162,7 +165,7 @@ public class DriverInput extends Module {
     public boolean isAutoOverridePressed() {
         boolean autonOverride = false;
         for(ELogitech310 l : SystemSettings.kAutonOverrideTriggers) {
-            if(mDriverInputCodex.get(l) > SystemSettings.kAutonOverrideAxisThreshold) {
+            if(mDriverInputCodex.isSet(l) && mDriverInputCodex.get(l) > SystemSettings.kAutonOverrideAxisThreshold) {
                 autonOverride = true;
             }
         }
