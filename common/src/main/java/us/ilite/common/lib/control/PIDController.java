@@ -211,6 +211,10 @@ public class PIDController {
         mPIDControl.set( EPIDControl.F_GAIN, m_F );
     }
 
+    public Codex<Double, EPIDControl> getCodex() {
+        return mPIDControl;
+    }
+
     enum EPIDControl implements CodexOf<Double> {
         ERROR,
         OUTPUT,
