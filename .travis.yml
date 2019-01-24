@@ -1,10 +1,7 @@
 sudo: required
 language: java
 jdk: openjdk11
-
-before_install:
-  - sudo apt-get update
-  - sudo apt-get dist-upgrade -y
+dist: xenial
 
 script:
   - ./gradlew clean build --refresh-dependencies --stacktrace
