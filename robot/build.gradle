@@ -43,9 +43,9 @@ dependencies {
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
 
-    runtime group: "edu.wpi.first.ntcore", name: "ntcore-jni", version: "2019.+", classifier: "all"
-    compile group: "edu.wpi.first.ntcore", name: "ntcore-java", version: "2019.+"
-    compile group: "edu.wpi.first.wpiutil", name: "wpiutil-java", version: "2019.+"
+    testRuntime group: "edu.wpi.first.ntcore", name: "ntcore-jni", version: "2019.+", classifier: "all"
+    testCompile group: "edu.wpi.first.ntcore", name: "ntcore-java", version: "2019.+"
+    testCompile group: "edu.wpi.first.wpiutil", name: "wpiutil-java", version: "2019.+"
 
 }
 
