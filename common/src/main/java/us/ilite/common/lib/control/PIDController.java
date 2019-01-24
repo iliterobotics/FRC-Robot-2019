@@ -66,6 +66,12 @@ public class PIDController {
         logToCodex();
     }
 
+    /**
+     * Calculating output based on pid constants
+     * @param input the current position
+     * @param absoluteTime the current time (pNow) 
+     * @return the output to apply
+     */
     public double calculate(double input, double absoluteTime) {
         m_inputForCodex = input;
         if ( m_dt == 0.0 ) {
@@ -106,7 +112,6 @@ public class PIDController {
         m_previousTime = absoluteTime;
 
         logToCodex();
-        mPIDControl.set( EPIDControl.CURRENT, input );
         return m_result;
     }
 
@@ -142,6 +147,10 @@ public class PIDController {
         return m_result;
     }
 
+    /**
+     * Enables or disables continuous for rotational pid
+     * @param continuous true to enable continuous, false to disable continuous
+     */
     public void setContinuous(boolean continuous) {
         m_continuous = continuous;
     }
@@ -150,7 +159,11 @@ public class PIDController {
         m_deadband = deadband;
     }
 
-
+    /**
+     * Sets the input (Starting distance) range
+     * @param minimumInput the minimum input
+     * @param maximumInput the maximum input
+     */
     public void setInputRange(double minimumInput, double maximumInput) {
         if (minimumInput > maximumInput) {
             mLogger.debug("Lower bound is greater than upper bound");
@@ -160,7 +173,11 @@ public class PIDController {
         setSetpoint(m_setpoint);
     }
 
-
+    /**
+     * Sets the (pid calculation) output range
+     * @param minimumOutput the minimum output
+     * @param maximumOutput the maximum output
+     */
     public void setOutputRange(double minimumOutput, double maximumOutput) {
         if (minimumOutput > maximumOutput) {
             mLogger.debug("Lower bound is greater than upper bound");
@@ -169,26 +186,30 @@ public class PIDController {
         m_maximumOutput = maximumOutput;
     }
 
-
     public void setSetpoint(double setpoint) {
         m_setpoint = Util.limit(setpoint, m_minimumInput, m_maximumInput);
     }
-
 
     public double getSetpoint() {
         return m_setpoint;
     }
 
-
     public double getError() {
         return m_error;
     }
 
+    /**
+     * Determines if the error is within a certain threshold
+     * @param tolerance the threshold to check if error is within
+     * @return true when error is within -tolerance and tolerance
+     */
     public boolean isOnTarget(double tolerance) {
         return m_last_input != Double.NaN && Math.abs(m_last_input - m_setpoint) < tolerance;
     }
 
-
+    /**
+     * Resets the input, previous error, total error, calculate() output, and setpoint
+     */
     public void reset() {
         m_last_input = Double.NaN;
         m_prevError = 0;
@@ -211,6 +232,10 @@ public class PIDController {
         mPIDControl.set( EPIDControl.F_GAIN, m_F );
     }
 
+    /**
+     * Access the codex holding PIDController values
+     * @return the codex holding PIDController values
+     */
     public Codex<Double, EPIDControl> getCodex() {
         return mPIDControl;
     }
