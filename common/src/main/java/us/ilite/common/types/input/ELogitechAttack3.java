@@ -2,8 +2,8 @@ package us.ilite.common.types.input;
 
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
+
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Joystick.AxisType;
 
 public enum ELogitechAttack3 implements CodexOf<Double>{
   TRIGGER,
@@ -28,9 +28,9 @@ public enum ELogitechAttack3 implements CodexOf<Double>{
     for(int i = 0; i < 11; i++) {
       pCodex.set(i, pJoystick.getRawButton(i+1) ? 1d : null);
     }
-    pCodex.set(X_AXIS, pJoystick.getAxis(AxisType.kX));
-    pCodex.set(Y_AXIS, pJoystick.getAxis(AxisType.kY));
-    pCodex.set(THROTTLE, pJoystick.getAxis(AxisType.kZ));
+    pCodex.set(X_AXIS, pJoystick.getX());
+    pCodex.set(Y_AXIS, pJoystick.getY());
+    pCodex.set(THROTTLE, pJoystick.getZ());
     pCodex.set(ID, Double.valueOf(pID));
   }
   

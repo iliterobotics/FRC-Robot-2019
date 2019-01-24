@@ -1,14 +1,20 @@
 package us.ilite.common.config;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import us.ilite.common.lib.util.ConstantsBase;
+import com.team254.lib.util.ConstantsBase;
 
-public class SystemSettings extends ConstantsBase {
+import us.ilite.common.lib.util.NetworkTablesConstantsBase;
+import us.ilite.common.types.ETrackingType;
+import us.ilite.common.types.input.ELogitech310;
+
+public class SystemSettings extends NetworkTablesConstantsBase {
 
 
     public static double kControlLoopPeriod = 0.01; // seconds
-    public static TimeUnit SYSTEM_TIME_UNIT = TimeUnit.SECONDS;
 
     public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
 
@@ -63,6 +69,12 @@ public class SystemSettings extends ConstantsBase {
     public static int     JOYSTICK_PORT_OPERATOR = 1;
     public static int     JOYSTICK_PORT_TESTER = 2;
 
+    public static int kLimelightDefaultPipeline = ETrackingType.TARGET_LEFT.getPipeline();
+    public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN, 
+                                                                            DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN,
+                                                                            DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN);
+    
+
     // =============================================================================
     // Motion Magic Constants
     // =============================================================================
@@ -100,9 +112,74 @@ public class SystemSettings extends ConstantsBase {
     public static double kDriveVelocity_kD = 10.0;
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
-    @Override
-    public String getFileLocation() {
-        return "~/constants.txt";
+    public static final int ULTRASONIC_PORT = 2;
+
+
+    // =============================================================================
+    // LimeLight Camera Constants
+    // Note: These constants need to be recalculted for a specific robot geometry
+    // =============================================================================
+    public static double llCameraHeightIn = 58.0;
+    public static double llCameraToBumperIn = 10.0;
+    public static double llCameraAngleDeg = 28.55;
+
+    // Left angle coefficients for angle = a + bx + cx^2
+    //    a	0.856905324060421
+    //    b	-3.01414088331715
+    //    c	-0.0331854848038372
+    public static double llLeftACoeff = 0.856905324060421;
+    public static double llLeftBCoeff = -3.01414088331715;
+    public static double llLeftCCoeff = -0.0331854848038372;
+
+    // Right angle coefficients for angle = a + bx + cx^2
+    // a	-54.3943883842204
+    // b	-4.53956454545558
+    // c	-0.0437470770400814
+    public static double llRightACoeff = -54.3943883842204;
+    public static double llRightBCoeff = -4.53956454545558;
+    public static double llRightCCoeff = -0.0437470770400814;
+
+
+
+    // =============================================================================
+    // Target Constants
+    // Note: These constants need to be recalculted for the specific target geometry
+    // =============================================================================
+    // TODO These values are specific to the targets, not the camera, and may belong elsewhere
+    // The current target values assume the limelight processing stream is configured to target
+    // the bottom of the vision target
+    public enum VisionTarget {
+        HatchPort(25.6875), // height of the bottom of the reflective tape in inches for the hatch port
+        CargoPort(33.3125), // height of the bottom of the reflective tape in inches for the cargo port
+        Ground(0.0,"Ground_Tape_Tracking.vpr"), //The ground
+        CargoHeight(6.5d,"Cargo_Ball_Tracking.vpr");//This may change, not sure what the correct value
+
+        private final double height;
+        private final Optional<String> pipelineName;
+
+        VisionTarget(double height) {
+            this(height, null);
+        }
+        VisionTarget( double height, String pipelineName)  {
+            this.height = height;
+            this.pipelineName = Optional.ofNullable(pipelineName);
+        }
+
+        /**
+         * @return the heightfE
+         */
+        public double getHeight() {
+            return height;
+        }
+        /**
+         * @return the pipelineName
+         */
+        public Optional<String> getPipelineName() {
+            return pipelineName;
+        }
+
     }
+
+    
 
 }

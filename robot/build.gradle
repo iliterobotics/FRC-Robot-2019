@@ -36,10 +36,12 @@ deploy {
 dependencies {
 
     compile project(':common')
+    implementation 'com.github.flybotix:highfrequencyrobots:2019.1.12'
     
     compile wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+    testCompile "org.mockito:mockito-core:2.+"
 
 }
 

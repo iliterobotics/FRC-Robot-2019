@@ -3,6 +3,7 @@ package us.ilite.common.lib.control;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.physics.DifferentialDrive;
+import com.team254.lib.physics.DriveOutput;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 
