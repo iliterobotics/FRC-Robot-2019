@@ -2,6 +2,7 @@ package us.ilite.common.config;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import com.team254.lib.util.ConstantsBase;
@@ -64,7 +65,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int     JOYSTICK_PORT_OPERATOR = 1;
     public static int     JOYSTICK_PORT_TESTER = 2;
 
-    public static int kLimelightDefaultPipeline = ETrackingType.TARGET_TRACK.getRightPipelineNum();
+    public static int kLimelightDefaultPipeline = ETrackingType.TARGET_LEFT.getPipeline();
     public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN, 
                                                                             DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN,
                                                                             DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN);
@@ -97,5 +98,5 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveVelocity_kD = 10.0;
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
-    public static int ULTRASONIC_PORT = 2;
+    public static final int ULTRASONIC_PORT = 2;
 }
