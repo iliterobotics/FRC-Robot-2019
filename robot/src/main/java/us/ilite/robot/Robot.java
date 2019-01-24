@@ -3,22 +3,30 @@ package us.ilite.robot;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import us.ilite.common.lib.control.DriveController;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
 import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.FollowTrajectory;
+import us.ilite.robot.commands.TurnToDegree;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.Drive;
+import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.ModuleList;
 
 import java.util.Arrays;
@@ -37,20 +45,29 @@ public class Robot extends TimedRobot {
     private Clock mClock = new Clock();
     private Data mData = new Data();
     private Timer initTimer = new Timer();
+    private SystemSettings mSettings = new SystemSettings();
+
 
     // Module declarations here
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
     private DriverInput mDriverInput = new DriverInput(mDrive, mData);
+    private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
+
+    private CANSparkMax mTestNeo = new CANSparkMax(0, MotorType.kBrushless);
+    private CANEncoder mTestNeoEncoder = mTestNeo.getEncoder();
+    private Joystick mTestJoystick = new Joystick(2);
 
     @Override
     public void robotInit() {
         initTimer.reset();
         initTimer.start();
-        Logger.setLevel(ELevel.ERROR);
+        Logger.setLevel(ELevel.INFO);
         mLogger.info("Starting Robot Initialization...");
+
+        mSettings.writeToNetworkTables();
 
         mRunningModules.setModules();
 
@@ -76,10 +93,12 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        
         initTimer.reset();
         initTimer.start();
         mLogger.info("Starting Autonomous Initialization...");
 
+        mSettings.loadFromNetworkTables();
 
         mRunningModules.setModules();
         mRunningModules.modeInit(mClock.getCurrentTime());
@@ -88,8 +107,11 @@ public class Robot extends TimedRobot {
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
 
-        mCommandQueue.setCommands(new FollowTrajectory(trajectory, mDrive, true));
+        // mCommandQueue.setCommands(new FollowTrajectory(trajectory, mDrive, true));
 //        mCommandQueue.setCommands(new CharacterizeDrive(mDrive, false, false));
+        mCommandQueue.setCommands(
+            new TurnToDegree(mDrive, Rotation2d.fromDegrees(90.0), 2.5, mData), 
+            new TurnToDegree(mDrive, Rotation2d.fromDegrees(-90.0), 2.5, mData));
         mCommandQueue.init(mClock.getCurrentTime());
 
         initTimer.stop();
@@ -106,7 +128,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        mRunningModules.setModules(mDriverInput);
+        mRunningModules.setModules(mDriverInput, mLimelight);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
@@ -118,6 +140,9 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
+        Data.kSmartDashboard.putDouble("Neo Position", mTestNeoEncoder.getPosition());
+        Data.kSmartDashboard.putDouble("Neo Velocity", mTestNeoEncoder.getVelocity());
+        mTestNeo.set(mTestJoystick.getX());
     }
 
     @Override

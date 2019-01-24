@@ -14,8 +14,8 @@ import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.drivers.talon.TalonSRXChecker;
-import com.team254.lib.drivers.talon.TalonSRXFactory;
 import com.team254.lib.drivers.talon.TalonSRXChecker.CheckerConfigBuilder;
+import com.team254.lib.drivers.talon.TalonSRXFactory;
 import com.team254.lib.geometry.Rotation2d;
 
 import us.ilite.common.config.SystemSettings;
@@ -222,7 +222,7 @@ public class DriveHardware implements IDriveHardware {
     }
 
     public Rotation2d getHeading() {
-        return Rotation2d.fromDegrees(mGyro.getFusedHeading());
+        return Rotation2d.fromDegrees(mGyro.getFusedHeading()).inverse();
     }
 
     public double getLeftInches() {

@@ -2,18 +2,19 @@ package us.ilite.common.config;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import com.team254.lib.util.ConstantsBase;
 
+import us.ilite.common.lib.util.NetworkTablesConstantsBase;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.ELogitech310;
 
-public class SystemSettings extends ConstantsBase {
+public class SystemSettings extends NetworkTablesConstantsBase {
 
 
     public static double kControlLoopPeriod = 0.01; // seconds
-    public static TimeUnit SYSTEM_TIME_UNIT = TimeUnit.SECONDS;
 
     public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
 
@@ -64,7 +65,7 @@ public class SystemSettings extends ConstantsBase {
     public static int     JOYSTICK_PORT_OPERATOR = 1;
     public static int     JOYSTICK_PORT_TESTER = 2;
 
-    public static int kLimelightDefaultPipeline = ETrackingType.TARGET_TRACK.getRightPipelineNum();
+    public static int kLimelightDefaultPipeline = ETrackingType.TARGET_LEFT.getPipeline();
     public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN, 
                                                                             DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN,
                                                                             DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN);
@@ -97,9 +98,12 @@ public class SystemSettings extends ConstantsBase {
     public static double kDriveVelocity_kD = 10.0;
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
-    @Override
-    public String getFileLocation() {
-        return "~/constants.txt";
-    }
-
-}
+    public static final int ULTRASONIC_PORT = 2;
+    
+    // =============================================================================
+    // Turn-To cPID constants
+    // =============================================================================
+    public static double kTurnP = 0.001;
+    public static double kTurnI = 0.0;
+    public static double kTurnD = 0.0;
+    public static double kTurnF = 0.085;}

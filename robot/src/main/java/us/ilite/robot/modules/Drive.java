@@ -70,7 +70,7 @@ public class Drive extends Loop {
 	}
 
 	public void startCsvLogging() {
-		mDebugLogger = new ReflectingCSVWriter<>("~/debug.csv", DebugOutput.class);
+		mDebugLogger = new ReflectingCSVWriter<>("/home/lvuser/debug.csv", DebugOutput.class);
 		debugOutput = new DebugOutput();
 	}
 
@@ -186,6 +186,8 @@ public class Drive extends Loop {
 				// debugOutput.update(pNow, output);
 				// debugOutput.outputToLiveDashboard();
 
+				break;
+			case NORMAL:
 				break;
 			default:
 				mLogger.warn("Got drive state: " + mDriveState+" which is unhandled");
