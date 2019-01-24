@@ -69,8 +69,9 @@ public class SimpleNetworkTable  {
      * @param pTime The current time.
      */
     public static <V extends Number, E extends Enum<E> & CodexOf<V>> void writeCodexToSmartDashboard(String name, Codex<V, E> pCodex, double pTime) {
-        List<E> enums = EnumUtils.getSortedEnums(pCodex.meta().getEnum());
-        for(E e : enums) {
+        Class<E> enumClass = pCodex.meta().getEnum();
+        E [] enumConstants = enumClass.getEnumConstants();
+        for(E e : enumConstants) {
             Double value = (Double) pCodex.get(e);
             if(e != null) logNumber(name, e, value);
         }

@@ -21,8 +21,6 @@ import us.ilite.common.lib.RobotProfile;
  */
 public class DriveController {
 
-    private final double kDt;
-
     private final RobotProfile mRobotProfile;
     private final DCMotorTransmission mLeftTransmission, mRightTransmission;
     private final DifferentialDrive mDriveModel;
@@ -32,7 +30,7 @@ public class DriveController {
     private final DriveMotionPlanner mDriveMotionPlanner;
     private final RobotStateEstimator mRobotStateEstimator;
 
-    public DriveController(RobotProfile pRobotProfile, double pDt) {
+    public DriveController(RobotProfile pRobotProfile) {
         mRobotProfile = pRobotProfile;
         // Invert our feedforward constants. Torque constant is kT = I * kA, where I is the robot modeled as a cylindrical load on the transmission and kA is the inverted feedforward.
         mLeftTransmission = new DCMotorTransmission(1 / mRobotProfile.getLeftVoltPerSpeed(), mRobotProfile.getCylindricalMoi() / mRobotProfile.getLeftVoltPerAccel(), mRobotProfile.getLeftFrictionVoltage());
@@ -44,8 +42,6 @@ public class DriveController {
         mController = new NonlinearFeedbackController(mDriveModel, 0.65, 0.175);
         mDriveMotionPlanner = new DriveMotionPlanner(mDriveModel, DriveMotionPlanner.PlannerMode.FEEDFORWARD_ONLY, mController);
         mRobotStateEstimator = new RobotStateEstimator(mKinematicModel);
-
-        kDt = pDt;
 
     }
 

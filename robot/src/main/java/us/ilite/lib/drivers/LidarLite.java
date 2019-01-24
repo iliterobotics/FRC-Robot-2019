@@ -30,7 +30,6 @@ public class LidarLite
 	private boolean hasSignal;
 	private final Timer t = new Timer();
 	private TimerTask lidarReadTask = null;
-	private int mCount = 0;
 	private byte[] distance;	
 		
 	
