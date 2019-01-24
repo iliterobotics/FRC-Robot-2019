@@ -32,7 +32,6 @@ public class TurnToDegree implements ICommand {
   private Rotation2d mInitialYaw, mTurnAngle, mTargetYaw;
   private double mOutput = 0.0;
   private double mStartTime;
-  private double mPreviousTime;
   private int mAlignedCount;
   private PIDController pid;
   private final double mAllowableError;
@@ -49,28 +48,21 @@ public class TurnToDegree implements ICommand {
 
   @Override
   public void init(double pNow) {
-    SystemSettings settings = new SystemSettings();
-    settings.loadFromNetworkTables();
-    settings.writeToNetworkTables();
     mStartTime = pNow;
 
     mInitialYaw = getYaw();
     mTargetYaw = mInitialYaw.rotateBy( mTurnAngle );
-    pid = new PIDController(SystemSettings.kTurnP, SystemSettings.kTurnI, SystemSettings.kTurnD);
+    pid = new PIDController(SystemSettings.kTurnP, SystemSettings.kTurnI, SystemSettings.kTurnD, SystemSettings.kControlLoopPeriod);
     pid.setContinuous(true);
     pid.setOutputRange(kMIN_POWER, kMAX_POWER);
     pid.setInputRange( -180, 180 );
     pid.setSetpoint(mTargetYaw.getDegrees());
 
-    mPreviousTime = pNow;
-    System.out.println(mPreviousTime);
     mAlignedCount = 0;
   }
 
   public boolean update(double pNow) {
-    System.out.println("Update pNow: " + pNow + " Update mPreviousTime: " + mPreviousTime);
-    System.out.println("pNow - mPreviousTime = " + (pNow + 1 - mPreviousTime));
-    mOutput = pid.calculate(getYaw().getDegrees(), pNow + 1 - mPreviousTime);
+    mOutput = pid.calculate(getYaw().getDegrees(), pNow);
     mOutput += Math.signum(mOutput) * SystemSettings.kTurnF;
     if ((Math.abs(pid.getError()) <= Math.abs(mAllowableError))) {
      mAlignedCount++;
@@ -80,13 +72,11 @@ public class TurnToDegree implements ICommand {
     if ( mAlignedCount >= kMIN_ALIGNED_COUNT || pNow - mStartTime > kTIMEOUT) {
       mDrive.setDriveMessage(new DriveMessage(0.0, 0.0, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
       mLogger.info("Turn finished");
-      mPreviousTime = System.currentTimeMillis();
       return true;
     }
     mDrive.setDriveMessage(new DriveMessage(mOutput, -mOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
     Data.kSmartDashboard.putDouble("turn_error", pid.getError());
     mLogger.info("Target: " + mTargetYaw + " Yaw: " + getYaw() + "\n");
-    mPreviousTime = pNow;
     return false;
   }
   

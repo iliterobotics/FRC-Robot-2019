@@ -1,3 +1,9 @@
+//=============================================================================//
+//                                                                             //
+//              Modified class originally written by Team 254                  //
+//                                                                             //
+//=============================================================================//
+
 package us.ilite.common.lib.control;
 
 import com.flybotix.hfr.util.log.ILog;
@@ -12,6 +18,10 @@ import com.team254.lib.util.Util;
 public class PIDController {
 
     private ILog mLogger = Logger.createLog(this.getClass());
+
+    private double m_previousTime;
+    private double m_defaultDT;
+    private double m_dt;
 
     private double m_P; // factor for "proportional" control
     private double m_I; // factor for "integral" control
@@ -48,8 +58,8 @@ public class PIDController {
      * @param Kd
      *            the derivative coefficient
      */
-    public PIDController(double Kp, double Ki, double Kd) {
-        this( Kp, Ki, Kd, 0d );
+    public PIDController(double Kp, double Ki, double Kd, double KdefaultDT) {
+        this( Kp, Ki, Kd, 0d, KdefaultDT );
     }
 
     /**
@@ -64,11 +74,12 @@ public class PIDController {
      * @param Kf
      *            the feed forward gain coefficient
      */
-    public PIDController(double Kp, double Ki, double Kd, double Kf) {
+    public PIDController(double Kp, double Ki, double Kd, double Kf, double KdefaultDT) {
         m_P = Kp;
         m_I = Ki;
         m_D = Kd;
         m_F = Kf;
+        m_defaultDT = KdefaultDT;
     }
 
     /**
@@ -77,15 +88,14 @@ public class PIDController {
      *
      * @param input
      *            the input
-     * @param dt
-     *            time passed since previous call to calculate
+     * @param absoluteTime
+     *            total time
      */
-    public double calculate(double input, double dt) {
-        if ( dt == 0 ) {
-            throw new IllegalArgumentException();
-        }
-        if (dt < 1E-6) {
-            dt = 1E-6;
+    public double calculate(double input, double absoluteTime) {
+        if ( m_dt == 0.0 ) {
+            m_dt = m_defaultDT;
+        } else {
+            m_dt = absoluteTime - m_previousTime;
         }
         m_last_input = input;
         m_error = m_setpoint - input;
@@ -104,7 +114,7 @@ public class PIDController {
 
         // Only add to totalError if output isn't being saturated
         if ((m_error * m_P < m_maximumOutput) && (m_error * m_P > m_minimumOutput)) {
-            m_totalError += m_error * dt;
+            m_totalError += m_error * m_dt;
         } else {
             m_totalError = 0;
         }
@@ -112,7 +122,7 @@ public class PIDController {
         // Don't blow away m_error so as to not break derivative
         double proportionalError = Math.abs(m_error) < m_deadband ? 0 : m_error;
 
-        m_result = (m_P * proportionalError + m_I * m_totalError + m_D * (m_error - m_prevError) / dt
+        m_result = (m_P * proportionalError + m_I * m_totalError + m_D * (m_error - m_prevError) / m_dt
                 + m_F * m_setpoint);
         m_prevError = m_error;
 
@@ -122,6 +132,7 @@ public class PIDController {
         //     m_result = m_minimumOutput;
         // }
         m_result = Util.limit( m_result, m_maximumOutput );
+        m_previousTime = absoluteTime;
         return m_result;
     }
 
