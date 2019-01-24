@@ -22,10 +22,6 @@ public class TurnToDegree implements ICommand {
   
   private static final int kMIN_ALIGNED_COUNT = 25;
   private static final double kTIMEOUT = 9999.9;
-  // private static final double kP = SystemSettings.kTurnP;
-  // private static final double kI = SystemSettings.kTurnI;
-  // private static final double kD = SystemSettings.kTurnD;
-  // private static final double kFrictionFeedforward = 0.085;
   private static final double kMIN_POWER = 0.0; //0.066666667
   private static final double kMAX_POWER = 1.0;
  
