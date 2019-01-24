@@ -37,6 +37,7 @@ public class PIDController {
                                          // this
     private double m_minimumInput = 0.0; // minimum input - limit setpoint to
                                          // this
+    private double m_inputForCodex;
     private boolean m_continuous = false; // do the endpoints wrap around? eg.
                                           // Absolute encoder
     private double m_prevError = 0.0; // the prior sensor input (used to compute
@@ -62,9 +63,11 @@ public class PIDController {
         m_D = Kd;
         m_F = Kf;
         m_defaultDT = KdefaultDT;
+        logToCodex();
     }
 
     public double calculate(double input, double absoluteTime) {
+        m_inputForCodex = input;
         if ( m_dt == 0.0 ) {
             m_dt = m_defaultDT;
         } else {
@@ -101,8 +104,8 @@ public class PIDController {
 
         m_result = Util.limit( m_result, m_maximumOutput );
         m_previousTime = absoluteTime;
-        mPIDControl.set( EPIDControl.OUTPUT, m_P );
-        mPIDControl.set( EPIDControl.ERROR, m_error );
+
+        logToCodex();
         mPIDControl.set( EPIDControl.CURRENT, input );
         return m_result;
     }
@@ -116,6 +119,7 @@ public class PIDController {
         m_I = i;
         m_D = d;
         m_F = f;
+        logToCodex();
     }
 
     public double getP() {
@@ -134,7 +138,7 @@ public class PIDController {
         return m_F;
     }
 
-    public double get() {
+    public double getOutput() {
         return m_result;
     }
 
@@ -195,6 +199,16 @@ public class PIDController {
 
     public void resetIntegrator() {
         m_totalError = 0;
+    }
+
+    public void logToCodex() {
+        mPIDControl.set( EPIDControl.OUTPUT, m_P );
+        mPIDControl.set( EPIDControl.ERROR, m_error );
+        mPIDControl.set( EPIDControl.CURRENT, m_inputForCodex );
+        mPIDControl.set( EPIDControl.P_GAIN, m_P );
+        mPIDControl.set( EPIDControl.I_GAIN, m_I );
+        mPIDControl.set( EPIDControl.D_GAIN, m_D );
+        mPIDControl.set( EPIDControl.F_GAIN, m_F );
     }
 
     enum EPIDControl implements CodexOf<Double> {
