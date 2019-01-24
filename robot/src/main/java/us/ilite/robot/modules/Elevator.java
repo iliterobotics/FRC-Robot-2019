@@ -1,12 +1,12 @@
 
 package us.ilite.robot.modules;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team254.lib.util.Units;
 
 import us.ilite.common.config.SystemSettings;
-// import com.team254.lib.drivers.TalonSRXFactory;
-import us.ilite.lib.drivers.TalonSRXFactory;
+import com.team254.lib.drivers.talon.TalonSRXFactory;
 
 import edu.wpi.first.wpilibj.Talon;
 import us.ilite.robot.Data;
@@ -45,13 +45,24 @@ public class Elevator extends Module {
         mData = pData;
 
         //initialize motors TODO make ids in systemsettings
-        mMasterElevator = TalonSRXFactory.createDefaultTalon(0);
-        mFollowerElevator = TalonSRXFactory.createDefaultTalon(0);
-
+        mMasterElevator = TalonSRXFactory.createDefaultTalon(/*Elevator Master Talon ID*/0);
+        mFollowerElevator = TalonSRXFactory.createDefaultTalon(/* Elevator Master Talon ID */0);
+        // TODO Probably set inverted
+        mMasterElevator.setInverted(true);
+        mFollowerElevator.setInverted(true);
         mFollowerElevator.follow(mMasterElevator);
 
-        //TODO Probably set inverted
-        //TODO All the other talon things
+        mMasterElevator.setNeutralMode(NeutralMode.Brake);
+        mFollowerElevator.setNeutralMode(NeutralMode.Brake);
+
+        mMasterElevator.enableCurrentLimit(true);
+        mMasterElevator.setSensorPhase(false);
+
+        mMasterElevator.configOpenloopRamp(/*Create constant for open loop rate*/0, /*Timeout*/0);
+        mFollowerElevator.configOpenloopRamp(/*Create constant for open loop rate*/0, /*Timeout*/0);
+
+        // mMasterElevator.setStatusFramePeriod()
+
 
         //initialization stuff
         mAtBottom = true;
@@ -64,7 +75,7 @@ public class Elevator extends Module {
 
         mCurrentEncoderTicks = 0;
 
-        //TODO maybe change the quad position
+        //TODO change the quad position
         mMasterElevator.getSensorCollection().setQuadraturePosition(0, 0);
 
     }
@@ -98,7 +109,7 @@ public class Elevator extends Module {
 
     }
 
-    //might just put into the rigular update method but who knows, really.
+    //might just put into the rigular update method
     public void updateElevator(double pNow) {
 
         if (Math.abs(mDesiredPower) > 0d && !mAtBottom /* and also if position buttons are not being used*/) {
@@ -150,15 +161,17 @@ public class Elevator extends Module {
     }
 
     double lastError = 0;
+
     public void setPositon(EElevatorPosition pDesiredPosition) {
-        //TODO log dis
+    
+        //TODO log this
         mDesiredPositionAboveInitial = (mCurrentEncoderTicks < pDesiredPosition.mEncoderThreshold);
         
         //Error describes the deficit of ticks between our current position and the position we are trying to get to.
         double error = mPosition.mEncoderThreshold = mCurrentEncoderTicks;
 
-        //This is the value we used last year. Probably going to change and use the PID class
-        double kP = 1d / 2000d * 1.2;
+        //use the PID class
+        double kP = 0;
 
         mAtDesiredPosition = (Math.abs(error = lastError) <= SystemSettings.kELEVATOR_ENCODER_DEADBAND);
         //If we make it to or beyond our position, then hold.

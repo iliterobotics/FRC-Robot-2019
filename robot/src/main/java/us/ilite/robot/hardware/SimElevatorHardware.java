@@ -7,7 +7,6 @@ import com.team254.lib.geometry.Rotation2d;
 
 import us.ilite.common.lib.RobotProfile;
 import us.ilite.common.lib.control.DriveController;
-import us.ilite.common.lib.odometry.Kinematics;
 import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.util.Conversions;
 import us.ilite.lib.drivers.Clock;
