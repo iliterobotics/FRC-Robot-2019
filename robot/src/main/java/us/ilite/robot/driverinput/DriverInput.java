@@ -140,7 +140,7 @@ public class DriverInput extends Module {
 //			System.out.println("LEFT: " + desiredLeftOutput +"\tRIGHT: " +  desiredRightOutput + "");
 //		}
 
-        driveTrain.setDriveMessage(new DriveMessage(desiredLeftOutput, desiredRightOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
+        driveTrain.setDriveMessage(new DriveMessage(desiredLeftOutput, desiredRightOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Coast));
 
     }
 

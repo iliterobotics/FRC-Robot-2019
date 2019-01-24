@@ -78,12 +78,6 @@ public class DriveHardware implements IDriveHardware {
         mLeftControlMode = mRightControlMode = ControlMode.PercentOutput;
         mLeftNeutralMode = mRightNeutralMode = NeutralMode.Brake;
 
-        // Bypass state machine in set() and configure directly
-        configTalonForPercentOutput(mLeftMaster);
-        configTalonForPercentOutput(mRightMaster);
-        setNeutralMode(mLeftNeutralMode, mRightMaster, mRightRear);
-        setNeutralMode(mLeftNeutralMode, mLeftMaster, mRightMaster);
-
         set(DriveMessage.kNeutral);
     }
 
@@ -94,6 +88,12 @@ public class DriveHardware implements IDriveHardware {
 
         mLeftMaster.setSelectedSensorPosition(0, 0, SystemSettings.kCANTimeoutMs);
         mRightMaster.setSelectedSensorPosition(0, 0, SystemSettings.kCANTimeoutMs);
+
+        // Bypass state machine in set() and configure directly
+        configTalonForPercentOutput(mLeftMaster);
+        configTalonForPercentOutput(mRightMaster);
+        setNeutralMode(NeutralMode.Brake, mRightMaster, mRightRear);
+        setNeutralMode(NeutralMode.Brake, mLeftMaster, mLeftRear);
 
         mLeftMaster.set(ControlMode.PercentOutput, 0.0);
         mRightMaster.set(ControlMode.PercentOutput, 0.0);
@@ -177,9 +177,9 @@ public class DriveHardware implements IDriveHardware {
         talon.configVoltageCompSaturation(12.0, SystemSettings.kLongCANTimeoutMs);
         talon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_50Ms, SystemSettings.kLongCANTimeoutMs);
         talon.configVelocityMeasurementWindow(1, SystemSettings.kLongCANTimeoutMs);
-        talon.configOpenloopRamp(SystemSettings.kDriveOpenLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
-        talon.configClosedloopRamp(SystemSettings.kDriveClosedLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
-        talon.configContinuousCurrentLimit(SystemSettings.kDriveCurrentLimitAmps, SystemSettings.kLongCANTimeoutMs);
+        // talon.configOpenloopRamp(SystemSettings.kDriveOpenLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
+        // talon.configClosedloopRamp(SystemSettings.kDriveClosedLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
+        // talon.configContinuousCurrentLimit(SystemSettings.kDriveCurrentLimitAmps, SystemSettings.kLongCANTimeoutMs);
         talon.configNeutralDeadband(0.04, 0);
     }
 

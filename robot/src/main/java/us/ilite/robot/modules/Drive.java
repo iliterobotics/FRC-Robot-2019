@@ -183,9 +183,10 @@ public class Drive extends Loop {
 					debugOutput.update(pNow, output);
 					mDebugLogger.add(debugOutput);
 				}
-				// debugOutput.update(pNow, output);
+				debugOutput.update(pNow, output);
 				// debugOutput.outputToLiveDashboard();
-
+				break;
+			case NORMAL:
 				break;
 			default:
 				mLogger.warn("Got drive state: " + mDriveState+" which is unhandled");
@@ -251,18 +252,18 @@ public class Drive extends Loop {
 	}
 
 	public class DebugOutput {
-		public final NetworkTable livedashboard = NetworkTableInstance.getDefault().getTable("Live Dashboard");
+		// public final NetworkTable livedashboard = NetworkTableInstance.getDefault().getTable("Live Dashboard");
 
 		public double t = 0.0;
 
 		public double targetLeftVel = 0.0, targetRightVel = 0.0, leftVel = 0.0, rightVel = 0.0;
-		public double targetX = 0.0, targetY = 0.0, x = 0.0, y = 0.0;
+		// public double targetX = 0.0, targetY = 0.0, x = 0.0, y = 0.0;
 
-		public double leftAppliedVolts = 0.0, rightAppliedVolts = 0.0;
+		// public double leftAppliedVolts = 0.0, rightAppliedVolts = 0.0;
 
-		public double heading = 0.0;
+		// public double heading = 0.0;
 
-		public Pose2d error = new Pose2d();
+		// public Pose2d error = new Pose2d();
 
 		public void update(double time, DriveOutput output) {
 			t = time;
@@ -272,33 +273,33 @@ public class Drive extends Loop {
 			leftVel = mData.drive.get(EDriveData.LEFT_VEL_IPS);
 			rightVel = mData.drive.get(EDriveData.RIGHT_VEL_IPS);
 
-			targetX = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().x();
-			targetY = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().y();
-			x = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().getTranslation().x();
-			y = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().getTranslation().y();
+			// targetX = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().x();
+			// targetY = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().y();
+			// x = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().getTranslation().x();
+			// y = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().getTranslation().y();
 
 //			leftAppliedVolts = mData.drive.get(EDriveData.LEFT_VOLTAGE);
 //			rightAppliedVolts = mData.drive.get(EDriveData.RIGHT_VOLTAGE);
 
-			heading = mData.imu.get(EGyro.YAW_DEGREES);
+			// heading = mData.imu.get(EGyro.YAW_DEGREES);
 
-			error = mDriveController.getDriveMotionPlanner().error();
+			// error = mDriveController.getDriveMotionPlanner().error();
 		}
 
-		public void outputToLiveDashboard() {
-			final Pose2d robotPose = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose();
-			final Pose2d targetPose = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose();
+		// public void outputToLiveDashboard() {
+		// 	final Pose2d robotPose = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose();
+		// 	final Pose2d targetPose = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose();
 
-			livedashboard.getEntry("Robot X").setDouble(robotPose.getTranslation().x() / 12.0);
-			livedashboard.getEntry("Robot Y").setDouble((robotPose.getTranslation().y() + 13.5) / 12.0);
-			livedashboard.getEntry("Robot Heading").setDouble(robotPose.getRotation().getRadians());
+		// 	livedashboard.getEntry("Robot X").setDouble(robotPose.getTranslation().x() / 12.0);
+		// 	livedashboard.getEntry("Robot Y").setDouble((robotPose.getTranslation().y() + 13.5) / 12.0);
+		// 	livedashboard.getEntry("Robot Heading").setDouble(robotPose.getRotation().getRadians());
 
-			livedashboard.getEntry("Path X").setDouble(targetPose.getTranslation().x() / 12.0);
-			livedashboard.getEntry("Path Y").setDouble((targetPose.getTranslation().y() + 13.5) / 12.0);
+		// 	livedashboard.getEntry("Path X").setDouble(targetPose.getTranslation().x() / 12.0);
+		// 	livedashboard.getEntry("Path Y").setDouble((targetPose.getTranslation().y() + 13.5) / 12.0);
 
-			Data.kSmartDashboard.getEntry("Left Vel Error Inches").setDouble(targetLeftVel - leftVel);
-			Data.kSmartDashboard.getEntry("Right Vel Error Inches").setDouble(targetRightVel - rightVel);
-		}
+		// 	Data.kSmartDashboard.getEntry("Left Vel Error Inches").setDouble(targetLeftVel - leftVel);
+		// 	Data.kSmartDashboard.getEntry("Right Vel Error Inches").setDouble(targetRightVel - rightVel);
+		// }
 
 	}
 

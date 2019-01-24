@@ -52,7 +52,7 @@ public class StrongholdProfile implements RobotProfile {
 
     @Override
     public double getLinearInertia() {
-        return 1;
+        return 31.98;
     }
 
     @Override

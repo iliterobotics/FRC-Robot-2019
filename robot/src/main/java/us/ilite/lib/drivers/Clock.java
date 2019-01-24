@@ -26,7 +26,6 @@ public class Clock {
         if(hasTimeUpdatedThisCycle == false) {
             mCurrentTime = (mIsSimulated) ? System.currentTimeMillis() / 1000L : Timer.getFPGATimestamp();
             hasTimeUpdatedThisCycle = true;
-           mLogger.debug("Updated time to: " + mCurrentTime);
         }
 
         return mCurrentTime;

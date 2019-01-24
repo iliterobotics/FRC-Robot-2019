@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+import us.ilite.common.types.drive.EDriveData;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
 import com.team254.lib.geometry.Pose2dWithCurvature;
@@ -19,6 +20,7 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import us.ilite.lib.drivers.Clock;
+import us.ilite.robot.commands.CharacterizeDrive;
 import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
@@ -60,7 +62,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         initTimer.reset();
         initTimer.start();
-        Logger.setLevel(ELevel.ERROR);
+        Logger.setLevel(ELevel.INFO);
         mLogger.info("Starting Robot Initialization...");
 
         mRunningModules.setModules();
@@ -100,7 +102,7 @@ public class Robot extends TimedRobot {
         mLoopManager.start();
 
         mCommandQueue.setCommands(new FollowTrajectory(trajectory, mDrive, true));
-//        mCommandQueue.setCommands(new CharacterizeDrive(mDrive, false, false));
+    //    mCommandQueue.setCommands(new CharacterizeDrive(mDrive, false, false));
         mCommandQueue.init(mClock.getCurrentTime());
 
         initTimer.stop();
@@ -109,9 +111,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        mRunningModules.periodicInput(mClock.getCurrentTime());
+        // mRunningModules.periodicInput(mClock.getCurrentTime());
         mCommandQueue.update(mClock.getCurrentTime());
-        mRunningModules.update(mClock.getCurrentTime());
+        // mRunningModules.update(mClock.getCurrentTime());
 //        mDrive.flushTelemetry();
     }
 
@@ -129,6 +131,8 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
+        Data.kSmartDashboard.putDouble("left_vel", mData.drive.get(EDriveData.LEFT_VEL_IPS));
+        Data.kSmartDashboard.putDouble("right_vel", mData.drive.get(EDriveData.RIGHT_VEL_IPS));
         Data.kSmartDashboard.putDouble("Neo Position", mTestNeoEncoder.getPosition());
         Data.kSmartDashboard.putDouble("Neo Velocity", mTestNeoEncoder.getVelocity());
         mTestNeo.set(mTestJoystick.getX());
