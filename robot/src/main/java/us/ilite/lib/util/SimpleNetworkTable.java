@@ -83,7 +83,7 @@ public class SimpleNetworkTable  {
     }
 
     public static <E extends Enum<E>> void logNumber(String pName, String key, Number pNumber) {
-        Data.kLoggingTable.putDouble(pName + "-" + key, (pNumber == null) ? 0 : pNumber.doubleValue());
+        Data.kLoggingTable.get().putDouble(pName + "-" + key, (pNumber == null) ? 0 : pNumber.doubleValue());
     }
 
 }

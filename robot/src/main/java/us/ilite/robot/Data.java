@@ -1,6 +1,9 @@
 package us.ilite.robot;
 
 import com.flybotix.hfr.codex.Codex;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.types.drive.EDriveData;
@@ -11,15 +14,43 @@ import us.ilite.lib.util.SimpleNetworkTable;
 
 public class Data {
 
-    public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
-    public static SimpleNetworkTable kSmartDashboard = new SimpleNetworkTable("SmartDashboard");
-    public static NetworkTable kLimelight = NetworkTableInstance.getDefault().getTable("limelight");
-    public static SimpleNetworkTable kDriverControlSelection = new SimpleNetworkTable("DriverControlSelection") {
-        @Override
-        public void initKeys() {
-            getInstance().getEntry(EDriverInputMode.class.getSimpleName()).setDefaultNumber(-1);
-        }
-    };
+    public static final Supplier<SimpleNetworkTable> kLoggingTable;
+    public static final Supplier<SimpleNetworkTable> kSmartDashboard;
+    public static final Supplier<NetworkTable> kLimelight;
+    public static final Supplier<SimpleNetworkTable> kDriverControlSelection;
+    static {
+        kLoggingTable =  Suppliers.memoize(new Supplier<SimpleNetworkTable>() {
+            @Override
+            public SimpleNetworkTable get() {
+                return new SimpleNetworkTable("LoggingTable");
+            }
+        });
+        kSmartDashboard =  Suppliers.memoize(new Supplier<SimpleNetworkTable>() {
+            @Override
+            public SimpleNetworkTable get() {
+                return new SimpleNetworkTable("SmartDashboard");
+            }
+        });
+        kDriverControlSelection = new Supplier<SimpleNetworkTable>(){
+        
+            @Override
+            public SimpleNetworkTable get() {
+                return new SimpleNetworkTable("DriverControlSelection") {
+                    @Override
+                    public void initKeys() {
+                        getInstance().getEntry(EDriverInputMode.class.getSimpleName()).setDefaultNumber(-1);
+                    }
+                };
+            }
+        };
+        kLimelight = new Supplier<NetworkTable>(){
+        
+            @Override
+            public NetworkTable get() {
+                return  NetworkTableInstance.getDefault().getTable("limelight");
+            }
+        };
+    }
 
     public Codex<Double, EGyro> imu = Codex.of.thisEnum(EGyro.class);
     public Codex<Double, EDriveData> drive = Codex.of.thisEnum(EDriveData.class);
