@@ -3,16 +3,22 @@ package us.ilite.common.config;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
-import com.team254.lib.util.ConstantsBase;
-
+import us.ilite.common.lib.util.ITableProvider;
+import us.ilite.common.lib.util.NetworkTableInstanceWrapper;
 import us.ilite.common.lib.util.NetworkTablesConstantsBase;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.ELogitech310;
 
 public class SystemSettings extends NetworkTablesConstantsBase {
 
+    public SystemSettings() {
+        this(new NetworkTableInstanceWrapper());
+        
+    }
+    public SystemSettings(ITableProvider provider) {
+        super(provider);
+    }
 
     public static double kControlLoopPeriod = 0.01; // seconds
 
