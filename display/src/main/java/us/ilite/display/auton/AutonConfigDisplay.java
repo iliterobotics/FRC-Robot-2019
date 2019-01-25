@@ -62,8 +62,8 @@ public class AutonConfigDisplay extends Application {
   // private static Integer mAutonPath = EDriverControlMode.values()[0].ordinal();
   
   // private String awesomeCss = AutonConfigDisplay.class.getResource("AwesomeStyle.css").toExternalForm();
-	// private String iliteCss = AutonConfigDisplay.class.getResource("ILITEStyle.css").toExternalForm();
-	
+  // private String iliteCss = this.getClass().getResource("ILITEStyle".css").toExternalForm();
+  
   public static void main(String[] pArgs) {
     launch(pArgs);
   }
@@ -74,13 +74,13 @@ public class AutonConfigDisplay extends Application {
 
     BorderPane root = new BorderPane();
     Scene scene = new Scene(root, 800, 600);
-    
-    //This is dumb and changes background
+
+    // This is dumb and changes background
     // scene.getStylesheets().add(iliteCss);
     // scene.setOnMouseClicked(e -> {
-    //   if(scene.getStylesheets().contains(awesomeCss)) {
-    //     playSound("./airhorn.mp3");
-    //   }
+      // if(scene.getStylesheets().contains(awesomeCss)) {
+        // playSound("./airhorn.mp3");
+      // }
     // });
     
     Button send = new Button("Send"); //Send Button
@@ -90,16 +90,16 @@ public class AutonConfigDisplay extends Application {
     
     Button mode = new Button("Enhanced Mode");
     mode.setOnAction(e -> {
-    //   if(scene.getStylesheets().contains(awesomeCss)) {
-    //     mode.setText("Enhanced Mode");
-    //     scene.getStylesheets().clear();
-    //     scene.getStylesheets().add(iliteCss);
-    //   } else {
-    //     mode.setText("Judge's Mode");
-    //     scene.getStylesheets().clear();
-    //     scene.getStylesheets().add(awesomeCss);
+      // if(scene.getStylesheets().contains(awesomeCss)) {
+        // mode.setText("Enhanced Mode");
+        // scene.getStylesheets().clear();
+        // scene.getStylesheets().add(iliteCss);
+      // } else {
+        // mode.setText("Judge's Mode");
+        // scene.getStylesheets().clear();
+        // scene.getStylesheets().add(awesomeCss);
     //     setFieldImage("./field.png");
-    //   }
+      // }
       
     });
     
@@ -225,9 +225,9 @@ public class AutonConfigDisplay extends Application {
   }
   
   private void sendData() {
-    //  SystemSettings.AUTON_TABLE.putNumber(ECargoAction.class.getSimpleName(), mCargoAction);
-    //  SystemSettings.AUTON_TABLE.putNumber(EHatchAction.class.getSimpleName(), mHatchAction);
-    //  SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), mStartingPosition);
+    SystemSettings.AUTON_TABLE.putNumber(ECargoAction.class.getSimpleName(), mCargoAction);
+    SystemSettings.AUTON_TABLE.putNumber(EHatchAction.class.getSimpleName(), mHatchAction);
+    SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), mStartingPosition);
 
   //   SystemSettings.AUTON_TABLE.putDouble(SystemSettings.AUTO_DELAY_KEY, mDelay);
   //   SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), mCross);

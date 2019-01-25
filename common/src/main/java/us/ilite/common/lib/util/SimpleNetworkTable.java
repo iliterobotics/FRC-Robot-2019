@@ -10,7 +10,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.config.SystemSettings;
-//import us.ilite
+
 
 public class SimpleNetworkTable  {
     private NetworkTable netTable;
@@ -83,7 +83,7 @@ public class SimpleNetworkTable  {
     }
 
     public static <E extends Enum<E>> void logNumber(String pName, String key, Number pNumber) {
-       // Data.kLoggingTable.putDouble(pName + "-" + key, (pNumber == null) ? 0 : pNumber.doubleValue());
+        SystemSettings.kLoggingTable.putDouble(pName + "-" + key, (pNumber == null) ? 0 : pNumber.doubleValue());
     }
 
 }

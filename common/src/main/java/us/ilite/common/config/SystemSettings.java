@@ -26,7 +26,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     //==============================================================================
     // Comms
     // =============================================================================
-    // public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE");
+    public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE");
+    public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
 
     //==============================================================================
     // Logging
