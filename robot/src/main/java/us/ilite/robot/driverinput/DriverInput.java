@@ -88,19 +88,19 @@ public class DriverInput extends Module {
             ETrackingType trackingType = null;
             // Switch the limelight to a pipeline and track
             if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN)) {
-                trackingType = ETrackingType.TARGET_TRACK;
+                trackingType = ETrackingType.TARGET_LEFT;
             } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN)) {
-                trackingType = ETrackingType.CARGO_TRACK;
+                trackingType = ETrackingType.CARGO_LEFT;
             } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN)) {
-                trackingType = ETrackingType.HATCH_TRACK;
+                trackingType = ETrackingType.HATCH_LEFT;
             }
 
             double pipelineNum;
             if(trackingType != null) {
                 if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_LEFT)) {
-                    pipelineNum = trackingType.getLeftPipelineNum();
+                    pipelineNum = trackingType.getPipeline();
                 } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT)) {
-                    pipelineNum = trackingType.getRightPipelineNum();
+                    pipelineNum = trackingType.getPipeline();
                 }
             }
 
