@@ -10,6 +10,8 @@ import com.flybotix.hfr.util.lang.EnumUtils;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
+import us.ilite.common.io.CodexNetworkTablesParser;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -28,7 +30,22 @@ public class CodexNetworkTables {
    */
   public <V, E extends Enum<E> & CodexOf<V>> void registerCodex(Class<E> pEnum) {
     Integer hash = EnumUtils.hashOf(pEnum);
-    String tablename = pEnum.getSimpleName().toUpperCase();
+    String tablename = CodexNetworkTablesParser.constructNetworkTableName(pEnum);
+    mLog.debug("Registering codex " + tablename + " with hash " + hash);
+    mTables.put(hash, sNETWORK_TABLES.getTable(tablename));
+
+    mWriters.put(hash, ((nt, key, val) -> nt.getEntry(key).setValue(val)));
+  }
+
+  /**
+   * Initializes a few items related to writing elements of a codex to a network table.
+   * Do this ahead of time to prevent issues with timing on the first cycle.
+   * @param pName
+   * @param pEnum
+   */
+  public <V, E extends Enum<E> & CodexOf<V>> void registerCodex(String pName, Class<E> pEnum) {
+    Integer hash = EnumUtils.hashOf(pEnum);
+    String tablename = CodexNetworkTablesParser.constructNetworkTableName(pName, pEnum);
     mLog.debug("Registering codex " + tablename + " with hash " + hash);
     mTables.put(hash, sNETWORK_TABLES.getTable(tablename));
 

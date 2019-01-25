@@ -32,19 +32,24 @@ public class LoggedData {
     public void logFromCodexToCSVHeader() {
         loggedCodexes.forEach(c -> c.codexToCSVHeader());
     }
-    public void logFromCodexToCSV(long pTimeOnRobot) {
-        loggedCodexes.forEach(c -> c.codexToCSVLog(pTimeOnRobot));
+    public void logFromCodexToCSVLog() {
+        loggedCodexes.forEach(c -> c.codexToCSVLog());
     }
 
-    //Testing purposes only
+    //For testing purposes
     public static void main(String[] args) {
+        
         NetworkTableInstance.getDefault().startClientTeam(1885);
         LoggedData loggedData = new LoggedData();
+
         Thread logger = new Thread() {
             public void run() {
+                loggedData.logFromNetworkTables();
+                loggedData.logFromCodexToCSVHeader();
                     while(true) {
                         loggedData.logFromNetworkTables();
                         // System.out.println(System.currentTimeMillis() + " " + loggedData.imu);
+                        loggedData.logFromCodexToCSVLog();
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
@@ -56,6 +61,28 @@ public class LoggedData {
         };
 
         logger.start();
+
+        //Offline Testing
+        // NetworkTableInstance kInst = NetworkTableInstance.getDefault();
+        // kInst.startServer();
+        // kInst.startClient("localhost");
+        // LoggedData loggedData = new LoggedData();
+        // Thread logger = new Thread() {
+        //     public void run() {
+        //             while(true) {
+        //                 loggedData.logFromNetworkTables();
+        //                 // System.out.println(System.currentTimeMillis() + " " + loggedData.imu);
+        //                 try {
+        //                     Thread.sleep(100);
+        //                 } catch (InterruptedException e) {
+        //                     // TODO Auto-generated catch block
+        //                     e.printStackTrace();
+        //                 }
+        //             }
+        //     }
+        // };
+
+        // logger.start();
 
     }
 

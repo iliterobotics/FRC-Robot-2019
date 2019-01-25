@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
@@ -18,7 +17,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
 
-    private static final String LOG_PATH_FORMAT = "./logs/%s/%s.csv"; //month day year hour min
+    private static final String LOG_PATH_FORMAT = System.getProperty("user.dir")+"/logs/%s/%s.csv"; //month day year hour min
 
     private final NetworkTableInstance kNetworkTablesInstance = NetworkTableInstance.getDefault();
     private final NetworkTable kNetworkTable;
@@ -28,6 +27,12 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
 
     private File kLog;
 
+    /**
+     * 
+     * @param pCodex The codex that this CodexNetworkTablesParser instance is parsing
+     * @param pEnumClass The enumeration that the codex uses
+     * @param pNetworkTablesName Unique identifier when there are more than one codex instance of the same enum
+     */
     public CodexNetworkTablesParser(Codex<Double, E> pCodex, Class<E> pEnumClass, String pNetworkTablesName) {
         mCodex = pCodex;
         mEnumClass = pEnumClass;
@@ -37,6 +42,11 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
                                             mEnumClass.getSimpleName()));
     }
 
+    /**
+     * 
+     * @param pCodex The codex that this CodexNetworkTablesParser instance is parsing
+     * @param pEnumClass The enumeration that the codex uses
+     */
     public CodexNetworkTablesParser(Codex<Double, E> pCodex, Class<E> pEnumClass) {
         mCodex = pCodex;
         mEnumClass = pEnumClass;
@@ -46,20 +56,31 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
                                             mEnumClass.getSimpleName()));
     }
 
+    /**
+     * Translates the NetworkTables into its corresponding Codex
+     */
     public void parseFromNetworkTables() {
-        List<E> enums = EnumUtils.getEnums(mEnumClass);
-        for(E t : enums) {
-            String key = t.name().toUpperCase();
+        for(E e : EnumUtils.getEnums(mEnumClass)) {
+            String key = e.name().toUpperCase();
             System.out.println(kNetworkTable.getPath() + " " + key);
             Double value = kNetworkTable.getEntry(key).getDouble(Double.NaN);
-            mCodex.set(t, value);
+            mCodex.set(e, value);
         }
     }
 
+    /**
+     * Gets the NetworkTable name of the codex/enum class in question
+     * when there are multiple instances of the same enumeration class
+     */
     public static <E extends Enum<E>> String constructNetworkTableName(String pName, Class<E> pClass) {
-        return pName + "-" + constructNetworkTableName(pClass);
+        return pName.toUpperCase() + "-" + constructNetworkTableName(pClass);
     }
 
+    /**
+     * Gets the NetworkTable name of the codex/enum class in question
+     * @param pClass the codex's enum class
+     * @return the name of the enum class
+     */
     public static <E extends Enum<E>> String constructNetworkTableName(Class<E> pClass) {
         return pClass.getSimpleName().toUpperCase();
     }
@@ -69,10 +90,10 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
      */
     public void codexToCSVHeader() {
         try {
-            handleCreation(kLog); //Makes the file
+            handleCreation(kLog); //Makes the file if it doesnt exist
             Writer logger = new BufferedWriter(new FileWriter(kLog));
-            String row = mCodex.getCSVHeader() + "TIME_SENT,TIME_RECEIVED";
-            logger.append(row);
+            String row = mCodex.getCSVHeader() + ",TIME_RECEIVED";
+            logger.write(row);
             logger.close();
         }
         catch(IOException e) {
@@ -83,11 +104,11 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
     /**
      * Translates and adds codex entries to CSV in `log` var File
      */
-    public void codexToCSVLog(long robotTime) {
+    public void codexToCSVLog() {
         try {
             Writer logger = new BufferedWriter(new FileWriter(kLog));
-            String row = "\n"+mCodex.toCSV() + robotTime + "," + (System.currentTimeMillis()/1000);
-            logger.append(row);
+            String row = "\n"+mCodex.toCSV() + "," + (System.currentTimeMillis()/1000);
+            logger.write(row);
             logger.close();
         }
         catch(IOException e) {
@@ -99,7 +120,10 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
      * Makes the log file if it doesn't already exist
      */
     private void handleCreation(File pFile) throws IOException {
-        if(pFile.getParentFile().exists()) pFile.getParentFile().mkdir();
+        //Makes every folder before the file if the CSV's parent folder doesn't exist
+        if(!pFile.getParentFile().exists()) pFile.getParentFile().mkdirs();
+
+        //Creates the .CSV if it doesn't exist
         if(!pFile.exists()) pFile.createNewFile();
     }
 

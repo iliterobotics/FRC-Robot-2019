@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.robot.auto.paths.TestAuto;
-import us.ilite.common.LoggedData;
 import us.ilite.common.config.SystemSettings;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.Trajectory;
@@ -45,8 +44,6 @@ public class Robot extends TimedRobot {
     private DriverInput mDriverInput = new DriverInput(mDrive, mData);
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
-
-    private LoggedData loggedData = new LoggedData();
 
     @Override
     public void robotInit() {
@@ -115,8 +112,6 @@ public class Robot extends TimedRobot {
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
-
-        mData.loggedData.logFromCodexToCSVHeader();
     }
 
     @Override
@@ -125,7 +120,6 @@ public class Robot extends TimedRobot {
         mRunningModules.update(mClock.getCurrentTime());
         
         mData.sendCodices();
-        mData.loggedData.logFromCodexToCSV(System.currentTimeMillis()/1000);
     }
 
     @Override

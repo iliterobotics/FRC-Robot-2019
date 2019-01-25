@@ -19,8 +19,8 @@ public class Data {
     public CodexNetworkTables mCodexNT = CodexNetworkTables.getInstance();
     public Codex<Double, EGyro> imu = loggedData.imu;
     public Codex<Double, EDriveData> drive = loggedData.drive;
-    public Codex<Double, ELogitech310> driverinput = Codex.of.thisEnum(ELogitech310.class);
-    public Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
+    public Codex<Double, ELogitech310> driverinput = loggedData.driverinput;
+    public Codex<Double, ELogitech310> operatorinput = loggedData.operatorinput;
 
     public static NetworkTableInstance kInst = NetworkTableInstance.getDefault();
     public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
@@ -44,7 +44,8 @@ public class Data {
     public void registerCodices() {
         mCodexNT.registerCodex(EGyro.class);
         mCodexNT.registerCodex(EDriveData.class);
-        mCodexNT.registerCodex(ELogitech310.class);
+        mCodexNT.registerCodex("DRIVER", ELogitech310.class);
+        mCodexNT.registerCodex("OPERATOR", ELogitech310.class);
     }
     
     /**
