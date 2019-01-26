@@ -1,4 +1,4 @@
-package us.ilite.robot.modules;
+package us.ilite.lib.drivers;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import us.ilite.common.config.SystemSettings;
