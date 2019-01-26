@@ -1,27 +1,29 @@
 package us.ilite.robot;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import us.ilite.common.lib.control.DriveController;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
-import us.ilite.common.lib.trajectory.TrajectoryGenerator;
-import us.ilite.robot.auto.paths.TestAuto;
-import us.ilite.common.config.SystemSettings;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
+
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import us.ilite.common.config.SystemSettings;
+import us.ilite.common.lib.control.DriveController;
+import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.lib.drivers.Clock;
+import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.robot.commands.CommandQueue;
-import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.commands.TurnToDegree;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
@@ -30,9 +32,6 @@ import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class Robot extends TimedRobot {
     
     private ILog mLogger = Logger.createLog(this.getClass());
@@ -40,6 +39,7 @@ public class Robot extends TimedRobot {
     // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
     private LoopManager mLoopManager = new LoopManager(SystemSettings.kControlLoopPeriod);
     private ModuleList mRunningModules = new ModuleList();
+    private CommandQueue mCommandQueue = new CommandQueue();
 
     private Clock mClock = new Clock();
     private Data mData = new Data();
