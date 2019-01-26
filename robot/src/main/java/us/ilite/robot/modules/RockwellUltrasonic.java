@@ -2,9 +2,9 @@ package us.ilite.robot.modules;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.robot.commands.IDistanceProvider;
+import us.ilite.robot.commands.IAbsoluteDistanceProvider;
 
-public class RockwellUltrasonic implements IDistanceProvider
+public class RockwellUltrasonic implements IAbsoluteDistanceProvider
 {
 
     private static final double kMinMeasuringDistance = 1.75;
@@ -26,7 +26,7 @@ public class RockwellUltrasonic implements IDistanceProvider
      * 
      * @return The distance sensed by the ultrasonic sensor
      */
-    public double getDistanceInches() {
+    public double getAbsoluteDistanceInInches() {
         return (getVoltage() * kInchesPerVolt) + kMinMeasuringDistance;
     }
 

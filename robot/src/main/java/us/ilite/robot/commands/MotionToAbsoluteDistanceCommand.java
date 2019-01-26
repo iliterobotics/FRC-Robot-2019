@@ -1,16 +1,16 @@
 package us.ilite.robot.commands;
 
+import com.team254.lib.util.Util;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
-import com.team254.lib.util.Util;
 
-public class MotionToDistanceCommand implements ICommand {
+public class MotionToAbsoluteDistanceCommand implements ICommand {
     private final Drive drive;
-    private final IDistanceProvider distanceProvider;
+    private final IAbsoluteDistanceProvider distanceProvider;
     private final double goalDistanceInInches;
 
     
-    public MotionToDistanceCommand(Drive drive, IDistanceProvider distanceProvider, double goalDistanceInInches) {
+    public MotionToAbsoluteDistanceCommand(Drive drive, IAbsoluteDistanceProvider distanceProvider, double goalDistanceInInches) {
         this.distanceProvider = distanceProvider;
         this.drive = drive;
         this.goalDistanceInInches = goalDistanceInInches;
@@ -28,8 +28,8 @@ public class MotionToDistanceCommand implements ICommand {
     public boolean update(double pNow) {
         boolean isFinished = false;
         //Take a measurment of how far the distance provider
-        double deltaDistance = distanceProvider.getDistanceInches() - goalDistanceInInches;
-        if(Utils.epsilonEquals(deltaDistance, 0.01)) {
+        double deltaDistance = distanceProvider.getAbsoluteDistanceInInches() - goalDistanceInInches;
+        if(Util.epsilonEquals(deltaDistance, 0.01)) {
             isFinished = true;
         } else if(deltaDistance > 0.0d) {
             //Move backwards
