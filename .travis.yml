@@ -1,9 +1,9 @@
 sudo: required
 language: java
-jdk: oraclejdk11
+jdk: openjdk11
 
 script:
-  - ./gradlew build
+  - ./gradlew clean build -refresh-dependencies --stacktrace -x test
 
 notifications:
   email:

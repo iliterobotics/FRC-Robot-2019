@@ -62,6 +62,7 @@ public class Drive extends Loop {
 		}
 
 		this.mDriveHardware.init();
+		startCsvLogging();
 	}
 
 	public Drive(Data data, DriveController pDriveController) {

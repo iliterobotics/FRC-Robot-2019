@@ -7,7 +7,7 @@ import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.input.EDriverInputMode;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.common.types.sensor.EGyro;
-import us.ilite.lib.util.SimpleNetworkTable;
+import us.ilite.common.lib.util.SimpleNetworkTable;
 
 public class Data {
 

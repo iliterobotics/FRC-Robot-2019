@@ -5,8 +5,13 @@ import com.flybotix.hfr.codex.ICodexTimeProvider;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import us.ilite.common.lib.control.DriveController;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
@@ -24,7 +29,9 @@ import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.Drive;
+import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.ModuleList;
+import us.ilite.robot.modules.Superstructure;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,8 +39,6 @@ import java.util.List;
 public class Robot extends TimedRobot {
     
     private ILog mLogger = Logger.createLog(this.getClass());
-
-    private CommandQueue mCommandQueue = new CommandQueue();
 
     // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
     private LoopManager mLoopManager = new LoopManager(SystemSettings.kControlLoopPeriod);
@@ -44,11 +49,18 @@ public class Robot extends TimedRobot {
     private Timer initTimer = new Timer();
 
     // Module declarations here
+    private Superstructure mSuperstructure = new Superstructure();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
-    private DriverInput mDriverInput = new DriverInput(mDrive, mData);
     
+    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData);
+    private Limelight mLimelight = new Limelight();
+
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
+
+    private CANSparkMax mTestNeo = new CANSparkMax(0, MotorType.kBrushless);
+    private CANEncoder mTestNeoEncoder = mTestNeo.getEncoder();
+    private Joystick mTestJoystick = new Joystick(2);
 
     @Override
     public void robotInit() {
@@ -95,17 +107,16 @@ public class Robot extends TimedRobot {
         initTimer.start();
         mLogger.info("Starting Autonomous Initialization...");
 
+        mSuperstructure.startCommands(new FollowTrajectory(trajectory, mDrive, true));
+//        mCommandQueue.startCommands(new CharacterizeDrive(mDrive, false, false));
 
-        mRunningModules.setModules();
+        // Init modules after commands are set
+        mRunningModules.setModules(mSuperstructure);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
-
-        mCommandQueue.setCommands(new FollowTrajectory(trajectory, mDrive, true));
-//        mCommandQueue.setCommands(new CharacterizeDrive(mDrive, false, false));
-        mCommandQueue.init(mClock.getCurrentTime());
 
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");
@@ -114,14 +125,13 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
-        mCommandQueue.update(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
 //        mDrive.flushTelemetry();
     }
 
     @Override
     public void teleopInit() {
-        mRunningModules.setModules(mDriverInput);
+        mRunningModules.setModules(mDriverInput, mLimelight);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
@@ -133,6 +143,9 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
+        Data.kSmartDashboard.putDouble("Neo Position", mTestNeoEncoder.getPosition());
+        Data.kSmartDashboard.putDouble("Neo Velocity", mTestNeoEncoder.getVelocity());
+        mTestNeo.set(mTestJoystick.getX());
     }
 
     @Override
@@ -140,7 +153,6 @@ public class Robot extends TimedRobot {
         mLogger.info("Disabled Initialization");
         mRunningModules.shutdown(mClock.getCurrentTime());
         mLoopManager.stop();
-        mCommandQueue.shutdown(mClock.getCurrentTime());
     }
 
     @Override
