@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import us.ilite.common.types.auton.EHatchAction;
+import us.ilite.common.types.auton.ECargoAction;
+import us.ilite.common.types.auton.EStartingPosition;
+import us.ilite.common.lib.util.SimpleNetworkTable;
+
 import com.team254.lib.util.ConstantsBase;
 
 import us.ilite.common.lib.util.NetworkTablesConstantsBase;
@@ -18,7 +23,13 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
 
-    //=============================================================================
+    //==============================================================================
+    // Comms
+    // =============================================================================
+    public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE");
+    public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
+
+    //==============================================================================
     // Logging
     // =============================================================================
     public static String kLoggingTimestampKey = "TIME";
@@ -57,8 +68,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Input Constants
     // =============================================================================
-    public static double  SNAIL_MODE_THROTTLE_LIMITER = .5;
-    public static double  SNAIL_MODE_ROTATE_LIMITER = .4;
+    public static double kSnailModePercentThrottleReduction = .5;
+    public static double kSnailModePercentRotateReduction = .4;
     public static double  INPUT_DEADBAND_F310_JOYSTICK = 0.05;
     public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
     public static int     JOYSTICK_PORT_DRIVER = 0;
@@ -69,7 +80,9 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN, 
                                                                             DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN,
                                                                             DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN);
-    
+    public static List<ELogitech310> kAutonOverrideTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_THROTTLE_AXIS,
+                                                                            DriveTeamInputMap.DRIVER_TURN_AXIS);
+    public static double kAutonOverrideAxisThreshold = 0.3;
 
     // =============================================================================
     // Motion Magic Constants

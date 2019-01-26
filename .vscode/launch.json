@@ -5,13 +5,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "java",
-      "name": "CodeLens (Launch) - LoggedData",
-      "request": "launch",
-      "mainClass": "us.ilite.common.LoggedData",
-      "projectName": "common"
-    },
-    {
       "type": "wpilib",
       "name": "WPILib Desktop Debug",
       "request": "launch",
