@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.team254.lib.util.ConstantsBase;
 
+import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.util.NetworkTablesConstantsBase;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.ELogitech310;
@@ -98,6 +99,13 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     //TODO Actually change this please
     public static int kTopEncoderTicks = 0;
+
+    public static double kElevatorP = 0; 
+    public static double kElevatorI = 0; 
+    public static double kElevatorD = 0;
+    public static double kElevatorF = 0;
+    public static PIDGains kElevatorGains = new PIDGains(kElevatorP, kElevatorI, kElevatorD, kElevatorF);
+    public static double kELevatorControlLoopPeriod = 0.01; //Change this value
 
     //This is the value that it was last year. It will most likely change. 
     public static int kELEVATOR_ENCODER_DEADBAND = 20;

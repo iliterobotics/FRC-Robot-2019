@@ -3,15 +3,19 @@ package us.ilite.robot.modules;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.team254.lib.util.Units;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import us.ilite.common.config.SystemSettings;
-import com.team254.lib.drivers.talon.TalonSRXFactory;
+import us.ilite.lib.drivers.SparkMaxFactory;
 
 import edu.wpi.first.wpilibj.Talon;
 import us.ilite.robot.Data;
+import us.ilite.common.lib.control.PIDController;
+import us.ilite.common.lib.control.PIDGains;
 
-// import com.ctre.pho/enix.motorcontrol.can.TalonSRX;
 
 public class Elevator extends Module {
 
@@ -38,31 +42,24 @@ public class Elevator extends Module {
 
     // public static final double TOP_LIMIT, BOTTOM_LIMIT, DEFAULT_LIMIT;
 
-    TalonSRX mMasterElevator, mFollowerElevator;
+    CANSparkMax mMasterElevator;
 
     public Elevator(Data pData) {
 
         mData = pData;
 
         //initialize motors TODO make ids in systemsettings
-        mMasterElevator = TalonSRXFactory.createDefaultTalon(/*Elevator Master Talon ID*/0);
-        mFollowerElevator = TalonSRXFactory.createDefaultTalon(/* Elevator Master Talon ID */0);
+        mMasterElevator = SparkMaxFactory.createDefaultSparkMax(/*Elevator Master Talon ID*/0, MotorType.kBrushless );
         // TODO Probably set inverted
         mMasterElevator.setInverted(true);
-        mFollowerElevator.setInverted(true);
-        mFollowerElevator.follow(mMasterElevator);
 
-        mMasterElevator.setNeutralMode(NeutralMode.Brake);
-        mFollowerElevator.setNeutralMode(NeutralMode.Brake);
+        mMasterElevator.setIdleMode(IdleMode.kBrake);
 
-        mMasterElevator.enableCurrentLimit(true);
-        mMasterElevator.setSensorPhase(false);
+        // mMasterElevator.enableCurrentLimit(true);
+        // mMasterElevator.setSmartCurrentLimit(true);
+        // mMasterElevator.setSensorPhase(false);
 
-        mMasterElevator.configOpenloopRamp(/*Create constant for open loop rate*/0, /*Timeout*/0);
-        mFollowerElevator.configOpenloopRamp(/*Create constant for open loop rate*/0, /*Timeout*/0);
-
-        // mMasterElevator.setStatusFramePeriod()
-
+        mMasterElevator.setRampRate(/*Create constant for open loop rate*/0);
 
         //initialization stuff
         mAtBottom = true;
@@ -74,10 +71,6 @@ public class Elevator extends Module {
         mState = EElevatorState.STOP;
 
         mCurrentEncoderTicks = 0;
-
-        //TODO change the quad position
-        mMasterElevator.getSensorCollection().setQuadraturePosition(0, 0);
-
     }
 
     public void shutdown(double pNow) {
@@ -95,7 +88,7 @@ public class Elevator extends Module {
     public void update(double pNow) {
 
         //TODO change selected sensor position
-        mCurrentEncoderTicks = mMasterElevator.getSelectedSensorPosition(0);
+        mCurrentEncoderTicks = getEnocderPosition();
         mDesiredDirectionUp = (mDesiredPower > 0);
         mDesiredDirectionDown = !mDesiredDirectionUp;
 
@@ -132,11 +125,11 @@ public class Elevator extends Module {
     }
 
     private void resetTop() {
-        mMasterElevator.setSelectedSensorPosition(SystemSettings.kTopEncoderTicks, 0, SystemSettings.kCANTimeoutMs);
+        setEncoderPosition(0); //Find out top position encoder ticks
     }
 
     public void zeroEncoder() {
-        mMasterElevator.setSelectedSensorPosition(0, 0, SystemSettings.kCANTimeoutMs);
+        setEncoderPosition(0); //Actually should be zero
     }
 
     private void shouldDecelerate(int pCurrentEncoderTicks, boolean pCurrentDirectionUp) {
@@ -162,7 +155,7 @@ public class Elevator extends Module {
 
     double lastError = 0;
 
-    public void setPositon(EElevatorPosition pDesiredPosition) {
+    public void setPositon(EElevatorPosition pDesiredPosition, double pNow) {
     
         //TODO log this
         mDesiredPositionAboveInitial = (mCurrentEncoderTicks < pDesiredPosition.mEncoderThreshold);
@@ -170,21 +163,20 @@ public class Elevator extends Module {
         //Error describes the deficit of ticks between our current position and the position we are trying to get to.
         double error = mPosition.mEncoderThreshold = mCurrentEncoderTicks;
 
-        //use the PID class
-        double kP = 0;
+
+        
+        PIDController pidController = new PIDController(SystemSettings.kElevatorGains, SystemSettings.kControlLoopPeriod);
 
         mAtDesiredPosition = (Math.abs(error = lastError) <= SystemSettings.kELEVATOR_ENCODER_DEADBAND);
         //If we make it to or beyond our position, then hold.
         if (mAtDesiredPosition) {
             mState = EElevatorState.HOLD;
         } else {
-            mState = EElevatorState.NORMAL;
-
-            mDesiredPower = clamp(kP * error, mPosition.mSetPointPower);
-
+            mState = EElevatorState.NORMAL;            // mDesiredPower = clamp(kP * error, mPosition.mSetPointPower);
+            mDesiredPower = pidController.calculate(Math.abs(pDesiredPosition.mEncoderThreshold - mCurrentEncoderTicks), pNow);
             lastError = error;
         }
-
+ 
     }
 
     public int getCurrentEncoderTicks() {
@@ -206,25 +198,30 @@ public class Elevator extends Module {
 
 
     //Getting voltage and current
-    public double getMasterVoltage() {
-        return mMasterElevator.getMotorOutputVoltage();
+    public double getBusVoltage() {
+        return mMasterElevator.getBusVoltage();
     }
 
-    public double getFollowerVoltage() {
-        return mFollowerElevator.getMotorOutputVoltage();
-    }
+    
 
     public double getMasterCurrent() {
         return mMasterElevator.getOutputCurrent();
     }
 
-    public double getFollowerCurrent() {
-        return mFollowerElevator.getOutputCurrent();
-    }
+   
 
     public boolean finishedPositioning() {
         return mAtDesiredPosition;
     }
+
+    public int getEnocderPosition() {
+        return 0;
+    }
+
+    public void setEncoderPosition(int pTicks) {
+
+    }
+
 
     public static double clamp(double pVal, double pMaxMagnitude) {
         double value = Math.abs(pVal);
