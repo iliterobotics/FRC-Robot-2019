@@ -1,12 +1,10 @@
 package us.ilite.common.io;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
@@ -17,15 +15,13 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
 
-    private static final String LOG_PATH_FORMAT = System.getProperty("user.dir")+"/logs/%s/%s.csv"; //month day year hour min
+    private static final String LOG_PATH_FORMAT = System.getProperty("user.dir")+"/logs/%s/%s.csv";
 
     private final NetworkTableInstance kNetworkTablesInstance = NetworkTableInstance.getDefault();
     private final NetworkTable kNetworkTable;
 
     private Codex<Double, E> mCodex;
     private Class<E> mEnumClass;
-
-    private File kLog;
 
     /**
      * Use this constructor when you have multiple codices that have the same enumeration
@@ -36,9 +32,6 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
         mCodex = pCodex;
         mEnumClass = mCodex.meta().getEnum(); //This gets the enumeration that corresponds to the codex
         kNetworkTable = kNetworkTablesInstance.getTable(constructNetworkTableName(mEnumClass, pNetworkTablesName));
-        kLog = new File(String.format(LOG_PATH_FORMAT,
-                                            new SimpleDateFormat("MM-dd-YYYY_HH-mm").format(Calendar.getInstance().getTime()),
-                                            mEnumClass.getSimpleName()));
     }
 
     /**
@@ -49,9 +42,6 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
         mCodex = pCodex;
         mEnumClass = mCodex.meta().getEnum();
         kNetworkTable = kNetworkTablesInstance.getTable(constructNetworkTableName(mEnumClass));
-        kLog = new File(String.format(LOG_PATH_FORMAT,
-                                            new SimpleDateFormat("MM-dd-YYYY_HH-mm").format(Calendar.getInstance().getTime()),
-                                            mEnumClass.getSimpleName()));
     }
 
     /**
@@ -86,44 +76,32 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
     }
     /**
      * Translates and adds codex keys to a CSV Header in 'log' File path
+     * @return returns the codex's header string
      */
-    public void codexToCSVHeader() {
-        try {
-            handleCreation(kLog); //Makes the file if it doesnt exist
-            Writer logger = new BufferedWriter(new FileWriter(kLog));
-            String row = mCodex.getCSVHeader() + ",TIME_RECEIVED";
-            logger.write(row);
-            logger.close();
-        }
-        catch(IOException e) {
-            System.err.printf("Error writing CSV header");
-            e.printStackTrace();
-        }
+    public String codexToCSVHeader() {
+        return mCodex.getCSVHeader() + "TIME_RECEIVED";
     }
     /**
-     * Translates and adds codex entries to CSV in 'log' File path
+     * Translates and adds codex entries to a String
+     * @return returns the codex's values string
      */
-    public void codexToCSVLog() {
-        try {
-            Writer logger = new BufferedWriter(new FileWriter(kLog));
-            String row = "\n"+mCodex.toCSV() + "," + (System.currentTimeMillis()/1000);
-            logger.write(row);
-            logger.close();
-        }
-        catch(IOException e) {
-            System.err.printf("Error logging into CSV");
-            e.printStackTrace();
-        }
+    public String codexToCSVLog() {
+        return "\n"+mCodex.toCSV()+System.currentTimeMillis()/1000;
     }
     /**
-     * Makes the log file if it doesn't already exist
+     * Gives back a file with a path based on the enumeration name and date
+     * The csv log file path (LOG_PATH_FORMAT) is .\logs\MM-dd-YYYY_HH-mm\EnumName.csv
+     * @return File path of a certain enumeration
      */
-    private void handleCreation(File pFile) throws IOException {
-        //Makes every folder before the file if the CSV's parent folder doesn't exist
-        if(!pFile.getParentFile().exists()) pFile.getParentFile().mkdirs();
-
-        //Creates the .CSV if it doesn't exist
-        if(!pFile.exists()) pFile.createNewFile();
+    public File file() {
+        return new File(String.format(LOG_PATH_FORMAT, new SimpleDateFormat("MM-dd-YYYY_HH-mm").format(Calendar.getInstance().getTime()), mEnumClass.getSimpleName()));
     }
 
+    /**
+     * 
+     * @return Enumeration class associated to the codex of this CodexNetworkTablesParser instance
+     */
+    public Class<E> getEnum() {
+        return mEnumClass;
+    }
 }
