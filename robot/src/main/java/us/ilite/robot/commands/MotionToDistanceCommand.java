@@ -2,19 +2,18 @@ package us.ilite.robot.commands;
 
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
+import com.team254.lib.util.Util;
 
 public class MotionToDistanceCommand implements ICommand {
-    private static final double DEFAULT_DISTANCE_BUFFER_IN_INCHES =12.0d;
     private final Drive drive;
     private final IDistanceProvider distanceProvider;
-    private final double distanceBufferInInches;
-    public MotionToDistanceCommand(Drive drive, IDistanceProvider distanceProvider) {
-        this(drive, distanceProvider, DEFAULT_DISTANCE_BUFFER_IN_INCHES);
-    }
-    public MotionToDistanceCommand(Drive drive, IDistanceProvider distanceProvider, double distanceBufferInInches) {
+    private final double goalDistanceInInches;
+
+    
+    public MotionToDistanceCommand(Drive drive, IDistanceProvider distanceProvider, double goalDistanceInInches) {
         this.distanceProvider = distanceProvider;
         this.drive = drive;
-        this.distanceBufferInInches = distanceBufferInInches;
+        this.goalDistanceInInches = goalDistanceInInches;
     }
     @Override
     public void init(double pNow) {
@@ -29,12 +28,17 @@ public class MotionToDistanceCommand implements ICommand {
     public boolean update(double pNow) {
         boolean isFinished = false;
         //Take a measurment of how far the distance provider
-        double distanceInIches = distanceProvider.getDistanceInches();
-        if(distanceInIches > distanceInIches) {
-            drive.setDriveMessage(DriveMessage.fromThrottleAndTurn(1.0, 0));
-        } else if (distanceInIches < distanceInIches) {
+        double deltaDistance = distanceProvider.getDistanceInches() - goalDistanceInInches;
+        if(Utils.epsilonEquals(deltaDistance, 0.01)) {
+            isFinished = true;
+        } else if(deltaDistance > 0.0d) {
+            //Move backwards
+            drive.setDriveMessage(DriveMessage.fromThrottleAndTurn(-1.0, 0));
+            isFinished = false;
+        } else if(deltaDistance < 0.0d) {
             drive.setDriveMessage(DriveMessage.fromThrottleAndTurn(1.0, 0));
         } else {
+            //Should be impossible, but we'll say we're done
             isFinished = true;
         }
         
