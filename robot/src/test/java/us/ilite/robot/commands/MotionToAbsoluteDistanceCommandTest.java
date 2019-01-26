@@ -1,6 +1,7 @@
 package us.ilite.robot.commands;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 import org.junit.Before;
@@ -42,6 +43,17 @@ public class MotionToAbsoluteDistanceCommandTest {
 
         assertFalse(isDone);
         verify(drive, times(1)).setDriveMessage(argThat(getArgMatcher(1, 1)));
+
+    }
+
+    @Test
+    public void testSensorReading() {
+        when(absoluteDistanceProvider.getAbsoluteDistanceInInches()).thenReturn(DESIRED_DISTANCE_IN_INCHES);
+
+        boolean isDone = distanceToCommand.update(System.currentTimeMillis());
+
+        assertTrue(isDone);
+        verify(drive, never()).setDriveMessage(any(DriveMessage.class));
 
     }
 
