@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
     private LoopManager mLoopManager = new LoopManager(SystemSettings.kControlLoopPeriod);
     private ModuleList mRunningModules = new ModuleList();
 
-    private Clock mClock = new Clock();
+    private Clock mSystemClock = new Clock();
     private Data mData = new Data();
     private Timer initTimer = new Timer();
 
@@ -65,13 +65,14 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         // Init static variables and get singleton instances first
+        Network.getInstance();
+
         ICodexTimeProvider provider = new ICodexTimeProvider() {
             public long getTimestamp() {
-                return RobotController.getFPGATime() * 1000l;
+                return (long)mSystemClock.getCurrentTimeInNanos();
             }
         };
         CodexMetadata.overrideTimeProvider(provider);
-        Network.getInstance();
 
         // Init the actual robot
         initTimer.reset();
@@ -98,7 +99,7 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
 //        mLogger.info(this.toString());
 
-        mClock.cycleEnded();
+        mSystemClock.cycleEnded();
     }
 
     @Override
@@ -112,8 +113,8 @@ public class Robot extends TimedRobot {
 
         // Init modules after commands are set
         mRunningModules.setModules(mSuperstructure);
-        mRunningModules.modeInit(mClock.getCurrentTime());
-        mRunningModules.periodicInput(mClock.getCurrentTime());
+        mRunningModules.modeInit(mSystemClock.getCurrentTime());
+        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
@@ -124,16 +125,16 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        mRunningModules.periodicInput(mClock.getCurrentTime());
-        mRunningModules.update(mClock.getCurrentTime());
+        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
+        mRunningModules.update(mSystemClock.getCurrentTime());
 //        mDrive.flushTelemetry();
     }
 
     @Override
     public void teleopInit() {
         mRunningModules.setModules(mDriverInput, mLimelight);
-        mRunningModules.modeInit(mClock.getCurrentTime());
-        mRunningModules.periodicInput(mClock.getCurrentTime());
+        mRunningModules.modeInit(mSystemClock.getCurrentTime());
+        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
@@ -141,8 +142,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        mRunningModules.periodicInput(mClock.getCurrentTime());
-        mRunningModules.update(mClock.getCurrentTime());
+        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
+        mRunningModules.update(mSystemClock.getCurrentTime());
         Data.kSmartDashboard.putDouble("Neo Position", mTestNeoEncoder.getPosition());
         Data.kSmartDashboard.putDouble("Neo Velocity", mTestNeoEncoder.getVelocity());
         mTestNeo.set(mTestJoystick.getX());
@@ -151,7 +152,7 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         mLogger.info("Disabled Initialization");
-        mRunningModules.shutdown(mClock.getCurrentTime());
+        mRunningModules.shutdown(mSystemClock.getCurrentTime());
         mLoopManager.stop();
     }
 
@@ -162,9 +163,9 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         mRunningModules.setModules(mDrive);
-        mRunningModules.modeInit(mClock.getCurrentTime());
-        mRunningModules.periodicInput(mClock.getCurrentTime());
-        mRunningModules.checkModule(mClock.getCurrentTime());
+        mRunningModules.modeInit(mSystemClock.getCurrentTime());
+        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
+        mRunningModules.checkModule(mSystemClock.getCurrentTime());
 
         mLoopManager.start();
     }
@@ -172,8 +173,8 @@ public class Robot extends TimedRobot {
     @Override
     public void testPeriodic() {
 
-//        mRunningModules.periodicInput(mClock.getCurrentTime());
-//        mRunningModules.update(mClock.getCurrentTime());
+//        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
+//        mRunningModules.update(mSystemClock.getCurrentTime());
     }
 
     public String toString() {
