@@ -10,6 +10,5 @@
     ".classpath": true,
     ".project": true
   },
-  "wpilib.online": true,
-  "java.home": "/Users/farissyed/frc2019/jdk"
+  "wpilib.online": true
 }
