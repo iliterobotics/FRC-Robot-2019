@@ -29,8 +29,8 @@ public class CodexNetworkTables {
    * @param pEnum
    */
   public <V, E extends Enum<E> & CodexOf<V>> void registerCodex(Class<E> pEnum) {
-    Integer hash = EnumUtils.hashOf(pEnum);
     String tablename = CodexNetworkTablesParser.constructNetworkTableName(pEnum);
+    Integer hash = tablename.hashCode();
     mLog.debug("Registering codex " + tablename + " with hash " + hash);
     mTables.put(hash, sNETWORK_TABLES.getTable(tablename));
 
@@ -43,9 +43,9 @@ public class CodexNetworkTables {
    * @param pName
    * @param pEnum
    */
-  public <V, E extends Enum<E> & CodexOf<V>> void registerCodex(String pName, Class<E> pEnum) {
-    Integer hash = EnumUtils.hashOf(pEnum);
+  public <V, E extends Enum<E> & CodexOf<V>> void registerCodex(String pName, Class<E> pEnum) {    
     String tablename = CodexNetworkTablesParser.constructNetworkTableName(pEnum, pName);
+    Integer hash = tablename.hashCode();
     mLog.debug("Registering codex " + tablename + " with hash " + hash);
     mTables.put(hash, sNETWORK_TABLES.getTable(tablename));
 
@@ -58,10 +58,11 @@ public class CodexNetworkTables {
    * @param pCodex
    */
   public <V, E extends Enum<E> & CodexOf<V>> void send(Codex<V,E> pCodex) {
-    int hash = EnumUtils.hashOf(pCodex.meta().getEnum());
+    String tablename = CodexNetworkTablesParser.constructNetworkTableName(pCodex.meta().getEnum());
+    int hash = tablename.hashCode();
 
     if(!mWriters.containsKey(hash) || !mTables.containsKey(hash)) {
-      mLog.warn("Cannot send codex " + pCodex.meta().getEnum().getSimpleName() + " because it has not been registered.");
+      mLog.warn("Cannot send codex " + tablename + " because it has not been registered.");
       return;
     }
 
@@ -78,6 +79,34 @@ public class CodexNetworkTables {
       }
 
       // grumble grumble.... NT doesn't have a way to clear a field.
+    }
+  }
+
+  /**
+   * Writes the elements and metadata values of the codex to the NetworkTables that
+   * corresponds to the Codex's enum class name.
+   * @param pCodex
+   */
+  public <V, E extends Enum<E> & CodexOf<V>> void send(String pName, Codex<V,E> pCodex) {
+    String tablename = CodexNetworkTablesParser.constructNetworkTableName(pCodex.meta().getEnum(), pName);
+    int hash = tablename.hashCode();
+
+    if(!mWriters.containsKey(hash) || !mTables.containsKey(hash)) {
+      mLog.warn("Cannot send codex " + tablename + " because it has not been registered.");
+      return;
+    }
+
+    @SuppressWarnings("unchecked")
+    Put<V> writer = (Put<V>)mWriters.get(hash);
+    NetworkTable nt = mTables.get(hash);
+
+    nt.getEntry("ID").setNumber(pCodex.meta().id());
+    nt.getEntry("KEY").setNumber(pCodex.meta().key());
+    nt.getEntry("TIME_MS").setNumber(pCodex.meta().timestamp());
+    for(E e : EnumSet.allOf(pCodex.meta().getEnum())) {
+      if(pCodex.isSet(e)) {
+        writer.write(nt, e.name().toUpperCase(), pCodex.get(e));
+      }
     }
   }
 

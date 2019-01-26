@@ -23,6 +23,8 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
     private Codex<Double, E> mCodex;
     private Class<E> mEnumClass;
 
+    private String csvIdentifier;
+
     /**
      * Use this constructor when you have multiple codices that have the same enumeration
      * @param pCodex The codex that this CodexNetworkTablesParser instance is parsing
@@ -31,7 +33,8 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
     public CodexNetworkTablesParser(Codex<Double, E> pCodex, String pNetworkTablesName) {
         mCodex = pCodex;
         mEnumClass = mCodex.meta().getEnum(); //This gets the enumeration that corresponds to the codex
-        kNetworkTable = kNetworkTablesInstance.getTable(constructNetworkTableName(mEnumClass, pNetworkTablesName));
+        csvIdentifier = constructNetworkTableName(mEnumClass, pNetworkTablesName);
+        kNetworkTable = kNetworkTablesInstance.getTable(csvIdentifier);
     }
 
     /**
@@ -41,7 +44,8 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
     public CodexNetworkTablesParser(Codex<Double, E> pCodex) {
         mCodex = pCodex;
         mEnumClass = mCodex.meta().getEnum();
-        kNetworkTable = kNetworkTablesInstance.getTable(constructNetworkTableName(mEnumClass));
+        csvIdentifier = constructNetworkTableName(mEnumClass);
+        kNetworkTable = kNetworkTablesInstance.getTable(csvIdentifier);
     }
 
     /**
@@ -94,7 +98,7 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
      * @return File path of a certain enumeration
      */
     public File file() {
-        return new File(String.format(LOG_PATH_FORMAT, new SimpleDateFormat("MM-dd-YYYY_HH-mm").format(Calendar.getInstance().getTime()), mEnumClass.getSimpleName()));
+        return new File(String.format(LOG_PATH_FORMAT, new SimpleDateFormat("MM-dd-YYYY_HH-mm").format(Calendar.getInstance().getTime()), csvIdentifier));
     }
 
     /**
@@ -103,5 +107,8 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
      */
     public Class<E> getEnum() {
         return mEnumClass;
+    }
+    public String getCSVIdentifier() {
+        return csvIdentifier;
     }
 }

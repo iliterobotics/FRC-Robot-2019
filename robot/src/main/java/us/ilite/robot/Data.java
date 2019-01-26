@@ -54,7 +54,7 @@ public class Data {
     public void sendCodices() {
         mCodexNT.send(imu);
         mCodexNT.send(drive);
-        mCodexNT.send(driverinput);
-        mCodexNT.send(operatorinput);
+        mCodexNT.send("DRIVER", driverinput);
+        mCodexNT.send("OPERATOR", operatorinput);
     }
 }

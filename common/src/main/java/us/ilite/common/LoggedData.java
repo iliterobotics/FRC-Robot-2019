@@ -43,7 +43,9 @@ public class LoggedData {
         //This loop makes a Writer for each parser and sticks it into mWriters
         for (CodexNetworkTablesParser parser : mLoggedCodexes) {
             try {
-                mWriters.put(parser.getEnum().getSimpleName(), new BufferedWriter(new FileWriter(parser.file())));
+                File file = parser.file();
+                handleCreation(file);
+                mWriters.put(parser.getCSVIdentifier(), new BufferedWriter(new FileWriter(parser.file())));
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -63,10 +65,8 @@ public class LoggedData {
      */
     public void logFromCodexToCSVHeader() {
         for (CodexNetworkTablesParser parser : mLoggedCodexes) {
-            File file = parser.file();
             try {
-                handleCreation(file);
-                Writer logger = mWriters.get(parser.getEnum().getSimpleName());
+                Writer logger = mWriters.get(parser.getCSVIdentifier());
                 logger.append(parser.codexToCSVHeader());
                 logger.flush();
             }
@@ -81,7 +81,7 @@ public class LoggedData {
     public void logFromCodexToCSVLog() {
         for (CodexNetworkTablesParser parser : mLoggedCodexes) {
             try {
-                Writer logger = mWriters.get(parser.getEnum().getSimpleName());
+                Writer logger = mWriters.get(parser.getCSVIdentifier());
                 logger.append(parser.codexToCSVLog());
                 logger.flush();
             }
@@ -120,6 +120,7 @@ public class LoggedData {
         
         NetworkTableInstance.getDefault().startClientTeam(1885);
         LoggedData loggedData = new LoggedData();
+        // loggedData.closeWriters();
 
         Thread logger = new Thread() {
             public void run() {
@@ -135,7 +136,6 @@ public class LoggedData {
                             e.printStackTrace();
                         }
                     }
-                // loggedData.closeWriters();
             }
         };
 
