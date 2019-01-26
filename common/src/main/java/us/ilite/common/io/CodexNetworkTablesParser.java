@@ -28,15 +28,14 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
     private File kLog;
 
     /**
-     * 
+     * Use this constructor when you have multiple codices that have the same enumeration
      * @param pCodex The codex that this CodexNetworkTablesParser instance is parsing
-     * @param pEnumClass The enumeration that the codex uses
-     * @param pNetworkTablesName Unique identifier when there are more than one codex instance of the same enum
+     * @param pNetworkTablesName Composite key for the NetworkTable
      */
-    public CodexNetworkTablesParser(Codex<Double, E> pCodex, Class<E> pEnumClass, String pNetworkTablesName) {
+    public CodexNetworkTablesParser(Codex<Double, E> pCodex, String pNetworkTablesName) {
         mCodex = pCodex;
-        mEnumClass = pEnumClass;
-        kNetworkTable = kNetworkTablesInstance.getTable(constructNetworkTableName(pNetworkTablesName, pEnumClass));
+        mEnumClass = mCodex.meta().getEnum(); //This gets the enumeration that corresponds to the codex
+        kNetworkTable = kNetworkTablesInstance.getTable(constructNetworkTableName(mEnumClass, pNetworkTablesName));
         kLog = new File(String.format(LOG_PATH_FORMAT,
                                             new SimpleDateFormat("MM-dd-YYYY_HH-mm").format(Calendar.getInstance().getTime()),
                                             mEnumClass.getSimpleName()));
@@ -45,48 +44,48 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
     /**
      * 
      * @param pCodex The codex that this CodexNetworkTablesParser instance is parsing
-     * @param pEnumClass The enumeration that the codex uses
      */
-    public CodexNetworkTablesParser(Codex<Double, E> pCodex, Class<E> pEnumClass) {
+    public CodexNetworkTablesParser(Codex<Double, E> pCodex) {
         mCodex = pCodex;
-        mEnumClass = pEnumClass;
-        kNetworkTable = kNetworkTablesInstance.getTable(constructNetworkTableName(pEnumClass));
+        mEnumClass = mCodex.meta().getEnum();
+        kNetworkTable = kNetworkTablesInstance.getTable(constructNetworkTableName(mEnumClass));
         kLog = new File(String.format(LOG_PATH_FORMAT,
                                             new SimpleDateFormat("MM-dd-YYYY_HH-mm").format(Calendar.getInstance().getTime()),
                                             mEnumClass.getSimpleName()));
     }
 
     /**
-     * Translates the NetworkTables into its corresponding Codex
+     * Gets the NetworkTable name of the codex in question when
+     * there are multiple codex instances of the same enumeration class
+     * @param pName Extra identification to find the NetworkTable that corresponds with the codex
+     * @param pClass The enumeration that the codex is based on
      */
-    public void parseFromNetworkTables() {
-        for(E e : EnumUtils.getEnums(mEnumClass)) {
-            String key = e.name().toUpperCase();
-            System.out.println(kNetworkTable.getPath() + " " + key);
-            Double value = kNetworkTable.getEntry(key).getDouble(Double.NaN);
-            mCodex.set(e, value);
-        }
-    }
-
-    /**
-     * Gets the NetworkTable name of the codex/enum class in question
-     * when there are multiple instances of the same enumeration class
-     */
-    public static <E extends Enum<E>> String constructNetworkTableName(String pName, Class<E> pClass) {
+    public static <E extends Enum<E>> String constructNetworkTableName(Class<E> pClass, String pName) {
         return pName.toUpperCase() + "-" + constructNetworkTableName(pClass);
     }
 
     /**
-     * Gets the NetworkTable name of the codex/enum class in question
-     * @param pClass the codex's enum class
-     * @return the name of the enum class
+     * Gets the NetworkTable name of the codex in question
+     * @param pClass The codex's enum class
+     * @return The name of the enum class
      */
     public static <E extends Enum<E>> String constructNetworkTableName(Class<E> pClass) {
         return pClass.getSimpleName().toUpperCase();
     }
 
     /**
-     * Translates and adds codex keys to a CSV Header in the LOG_PATH_FORMAT path
+     * Translates the NetworkTables into the Codex with the corresponding enumeration name
+     */
+    public void parseFromNetworkTables() {
+        for(E e : EnumUtils.getEnums(mEnumClass)) {
+            String key = e.name().toUpperCase();
+            // System.out.println(kNetworkTable.getPath() + " " + key);
+            Double value = kNetworkTable.getEntry(key).getDouble(Double.NaN);
+            mCodex.set(e, value);
+        }
+    }
+    /**
+     * Translates and adds codex keys to a CSV Header in 'log' File path
      */
     public void codexToCSVHeader() {
         try {
@@ -102,7 +101,7 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
         }
     }
     /**
-     * Translates and adds codex entries to CSV in `log` var File
+     * Translates and adds codex entries to CSV in 'log' File path
      */
     public void codexToCSVLog() {
         try {

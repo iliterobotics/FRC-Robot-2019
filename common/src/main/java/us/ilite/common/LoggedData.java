@@ -17,21 +17,30 @@ public class LoggedData {
     public Codex<Double, EDriveData> drive = Codex.of.thisEnum(EDriveData.class);
     public Codex<Double, ELogitech310> driverinput = Codex.of.thisEnum(ELogitech310.class);
     public Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
-      
+    
     public List<CodexNetworkTablesParser> loggedCodexes = Arrays.asList(
-        new CodexNetworkTablesParser<EGyro>(imu, EGyro.class),
-        new CodexNetworkTablesParser<EDriveData>(drive, EDriveData.class),
-        new CodexNetworkTablesParser<ELogitech310>(driverinput,ELogitech310.class),
-        new CodexNetworkTablesParser<ELogitech310>(operatorinput,ELogitech310.class)
+        new CodexNetworkTablesParser<EGyro>(imu),
+        new CodexNetworkTablesParser<EDriveData>(drive),
+        new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
+        new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR")
     );
 
+    /**
+     * Translate NT to on-computer codex for each CodexNetworkTablesParser in loggedCodexes
+     */
     public void logFromNetworkTables() {
         loggedCodexes.forEach(c -> c.parseFromNetworkTables());
     }
 
+    /**
+     * Makes a csv file and writes the starting row/header for each CodexNetworkTablesParser in loggedCodexes
+     */
     public void logFromCodexToCSVHeader() {
         loggedCodexes.forEach(c -> c.codexToCSVHeader());
     }
+    /**
+     * Logs codex values to its corresponding csv
+     */
     public void logFromCodexToCSVLog() {
         loggedCodexes.forEach(c -> c.codexToCSVLog());
     }
