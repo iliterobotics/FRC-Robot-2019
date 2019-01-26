@@ -34,6 +34,17 @@ public class MotionToAbsoluteDistanceCommandTest {
 
     }
 
+    @Test
+    public void testSensorReadingLess() {
+        when(absoluteDistanceProvider.getAbsoluteDistanceInInches()).thenReturn(DESIRED_DISTANCE_IN_INCHES * -2);
+
+        boolean isDone = distanceToCommand.update(System.currentTimeMillis());
+
+        assertFalse(isDone);
+        verify(drive, times(1)).setDriveMessage(argThat(getArgMatcher(1, 1)));
+
+    }
+
     private static ArgumentMatcher<DriveMessage> getArgMatcher(double leftOutput, double rightOutput) {
         return (driverMessage)->{
             return driverMessage.leftOutput == leftOutput && driverMessage.rightOutput == rightOutput;
