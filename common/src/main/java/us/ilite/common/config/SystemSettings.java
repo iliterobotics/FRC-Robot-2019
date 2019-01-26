@@ -104,7 +104,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Turn-To PID constants
     // =============================================================================
-    public static PIDGains kPIDGains = new PIDGains( 0.001, 0.0, 0.0, 0.085 );
+    public static PIDGains kPIDGains = new PIDGains( 0.0, 0.0, 0.0, 0.085 );
 
 
     // =============================================================================
