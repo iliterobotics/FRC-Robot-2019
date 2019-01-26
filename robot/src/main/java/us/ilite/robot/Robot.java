@@ -127,8 +127,8 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
-        Data.kSmartDashboard.get().putDouble("Neo Position", mTestNeoEncoder.getPosition());
-        Data.kSmartDashboard.get().putDouble("Neo Velocity", mTestNeoEncoder.getVelocity());
+        Data.kSmartDashboard.putDouble("Neo Position", mTestNeoEncoder.getPosition());
+        Data.kSmartDashboard.putDouble("Neo Velocity", mTestNeoEncoder.getVelocity());
         mTestNeo.set(mTestJoystick.getX());
     }
 

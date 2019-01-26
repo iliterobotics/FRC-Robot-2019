@@ -36,8 +36,7 @@ deploy {
 dependencies {
 
     compile project(':common')
-    implementation 'com.github.flybotix:highfrequencyrobots:2019.1.12' 
-    implementation group: 'com.google.guava', name: 'guava', version: '23.5-jre'
+    implementation 'com.github.flybotix:highfrequencyrobots:2019.1.12'    
     testCompile "org.mockito:mockito-core:2.+"
 
     compile wpi.deps.vendor.java()
