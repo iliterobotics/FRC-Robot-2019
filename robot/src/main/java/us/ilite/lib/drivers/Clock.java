@@ -59,11 +59,11 @@ public class Clock {
         return this;
     }
 
-    private double getJavaTime() {
+    private static double getJavaTime() {
         return System.currentTimeMillis() / 1000.0;
     }
 
-    private double getRobotTime() {
+    private static double getRobotTime() {
         return Timer.getFPGATimestamp();
     }
 
