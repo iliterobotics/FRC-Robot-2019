@@ -14,9 +14,13 @@ public class Clock {
 
     private ILog mLogger = Logger.createLog(Clock.class);
 
+    private double mStartTime = 0.0;
     private double mCurrentTime = 0.0;
     private boolean hasTimeUpdatedThisCycle = false;
     private boolean mIsSimulated = false;
+
+    public Clock() {
+    }
 
     /**
      *
@@ -24,7 +28,8 @@ public class Clock {
      */
     public double getCurrentTime() {
         if(hasTimeUpdatedThisCycle == false) {
-            mCurrentTime = (mIsSimulated) ? System.currentTimeMillis() / 1000L : Timer.getFPGATimestamp();
+            mCurrentTime = (mIsSimulated) ? getJavaTime() : getRobotTime();
+            mCurrentTime -= mStartTime;
             hasTimeUpdatedThisCycle = true;
            mLogger.debug("Updated time to: " + mCurrentTime);
         }
@@ -41,6 +46,7 @@ public class Clock {
 
     public void setTime(double time) {
         if(mIsSimulated) {
+            mStartTime = 0.0;
             mCurrentTime = time;
         } else {
             mLogger.error("Setting the current time is not allowed outside of simulation.");
@@ -48,8 +54,17 @@ public class Clock {
     }
 
     public Clock simulated() {
+        mStartTime = getJavaTime();
         mIsSimulated = true;
         return this;
+    }
+
+    private static double getJavaTime() {
+        return System.currentTimeMillis() / 1000.0;
+    }
+
+    private static double getRobotTime() {
+        return Timer.getFPGATimestamp();
     }
 
 }

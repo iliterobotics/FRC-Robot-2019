@@ -57,8 +57,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Input Constants
     // =============================================================================
-    public static double  SNAIL_MODE_THROTTLE_LIMITER = .5;
-    public static double  SNAIL_MODE_ROTATE_LIMITER = .4;
+    public static double kSnailModePercentThrottleReduction = .5;
+    public static double kSnailModePercentRotateReduction = .4;
     public static double  INPUT_DEADBAND_F310_JOYSTICK = 0.05;
     public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
     public static int     JOYSTICK_PORT_DRIVER = 0;
@@ -69,7 +69,9 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN, 
                                                                             DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN,
                                                                             DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN);
-    
+    public static List<ELogitech310> kAutonOverrideTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_THROTTLE_AXIS,
+                                                                            DriveTeamInputMap.DRIVER_TURN_AXIS);
+    public static double kAutonOverrideAxisThreshold = 0.3;
 
     // =============================================================================
     // Motion Magic Constants
