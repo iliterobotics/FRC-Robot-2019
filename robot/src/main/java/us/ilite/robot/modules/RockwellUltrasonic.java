@@ -1,9 +1,10 @@
 package us.ilite.robot.modules;
-import us.ilite.common.config.SystemSettings;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.Ultrasonic;
 
-public class RockwellUltrasonic 
+import edu.wpi.first.wpilibj.AnalogInput;
+import us.ilite.common.config.SystemSettings;
+import us.ilite.robot.commands.IDistanceProvider;
+
+public class RockwellUltrasonic implements IDistanceProvider
 {
 
     private static final double kMinMeasuringDistance = 1.75;
