@@ -1,4 +1,4 @@
-package us.ilite.lib.util;
+package us.ilite.common.lib.util;
 
 import java.util.List;
 
@@ -10,11 +10,11 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.robot.Data;
+
 
 public class SimpleNetworkTable  {
     private NetworkTable netTable;
-    
+            
     public SimpleNetworkTable(String name) {
         NetworkTableInstance.getDefault().setUpdateRate(SystemSettings.NETWORK_TABLE_UPDATE_RATE);
         netTable = NetworkTableInstance.getDefault().getTable(name);
@@ -83,7 +83,7 @@ public class SimpleNetworkTable  {
     }
 
     public static <E extends Enum<E>> void logNumber(String pName, String key, Number pNumber) {
-        Data.kLoggingTable.putDouble(pName + "-" + key, (pNumber == null) ? 0 : pNumber.doubleValue());
+        SystemSettings.kLoggingTable.putDouble(pName + "-" + key, (pNumber == null) ? 0 : pNumber.doubleValue());
     }
 
 }
