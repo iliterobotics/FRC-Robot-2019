@@ -28,6 +28,7 @@ import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.ModuleList;
+import us.ilite.robot.modules.Superstructure;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,8 +36,6 @@ import java.util.List;
 public class Robot extends TimedRobot {
     
     private ILog mLogger = Logger.createLog(this.getClass());
-
-    private CommandQueue mCommandQueue = new CommandQueue();
 
     // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
     private LoopManager mLoopManager = new LoopManager(SystemSettings.kControlLoopPeriod);
@@ -49,9 +48,10 @@ public class Robot extends TimedRobot {
 
 
     // Module declarations here
+    private Superstructure mSuperstructure = new Superstructure();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
-    private DriverInput mDriverInput = new DriverInput(mDrive, mData);
+    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData);
     private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
@@ -100,7 +100,8 @@ public class Robot extends TimedRobot {
 
         mSettings.loadFromNetworkTables();
 
-        mRunningModules.setModules();
+        // Init modules after commands are set
+        mRunningModules.setModules(mSuperstructure);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
@@ -121,7 +122,6 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
-        mCommandQueue.update(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
 //        mDrive.flushTelemetry();
     }
@@ -150,7 +150,6 @@ public class Robot extends TimedRobot {
         mLogger.info("Disabled Initialization");
         mRunningModules.shutdown(mClock.getCurrentTime());
         mLoopManager.stop();
-        mCommandQueue.shutdown(mClock.getCurrentTime());
     }
 
     @Override
