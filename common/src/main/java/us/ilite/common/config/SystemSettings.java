@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.team254.lib.util.ConstantsBase;
 
+import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.util.NetworkTablesConstantsBase;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.ELogitech310;
@@ -99,6 +100,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static final int ULTRASONIC_PORT = 2;
+
+    // =============================================================================
+    // Turn-To PID constants
+    // =============================================================================
+    public static PIDGains kPIDGains = new PIDGains( 0.001, 0.0, 0.0, 0.085 );
 
 
     // =============================================================================
