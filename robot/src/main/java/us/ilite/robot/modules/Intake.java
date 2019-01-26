@@ -8,7 +8,6 @@ import com.team254.lib.drivers.talon.TalonSRXFactory;
 
 import edu.wpi.first.wpilibj.Encoder;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.robot.hardware.BeamBreak;
 
 
 public class Intake extends Module {
@@ -18,8 +17,6 @@ public class Intake extends Module {
     private VictorSPX spx1;
     private VictorSPX spx2;
 
-    private BeamBreak beamBreak;
-
     // Wrist control
     private TalonSRX wristSRX;
     private Encoder encoder;
@@ -27,11 +24,11 @@ public class Intake extends Module {
     // Monitor the wrist SRX current
     
     public Intake() {
-        // TODO Construction
+        // Construction
         spx1 = new VictorSPX(SystemSettings.kIntakeSPX1Address);
         spx2 = new VictorSPX(SystemSettings.kIntakeSPX2Address);
     
-        beamBreak = new BeamBreak(SystemSettings.kIntakeBeamBreakAddress);
+        // TODO Add a "Beam Break" Sensor
     
         // Wrist control
         wristSRX = TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress);

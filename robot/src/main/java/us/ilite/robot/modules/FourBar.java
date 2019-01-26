@@ -7,7 +7,6 @@ import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.robot.hardware.TbdCanSensor;
 
 
 public class FourBar extends Module {
@@ -20,8 +19,6 @@ public class FourBar extends Module {
     private CANEncoder neo1Encoder;
     private CANEncoder neo2Encoder;
 
-    private TbdCanSensor tbdSensor;
-
     private DoubleSolenoid doubleSolenoid;
 
 
@@ -33,8 +30,6 @@ public class FourBar extends Module {
         // Connect the NEO's to the encoders
         neo1Encoder = new CANEncoder(neo1);
         neo2Encoder = new CANEncoder(neo2);
-    
-        tbdSensor = new TbdCanSensor(SystemSettings.kFourBarTBDSensorAddress);
     
         doubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
     }
