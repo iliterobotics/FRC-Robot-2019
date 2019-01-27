@@ -20,7 +20,13 @@ import org.junit.Test;
 public class GetLocalIPTest {
 
     @Test
-    public void testNullStream() {
+    public void testNullReader() {
+        Optional<String> returnVal = GetLocalIP.getIPFromInputStream(null);
+        assertNotNull(returnVal);
+        assertTrue(returnVal.isEmpty());
+    }
+    @Test
+    public void testEmptyReader() {
         Optional<String> returnVal = GetLocalIP.getIPFromInputStream(null);
         assertNotNull(returnVal);
         assertTrue(returnVal.isEmpty());
