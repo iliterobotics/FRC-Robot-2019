@@ -7,8 +7,7 @@
 
 package us.ilite.robot.os.commands;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.BufferedReader;
@@ -50,5 +49,15 @@ public class GetLocalIPTest {
         Optional<String> returnVal = GetLocalIP.getIPFromInputStream(br);
         assertNotNull(returnVal);
         assertTrue(returnVal.isEmpty());
+    }
+
+    @Test
+    public void testReaderMultipleIpsSame() throws IOException{
+        BufferedReader br = mock(BufferedReader.class);
+        //We want to return a bogus string first and then null so there is not an infinite loop
+        when(br.readLine()).thenReturn("10.18.85.186","10.18.85.186",(String)null);
+        Optional<String> returnVal = GetLocalIP.getIPFromInputStream(br);
+        assertNotNull(returnVal);
+        assertFalse(returnVal.isEmpty());
     }
 }
