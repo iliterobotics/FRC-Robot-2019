@@ -9,7 +9,7 @@ public class DriveMessage {
   public static final DriveMessage kNeutral = new DriveMessage(0.0, 0.0, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake);
 
   public final double leftOutput, rightOutput;
-  public final ControlMode leftControlMode, rightControlMode;
+  public ControlMode leftControlMode, rightControlMode;
 
   public DemandType leftDemandType = DemandType.ArbitraryFeedForward;
   public DemandType rightDemandType = DemandType.ArbitraryFeedForward;
@@ -56,6 +56,11 @@ public class DriveMessage {
   public DriveMessage setNeutralMode(NeutralMode pMode) {
     this.leftNeutralMode = pMode;
     this.rightNeutralMode = pMode;
+    return this;
+  }
+
+  public DriveMessage setControlMode(ControlMode pControlMode) {
+    this.leftControlMode = this.rightControlMode = pControlMode;
     return this;
   }
 

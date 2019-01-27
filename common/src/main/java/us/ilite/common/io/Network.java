@@ -2,6 +2,9 @@ package us.ilite.common.io;
 
 import java.util.function.Consumer;
 
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
+
 import edu.wpi.first.networktables.ConnectionInfo;
 import edu.wpi.first.networktables.ConnectionNotification;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -14,14 +17,27 @@ import edu.wpi.first.networktables.NetworkTableInstance;
  * @param <ConnectionInfo>
  */
 public class Network {
-    public static final Network INFO = new Network();
+    private final ILog sLOG = Logger.createLog(Network.class);
+    private static final Network INFO = new Network();
     private ConnectionInfo mConnectionInfo = null;
+
+    public static Network getInstance() {
+        return INFO;
+    }
+
+    /**
+     * @return the current connection information.  This will be NULL during robotInit()
+     * but NOT NULL during disabledInit(), auton, and teleop
+     */
+    public ConnectionInfo getConnectionInfo() {
+        return mConnectionInfo;
+    } 
 
     private Network() {
         Consumer<ConnectionNotification> listener = conn -> {
             mConnectionInfo = conn.conn;
-            System.out.println("=== Connection Info ===");
-            System.out.println(mConnectionInfo.remote_ip + " : " + mConnectionInfo.remote_port);
+            sLOG.info("=== Remote Connection Info ===");
+            sLOG.info(mConnectionInfo.remote_ip + " : " + mConnectionInfo.remote_port);
         };
         NetworkTableInstance.getDefault().addConnectionListener(listener, true);
     }
