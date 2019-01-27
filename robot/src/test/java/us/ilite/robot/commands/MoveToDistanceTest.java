@@ -11,9 +11,9 @@ import org.mockito.ArgumentMatcher;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
-public class MotionToAbsoluteDistanceCommandTest {
+public class MoveToDistanceTest {
 
-    private MotionToAbsoluteDistanceCommand distanceToCommand;
+    private MoveToDistance distanceToCommand;
     private Drive drive;
     private IAbsoluteDistanceProvider absoluteDistanceProvider;
     private final double DESIRED_DISTANCE_IN_INCHES = 25;
@@ -22,7 +22,7 @@ public class MotionToAbsoluteDistanceCommandTest {
     public void init() {
         drive = mock(Drive.class);
         absoluteDistanceProvider = mock(IAbsoluteDistanceProvider.class);
-        distanceToCommand = new MotionToAbsoluteDistanceCommand(drive, absoluteDistanceProvider,DESIRED_DISTANCE_IN_INCHES);
+        distanceToCommand = new MoveToDistance(drive, absoluteDistanceProvider,DESIRED_DISTANCE_IN_INCHES);
     }
     @Test
     public void testSensorReadingGreater() {

@@ -4,13 +4,13 @@ import com.team254.lib.util.Util;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
-public class MotionToAbsoluteDistanceCommand implements ICommand {
+public class MoveToDistance implements ICommand {
     private final Drive drive;
     private final IAbsoluteDistanceProvider distanceProvider;
     private final double goalDistanceInInches;
 
     
-    public MotionToAbsoluteDistanceCommand(Drive drive, IAbsoluteDistanceProvider distanceProvider, double goalDistanceInInches) {
+    public MoveToDistance(Drive drive, IAbsoluteDistanceProvider distanceProvider, double goalDistanceInInches) {
         this.distanceProvider = distanceProvider;
         this.drive = drive;
         this.goalDistanceInInches = goalDistanceInInches;
