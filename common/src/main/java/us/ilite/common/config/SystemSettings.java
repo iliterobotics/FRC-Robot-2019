@@ -179,7 +179,17 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     }
 
+    // =============================================================================
+    // Hatch Flower constants
+    // =============================================================================
+    public static double kHatchFlowerSolenoidSettleTimeSec = 0.25;
+    public static double kHatchFlowerPushDurationSec = 0.25;
 
+    // kHatchFlowerGrabToPushTransitionTimeSec is the time between releasing the 
+    // grab solenoid and engaging the push solenoid.
+    public static double kHatchFlowerGrabToPushTransitionTimeSec = 0.1;
+
+    
     // =============================================================================
     // 2019 Module Addresses
     // =============================================================================
