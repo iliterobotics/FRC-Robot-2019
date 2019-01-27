@@ -20,6 +20,7 @@ import com.team254.lib.geometry.Rotation2d;
 
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.util.Conversions;
+import us.ilite.robot.Data;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
@@ -109,6 +110,11 @@ public class DriveHardware implements IDriveHardware {
 
         mLeftMaster.set(mLeftControlMode, pDriveMessage.leftOutput, pDriveMessage.leftDemandType, pDriveMessage.leftDemand);
         mRightMaster.set(mRightControlMode, pDriveMessage.rightOutput, pDriveMessage.rightDemandType, pDriveMessage.rightDemand);
+
+        Data.kSmartDashboard.putDouble("left_error", mLeftMaster.getClosedLoopError());
+        Data.kSmartDashboard.putDouble("right_error", mRightMaster.getClosedLoopError());
+        Data.kSmartDashboard.putString("left_controlmode", mLeftMaster.getControlMode().name());
+        Data.kSmartDashboard.putString("right_controlmode", mRightMaster.getControlMode().name());
     }
 
     /**

@@ -60,9 +60,8 @@ public class Robot extends TimedRobot {
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
 
-    private CANSparkMax mTestNeo = new CANSparkMax(0, MotorType.kBrushless);
-    private CANEncoder mTestNeoEncoder = mTestNeo.getEncoder();
-    private Joystick mTestJoystick = new Joystick(2);
+    private SystemSettings mSettings = new SystemSettings();
+
 
     @Override
     public void robotInit() {
@@ -86,8 +85,9 @@ public class Robot extends TimedRobot {
 
         TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
         List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(/*new CentripetalAccelerationConstraint(60.0)*/);
-        trajectory = mTrajectoryGenerator.generateTrajectory(false, TestAuto.kPath, kTrajectoryConstraints, 60.0, 80.0, 12.0);
+        trajectory = mTrajectoryGenerator.generateTrajectory(false, TestAuto.kPath, kTrajectoryConstraints, 60.0, 80.0, 6.0);
 
+        mSettings.writeToNetworkTables();
 
         initTimer.stop();
         mLogger.info("Robot initialization finished. Took: ", initTimer.get(), " seconds");
@@ -106,6 +106,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
+        mSettings.loadFromNetworkTables();
+
         initTimer.reset();
         initTimer.start();
         mLogger.info("Starting Autonomous Initialization...");
@@ -147,11 +149,6 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
-        Data.kSmartDashboard.putDouble("left_vel", mData.drive.get(EDriveData.LEFT_VEL_IPS));
-        Data.kSmartDashboard.putDouble("right_vel", mData.drive.get(EDriveData.RIGHT_VEL_IPS));
-        Data.kSmartDashboard.putDouble("Neo Position", mTestNeoEncoder.getPosition());
-        Data.kSmartDashboard.putDouble("Neo Velocity", mTestNeoEncoder.getVelocity());
-        mTestNeo.set(mTestJoystick.getX());
     }
 
     @Override
