@@ -25,7 +25,7 @@ public final class GetLocalIP {
     private static final String kWindowsShell = "C:\\Program Files\\Git\\bin\\bash";
     private static final String kWindowsCommand = "robot/src/main/resources/sampleOutput.sh";
     private static final String kUnixShell = "/bin/sh";
-    private static final String UNIX_SCRIPT = "netstat -t -n | grep tcp | grep -v 127.0.0.1 | awk '{print $4}' | awk -F: '{print $1}'";
+    private static final String UNIX_SCRIPT = "netstat -t -n | grep tcp | grep -v 127.0.0.1 | awk '{print $5}' | awk -F: '{print $1}'";
 
     private static final String kShell;
     private static final String kScript;
