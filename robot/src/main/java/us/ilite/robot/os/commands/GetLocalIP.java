@@ -13,9 +13,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 
 /**
- * Add your docs here.
+ * Utility class to get the local IP by running a netstat. 
+ * @see GetLocalIP#getIp()
  */
-public class GetLocalIP {
+public final class GetLocalIP {
 
     /**
      * In windows we want to run in the git bash shell. Update to the correct
@@ -57,6 +58,12 @@ public class GetLocalIP {
         }
     }
 
+    /**
+     * Method to get the local IP of the DS
+     * @return
+     *  An optional that will contain the IP if it was sucessfully retrieved. Otherwise it will be 
+     * empty. It will never be null.
+     */
     public static Optional<String> getIp() {
         Optional<String> returnVal = Optional.empty();
         ProcessBuilder procBuild = new ProcessBuilder(Arrays.asList(kShell, "-c", kScript));
@@ -74,6 +81,15 @@ public class GetLocalIP {
         return returnVal;
     }
 
+    /**
+     * Method to extract the IP from a process's InputStreamReader. This method will
+     * keep reading from the passed in reader until all IPs are found. Then the method 
+     * will return the first match. If there are no IPs or any other errors, this method 
+     * will return an empty Optional
+     * 
+     * @param reader the reader from the process's inputstream. If this is null, 
+     * the method will return an empty optional
+     */
     protected static Optional<String> getIPFromInputStream(BufferedReader reader) {
 
         Optional<String> returnVal = Optional.empty();
@@ -94,6 +110,13 @@ public class GetLocalIP {
             returnVal = allLines.stream().findFirst();
         }
         return returnVal;
+    }
+
+    /**
+     * Private class so this does not get instantiated
+     */
+    private GetLocalIP() {
+
     }
 
     public static void main(String[] pArgs) {
