@@ -1,19 +1,15 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package us.ilite.robot.os.commands;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 /**
@@ -29,6 +25,15 @@ public class GetLocalIP {
 
     private static final String SHELL;
     private static final String SCRIPT;
+
+    /**Regex provided by: https://www.mkyong.com/regular-expressions/how-to-validate-ip-address-with-regular-expression/ */
+    private static final String IPADDRESS_PATTERN = 
+		"^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
+    
+    private static final Pattern IP_PATTERN = Pattern.compile(IPADDRESS_PATTERN);
 
     static {
         String os = System.getProperty("os.name");
@@ -58,14 +63,17 @@ public class GetLocalIP {
             BufferedReader reader = 
                 new BufferedReader(new InputStreamReader(proc.getInputStream()));
             
-            StringBuilder builder = new StringBuilder();
+            Set<String>allLines = new LinkedHashSet<>();
             String line = null;
             while ( (line = reader.readLine()) != null) {
-                builder.append(line);
-                builder.append(System.getProperty("line.separator"));
+                Matcher matcher = IP_PATTERN.matcher(line);
+                if(matcher.matches()) {
+                    allLines.add(line);
+                }
             }
-            String result = builder.toString();
-            returnVal = Optional.of(result);
+
+            returnVal = allLines.stream().findAny();
+
         } catch(IOException e) {
             e.printStackTrace();
         }
