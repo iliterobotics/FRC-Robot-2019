@@ -38,6 +38,30 @@ public class Clock {
     }
 
     /**
+     *
+     * @return A cycle-consistent time, in milliseconds.
+     */
+    public double getCurrentTimeInMillis() {
+        return getCurrentTime() * 1000;
+    }
+
+    /**
+     *
+     * @return A cycle-consistent time, in microseconds.
+     */
+    public double getCurrentTimeInMicros() {
+        return getCurrentTime() * 1000000;
+    }
+
+    /**
+     *
+     * @return A cycle-consistent time, in nanoseconds.
+     */
+    public double getCurrentTimeInNanos() {
+        return getCurrentTime() * 1000000000;
+    }
+
+    /**
      * Call this to signify the end of a robot cycle and tell the time to update next time it's retrieved.
      */
     public void cycleEnded() {

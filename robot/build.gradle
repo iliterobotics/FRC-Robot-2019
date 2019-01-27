@@ -36,7 +36,8 @@ deploy {
 dependencies {
 
     compile project(':common')
-    implementation 'com.github.flybotix:highfrequencyrobots:2019.1.12'    
+    implementation 'com.github.flybotix:highfrequencyrobots:2019.1.13a'
+    
     testCompile "org.mockito:mockito-core:2.+"
 
     compile wpi.deps.vendor.java()

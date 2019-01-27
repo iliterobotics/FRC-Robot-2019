@@ -185,6 +185,45 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     }
 
-    
+
+    // =============================================================================
+    // 2019 Module Addresses
+    // =============================================================================
+    public static int kCargoSpitSPXAddress = -1;
+    public static double kCargoSpitSPXCurrentLimit = -1.0;
+
+    public static int kElevatorNEOAddress = -1;
+    public static int kElevatorNEOEncoderAddress = -1;
+    // public static int kElevatorRedundantEncoderAddress = -1;
+
+    public static int kFourBarNEO1Address = -1;
+    public static int kFourBarNEO2Address = -1;
+    public static int kFourBarDoubleSolenoidForwardAddress = -1;
+    public static int kFourBarDoubleSolenoidReverseAddress = -1;
+    public static int kFourBarTBDSensorAddress = -1;
+
+    public static int kHatchFlowerOpenCloseSolenoidAddress = -1;
+    public static int kHatchFlowerExtensionSolenoidAddress = -1;
+
+    public static int kIntakeSPX1Address = -1;
+    public static int kIntakeSPX2Address = -1;
+    public static int kIntakeBeamBreakAddress = -1;
+
+    public static int kIntakeWristSRXAddress = -1;
+    public static int kIntakeWristEncoderA_Address = -1;
+    public static int kIntakeWristEncoderB_Address = -1;
+    public static double kIntakeWristCurrentLimit = -1.0;
+
+    public static int kDriveTrainRightSRXAddress = -1;
+    public static int kDriveTrainRightSPX1Address = -1;
+    public static int kDriveTrainRightSPX2Address = -1;
+    public static int kDriveTrainLeftSRXAddress = -1;
+    public static int kDriveTrainLeftSPX1Address = -1;
+    public static int kDriveTrainLeftSPX2Address = -1;
+
+
+
+
+
 
 }

@@ -3,6 +3,9 @@ package us.ilite.robot;
 import java.util.Arrays;
 import java.util.List;
 
+import com.flybotix.hfr.codex.CodexMetadata;
+import com.flybotix.hfr.codex.ICodexTimeProvider;
+
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -15,12 +18,19 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.lib.control.DriveController;
+import us.ilite.common.io.Network;
+
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.trajectory.timing.TimingConstraint;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.robot.commands.CommandQueue;
@@ -31,6 +41,7 @@ import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
+import us.ilite.common.lib.control.DriveController;
 
 public class Robot extends TimedRobot {
     
@@ -41,7 +52,7 @@ public class Robot extends TimedRobot {
     private ModuleList mRunningModules = new ModuleList();
     private CommandQueue mCommandQueue = new CommandQueue();
 
-    private Clock mClock = new Clock();
+    private Clock mSystemClock = new Clock();
     private Data mData = new Data();
     private Timer initTimer = new Timer();
     private SystemSettings mSettings = new SystemSettings();
@@ -51,6 +62,7 @@ public class Robot extends TimedRobot {
     private Superstructure mSuperstructure = new Superstructure();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
+    
     private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData);
     private Limelight mLimelight = new Limelight();
 
@@ -62,6 +74,17 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
+        // Init static variables and get singleton instances first
+        Network.getInstance();
+
+        ICodexTimeProvider provider = new ICodexTimeProvider() {
+            public long getTimestamp() {
+                return (long)mSystemClock.getCurrentTimeInNanos();
+            }
+        };
+        CodexMetadata.overrideTimeProvider(provider);
+
+        // Init the actual robot
         initTimer.reset();
         initTimer.start();
         Logger.setLevel(ELevel.INFO);
@@ -88,7 +111,7 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
 //        mLogger.info(this.toString());
 
-        mClock.cycleEnded();
+        mSystemClock.cycleEnded();
     }
 
     @Override
@@ -102,8 +125,8 @@ public class Robot extends TimedRobot {
 
         // Init modules after commands are set
         mRunningModules.setModules(mSuperstructure);
-        mRunningModules.modeInit(mClock.getCurrentTime());
-        mRunningModules.periodicInput(mClock.getCurrentTime());
+        mRunningModules.modeInit(mSystemClock.getCurrentTime());
+        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
@@ -121,16 +144,16 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        mRunningModules.periodicInput(mClock.getCurrentTime());
-        mRunningModules.update(mClock.getCurrentTime());
+        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
+        mRunningModules.update(mSystemClock.getCurrentTime());
 //        mDrive.flushTelemetry();
     }
 
     @Override
     public void teleopInit() {
         mRunningModules.setModules(mDriverInput, mLimelight);
-        mRunningModules.modeInit(mClock.getCurrentTime());
-        mRunningModules.periodicInput(mClock.getCurrentTime());
+        mRunningModules.modeInit(mSystemClock.getCurrentTime());
+        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
@@ -138,8 +161,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        mRunningModules.periodicInput(mClock.getCurrentTime());
-        mRunningModules.update(mClock.getCurrentTime());
+        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
+        mRunningModules.update(mSystemClock.getCurrentTime());
         Data.kSmartDashboard.putDouble("Neo Position", mTestNeoEncoder.getPosition());
         Data.kSmartDashboard.putDouble("Neo Velocity", mTestNeoEncoder.getVelocity());
         mTestNeo.set(mTestJoystick.getX());
@@ -148,7 +171,7 @@ public class Robot extends TimedRobot {
     @Override
     public void disabledInit() {
         mLogger.info("Disabled Initialization");
-        mRunningModules.shutdown(mClock.getCurrentTime());
+        mRunningModules.shutdown(mSystemClock.getCurrentTime());
         mLoopManager.stop();
     }
 
@@ -159,9 +182,9 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         mRunningModules.setModules(mDrive);
-        mRunningModules.modeInit(mClock.getCurrentTime());
-        mRunningModules.periodicInput(mClock.getCurrentTime());
-        mRunningModules.checkModule(mClock.getCurrentTime());
+        mRunningModules.modeInit(mSystemClock.getCurrentTime());
+        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
+        mRunningModules.checkModule(mSystemClock.getCurrentTime());
 
         mLoopManager.start();
     }
@@ -169,8 +192,8 @@ public class Robot extends TimedRobot {
     @Override
     public void testPeriodic() {
 
-//        mRunningModules.periodicInput(mClock.getCurrentTime());
-//        mRunningModules.update(mClock.getCurrentTime());
+//        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
+//        mRunningModules.update(mSystemClock.getCurrentTime());
     }
 
     public String toString() {
