@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
 
-	implementation 'com.github.flybotix:highfrequencyrobots:2019.1.12'
+	implementation 'com.github.flybotix:highfrequencyrobots:2019.1.13a'
 
     // Required for 254's utils (PolynomialRegression)
 	compile group: 'gov.nist.math', name: 'jama', version:'1.0.3'

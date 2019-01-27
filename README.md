@@ -48,6 +48,45 @@ logging - Contains logging code
 display - Contains display code
 ```
 
+## Conventions
+
+### Variables
+- Constants
+    - Preceded by `k`
+    - First word should be the name of the subsystem the constant is for
+    - Ex: `kDriveLeftRearTalonId`, `kLimelightFov`, `kControlLoopPeriod`
+- Fields
+    - Preceded by `m`
+    - Fields are any variables found in the **class body**
+    - Ex: `mWristAngle`, `mGyroAngle`
+- Parameters
+    - Preceded by `p`
+    - Ex:
+    ```
+        public DriveStraight(Drive pDrive, double pDistanceToDrive) {
+            mDrive = pDrive;
+            mDistanceToDrive = pDistanceToDrive;
+        }
+    ```
+
+### Constructors
+- If your class needs to use another classes' object, it should be passed into the constructor
+- Settings that are essential to your code's functionality (like the number of degrees to turn for `GyroTurn`) can also be passed in
+
+### Setting Properties
+- If you need to override a default setting for a class, use the flow model
+- Ex: To override the default power sent to the drivebase in the `DriveStraight` command:
+```
+public DriveStraight setPower(double pPower) {
+    mPower = pPower;
+    return this;
+}
+```
+- This allows us to create a `DriveStraight` object like so:
+```
+ICommand = new DriveStraight(mDrive, 10.0 /*The distance to drive*/).setPower(0.5);
+```
+
 ## VSCode and the WPILib Dev Environment
 You can find the instructions [here](https://wpilib.screenstepslive.com/s/currentCS/m/getting_started/l/999999-installing-c-and-java-development-tools-for-frc).
 
