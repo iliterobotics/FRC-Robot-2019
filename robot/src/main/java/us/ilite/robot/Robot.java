@@ -29,6 +29,7 @@ import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.Drive;
+import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
@@ -55,6 +56,7 @@ public class Robot extends TimedRobot {
     
     private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData);
     private Limelight mLimelight = new Limelight();
+    private HatchFlower mHatchFlower = new HatchFlower();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
 
@@ -132,7 +134,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        mRunningModules.setModules(mDriverInput, mLimelight);
+        mRunningModules.setModules(mDriverInput, mLimelight, mHatchFlower);
         mRunningModules.modeInit(mSystemClock.getCurrentTime());
         mRunningModules.periodicInput(mSystemClock.getCurrentTime());
 

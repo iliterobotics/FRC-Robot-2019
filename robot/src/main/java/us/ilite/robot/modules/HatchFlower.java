@@ -165,11 +165,12 @@ public class HatchFlower extends Module {
 
 
 
-    public HatchFlower(Codex<Double, ELogitech310> pController) {
-        // Construction
+    // Needed for prototype testing
+    // public HatchFlower(Codex<Double, ELogitech310> pController) {
+    public HatchFlower() {
 
-        // The controller has the controller button states
         // Needed for prototype testing
+        // The controller has the controller button states
         // this.mController = pController;
 
         this.mCurrentState = HatchFlowerStates.RELEASE;

@@ -206,8 +206,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kFourBarDoubleSolenoidReverseAddress = -1;
     public static int kFourBarTBDSensorAddress = -1;
 
-    public static int kHatchFlowerOpenCloseSolenoidAddress = -1;
-    public static int kHatchFlowerExtensionSolenoidAddress = -1;
+    public static int kHatchFlowerOpenCloseSolenoidAddress = 0;
+    public static int kHatchFlowerExtensionSolenoidAddress = 1;
 
     public static int kIntakeSPX1Address = -1;
     public static int kIntakeSPX2Address = -1;
