@@ -48,11 +48,15 @@ public class FourBar extends Module {
 
     @Override
     public void update(double pNow) {
-
+        
     }
 
     @Override
     public void shutdown(double pNow) {
 
+    }
+
+    public void updateFourBar() {
+        
     }
 }
