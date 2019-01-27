@@ -240,13 +240,21 @@ public class DriveHardware implements IDriveHardware {
     public int getRightVelTicks() {
         return mRightMaster.getSelectedSensorVelocity(0);
     }
-    
+
+    public double getLeftTarget() {
+        return mLeftMaster.getClosedLoopTarget();
+    }
+
+    public double getRightTarget() {
+        return mRightMaster.getClosedLoopTarget();
+    }
+
     public double getLeftVelInches() {
-        return Conversions.ticksPer100msToInchesPerSecond(mLeftMaster.getSelectedSensorVelocity(0));
+        return Conversions.ticksPer100msToRadiansPerSecond(mLeftMaster.getSelectedSensorVelocity());
     }
 
     public double getRightVelInches() {
-        return Conversions.ticksPer100msToInchesPerSecond(mRightMaster.getSelectedSensorVelocity(0));
+        return Conversions.ticksPer100msToRadiansPerSecond(mRightMaster.getSelectedSensorVelocity());
     }
 
     @Override
