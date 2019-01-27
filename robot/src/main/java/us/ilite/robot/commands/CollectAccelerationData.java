@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.team254.lib.physics.DriveCharacterization;
+import us.ilite.common.lib.physics.DriveCharacterization;
 import com.team254.lib.util.ReflectingCSVWriter;
 
 import us.ilite.common.lib.util.Conversions;
