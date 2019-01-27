@@ -1,4 +1,4 @@
-package us.ilite.robot.os.commands;
+package us.ilite.lib.drivers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import org.junit.Test;
+import us.ilite.lib.drivers.GetLocalIP;
 
 /**
  * Unit test class to test {@link GetLocalIP}

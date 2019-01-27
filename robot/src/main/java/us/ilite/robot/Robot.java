@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.io.Network;
@@ -66,6 +67,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         // Init static variables and get singleton instances first
         Network.getInstance();
+        System.out.println(GetLocalIP.getIp());
 
         ICodexTimeProvider provider = new ICodexTimeProvider() {
             public long getTimestamp() {
