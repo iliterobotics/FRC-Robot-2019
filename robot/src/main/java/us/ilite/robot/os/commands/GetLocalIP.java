@@ -18,22 +18,22 @@ import org.apache.commons.io.FilenameUtils;
 public class GetLocalIP {
 
     /**In windows we want to run in the git bash shell. Update to the correct directory */
-    private static final String WINDOWS_SHELL = "C:\\Program Files\\Git\\bin\\bash";
-    private static final String WINDOWS_COMMAND = "robot/src/main/resources/sampleOutput.sh";
-    private static final String UNIX_SHELL = "/bin/sh";
+    private static final String kWindowsShell = "C:\\Program Files\\Git\\bin\\bash";
+    private static final String kWindowsCommand = "robot/src/main/resources/sampleOutput.sh";
+    private static final String kUnixShell = "/bin/sh";
     private static final String UNIX_SCRIPT ="netstat -t -n | grep tcp | grep -v 127.0.0.1 | awk '{print $4}' | awk -F: '{print $1}'";
 
-    private static final String SHELL;
-    private static final String SCRIPT;
+    private static final String kShell;
+    private static final String kScript;
 
     /**Regex provided by: https://www.mkyong.com/regular-expressions/how-to-validate-ip-address-with-regular-expression/ */
-    private static final String IPADDRESS_PATTERN = 
+    private static final String kIpAddressRegex = 
 		"^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
 		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
 		"([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
         "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
     
-    private static final Pattern IP_PATTERN = Pattern.compile(IPADDRESS_PATTERN);
+    private static final Pattern kIPPattern = Pattern.compile(kIpAddressRegex);
 
     static {
         String os = System.getProperty("os.name");
@@ -44,18 +44,18 @@ public class GetLocalIP {
             //Git-bash uses unix file system representation. 
         String userDirUnix = FilenameUtils.separatorsToUnix(userDir);
 
-            winScript = userDirUnix + "/" + WINDOWS_COMMAND;
-            SHELL = WINDOWS_SHELL;
-            SCRIPT = winScript;
+            winScript = userDirUnix + "/" + kWindowsCommand;
+            kShell = kWindowsShell;
+            kScript = winScript;
         } else {
-            SHELL = UNIX_SHELL;
-            SCRIPT = UNIX_SCRIPT;
+            kShell = kUnixShell;
+            kScript = UNIX_SCRIPT;
         }
     }
 
     public static Optional<String> getIp() {
         Optional<String>returnVal = Optional.empty();
-        ProcessBuilder procBuild = new ProcessBuilder(Arrays.asList(SHELL,"-c",SCRIPT));
+        ProcessBuilder procBuild = new ProcessBuilder(Arrays.asList(kShell,"-c",kScript));
         procBuild.redirectErrorStream(true);
 
         try {
@@ -66,7 +66,7 @@ public class GetLocalIP {
             Set<String>allLines = new LinkedHashSet<>();
             String line = null;
             while ( (line = reader.readLine()) != null) {
-                Matcher matcher = IP_PATTERN.matcher(line);
+                Matcher matcher = kIPPattern.matcher(line);
                 if(matcher.matches()) {
                     allLines.add(line);
                 }
@@ -81,7 +81,7 @@ public class GetLocalIP {
         return returnVal;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] pArgs) {
         Optional<String> ip = getIp();
         if(ip.isPresent()) {
             System.out.println("IP: " + ip.get());
