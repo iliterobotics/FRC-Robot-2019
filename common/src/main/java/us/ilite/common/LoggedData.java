@@ -12,7 +12,6 @@ import java.util.Map;
 
 import com.flybotix.hfr.codex.Codex;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.io.CodexNetworkTablesParser;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.input.ELogitech310;
@@ -109,40 +108,13 @@ public class LoggedData {
      */
     private void handleCreation(File pFile) throws IOException {
         //Makes every folder before the file if the CSV's parent folder doesn't exist
-        if(!pFile.getParentFile().exists()) pFile.getParentFile().mkdirs();
+        if(!pFile.getParentFile().exists()) {
+            pFile.getParentFile().mkdirs();
+        }
 
         //Creates the .CSV if it doesn't exist
-        if(!pFile.exists()) pFile.createNewFile();
+        if(!pFile.exists()) {
+            pFile.createNewFile();
+        }
     }
-
-    //For testing purposes
-    public static void main(String[] args) {
-        
-        NetworkTableInstance.getDefault().startClientTeam(1885);
-        LoggedData loggedData = new LoggedData();
-        // loggedData.closeWriters();
-
-        Thread logger = new Thread() {
-            public void run() {
-                loggedData.logFromCodexToCSVHeader();
-                    while(true) {
-                        loggedData.logFromNetworkTables();
-                        // System.out.println(System.currentTimeMillis() + " " + loggedData.imu);
-                        loggedData.logFromCodexToCSVLog();
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-            }
-        };
-
-        logger.start();
-
-
-
-    }
-
 }

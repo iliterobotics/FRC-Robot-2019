@@ -12,7 +12,7 @@ import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
-import us.ilite.robot.Data;
+import us.ilite.robot.RobotData;
 import us.ilite.robot.commands.Delay;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
@@ -34,9 +34,9 @@ public class DriverInput extends Module {
 
     private Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
 
-    private Data mData;
+    private RobotData mData;
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, RobotData pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
         this.mSuperstructure = pSuperstructure;
         this.mData = pData;
@@ -50,7 +50,7 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData) {
+    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, RobotData pData) {
         this(pDrivetrain, pSuperstructure, pData, false);
     }
 

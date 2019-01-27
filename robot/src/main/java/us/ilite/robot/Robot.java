@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
     private ModuleList mRunningModules = new ModuleList();
 
     private Clock mClock = new Clock();
-    private Data mData = new Data();
+    private RobotData mData = new RobotData();
     private Timer initTimer = new Timer();
 
     // Module declarations here
@@ -127,8 +127,8 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
-        Data.kSmartDashboard.putDouble("Neo Position", mTestNeoEncoder.getPosition());
-        Data.kSmartDashboard.putDouble("Neo Velocity", mTestNeoEncoder.getVelocity());
+        RobotData.kSmartDashboard.putDouble("Neo Position", mTestNeoEncoder.getPosition());
+        RobotData.kSmartDashboard.putDouble("Neo Velocity", mTestNeoEncoder.getVelocity());
         mTestNeo.set(mTestJoystick.getX());
         
         mData.sendCodices();

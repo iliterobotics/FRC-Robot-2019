@@ -20,7 +20,7 @@ import com.team254.frc2018.planners.DriveMotionPlanner;
 import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.Data;
+import us.ilite.robot.RobotData;
 import us.ilite.robot.StrongholdProfile;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideRocket;
 import us.ilite.robot.modules.Drive;
@@ -40,7 +40,7 @@ public class TrackingSimulation {
     private ReflectingCSVWriter<Pose2d> csvPoseWriter;
     private ReflectingCSVWriter<DriveMotionPlanner> csvDrivePlanner;
 
-    private final Data mData;
+    private final RobotData mData;
     private final Clock mClock;
     private final DriveController mDriveController;
     private final TrajectoryGenerator mTrajectoryGenerator;
@@ -53,7 +53,7 @@ public class TrackingSimulation {
 
     public TrackingSimulation(RobotProfile pRobotProfile, double pDt) {
         kDt = pDt;
-        mData = new Data();
+        mData = new RobotData();
         mClock = new Clock().simulated();
         mDriveController = new DriveController(new StrongholdProfile());
         mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);

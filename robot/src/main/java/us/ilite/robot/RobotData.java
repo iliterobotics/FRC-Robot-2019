@@ -12,7 +12,7 @@ import us.ilite.common.types.input.ELogitech310;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.common.lib.util.SimpleNetworkTable;
 
-public class Data {
+public class RobotData {
 
     public LoggedData loggedData = new LoggedData();
 
@@ -33,7 +33,7 @@ public class Data {
         }
     };
 
-    public Data() {
+    public RobotData() {
         registerCodices();
         sendCodices();
     }

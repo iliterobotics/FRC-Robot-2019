@@ -10,7 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.Data;
+import us.ilite.robot.RobotData;
 import us.ilite.robot.commands.Delay;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.ModuleList;
@@ -30,7 +30,7 @@ public class DriverInputTest {
 
     private DriverInput mDriverInput;
 
-    private Data mData;
+    private RobotData mData;
     private Clock mClock;
     private ModuleList mModuleList;
 
@@ -39,7 +39,7 @@ public class DriverInputTest {
         MockitoAnnotations.initMocks(this);
         Logger.setLevel(ELevel.DEBUG);
 
-        mData = new Data();
+        mData = new RobotData();
         mClock = new Clock().simulated();
         mModuleList = new ModuleList();
         mSuperstructure = spy(new Superstructure());
