@@ -9,7 +9,10 @@ package us.ilite.robot.os.commands;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -28,6 +31,14 @@ public class GetLocalIPTest {
     @Test
     public void testEmptyReader() {
         Optional<String> returnVal = GetLocalIP.getIPFromInputStream(null);
+        assertNotNull(returnVal);
+        assertTrue(returnVal.isEmpty());
+    }
+    @Test
+    public void testReaderIOException() throws IOException{
+        BufferedReader br = mock(BufferedReader.class);
+        when(br.readLine()).thenThrow(IOException.class);
+        Optional<String> returnVal = GetLocalIP.getIPFromInputStream(br);
         assertNotNull(returnVal);
         assertTrue(returnVal.isEmpty());
     }
