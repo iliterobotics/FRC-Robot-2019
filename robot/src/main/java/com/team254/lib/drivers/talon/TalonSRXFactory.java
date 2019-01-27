@@ -69,6 +69,7 @@ public class TalonSRXFactory {
 
     public static TalonSRX createTalon(int id, Configuration config) {
         TalonSRX talon = new LazyTalonSRX(id);
+        talon.configFactoryDefault();
         talon.set(ControlMode.PercentOutput, 0.0);
 
         talon.changeMotionControlFramePeriod(config.MOTION_CONTROL_FRAME_PERIOD_MS);
