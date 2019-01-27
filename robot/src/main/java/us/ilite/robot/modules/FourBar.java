@@ -4,6 +4,7 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import us.ilite.common.config.SystemSettings;
@@ -24,8 +25,8 @@ public class FourBar extends Module {
 
     public FourBar() {
         // TODO Construction
-        neo1 = new CANSparkMax(SystemSettings.kFourBarNEO1Address, null);
-        neo2 = new CANSparkMax(SystemSettings.kFourBarNEO2Address, null);
+        neo1 = new CANSparkMax(SystemSettings.kFourBarNEO1Address, CANSparkMaxLowLevel.MotorType.kBrushless);
+        neo2 = new CANSparkMax(SystemSettings.kFourBarNEO2Address, CANSparkMaxLowLevel.MotorType.kBrushless);
     
         // Connect the NEO's to the encoders
         neo1Encoder = new CANEncoder(neo1);
@@ -52,11 +53,6 @@ public class FourBar extends Module {
 
     @Override
     public void shutdown(double pNow) {
-    }
 
-    @Override
-    public boolean checkModule(double pNow) {
-        return false;
     }
-
 }
