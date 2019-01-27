@@ -67,7 +67,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         // Init static variables and get singleton instances first
         Network.getInstance();
-        System.out.println(GetLocalIP.getIp());
+        mLogger.info("Netstat determined a driver station IP of ", GetLocalIP.getIp());
 
         ICodexTimeProvider provider = new ICodexTimeProvider() {
             public long getTimestamp() {
