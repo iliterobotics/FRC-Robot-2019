@@ -37,9 +37,8 @@ public class HatchFlower extends Module {
     private Solenoid solenoidOpenClose;
     private Solenoid solenoidExtension;
 
-    // private final Map<ELogitech310, Solenoid> mPneumaticButtons = new HashMap<>();
-
-    private final Codex<Double, ELogitech310> mController;
+    // Needed for prototype testing
+    // private final Codex<Double, ELogitech310> mController;
 
     private CommandQueue mCurrentCommandQueue;
 
@@ -170,7 +169,8 @@ public class HatchFlower extends Module {
         // Construction
 
         // The controller has the controller button states
-        this.mController = pController;
+        // Needed for prototype testing
+        // this.mController = pController;
 
         this.mCurrentState = HatchFlowerStates.RELEASE;
 
@@ -208,15 +208,16 @@ public class HatchFlower extends Module {
         // update any currently running commands first
         mCurrentCommandQueue.update(pNow);
 
-        // TODO Do we need to worry about both buttons being pressed? We will set a
-        // button priority.  Maybe both pressed is a reset??
-        // Check to see if the Hatch Flower buttons are pressed.
-        if (this.mController.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_CAPTURE_BTN)) {
-            this.captureHatch();
-        } else if (this.mController.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_PUSH_BTN)) {
-            // Only trigger push if the capture button is NOT being pushed
-            this.pushHatch();
-        }
+        // // Needed for prototype testing
+        // // TODO Do we need to worry about both buttons being pressed? We will set a
+        // // button priority.  Maybe both pressed is a reset??
+        // // Check to see if the Hatch Flower buttons are pressed.
+        // if (this.mController.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_CAPTURE_BTN)) {
+        //     this.captureHatch();
+        // } else if (this.mController.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_PUSH_BTN)) {
+        //     // Only trigger push if the capture button is NOT being pushed
+        //     this.pushHatch();
+        // }
 
     }
 
@@ -251,7 +252,7 @@ public class HatchFlower extends Module {
                     List<ICommand> step2List = Arrays.asList(
                         new GrabSolenoidCommand(GrabberState.GRAB), 
                         new PushSolenoidCommand(PusherState.RESET), 
-                        new Delay(SystemSettings.kHatchFlowerSolenoidSettleTimeSec)
+                        new Delay(SystemSettings.kHatchFlowerSolenoidReleaseTimeSec)
                     );
 
                     ParallelCommand step2= new ParallelCommand(step2List);
@@ -295,23 +296,23 @@ public class HatchFlower extends Module {
                     SetStateCommand step1 = new SetStateCommand(HatchFlowerStates.PUSH);
 
                     //// STEP 2 /////
-                    // Step2: First start releasing the grabber
+                    // Step2: Start pushing the hatch
                     List<ICommand> step2List = Arrays.asList(
-                        new GrabSolenoidCommand(GrabberState.RELEASE), 
-                        new PushSolenoidCommand(PusherState.RESET), 
-                        // The delay between release of grab and start of push
+                        new GrabSolenoidCommand(GrabberState.GRAB), 
+                        new PushSolenoidCommand(PusherState.PUSH), 
+                        // The delay between start of push and release of grab
                         new Delay(SystemSettings.kHatchFlowerGrabToPushTransitionTimeSec) 
                     );
 
                     ParallelCommand step2 = new ParallelCommand(step2List);
 
                     //// STEP 3 /////
-                    // Step3: Start pushing the hatch
+                    // Step3: Start releasing the grabber
                     List<ICommand> step3List = Arrays.asList(
                         new GrabSolenoidCommand(GrabberState.RELEASE), 
                         new PushSolenoidCommand(PusherState.PUSH), 
                         // The time to leave pusher out (Solenoid settle + push time)
-                        new Delay(SystemSettings.kHatchFlowerSolenoidSettleTimeSec + SystemSettings.kHatchFlowerPushDurationSec) 
+                        new Delay(SystemSettings.kHatchFlowerPushDurationSec) 
                     );
 
                     ParallelCommand step3 = new ParallelCommand(step3List);
@@ -322,7 +323,7 @@ public class HatchFlower extends Module {
                         new GrabSolenoidCommand(GrabberState.RELEASE), 
                         new PushSolenoidCommand(PusherState.RESET), 
                         // Time to allow the solenoid to reset
-                        new Delay(SystemSettings.kHatchFlowerSolenoidSettleTimeSec)
+                        new Delay(SystemSettings.kHatchFlowerSolenoidReleaseTimeSec)
                     );
 
                     ParallelCommand step4 = new ParallelCommand(step4List);
