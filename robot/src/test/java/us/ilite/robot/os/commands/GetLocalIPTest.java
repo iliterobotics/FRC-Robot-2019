@@ -42,4 +42,13 @@ public class GetLocalIPTest {
         assertNotNull(returnVal);
         assertTrue(returnVal.isEmpty());
     }
+    @Test
+    public void testReaderNoIPs() throws IOException{
+        BufferedReader br = mock(BufferedReader.class);
+        //We want to return a bogus string first and then null so there is not an infinite loop
+        when(br.readLine()).thenReturn("Test String",(String)null);
+        Optional<String> returnVal = GetLocalIP.getIPFromInputStream(br);
+        assertNotNull(returnVal);
+        assertTrue(returnVal.isEmpty());
+    }
 }
