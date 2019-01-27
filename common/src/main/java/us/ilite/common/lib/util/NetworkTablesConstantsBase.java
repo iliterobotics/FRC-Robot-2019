@@ -61,7 +61,9 @@ public abstract class NetworkTablesConstantsBase {
             NetworkTableEntry entry = mTable.getEntry(f.getName());
             if(entry.exists()) {
                 try {
-                    f.set(this, mGson.fromJson(entry.getString(""), f.getGenericType()));
+                    Object value = mGson.fromJson(entry.getString(""), f.getGenericType());
+                    f.set(this, value);
+                    mLog.info("Successfully set ", f.getName(), " to ", value);
                 } catch (IllegalAccessException e) {
                     mLog.error("Could not load value of ", f.getName(), " from NetworkTables. Maybe the variable is final?");
                     mLog.exception(e);
