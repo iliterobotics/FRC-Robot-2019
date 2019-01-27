@@ -74,23 +74,25 @@ public class GetLocalIP {
         return returnVal;
     }
 
-    public static Optional<String> getIPFromInputStream(BufferedReader reader) {
+    protected static Optional<String> getIPFromInputStream(BufferedReader reader) {
 
         Optional<String> returnVal = Optional.empty();
-        Set<String> allLines = new LinkedHashSet<>();
-        String line = null;
-        try {
-            while ((line = reader.readLine()) != null) {
-                Matcher matcher = kIPPattern.matcher(line);
-                if (matcher.matches()) {
-                    allLines.add(line);
+        if (reader != null) {
+            Set<String> allLines = new LinkedHashSet<>();
+            String line = null;
+            try {
+                while ((line = reader.readLine()) != null) {
+                    Matcher matcher = kIPPattern.matcher(line);
+                    if (matcher.matches()) {
+                        allLines.add(line);
+                    }
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        returnVal = allLines.stream().findFirst();
+            returnVal = allLines.stream().findFirst();
+        }
         return returnVal;
     }
 
