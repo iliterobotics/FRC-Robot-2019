@@ -87,6 +87,18 @@ public DriveStraight setPower(double pPower) {
 ICommand = new DriveStraight(mDrive, 10.0 /*The distance to drive*/).setPower(0.5);
 ```
 
+### Enumerations
+- Enumeration classes are in
+- Enumerations are in all caps, `LIKE_THIS`
+- The rationale behind this naming scheme is that Codexes (which rely on enums) will eventually be sent from the robot and
+deserialized into a database - and database column names are typically in all caps.
+- Ex: States of a manipulator:
+```
+public enum EManipulatorState {
+    RESET, GRABBING, PLACING;
+}
+```
+
 ## VSCode and the WPILib Dev Environment
 You can find the instructions [here](https://wpilib.screenstepslive.com/s/currentCS/m/getting_started/l/999999-installing-c-and-java-development-tools-for-frc).
 
