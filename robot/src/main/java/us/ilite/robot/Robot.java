@@ -115,8 +115,6 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
-//        mLogger.info(this.toString());
-
         mSystemClock.cycleEnded();
     }
 
@@ -137,8 +135,6 @@ public class Robot extends TimedRobot {
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
 
-        // mCommandQueue.setCommands(new FollowTrajectory(trajectory, mDrive, true));
-//        mCommandQueue.setCommands(new CharacterizeDrive(mDrive, false, false));
         mCommandQueue.setCommands(
             new TurnToDegree(mDrive, Rotation2d.fromDegrees(90.0), 2.5, mData), 
             new TurnToDegree(mDrive, Rotation2d.fromDegrees(-90.0), 2.5, mData));
@@ -152,7 +148,6 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {
         mRunningModules.periodicInput(mSystemClock.getCurrentTime());
         mRunningModules.update(mSystemClock.getCurrentTime());
-//        mDrive.flushTelemetry();
     }
 
     @Override
@@ -197,9 +192,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void testPeriodic() {
-
-//        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
-//        mRunningModules.update(mSystemClock.getCurrentTime());
+        
     }
 
     public String toString() {
