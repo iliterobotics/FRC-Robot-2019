@@ -32,6 +32,10 @@ public class Conversions {
         return ticksToRotations(ticks) * SystemSettings.kDriveWheelCircumference;
     }
 
+    public static int inchesToTicks(double inches) {
+        return (int)(inchesToRotations(inches) * SystemSettings.kDriveTicksPerRotation);
+    }
+
     public static double ticksPer100msToRotationsPerSecond(int ticks) {
         return ticksToRotations(ticks) * 10.0;
     }
