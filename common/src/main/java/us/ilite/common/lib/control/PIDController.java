@@ -82,7 +82,7 @@ public class PIDController {
         }
 
         // Only add to totalError if output isn't being saturated
-        if ( ( mError * mPIDGains.mP < mMaximumOutput ) && ( mError * mPIDGains.mP > mMinimumOutput ) ) {
+        if ( ( mError * mPIDGains.kP < mMaximumOutput ) && ( mError * mPIDGains.kP > mMinimumOutput ) ) {
             mTotalError += mError * mDt;
         } else {
             mTotalError = 0;
@@ -91,8 +91,8 @@ public class PIDController {
         // Don't blow away mError so as to not break derivative
         double proportionalError = Math.abs( mError ) < mDeadband ? 0 : mError;
 
-        mResult = ( mPIDGains.mP * proportionalError + mPIDGains.mI * mTotalError + mPIDGains.mD * ( mError - mPrevError ) / mDt
-                + mPIDGains.mF * mSetpoint );
+        mResult = ( mPIDGains.kP * proportionalError + mPIDGains.kI * mTotalError + mPIDGains.kD * ( mError - mPrevError ) / mDt
+                + mPIDGains.kF * mSetpoint );
         mPrevError = mError;
 
         mResult = Util.limit( mResult, mMaximumOutput );
@@ -135,10 +135,10 @@ public class PIDController {
         mPIDControl.set( EPIDController.OUTPUT, mOutputForCodex );
         mPIDControl.set( EPIDController.GOAL, mSetpoint );
         mPIDControl.set( EPIDController.ERROR, mError );
-        mPIDControl.set( EPIDController.P_GAIN, mPIDGains.mP );
-        mPIDControl.set( EPIDController.I_GAIN, mPIDGains.mI );
-        mPIDControl.set( EPIDController.D_GAIN, mPIDGains.mD );
-        mPIDControl.set( EPIDController.F_GAIN, mPIDGains.mF );
+        mPIDControl.set( EPIDController.P_GAIN, mPIDGains.kP );
+        mPIDControl.set( EPIDController.I_GAIN, mPIDGains.kI );
+        mPIDControl.set( EPIDController.D_GAIN, mPIDGains.kD );
+        mPIDControl.set( EPIDController.F_GAIN, mPIDGains.kF );
     }
 
     enum EPIDController implements CodexOf<Double> {

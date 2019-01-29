@@ -60,7 +60,7 @@ public class TurnToDegree implements ICommand {
 
   public boolean update( double pNow ) {
     mOutput = pid.calculate( getYaw().getDegrees(), pNow );
-    mOutput += Math.signum( mOutput ) * SystemSettings.kPIDGains.mF;
+    mOutput += Math.signum( mOutput ) * SystemSettings.kPIDGains.kF;
 
     // Keep track of time on target
     if ( ( Math.abs( pid.getError() ) <= Math.abs( mAllowableError ) ) ) {
