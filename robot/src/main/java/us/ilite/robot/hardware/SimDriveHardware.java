@@ -88,6 +88,11 @@ public class SimDriveHardware implements IDriveHardware {
         return mEncoderStateEstimator.getRobotState().getLatestFieldToVehiclePose().getRotation();
     }
 
+    @Override
+    public double getYawRate() {
+        return 0;
+    }
+
     public double getLeftInches() {
         return Conversions.ticksToInches((int)mLeftEncoder.getPosition());
     }

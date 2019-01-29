@@ -11,6 +11,7 @@ public interface IDriveHardware extends IHardware {
     void configureMode(ControlMode pControlMode);
 
     Rotation2d getHeading();
+    double getYawRate();
 
     double getLeftInches();
     double getRightInches();

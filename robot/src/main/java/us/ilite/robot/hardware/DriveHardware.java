@@ -225,6 +225,11 @@ public class DriveHardware implements IDriveHardware {
         return Rotation2d.fromDegrees(mGyro.getFusedHeading());
     }
 
+    public double getYawRate() {
+        // TODO Implement this
+        return 0.0;
+    }
+
     public double getLeftInches() {
         return Conversions.ticksToInches(mLeftMaster.getSelectedSensorPosition(0));
     }
