@@ -34,8 +34,8 @@ public class HatchFlower extends Module {
 
     private ILog mLog = Logger.createLog(HatchFlower.class);
 
-    private Solenoid solenoidOpenClose;
-    private Solenoid solenoidExtension;
+    private Solenoid grabSolenoid;
+    private Solenoid pushSolenoid;
 
     // Needed for prototype testing
     // private final Codex<Double, ELogitech310> mController;
@@ -49,7 +49,7 @@ public class HatchFlower extends Module {
     // ********************** Solenoid state enums *********************** //
     public enum GrabberState
     { 
-      GRAB(true),
+      GRAB(true),  // set to solenoid state that corresponds with grabbing the hatch
       RELEASE(false);
   
       private boolean grabber;
@@ -62,7 +62,7 @@ public class HatchFlower extends Module {
   
     public enum PusherState
     {
-      PUSH(true),
+      PUSH(true), // set to the solenoid state that corresponds with pushing the hatch
       RESET(false);
   
       private boolean pusher;
@@ -79,6 +79,10 @@ public class HatchFlower extends Module {
     /////////////////////////////////////////////////////////////////////////
     // ********************* Solenoid Change Commands ******************** //
 
+    /**
+     * The GrabSolenoidCommand will set the grab solenoid to the commanded state,
+     * which is provided in the constructor
+     */
     public class GrabSolenoidCommand implements ICommand {
 
         GrabberState state;
@@ -89,7 +93,8 @@ public class HatchFlower extends Module {
 
         @Override
         public void init(double pNow) {
-            solenoidOpenClose.set(this.state.grabber);
+            // Set the commanded solenoid state at init
+            grabSolenoid.set(this.state.grabber);
         }
 
         @Override
@@ -105,6 +110,10 @@ public class HatchFlower extends Module {
 
     }
 
+    /**
+     * The PushSolenoidCommand will set the push solenoid to the commanded state,
+     * which is provided in the constructor
+     */
     public class PushSolenoidCommand implements ICommand {
 
         PusherState state;
@@ -115,7 +124,8 @@ public class HatchFlower extends Module {
 
         @Override
         public void init(double pNow) {
-            solenoidExtension.set(this.state.pusher);
+            // Set the commanded solenoid state at init
+            pushSolenoid.set(this.state.pusher);
         }
 
         @Override
@@ -173,15 +183,15 @@ public class HatchFlower extends Module {
         // The controller has the controller button states
         // this.mController = pController;
 
-        this.mCurrentState = HatchFlowerStates.RELEASE;
-
         // TODO Do we need to pass the CAN Addresses in via the constructor?
-        solenoidOpenClose = new Solenoid(SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
-        solenoidExtension = new Solenoid(SystemSettings.kHatchFlowerExtensionSolenoidAddress);
+        grabSolenoid = new Solenoid(SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
+        pushSolenoid = new Solenoid(SystemSettings.kHatchFlowerExtensionSolenoidAddress);
 
-        // Init Hatch Flower to release state
-        solenoidOpenClose.set(GrabberState.RELEASE.grabber);
-        solenoidExtension.set(PusherState.RESET.pusher);
+        // Init Hatch Flower to grab state - Per JKnight we will start with a hatch or cargo onboard
+        this.mCurrentState = HatchFlowerStates.CAPTURE;
+
+        this.grabSolenoid.set(GrabberState.GRAB.grabber);
+        this.pushSolenoid.set(PusherState.RESET.pusher);
 
         // Command queue to hold the solenoid transition commands
         mCurrentCommandQueue = new CommandQueue();
@@ -243,6 +253,9 @@ public class HatchFlower extends Module {
 
             // check the current state
             switch(this.mCurrentState) {
+                case CAPTURE :
+                    // Allow reissue of the CAPTURE command in case it's needed,
+                    // The solenoids should already be in the required state, so no harm.
                 case RELEASE :
                     // We must be in the RELEASE state before we can capture:
 
@@ -262,8 +275,6 @@ public class HatchFlower extends Module {
 
                 break;
 
-                case CAPTURE :
-                    // we are already in capture state, do nothing
                 case PUSH :
                     // We must complete the Push before we can capture, do nothing
                 break;
