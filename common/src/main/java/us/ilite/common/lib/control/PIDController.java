@@ -40,6 +40,7 @@ public class PIDController {
                                      // term as 0
     private double mInputForCodex;
     private double mOutputForCodex;
+    private double mDTForCodex;
     private double mDefaultDT;
 
 
@@ -66,6 +67,7 @@ public class PIDController {
         } else {
             mDt = absoluteTime - mPreviousTime;
         }
+        mDTForCodex = mDt;
         mLastInput = input;
         mError = mSetpoint - input;
         
@@ -135,6 +137,7 @@ public class PIDController {
         mPIDControl.set( EPIDController.OUTPUT, mOutputForCodex );
         mPIDControl.set( EPIDController.GOAL, mSetpoint );
         mPIDControl.set( EPIDController.ERROR, mError );
+        mPIDControl.set( EPIDController.DELTA_TIME, mDTForCodex );
         mPIDControl.set( EPIDController.P_GAIN, mPIDGains.kP );
         mPIDControl.set( EPIDController.I_GAIN, mPIDGains.kI );
         mPIDControl.set( EPIDController.D_GAIN, mPIDGains.kD );
@@ -144,7 +147,7 @@ public class PIDController {
     enum EPIDController implements CodexOf<Double> {
 
         ERROR, OUTPUT, CURRENT, GOAL,
-        P_GAIN, I_GAIN, D_GAIN, F_GAIN,;
+        P_GAIN, I_GAIN, D_GAIN, F_GAIN, DELTA_TIME;
     }
 
     // ####### //
