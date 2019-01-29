@@ -70,7 +70,7 @@ public class Drive extends Loop {
 	}
 
 	public void startCsvLogging() {
-		mDebugLogger = new ReflectingCSVWriter<>("~/debug.csv", DebugOutput.class);
+		mDebugLogger = new ReflectingCSVWriter<>("/home/lvuser/debug.csv", DebugOutput.class);
 		debugOutput = new DebugOutput();
 	}
 

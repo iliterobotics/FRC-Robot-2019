@@ -36,11 +36,19 @@ deploy {
 dependencies {
 
     compile project(':common')
-    implementation 'com.github.flybotix:highfrequencyrobots:2019.1.12'
+    implementation 'com.github.flybotix:highfrequencyrobots:2019.1.13a'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+
     
+    testCompile "org.mockito:mockito-core:2.+"
+
     compile wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+
+    testRuntime group: "edu.wpi.first.ntcore", name: "ntcore-jni", version: "2019.+", classifier: "all"
+    testCompile group: "edu.wpi.first.ntcore", name: "ntcore-java", version: "2019.+"
+    testCompile group: "edu.wpi.first.wpiutil", name: "wpiutil-java", version: "2019.+"
 
 }
 

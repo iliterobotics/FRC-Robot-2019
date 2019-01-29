@@ -2,8 +2,9 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'application'
 apply plugin: 'org.openjfx.javafxplugin'
+// mainClassName = 'us.ilite.display.Main'
+mainClassName = 'us.ilite.display.auton.AutonConfigDisplay'
 
-mainClassName = 'us.ilite.display.Main'
 
 apply from: 'plot.gradle'
 
@@ -17,8 +18,7 @@ javafx {
 dependencies {
     compile project(':common')
     compile project(':robot')
-
-    compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
+	implementation 'com.github.flybotix:highfrequencyrobots:2019.1.13a'
 
     compile name: 'jfxrt'
 
