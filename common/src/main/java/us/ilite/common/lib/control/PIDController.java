@@ -16,7 +16,7 @@ public class PIDController {
 
     private ILog mLogger = Logger.createLog( this.getClass() );
 
-    private Codex<Double, EPIDControl> mPIDControl = Codex.of.thisEnum( EPIDControl.class );
+    private Codex<Double, EPIDController> mPIDControl = Codex.of.thisEnum( EPIDController.class );
 
     private boolean mContinuous = false;
 
@@ -131,17 +131,17 @@ public class PIDController {
     }
 
     public void logToCodex() {
-        mPIDControl.set( EPIDControl.CURRENT, mInputForCodex );
-        mPIDControl.set( EPIDControl.OUTPUT, mOutputForCodex );
-        mPIDControl.set( EPIDControl.GOAL, mSetpoint );
-        mPIDControl.set( EPIDControl.ERROR, mError );
-        mPIDControl.set( EPIDControl.P_GAIN, mPIDGains.mP );
-        mPIDControl.set( EPIDControl.I_GAIN, mPIDGains.mI );
-        mPIDControl.set( EPIDControl.D_GAIN, mPIDGains.mD );
-        mPIDControl.set( EPIDControl.F_GAIN, mPIDGains.mF );
+        mPIDControl.set( EPIDController.CURRENT, mInputForCodex );
+        mPIDControl.set( EPIDController.OUTPUT, mOutputForCodex );
+        mPIDControl.set( EPIDController.GOAL, mSetpoint );
+        mPIDControl.set( EPIDController.ERROR, mError );
+        mPIDControl.set( EPIDController.P_GAIN, mPIDGains.mP );
+        mPIDControl.set( EPIDController.I_GAIN, mPIDGains.mI );
+        mPIDControl.set( EPIDController.D_GAIN, mPIDGains.mD );
+        mPIDControl.set( EPIDController.F_GAIN, mPIDGains.mF );
     }
 
-    enum EPIDControl implements CodexOf<Double> {
+    enum EPIDController implements CodexOf<Double> {
 
         ERROR, OUTPUT, CURRENT, GOAL,
         P_GAIN, I_GAIN, D_GAIN, F_GAIN,;
@@ -205,7 +205,7 @@ public class PIDController {
      * Access the codex holding PIDController values
      * @return the codex holding PIDController values
      */
-    public Codex<Double, EPIDControl> getCodex() {
+    public Codex<Double, EPIDController> getCodex() {
         return mPIDControl;
     }
 
