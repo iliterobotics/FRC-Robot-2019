@@ -68,7 +68,7 @@ public class DriveStraight implements ICommand {
      * Indicates whether we use velocity control or pure % output for drivebase outputs.
      */
     public enum EDriveControlMode {
-        VELOCITY(ControlMode.MotionMagic),
+        MOTION_MAGIC(ControlMode.MotionMagic),
         PERCENT_OUTPUT(ControlMode.PercentOutput);
 
         public final ControlMode kMotorControlMode;
@@ -128,7 +128,7 @@ public class DriveStraight implements ICommand {
                 linearOutput = Util.limit(mDriveOutput, 1.0 - (angularOutput * mHeadingControlMode.kP));
 
                 break;
-            case VELOCITY:
+            case MOTION_MAGIC:
                 // Calculate a distance setpoint
                 linearOutput = Conversions.inchesToTicks(mInitialDistance + mDistanceToDrive);
 
