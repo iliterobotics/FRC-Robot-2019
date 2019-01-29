@@ -41,8 +41,7 @@ public class DriveHardware implements IDriveHardware {
 
     public DriveHardware() {
         mGyro = new PigeonIMU(SystemSettings.kPigeonId);
-        mGyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 5, SystemSettings.kLongCANTimeoutMs);
-        mGyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 5, SystemSettings.kLongCANTimeoutMs);
+        configGyro(mGyro);
 
         mLeftMaster = TalonSRXFactory.createDefaultTalon(SystemSettings.kDriveLeftMasterTalonId);
         mLeftRear = TalonSRXFactory.createPermanentSlaveTalon(SystemSettings.kDriveLeftRearTalonId, SystemSettings.kDriveLeftMasterTalonId);
@@ -181,6 +180,12 @@ public class DriveHardware implements IDriveHardware {
         talon.configClosedloopRamp(SystemSettings.kDriveClosedLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
         talon.configContinuousCurrentLimit(SystemSettings.kDriveCurrentLimitAmps, SystemSettings.kLongCANTimeoutMs);
         talon.configNeutralDeadband(0.04, 0);
+    }
+
+    private void configGyro(PigeonIMU pGyro) {
+        pGyro.configFactoryDefault();
+        pGyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 5, SystemSettings.kLongCANTimeoutMs);
+        pGyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR , 5, SystemSettings.kLongCANTimeoutMs);
     }
 
     private void configTalonForPercentOutput(TalonSRX talon) {
