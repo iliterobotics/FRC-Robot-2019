@@ -9,6 +9,8 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.types.EFourBarData;
+import us.ilite.common.types.input.ELogitech310;
 
 
 public class FourBar extends Module {
@@ -24,6 +26,7 @@ public class FourBar extends Module {
 
     private DoubleSolenoid mDoubleSolenoid;
 
+    private double mOutput;
 
     public FourBar() {
         // TODO Construction
@@ -34,7 +37,7 @@ public class FourBar extends Module {
         mNeo1Encoder = new CANEncoder( mNeo1 );
         mNeo2Encoder = new CANEncoder( mNeo2 );
     
-        doubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
+        mDoubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
     }
 
 
@@ -50,7 +53,14 @@ public class FourBar extends Module {
 
     @Override
     public void update(double pNow) {
+        if ( mData.driverinput.isSet( ELogitech310.B_BTN ) ) {
+            mOutput = mData.driverinput.get( ELogitech310.LEFT_Y_AXIS );
+            mNeo1.set( -mOutput );
+            mNeo2.set( mOutput );
             updateCodex();
+        }
+    }
+
     public void updateCodex() {
         // TO-DO: log angle of fourbar
         mData.fourbar.set( EFourBarData.A_OUTPUT, -mOutput );
