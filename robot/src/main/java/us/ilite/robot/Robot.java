@@ -1,5 +1,7 @@
 package us.ilite.robot;
 
+import com.flybotix.hfr.codex.CodexMetadata;
+import com.flybotix.hfr.codex.ICodexTimeProvider;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -7,20 +9,24 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import us.ilite.common.Data;
 import us.ilite.common.lib.control.DriveController;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.io.Network;
+
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.commands.TurnToDegree;
 import us.ilite.robot.driverinput.DriverInput;
@@ -28,6 +34,7 @@ import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.ModuleList;
+import us.ilite.robot.modules.Superstructure;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,8 +42,6 @@ import java.util.List;
 public class Robot extends TimedRobot {
     
     private ILog mLogger = Logger.createLog(this.getClass());
-
-    private CommandQueue mCommandQueue = new CommandQueue();
 
     // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
     private LoopManager mLoopManager = new LoopManager(SystemSettings.kControlLoopPeriod);
@@ -49,9 +54,11 @@ public class Robot extends TimedRobot {
 
 
     // Module declarations here
+    private Superstructure mSuperstructure = new Superstructure();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
-    private DriverInput mDriverInput = new DriverInput(mDrive, mData);
+    
+    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData);
     private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
@@ -59,9 +66,22 @@ public class Robot extends TimedRobot {
     private CANSparkMax mTestNeo = new CANSparkMax(0, MotorType.kBrushless);
     private CANEncoder mTestNeoEncoder = mTestNeo.getEncoder();
     private Joystick mTestJoystick = new Joystick(2);
+    
 
     @Override
     public void robotInit() {
+        // Init static variables and get singleton instances first
+        Network.getInstance();
+        mLogger.info("Netstat determined a driver station IP of ", GetLocalIP.getIp());
+
+        ICodexTimeProvider provider = new ICodexTimeProvider() {
+            public long getTimestamp() {
+                return (long)mClock.getCurrentTimeInNanos();
+            }
+        };
+        CodexMetadata.overrideTimeProvider(provider);
+
+        // Init the actual robot
         initTimer.reset();
         initTimer.start();
         Logger.setLevel(ELevel.INFO);
@@ -98,21 +118,16 @@ public class Robot extends TimedRobot {
         initTimer.start();
         mLogger.info("Starting Autonomous Initialization...");
 
-        mSettings.loadFromNetworkTables();
+        mSuperstructure.startCommands(new FollowTrajectory(trajectory, mDrive, true));
+//        mCommandQueue.startCommands(new CharacterizeDrive(mDrive, false, false));
 
-        mRunningModules.setModules();
+        // Init modules after commands are set
+        mRunningModules.setModules(mSuperstructure);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
-
-        // mCommandQueue.setCommands(new FollowTrajectory(trajectory, mDrive, true));
-//        mCommandQueue.setCommands(new CharacterizeDrive(mDrive, false, false));
-        mCommandQueue.setCommands(
-            new TurnToDegree(mDrive, Rotation2d.fromDegrees(90.0), 2.5, mData), 
-            new TurnToDegree(mDrive, Rotation2d.fromDegrees(-90.0), 2.5, mData));
-        mCommandQueue.init(mClock.getCurrentTime());
 
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");
@@ -121,7 +136,6 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
-        mCommandQueue.update(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
 //        mDrive.flushTelemetry();
     }
@@ -143,6 +157,8 @@ public class Robot extends TimedRobot {
         Data.kSmartDashboard.putDouble("Neo Position", mTestNeoEncoder.getPosition());
         Data.kSmartDashboard.putDouble("Neo Velocity", mTestNeoEncoder.getVelocity());
         mTestNeo.set(mTestJoystick.getX());
+        
+        mData.sendCodices();
     }
 
     @Override
@@ -150,7 +166,6 @@ public class Robot extends TimedRobot {
         mLogger.info("Disabled Initialization");
         mRunningModules.shutdown(mClock.getCurrentTime());
         mLoopManager.stop();
-        mCommandQueue.shutdown(mClock.getCurrentTime());
     }
 
     @Override
