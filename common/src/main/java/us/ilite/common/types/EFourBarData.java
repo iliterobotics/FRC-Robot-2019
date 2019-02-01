@@ -4,6 +4,6 @@ import com.flybotix.hfr.codex.CodexOf;
 
 public enum EFourBarData implements CodexOf<Double>{
     STATE, ANGLE,
-    A_OUTPUT, B_OUTPUT,
-    A_VOLTAGE, B_VOLTAGE;
+    A_OUTPUT, A_VOLTAGE, A_CURRENT,
+    B_OUTPUT, B_VOLTAGE, B_CURRENT;
 }
