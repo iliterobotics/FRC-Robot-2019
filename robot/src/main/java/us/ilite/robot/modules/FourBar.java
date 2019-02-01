@@ -16,23 +16,23 @@ public class FourBar extends Module {
     private ILog mLog = Logger.createLog(FourBar.class);
     private Data mData = new Data();
 
-    private CANSparkMax neo1;
-    private CANSparkMax neo2;
+    private CANSparkMax mNeo1;
+    private CANSparkMax mNeo2;
 
-    private CANEncoder neo1Encoder;
-    private CANEncoder neo2Encoder;
+    private CANEncoder mNeo1Encoder;
+    private CANEncoder mNeo2Encoder;
 
-    private DoubleSolenoid doubleSolenoid;
+    private DoubleSolenoid mDoubleSolenoid;
 
 
     public FourBar() {
         // TODO Construction
-        neo1 = new CANSparkMax(SystemSettings.kFourBarNEO1Address, CANSparkMaxLowLevel.MotorType.kBrushless);
-        neo2 = new CANSparkMax(SystemSettings.kFourBarNEO2Address, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mNeo1 = new CANSparkMax(SystemSettings.kFourBarNEO1Address, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mNeo2 = new CANSparkMax(SystemSettings.kFourBarNEO2Address, CANSparkMaxLowLevel.MotorType.kBrushless);
     
         // Connect the NEO's to the encoders
-        neo1Encoder = new CANEncoder(neo1);
-        neo2Encoder = new CANEncoder(neo2);
+        mNeo1Encoder = new CANEncoder( mNeo1 );
+        mNeo2Encoder = new CANEncoder( mNeo2 );
     
         doubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
     }
