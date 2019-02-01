@@ -7,12 +7,14 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 
 
 public class FourBar extends Module {
 
     private ILog mLog = Logger.createLog(FourBar.class);
+    private Data mData = new Data();
 
     private CANSparkMax neo1;
     private CANSparkMax neo2;
@@ -54,9 +56,5 @@ public class FourBar extends Module {
     @Override
     public void shutdown(double pNow) {
 
-    }
-
-    public void updateFourBar() {
-        
     }
 }
