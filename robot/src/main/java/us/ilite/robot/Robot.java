@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.io.Network;
@@ -25,7 +26,6 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
@@ -62,11 +62,13 @@ public class Robot extends TimedRobot {
     private CANSparkMax mTestNeo = new CANSparkMax(0, MotorType.kBrushless);
     private CANEncoder mTestNeoEncoder = mTestNeo.getEncoder();
     private Joystick mTestJoystick = new Joystick(2);
+    
 
     @Override
     public void robotInit() {
         // Init static variables and get singleton instances first
         Network.getInstance();
+        mLogger.info("Netstat determined a driver station IP of ", GetLocalIP.getIp());
 
         ICodexTimeProvider provider = new ICodexTimeProvider() {
             public long getTimestamp() {

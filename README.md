@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/iliterobotics/FRC-Robot-2019.svg?branch=master)](https://travis-ci.org/iliterobotics/FRC-Robot-2019)
-# FRC-Robot
+# FRC Robot 2019
 
-This is the incubating software framework for ILITE's 2019 season.
+This is ILITE's robot, display, and telemetry code for the 2019 FIRST Robotics Competition, featuring the third iteration of our software framework.
 
 ## Credits
 - Team 254 for their 2018 robot code, which can be found [here](https://github.com/Team254/FRC-2018-Public). We make heavy use of `com.team254.lib`, as well as extended versions of their motion planning and odometry code.  
@@ -85,6 +85,18 @@ public DriveStraight setPower(double pPower) {
 - This allows us to create a `DriveStraight` object like so:
 ```
 ICommand = new DriveStraight(mDrive, 10.0 /*The distance to drive*/).setPower(0.5);
+```
+
+### Enumerations
+- Enumeration classes are in
+- Enumerations are in all caps, `LIKE_THIS`
+- The rationale behind this naming scheme is that Codexes (which rely on enums) will eventually be sent from the robot and
+deserialized into a database - and database column names are typically in all caps.
+- Ex: States of a manipulator:
+```
+public enum EManipulatorState {
+    RESET, GRABBING, PLACING;
+}
 ```
 
 ## VSCode and the WPILib Dev Environment
