@@ -92,8 +92,13 @@ public class DriverInput extends Module {
         // Teleop control
         if (!mSuperstructure.isRunningCommands()) {
             updateDriveTrain();
+            updateFourBar();
         } 
 
+    }
+
+    private void updateFourBar() {
+        // Discuss buttons for fourbar use later
     }
 
     private void updateDriveTrain() {
