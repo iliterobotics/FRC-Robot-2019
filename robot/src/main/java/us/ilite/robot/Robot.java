@@ -140,7 +140,7 @@ public class Robot extends TimedRobot {
         mCommandQueue.setCommands(
             new TurnToDegree(mDrive, Rotation2d.fromDegrees(90.0), 2.5, mData), 
             new TurnToDegree(mDrive, Rotation2d.fromDegrees(-90.0), 2.5, mData));
-        mCommandQueue.init(mSystemClock.getCurrentTime());
+        mCommandQueue.init(mClock.getCurrentTime());
 
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");

@@ -3,7 +3,7 @@ package us.ilite.robot.commands;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.common.types.sensor.EGyro;
-import us.ilite.robot.Data;
+import us.ilite.common.Data;
 import us.ilite.common.lib.control.PIDController;
 import us.ilite.common.config.SystemSettings;
 
