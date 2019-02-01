@@ -14,6 +14,7 @@ import com.team254.lib.util.ReflectingCSVWriter;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.DriveController;
 import com.team254.frc2018.planners.DriveMotionPlanner;
@@ -22,7 +23,6 @@ import us.ilite.common.lib.util.Conversions;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.RobotData;
 import us.ilite.robot.hardware.DriveHardware;
 import us.ilite.robot.hardware.IDriveHardware;
 import us.ilite.robot.hardware.SimDriveHardware;
@@ -37,7 +37,7 @@ import us.ilite.robot.loops.Loop;
 public class Drive extends Loop {
 	private final ILog mLogger = Logger.createLog(Drive.class);
 
-	private RobotData mData;
+	private Data mData;
 
 	private IDriveHardware mDriveHardware;
 
@@ -50,7 +50,7 @@ public class Drive extends Loop {
 	ReflectingCSVWriter<DebugOutput> mDebugLogger = null;
 	DebugOutput debugOutput = new DebugOutput();
 
-	public Drive(RobotData data, DriveController pDriveController, Clock pSimClock, boolean pSimulated)
+	public Drive(Data data, DriveController pDriveController, Clock pSimClock, boolean pSimulated)
 	{
 		this.mData = data;
 		this.mDriveController = pDriveController;
@@ -65,7 +65,7 @@ public class Drive extends Loop {
 		startCsvLogging();
 	}
 
-	public Drive(RobotData data, DriveController pDriveController) {
+	public Drive(Data data, DriveController pDriveController) {
 		this(data, pDriveController, null, false);
 	}
 

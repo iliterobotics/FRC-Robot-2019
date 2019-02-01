@@ -12,25 +12,43 @@ import java.util.Map;
 
 import com.flybotix.hfr.codex.Codex;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import us.ilite.common.io.CodexNetworkTables;
 import us.ilite.common.io.CodexNetworkTablesParser;
+import us.ilite.common.lib.util.SimpleNetworkTable;
 import us.ilite.common.types.drive.EDriveData;
+import us.ilite.common.types.input.EDriverInputMode;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.common.types.sensor.EGyro;
 
-public class LoggedData {
+public class Data {
 
+    public CodexNetworkTables mCodexNT = CodexNetworkTables.getInstance();
+    
     //Add new codexes here as we need more
     public Codex<Double, EGyro> imu = Codex.of.thisEnum(EGyro.class);
     public Codex<Double, EDriveData> drive = Codex.of.thisEnum(EDriveData.class);
     public Codex<Double, ELogitech310> driverinput = Codex.of.thisEnum(ELogitech310.class);
     public Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
 
+    public static NetworkTableInstance kInst = NetworkTableInstance.getDefault();
+    public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
+    public static SimpleNetworkTable kSmartDashboard = new SimpleNetworkTable("SmartDashboard");
+    public static NetworkTable kLimelight = kInst.getTable("limelight");
+    public static SimpleNetworkTable kDriverControlSelection = new SimpleNetworkTable("DriverControlSelection") {
+        @Override
+        public void initKeys() {
+            getInstance().getEntry(EDriverInputMode.class.getSimpleName()).setDefaultNumber(-1);
+        }
+    };
+
     //Stores writers per codex needed for CSV logging
     private Map<String, Writer> mWriters = new HashMap<String, Writer>();
 
     private List<CodexNetworkTablesParser> mLoggedCodexes;
 
-    public LoggedData() {
+    public Data() {
         //Add new codexes as we support more into this list
         mLoggedCodexes = Arrays.asList(
             new CodexNetworkTablesParser<EGyro>(imu),
@@ -116,5 +134,25 @@ public class LoggedData {
         if(!pFile.exists()) {
             pFile.createNewFile();
         }
+    }
+
+    /**
+     * Sends Codex entries into its corresponding NetworkTable
+     */
+    public void sendCodices() {
+        mCodexNT.send(imu);
+        mCodexNT.send(drive);
+        mCodexNT.send("DRIVER", driverinput);
+        mCodexNT.send("OPERATOR", operatorinput);
+    }
+
+    /**
+     * Do this before sending codices to NetworkTables
+     */
+    public void registerCodices() {
+        mCodexNT.registerCodex(EGyro.class);
+        mCodexNT.registerCodex(EDriveData.class);
+        mCodexNT.registerCodex("DRIVER", ELogitech310.class);
+        mCodexNT.registerCodex("OPERATOR", ELogitech310.class);
     }
 }

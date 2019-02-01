@@ -7,12 +7,12 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Joystick;
+import us.ilite.common.Data;
 import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
-import us.ilite.robot.RobotData;
 import us.ilite.robot.commands.Delay;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
@@ -34,9 +34,9 @@ public class DriverInput extends Module {
 
     private Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
 
-    private RobotData mData;
+    private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, RobotData pData, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
         this.mSuperstructure = pSuperstructure;
         this.mData = pData;
@@ -50,7 +50,7 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, RobotData pData) {
+    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData) {
         this(pDrivetrain, pSuperstructure, pData, false);
     }
 
