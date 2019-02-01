@@ -13,10 +13,6 @@ import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
 
 public class TargetLock implements ICommand {
-    private Drive mDrive;
-    private ITargetDataProvider mCamera;
-    private PIDController mPID;
-    private SearchDirection mCubeSearchType;
 
     private static final double kMIN_POWER = -1;
     private static final double kMAX_POWER = 1;
@@ -26,6 +22,11 @@ public class TargetLock implements ICommand {
     private static final double kI = 0;
     private static final double kD = 0;
     private static final double kTURN_POWER = 0.4;
+
+    private Drive mDrive;
+    private ITargetDataProvider mCamera;
+    private PIDController mPID = new PIDController(kP, kI, kD);
+    private SearchDirection mCubeSearchType;
 
     private double mAllowableError, mPreviousTime, mOutput = 0.0;
 
@@ -46,10 +47,10 @@ public class TargetLock implements ICommand {
 
     @Override
     public void init(double pNow) {
-        mPID = new PIDController(kP, kI, kD);
         mPID.setOutputRange(kMIN_POWER, kMAX_POWER);
         mPID.setInputRange(kMIN_INPUT, kMAX_INPUT);
         mPID.setSetpoint(0);
+        mPID.reset();
 
         this.mPreviousTime = pNow;
     }
