@@ -9,6 +9,7 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import us.ilite.common.Data;
 import us.ilite.common.lib.control.DriveController;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Joystick;
@@ -44,7 +45,7 @@ public class Robot extends TimedRobot {
     private LoopManager mLoopManager = new LoopManager(SystemSettings.kControlLoopPeriod);
     private ModuleList mRunningModules = new ModuleList();
 
-    private Clock mSystemClock = new Clock();
+    private Clock mClock = new Clock();
     private Data mData = new Data();
     private Timer initTimer = new Timer();
 
@@ -71,7 +72,7 @@ public class Robot extends TimedRobot {
 
         ICodexTimeProvider provider = new ICodexTimeProvider() {
             public long getTimestamp() {
-                return (long)mSystemClock.getCurrentTimeInNanos();
+                return (long)mClock.getCurrentTimeInNanos();
             }
         };
         CodexMetadata.overrideTimeProvider(provider);
@@ -101,7 +102,7 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
 //        mLogger.info(this.toString());
 
-        mSystemClock.cycleEnded();
+        mClock.cycleEnded();
     }
 
     @Override
@@ -115,8 +116,8 @@ public class Robot extends TimedRobot {
 
         // Init modules after commands are set
         mRunningModules.setModules(mSuperstructure);
-        mRunningModules.modeInit(mSystemClock.getCurrentTime());
-        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
+        mRunningModules.modeInit(mClock.getCurrentTime());
+        mRunningModules.periodicInput(mClock.getCurrentTime());
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
@@ -127,16 +128,16 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
-        mRunningModules.update(mSystemClock.getCurrentTime());
+        mRunningModules.periodicInput(mClock.getCurrentTime());
+        mRunningModules.update(mClock.getCurrentTime());
 //        mDrive.flushTelemetry();
     }
 
     @Override
     public void teleopInit() {
         mRunningModules.setModules(mDriverInput, mLimelight);
-        mRunningModules.modeInit(mSystemClock.getCurrentTime());
-        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
+        mRunningModules.modeInit(mClock.getCurrentTime());
+        mRunningModules.periodicInput(mClock.getCurrentTime());
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
@@ -144,17 +145,19 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
-        mRunningModules.update(mSystemClock.getCurrentTime());
+        mRunningModules.periodicInput(mClock.getCurrentTime());
+        mRunningModules.update(mClock.getCurrentTime());
         Data.kSmartDashboard.putDouble("Neo Position", mTestNeoEncoder.getPosition());
         Data.kSmartDashboard.putDouble("Neo Velocity", mTestNeoEncoder.getVelocity());
         mTestNeo.set(mTestJoystick.getX());
+        
+        mData.sendCodices();
     }
 
     @Override
     public void disabledInit() {
         mLogger.info("Disabled Initialization");
-        mRunningModules.shutdown(mSystemClock.getCurrentTime());
+        mRunningModules.shutdown(mClock.getCurrentTime());
         mLoopManager.stop();
     }
 
@@ -165,9 +168,9 @@ public class Robot extends TimedRobot {
     @Override
     public void testInit() {
         mRunningModules.setModules(mDrive);
-        mRunningModules.modeInit(mSystemClock.getCurrentTime());
-        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
-        mRunningModules.checkModule(mSystemClock.getCurrentTime());
+        mRunningModules.modeInit(mClock.getCurrentTime());
+        mRunningModules.periodicInput(mClock.getCurrentTime());
+        mRunningModules.checkModule(mClock.getCurrentTime());
 
         mLoopManager.start();
     }
@@ -175,8 +178,8 @@ public class Robot extends TimedRobot {
     @Override
     public void testPeriodic() {
 
-//        mRunningModules.periodicInput(mSystemClock.getCurrentTime());
-//        mRunningModules.update(mSystemClock.getCurrentTime());
+//        mRunningModules.periodicInput(mClock.getCurrentTime());
+//        mRunningModules.update(mClock.getCurrentTime());
     }
 
     public String toString() {
