@@ -21,6 +21,7 @@ import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.input.EDriverInputMode;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.common.types.sensor.EGyro;
+import us.ilite.common.types.EFourBarData;
 
 public class Data {
 
@@ -31,6 +32,7 @@ public class Data {
     public Codex<Double, EDriveData> drive = Codex.of.thisEnum(EDriveData.class);
     public Codex<Double, ELogitech310> driverinput = Codex.of.thisEnum(ELogitech310.class);
     public Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
+    public Codex<Double, EFourBarData> fourbar = Codex.of.thisEnum(EFourBarData.class);
 
     public static NetworkTableInstance kInst = NetworkTableInstance.getDefault();
     public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
@@ -54,7 +56,8 @@ public class Data {
             new CodexNetworkTablesParser<EGyro>(imu),
             new CodexNetworkTablesParser<EDriveData>(drive),
             new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
-            new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR")
+            new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR"),
+            new CodexNetworkTablesParser<EFourBarData>(fourbar)
         );
 
         //This loop makes a Writer for each parser and sticks it into mWriters
@@ -144,6 +147,7 @@ public class Data {
         mCodexNT.send(drive);
         mCodexNT.send("DRIVER", driverinput);
         mCodexNT.send("OPERATOR", operatorinput);
+        mCodexNT.send(fourbar);
     }
 
     /**
@@ -154,5 +158,6 @@ public class Data {
         mCodexNT.registerCodex(EDriveData.class);
         mCodexNT.registerCodex("DRIVER", ELogitech310.class);
         mCodexNT.registerCodex("OPERATOR", ELogitech310.class);
+        mCodexNT.registerCodex(EFourBarData.class);
     }
 }
