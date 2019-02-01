@@ -66,6 +66,13 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / kDriveWheelDiameterInches;
 
     // =============================================================================
+    // Heading Gains
+    // =============================================================================
+    public static double kDriveHeading_kP = 0.3;
+    public static double kDriveHeading_kI = 0.0;
+    public static double kDriveHeading_kD = 0.0;
+
+    // =============================================================================
     // Input Constants
     // =============================================================================
     public static double kSnailModePercentThrottleReduction = .5;
@@ -88,7 +95,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Motion Magic Constants
     // =============================================================================
     public static int kDriveMotionMagicLoopSlot = 0;
-    public static int kDriveMotionMagicVelocityFeedforward = 0;
+    public static int kDriveMotionMagicCruiseVelocity = 0;
     public static int kDriveMotionMagicAccelFeedforward = 0;
 
     // =============================================================================

@@ -222,17 +222,12 @@ public class DriveHardware implements IDriveHardware {
     private void configTalonForMotionMagic(TalonSRX talon) {
         configTalonForVelocity(talon);
 
-        talon.configMotionCruiseVelocity(SystemSettings.kDriveMotionMagicVelocityFeedforward, SystemSettings.kLongCANTimeoutMs);
+        talon.configMotionCruiseVelocity(SystemSettings.kDriveMotionMagicCruiseVelocity, SystemSettings.kLongCANTimeoutMs);
         talon.configMotionAcceleration(SystemSettings.kDriveMotionMagicAccelFeedforward, SystemSettings.kLongCANTimeoutMs);
     }
 
     public Rotation2d getHeading() {
         return Rotation2d.fromDegrees(mGyro.getFusedHeading());
-    }
-
-    public double getYawRate() {
-        // TODO Implement this
-        return 0.0;
     }
 
     public double getLeftInches() {
