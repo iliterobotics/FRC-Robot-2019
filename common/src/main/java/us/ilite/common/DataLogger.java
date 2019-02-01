@@ -6,7 +6,7 @@ public class DataLogger extends Thread {
     //This is for logging codexes to csv
     public static void main(String[] args) {
         NetworkTableInstance.getDefault().startClientTeam(1885);
-        LoggedData loggedData = new LoggedData();
+        Data loggedData = new Data();
         // loggedData.closeWriters();
         Thread logger = new Thread() {
             public void run() {
