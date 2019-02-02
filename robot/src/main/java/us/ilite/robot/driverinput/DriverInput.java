@@ -147,11 +147,11 @@ public class DriverInput extends Module {
             } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT)) {
                 // If driver wants to seek right, switch from "_LEFT" enum to "_RIGHT" enum
                 trackingType = ETrackingType.values()[trackingTypeOrdinal + 1];
-            }
+            
             mSuperstructure.stopRunningCommands();
             mSuperstructure.startCommands(new TargetLock(mDrive, 3, trackingType, mLimelight));
+            }
         }
-
     }
 
     public boolean isDriverAllowingTeleopCommands() {
@@ -176,7 +176,6 @@ public class DriverInput extends Module {
 
     @Override
     public void shutdown(double pNow) {
-// TODO Auto-generated method stub
 
     }
 

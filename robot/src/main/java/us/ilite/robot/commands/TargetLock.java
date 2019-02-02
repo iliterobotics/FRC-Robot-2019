@@ -31,14 +31,6 @@ public class TargetLock implements ICommand {
 
     private double mAllowableError, mPreviousTime, mOutput = 0.0;
 
-    // public enum SearchDirection {
-	// 	LEFT(-1), RIGHT(1);
-	// 	int turnScalar;
-	// 	private SearchDirection(int turnScalar) {
-	// 		this.turnScalar = turnScalar;
-	// 	}
-	// }
-
     public TargetLock(Drive pDrive, double pAllowableError, ETrackingType pTrackingType, ITargetDataProvider pCamera) {
         this.mDrive = pDrive;
         this.mAllowableError = pAllowableError;
