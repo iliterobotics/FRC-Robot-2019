@@ -85,9 +85,4 @@ public class FourBar extends Module {
         mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getBusVoltage() );
         mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
     }
-
-    @Override
-    public void shutdown(double pNow) {
-
-    }
 }
