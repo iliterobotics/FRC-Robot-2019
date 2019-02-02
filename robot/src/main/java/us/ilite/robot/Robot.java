@@ -124,8 +124,8 @@ public class Robot extends TimedRobot {
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
 
-        mSuperstructure.startCommands(new CharacterizeDrive(mDrive, false, false));
-//        mSuperstructure.startCommands(new FollowTrajectory(trajectory, mDrive, true));
+//        mSuperstructure.startCommands(new CharacterizeDrive(mDrive, false, false));
+        mSuperstructure.startCommands(new FollowTrajectory(trajectory, mDrive, true));
 
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");

@@ -30,6 +30,7 @@ import us.ilite.robot.hardware.IDriveHardware;
 import us.ilite.robot.hardware.SimDriveHardware;
 import us.ilite.robot.loops.Loop;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,7 +69,6 @@ public class Drive extends Loop {
 		}
 
 		this.mDriveHardware.init();
-		startCsvLogging();
 	}
 
 	public Drive(Data data, DriveController pDriveController) {
@@ -189,10 +189,10 @@ public class Drive extends Loop {
 
 //				// Big overhead on update()!
 				if(mDebugLogger != null) {
-					debugOutput.update(pNow, output, mStatus);
+					debugOutput.update(pNow, output);
 					mDebugLogger.add(debugOutput);
 				}
-				debugOutput.update(pNow, output);
+//				debugOutput.update(pNow, output);
 				// debugOutput.outputToLiveDashboard();
 				break;
 			case NORMAL:
@@ -277,7 +277,7 @@ public class Drive extends Loop {
 
 //		public Pose2d error = new Pose2d();
 
-		public List<LogOutput> status;
+		public List<LogOutput> status = new ArrayList<>();
 
 		public void update(double time, DriveOutput output) {
 			t = time;
