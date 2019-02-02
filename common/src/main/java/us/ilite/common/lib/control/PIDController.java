@@ -108,7 +108,7 @@ public class PIDController {
                 + m_F * m_setpoint);
         m_prevError = m_error;
 
-        m_result = Util.limit( m_result, m_maximumOutput );
+        // m_result = Util.limit( m_result, m_maximumOutput );
         m_previousTime = absoluteTime;
 
         logToCodex();

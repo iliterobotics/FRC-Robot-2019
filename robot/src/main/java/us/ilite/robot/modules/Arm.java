@@ -4,6 +4,11 @@ public class Arm extends Module
 {
     private double mVoltage;
     private double mTheta;
+    private double mDesiredTheta;
+    private ESetPoint mDesiredSetPoint;
+    private ESetPoint mCurrentSetPoint;
+
+// 1024 ticks/360 degrees = .351 t/d
 
     @Override
     public void modeInit(double pNow)
@@ -43,20 +48,12 @@ public class Arm extends Module
       
         double error = pGoal - pTheta;
 
-        //example PID from online - needs editing (or we could use the PID class):
-
-        //double deriv = pTheta - this.getGlobal("last_x");
-        //double integral = this.getGlobal("integral") + error;
-      
-        //this.setGlobal("last_x", pTheta);
-        //this.setGlobal("integral", integral);
-      
-        //return (error * p_gain) + (integral * i_gain) - (deriv * d_gain);
+     
         return 0.0;
       }
 
 
-      public void getSetPoints( SetPoint pPoint)
+      public void getSetPoints( ESetPoint pPoint)
       {
         switch( pPoint )
         {
