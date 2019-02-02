@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import us.ilite.common.Data;
 import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
@@ -39,8 +40,9 @@ public class DriverInput extends Module {
 
     private Limelight mLimelight;
 
-    public DriverInput(Drive pDrive, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
+    public DriverInput(Drive pDrive, Limelight pLimelight, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
         this.mDrive = pDrive;
+        this.mLimelight = pLimelight;
         this.mSuperstructure = pSuperstructure;
         this.mData = pData;
         this.mDriverInputCodex = mData.driverinput;
@@ -53,8 +55,8 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData) {
-        this(pDrivetrain, pSuperstructure, pData, false);
+    public DriverInput(Drive pDrivetrain, Limelight pLimelight, Superstructure pSuperstructure, Data pData) {
+        this(pDrivetrain, pLimelight, pSuperstructure, pData, false);
     }
 
     @Override
@@ -147,10 +149,16 @@ public class DriverInput extends Module {
             } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT)) {
                 // If driver wants to seek right, switch from "_LEFT" enum to "_RIGHT" enum
                 trackingType = ETrackingType.values()[trackingTypeOrdinal + 1];
+            }
+            //System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+            //System.out.println(mLimelight.toString());
+            //System.out.println(trackingType);
+            //mLimelight.setPipeline(trackingType.getPipeline());
             
             mSuperstructure.stopRunningCommands();
+            mLimelight.setPipeline(trackingType.getPipeline());
             mSuperstructure.startCommands(new TargetLock(mDrive, 3, trackingType, mLimelight));
-            }
+            
         }
     }
 

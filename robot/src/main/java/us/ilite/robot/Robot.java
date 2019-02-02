@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+import us.ilite.common.types.ETrackingType;
 import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
@@ -53,9 +54,9 @@ public class Robot extends TimedRobot {
     private Superstructure mSuperstructure = new Superstructure();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
+    private Limelight mLimelight = new Limelight(mData);
     
-    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData);
-    private Limelight mLimelight = new Limelight();
+    private DriverInput mDriverInput = new DriverInput(mDrive, mLimelight, mSuperstructure, mData);
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
 
@@ -138,6 +139,7 @@ public class Robot extends TimedRobot {
         mRunningModules.setModules(mDriverInput, mLimelight);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
+        mLimelight.setPipeline(ETrackingType.CARGO_LEFT.getPipeline());
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
@@ -149,7 +151,7 @@ public class Robot extends TimedRobot {
         mRunningModules.update(mClock.getCurrentTime());
         Data.kSmartDashboard.putDouble("Neo Position", mTestNeoEncoder.getPosition());
         Data.kSmartDashboard.putDouble("Neo Velocity", mTestNeoEncoder.getVelocity());
-        mTestNeo.set(mTestJoystick.getX());
+        System.out.println(mLimelight.toString());
         
         mData.sendCodices();
     }
