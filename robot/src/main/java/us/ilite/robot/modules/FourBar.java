@@ -45,6 +45,9 @@ public class FourBar extends Module {
     public void modeInit(double pNow) {
         mLog.error("FourBar Initialized...");
         mOutput = 0;
+
+        mNeo1.setSmartCurrentLimit( 20 );
+        mNeo2.setSmartCurrentLimit( 20 );
     }
 
     @Override
