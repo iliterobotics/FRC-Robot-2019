@@ -103,6 +103,7 @@ Temporary Items
 .apdisk
 
 ### VisualStudioCode ###
+.vscode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -164,5 +165,6 @@ bin/
 *.ipr
 *.iws
 .idea
+out/
 
 # End of https://www.gitignore.io/api/c++,java,linux,macos,gradle,windows,visualstudiocode

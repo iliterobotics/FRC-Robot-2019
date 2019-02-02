@@ -2,12 +2,11 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'application'
 apply plugin: 'org.openjfx.javafxplugin'
-
-mainClassName = 'us.ilite.display.Main'
+// mainClassName = 'us.ilite.display.Main'
+//mainClassName = 'us.ilite.display.testing.AutonConfigDisplay'
+mainClassName = 'us.ilite.display.testing.TestingDisplay'
 
 apply from: 'plot.gradle'
-
-sourceCompatibility = 1.8
 
 javafx {
     modules = [ 'javafx.controls', 'javafx.media', 'javafx.graphics', 'javafx.fxml' ]
@@ -17,8 +16,7 @@ javafx {
 dependencies {
     compile project(':common')
     compile project(':robot')
-
-    compile group: 'com.flybotix', name: 'highfrequencyrobots', version: HFRVER
+	implementation 'com.github.flybotix:highfrequencyrobots:2019.1.13a'
 
     compile name: 'jfxrt'
 
