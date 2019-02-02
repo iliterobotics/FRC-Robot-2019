@@ -16,6 +16,7 @@ import com.team254.lib.util.ReflectingCSVWriter;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.DriveController;
 import com.team254.frc2018.planners.DriveMotionPlanner;
@@ -24,7 +25,6 @@ import us.ilite.common.lib.util.Conversions;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.Data;
 import us.ilite.robot.hardware.DriveHardware;
 import us.ilite.robot.hardware.IDriveHardware;
 import us.ilite.robot.hardware.SimDriveHardware;

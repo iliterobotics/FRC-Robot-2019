@@ -12,4 +12,8 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
     compile name: 'json-simple-1.1.1'
     compile name: 'poof-power-up-lib'
+
+    runtime group: "edu.wpi.first.ntcore", name: "ntcore-jni", version: "2019.+", classifier: "all"
+    compile group: "edu.wpi.first.ntcore", name: "ntcore-java", version: "2019.+"
+    compile group: "edu.wpi.first.wpiutil", name: "wpiutil-java", version: "2019.+"
 }
