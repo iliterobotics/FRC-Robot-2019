@@ -71,9 +71,6 @@ public class DriveHardware implements IDriveHardware {
 
     @Override
     public void init() {
-//        reloadGains(mLeftMaster);
-//        reloadGains(mRightMaster);
-
         zero();
         mLeftControlMode = mRightControlMode = ControlMode.PercentOutput;
         mLeftNeutralMode = mRightNeutralMode = NeutralMode.Brake;

@@ -2,14 +2,12 @@ package us.ilite.robot.modules;
 
 public enum ESetPoint
 {
-  //Math these up
-  FULLY_OUT(0), FULLY_UP(0), FULLY_DOWN(0);
+  FULLY_OUT(), FULLY_UP(), FULLY_DOWN(), MANUAL_STATE(); //0 degrees(min) to 135 degrees(max)
   
-
   int mEncoderTicks;
-  ESetPoint( int pEncoderTicks )
+  ESetPoint()
   {
-    this.mEncoderTicks = pEncoderTicks;
+    //this.mEncoderTicks = pEncoderTicks;
   }
 
 }

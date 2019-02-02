@@ -12,6 +12,7 @@ import us.ilite.common.lib.util.SimpleNetworkTable;
 
 import com.team254.lib.util.ConstantsBase;
 
+import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.util.NetworkTablesConstantsBase;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.ELogitech310;
@@ -111,15 +112,21 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveVelocity_kD = 10.0;
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
-    public static final int ULTRASONIC_PORT = 2;
-    
+    public static int ULTRASONIC_PORT = 2;
+
     // =============================================================================
-    // Turn-To cPID constants
+    // Turn-To PID constants
     // =============================================================================
-    public static double kTurnP = 0.001;
-    public static double kTurnI = 0.0;
-    public static double kTurnD = 0.0;
-    public static double kTurnF = 0.085;}
+    public static PIDGains kPIDGains = new PIDGains( 0.0, 0.0, 0.0, 0.085 );
+
+
+    // =============================================================================
+    // LimeLight Camera Constants
+    // Note: These constants need to be recalculted for a specific robot geometry
+    // =============================================================================
+    public static double llCameraHeightIn = 58.0;
+    public static double llCameraToBumperIn = 10.0;
+    public static double llCameraAngleDeg = 28.55;
 
     // Left angle coefficients for angle = a + bx + cx^2
     //    a	0.856905324060421

@@ -6,7 +6,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.codex.Codex;
 
+import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.PIDController;
+import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.types.ETargetingData;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
@@ -46,7 +48,7 @@ public class TargetLock implements ICommand {
 
     @Override
     public void init(double pNow) {
-        mPID = new PIDController(kP, kI, kD);
+        mPID = new PIDController( new PIDGains( kP, kI, kD ), SystemSettings.kControlLoopPeriod );
         mPID.setOutputRange(kMIN_POWER, kMAX_POWER);
         mPID.setInputRange(kMIN_INPUT, kMAX_INPUT);
         mPID.setSetpoint(0);
