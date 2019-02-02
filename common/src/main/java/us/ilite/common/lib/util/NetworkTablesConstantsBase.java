@@ -61,7 +61,10 @@ public abstract class NetworkTablesConstantsBase {
             NetworkTableEntry entry = mTable.getEntry(f.getName());
             if(entry.exists()) {
                 try {
-                    f.set(this, mGson.fromJson(entry.getString(""), f.getGenericType()));
+                    // This is a workaround to a bug where loadEntries() in NetworkTables will strip out double quotes from the NetworkTables value
+                    String fixedValue = entry.getString("").replaceAll("\\\\", "\"");
+                    entry.setString(fixedValue);
+                    f.set(this, mGson.fromJson(fixedValue, f.getGenericType()));
                 } catch (IllegalAccessException e) {
                     mLog.error("Could not load value of ", f.getName(), " from NetworkTables. Maybe the variable is final?");
                     mLog.exception(e);
@@ -74,6 +77,10 @@ public abstract class NetworkTablesConstantsBase {
                 }
             }
         } 
+    }
+
+    public NetworkTable getNetworkTable() {
+        return mTable;
     }
 
 }
