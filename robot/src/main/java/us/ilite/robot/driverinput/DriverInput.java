@@ -13,9 +13,10 @@ import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
-import us.ilite.robot.commands.Delay;
+import us.ilite.robot.commands.TargetLock;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
+import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.Module;
 import us.ilite.robot.modules.Superstructure;
 
@@ -24,7 +25,7 @@ public class DriverInput extends Module {
     private static final double DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
     private ILog mLog = Logger.createLog(DriverInput.class);
 
-    protected final Drive driveTrain;
+    protected final Drive mDrive;
     protected final Superstructure mSuperstructure;
 
     private boolean mDriverStartedCommands;
@@ -36,8 +37,10 @@ public class DriverInput extends Module {
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
-        this.driveTrain = pDrivetrain;
+    private Limelight mLimelight;
+
+    public DriverInput(Drive pDrive, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
+        this.mDrive = pDrive;
         this.mSuperstructure = pSuperstructure;
         this.mData = pData;
         this.mDriverInputCodex = mData.driverinput;
@@ -56,7 +59,6 @@ public class DriverInput extends Module {
 
     @Override
     public void modeInit(double pNow) {
-// TODO Auto-generated method stub
         mDriverStartedCommands = false;
     }
 
@@ -116,7 +118,7 @@ public class DriverInput extends Module {
             driveMessage.setNeutralMode(NeutralMode.Brake);
             driveMessage.setControlMode(ControlMode.PercentOutput);
 
-            driveTrain.setDriveMessage(driveMessage);
+            mDrive.setDriveMessage(driveMessage);
         }
     }
 
@@ -147,7 +149,7 @@ public class DriverInput extends Module {
                 trackingType = ETrackingType.values()[trackingTypeOrdinal + 1];
             }
             mSuperstructure.stopRunningCommands();
-            mSuperstructure.startCommands(new Delay(30)); // Placeholder
+            mSuperstructure.startCommands(new TargetLock(mDrive, 3, trackingType, mLimelight));
         }
 
     }

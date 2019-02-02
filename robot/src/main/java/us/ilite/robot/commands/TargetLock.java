@@ -8,6 +8,7 @@ import com.flybotix.hfr.codex.Codex;
 
 import us.ilite.common.lib.control.PIDController;
 import us.ilite.common.types.ETargetingData;
+import us.ilite.common.types.ETrackingType;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
@@ -26,22 +27,22 @@ public class TargetLock implements ICommand {
     private Drive mDrive;
     private ITargetDataProvider mCamera;
     private PIDController mPID = new PIDController(kP, kI, kD);
-    private SearchDirection mCubeSearchType;
+    private ETrackingType mTrackingType;
 
     private double mAllowableError, mPreviousTime, mOutput = 0.0;
 
-    public enum SearchDirection {
-		LEFT(-1), RIGHT(1);
-		int turnScalar;
-		private SearchDirection(int turnScalar) {
-			this.turnScalar = turnScalar;
-		}
-	}
+    // public enum SearchDirection {
+	// 	LEFT(-1), RIGHT(1);
+	// 	int turnScalar;
+	// 	private SearchDirection(int turnScalar) {
+	// 		this.turnScalar = turnScalar;
+	// 	}
+	// }
 
-    public TargetLock(Drive pDrive, double pAllowableError, SearchDirection pCubeSearchType, ITargetDataProvider pCamera) {
+    public TargetLock(Drive pDrive, double pAllowableError, ETrackingType pTrackingType, ITargetDataProvider pCamera) {
         this.mDrive = pDrive;
         this.mAllowableError = pAllowableError;
-        this.mCubeSearchType = pCubeSearchType;
+        this.mTrackingType = pTrackingType;
         this.mCamera = pCamera;
     }
 
@@ -74,14 +75,13 @@ public class TargetLock implements ICommand {
                 //if there is no target in the limelight's pov, continue turning in direction specified by SearchDirection
                 mDrive.setDriveMessage(
                     new DriveMessage(
-                        mCubeSearchType.turnScalar * kTURN_POWER, 
-                        mCubeSearchType.turnScalar * kTURN_POWER, 
+                        mTrackingType.getTurnScalar() * kTURN_POWER, 
+                        mTrackingType.getTurnScalar() * -kTURN_POWER, 
                         ControlMode.PercentOutput
                     ).setNeutralMode(NeutralMode.Brake)
                 );
             }
         }
-
 
         mPreviousTime = pNow;
         
