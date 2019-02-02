@@ -190,8 +190,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kElevatorNEOEncoderAddress = -1;
     // public static int kElevatorRedundantEncoderAddress = -1;
 
-    public static int kFourBarNEO1Address = 9;
-    public static int kFourBarNEO2Address = 10;
+    public static int kFourBarNEO1Address = -1;
+    public static int kFourBarNEO2Address = -1;
     public static int kFourBarDoubleSolenoidForwardAddress = 1; // TEMPORARY!
     public static int kFourBarDoubleSolenoidReverseAddress = 2; // TEMPORARY!
     public static int kFourBarTBDSensorAddress = -1;
