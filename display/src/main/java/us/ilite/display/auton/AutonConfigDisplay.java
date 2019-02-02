@@ -1,5 +1,32 @@
 package us.ilite.display.auton;
 
+import com.flybotix.hfr.util.lang.EnumUtils;
+import javafx.application.Application;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
+import javafx.util.Callback;
+import us.ilite.common.config.SystemSettings;
+import us.ilite.common.types.auton.ECargoAction;
+import us.ilite.common.types.auton.EHatchAction;
+import us.ilite.common.types.auton.EStartingPosition;
+
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
@@ -12,42 +39,6 @@ import java.util.List;
 // import us.ilite.frc.common.types.ECubeAction;
 // import us.ilite.frc.common.types.EStartingPosition;
 // import us.ilite.frc.common.util.CSVLogger;
-
-import us.ilite.robot.auto.paths.*;
-import us.ilite.common.config.SystemSettings;
-import us.ilite.common.types.auton.EStartingPosition;
-import us.ilite.common.types.auton.ECargoAction;
-import us.ilite.common.types.auton.EHatchAction;
-
-import com.flybotix.hfr.util.lang.EnumUtils;
-import com.google.gson.Gson;
-
-import javafx.*;
-import javafx.application.Application;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.cell.CheckBoxListCell;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.text.TextAlignment;
-import javafx.stage.Stage;
-import javafx.util.Callback; 
 
 
 public class AutonConfigDisplay extends Application {
