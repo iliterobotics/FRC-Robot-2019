@@ -77,11 +77,11 @@ public class FourBar extends Module {
 
     public void updateCodex() {
         // TO-DO: log angle of fourbar
-        mData.fourbar.set( EFourBarData.A_OUTPUT, -mOutput );
+        mData.fourbar.set( EFourBarData.A_OUTPUT, -mNeo1.get() );
         mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeo1.getBusVoltage() );
         mData.fourbar.set( EFourBarData.A_CURRENT, mNeo1.getOutputCurrent() );
 
-        mData.fourbar.set( EFourBarData.B_OUTPUT, mOutput );
+        mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
         mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getBusVoltage() );
         mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
     }
