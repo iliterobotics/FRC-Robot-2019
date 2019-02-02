@@ -43,7 +43,7 @@ public class FourBar extends Module {
 
     @Override
     public void modeInit(double pNow) {
-        mLog.error("MODE INIT");
+        mLog.error("FourBar Initialized...");
         mOutput = 0;
     }
 
@@ -58,11 +58,11 @@ public class FourBar extends Module {
             mOutput = mData.driverinput.get( ELogitech310.LEFT_Y_AXIS );
             mNeo1.set( -mOutput );
             mNeo2.set( mOutput );
-            updateCodex();
         } else {
             mNeo1.set( 0 );
             mNeo2.set( 0 );
         }
+        updateCodex();
     }
 
     public void updateCodex() {
