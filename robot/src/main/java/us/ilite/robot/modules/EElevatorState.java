@@ -6,7 +6,8 @@ public enum EElevatorState {
     STOP(0),
     HOLD(0),
     DECEL_TOP(0),
-    DECEL_BOTTOM(0);
+    DECEL_BOTTOM(0),
+    SET_POSITION(0);
 
     double mPower;
 

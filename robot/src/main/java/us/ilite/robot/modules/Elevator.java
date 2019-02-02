@@ -7,21 +7,23 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.team254.lib.util.Units;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.team254.lib.drivers.talon.TalonSRXFactory;
 
 import us.ilite.common.config.SystemSettings;
 import us.ilite.lib.drivers.SparkMaxFactory;
 
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Timer;
+// import sun.security.krb5.internal.rcache.DflCache;
 import us.ilite.robot.Data;
 import us.ilite.common.lib.control.PIDController;
 import us.ilite.common.lib.control.PIDGains;
+import com.team254.lib.util.Util;
 
 
 public class Elevator extends Module {
 
-    private Data mData;
 
-    private boolean mInitialized;
     private boolean mAtBottom = true;
     private boolean mAtTop = false;
     private int mCurrentEncoderTicks;
@@ -29,46 +31,39 @@ public class Elevator extends Module {
     private boolean mAtDesiredPosition;
     private boolean mDesiredDirectionUp, mDesiredDirectionDown;
     private boolean mDesiredPositionAboveInitial = false;
+    private double mMaxPower = 1.0d;
+    private double mMinPower = -1.0d;
+    private double mHoldVoltage = 0.5; //NOT final
+    private boolean mSettingPosition = false;
+    private int kCansparkId = 0; //TODO change ID
+    private int kTalonId = 0; //TODO change ID
 
     //TODO need to figure out these encoder thresholds
-    private int mDownEncoderThreshold = 0, mUpEncoderThreshold = 0;
+    private int mDownEncoderThreshold = SystemSettings.kLowerElevatorEncoderThreshold;
+    private int mUpEncoderThreshold = SystemSettings.kLowerElevatorEncoderThreshold;
 
     EElevatorPosition mCurrentPosition = EElevatorPosition.BOTTOM;
 
-    //TODO elevator state and position
-
-    EElevatorState mState;
-    EElevatorPosition mPosition;
-
-    // public static final double TOP_LIMIT, BOTTOM_LIMIT, DEFAULT_LIMIT;
+    EElevatorState mCurrentState = EElevatorState.NORMAL;
+    EElevatorPosition mDesiredPosition;
 
     CANSparkMax mMasterElevator;
+    TalonSRX mEncoder = TalonSRXFactory.createDefaultTalon(0);
 
     public Elevator(Data pData) {
-
-        mData = pData;
-
-        //initialize motors TODO make ids in systemsettings
-        mMasterElevator = SparkMaxFactory.createDefaultSparkMax(/*Elevator Master Talon ID*/0, MotorType.kBrushless );
-        // TODO Probably set inverted
-        mMasterElevator.setInverted(true);
-
+        //Create default NEO and set the ramp rate
+        mMasterElevator = SparkMaxFactory.createDefaultSparkMax(kCansparkId, MotorType.kBrushless);
         mMasterElevator.setIdleMode(IdleMode.kBrake);
+        mMasterElevator.setRampRate(SystemSettings.kELevatorControlLoopPeriod);
 
-        // mMasterElevator.enableCurrentLimit(true);
-        // mMasterElevator.setSmartCurrentLimit(true);
-        // mMasterElevator.setSensorPhase(false);
-
-        mMasterElevator.setRampRate(/*Create constant for open loop rate*/0);
-
-        //initialization stuff
+        //We start at the bottom
         mAtBottom = true;
         mAtTop = false;
-        mDesiredDirectionDown = false;
         mDesiredDirectionUp = true;
 
-        mPosition = EElevatorPosition.BOTTOM;
-        mState = EElevatorState.STOP;
+        //Make sure the elevator is stopped upon initialization
+        mDesiredPosition = EElevatorPosition.BOTTOM;
+        mCurrentState = EElevatorState.STOP;
 
         mCurrentEncoderTicks = 0;
     }
@@ -87,33 +82,28 @@ public class Elevator extends Module {
 
     public void update(double pNow) {
 
-        //TODO change selected sensor position
+        //Get encoder value from secondary Talon
         mCurrentEncoderTicks = getEnocderPosition();
         mDesiredDirectionUp = (mDesiredPower > 0);
-        mDesiredDirectionDown = !mDesiredDirectionUp;
 
-        //current limiting
-        mAtTop = !mAtBottom && /*currentLimiting &&*/ mDesiredDirectionUp; //TODO could cause issues when it comes to holding position
-        mAtBottom = !mAtBottom && /*currentLimiting && */ mDesiredDirectionDown; //TODO could cause issues duing hold position as well
+        updateElevator(pNow);
+        mDesiredPower = determineActualPower(mCurrentState);
 
-        // if (curentLimited()) {
-        //     mState = EElevatorState.STOP;
-        // } 
+        mMasterElevator.set(Util.limit(mDesiredPower, mMinPower, mMaxPower));
 
     }
 
-    //might just put into the rigular update method
     public void updateElevator(double pNow) {
 
-        if (Math.abs(mDesiredPower) > 0d && !mAtBottom /* and also if position buttons are not being used*/) {
-            mState = EElevatorState.HOLD;
+        //TODO test this
+        //Should override any automated control
+        if (Math.abs(mDesiredPower) ==  0d && !mAtBottom) { //Hold if input is absent and we aren't at the bottom
+            mCurrentState = EElevatorState.HOLD;
         } else {
-            mState = EElevatorState.NORMAL;
+            mCurrentState = EElevatorState.NORMAL;
         }
 
         if (mDesiredDirectionUp) {
-            shouldDecelerate(mCurrentEncoderTicks, mDesiredDirectionUp);
-        } else if (mDesiredDirectionDown) {
             shouldDecelerate(mCurrentEncoderTicks, mDesiredDirectionUp);
         }
 
@@ -132,50 +122,64 @@ public class Elevator extends Module {
         setEncoderPosition(0); //Actually should be zero
     }
 
+    //Checks if we are close enough to the top or bottom 
+    //that we should be decelerating
     private void shouldDecelerate(int pCurrentEncoderTicks, boolean pCurrentDirectionUp) {
         if (pCurrentDirectionUp) {
             if (pCurrentEncoderTicks >= mUpEncoderThreshold) {
-                mState = EElevatorState.DECEL_TOP;
+                mCurrentState = EElevatorState.DECEL_TOP;
             }
         } else if (!pCurrentDirectionUp) {
             if (pCurrentEncoderTicks >= mDownEncoderThreshold) {
-                mState = EElevatorState.DECEL_BOTTOM;
+                mCurrentState = EElevatorState.DECEL_BOTTOM;
             }
         }
-
     }
     
     public void toBottom() {
-        mPosition = EElevatorPosition.BOTTOM;
+        mDesiredPosition = EElevatorPosition.BOTTOM;
+        mCurrentState = EElevatorState.SET_POSITION;
     }
 
     public void toTop() {
-        mPosition = EElevatorPosition.TOP;
+        mDesiredPosition = EElevatorPosition.BOTTOM;
+        mCurrentState = EElevatorState.SET_POSITION;
     }
 
-    double lastError = 0;
 
-    public void setPositon(EElevatorPosition pDesiredPosition, double pNow) {
+    private double setPosition(EElevatorPosition pDesiredPosition, double pCurrentTime) {
     
-        //TODO log this
+
+        double power;
+        //If the current encoder ticks is less than the threshold of the desired position, then
+        //The desired position is above the initial position
         mDesiredPositionAboveInitial = (mCurrentEncoderTicks < pDesiredPosition.mEncoderThreshold);
         
-        //Error describes the deficit of ticks between our current position and the position we are trying to get to.
-        double error = mPosition.mEncoderThreshold = mCurrentEncoderTicks;
-
-
         
-        PIDController pidController = new PIDController(SystemSettings.kElevatorGains, SystemSettings.kControlLoopPeriod);
 
-        mAtDesiredPosition = (Math.abs(error = lastError) <= SystemSettings.kELEVATOR_ENCODER_DEADBAND);
-        //If we make it to or beyond our position, then hold.
-        if (mAtDesiredPosition) {
-            mState = EElevatorState.HOLD;
+        //If the we are under the desired position and we are not in the encoder position for said
+        //position, then we are still setting position
+        if (mDesiredPositionAboveInitial && mCurrentEncoderTicks >= pDesiredPosition.mEncoderThreshold) {
+            mSettingPosition = false;
+        } else if(!mDesiredPositionAboveInitial && mCurrentEncoderTicks <= pDesiredPosition.mEncoderThreshold) { //if we are above it, same logic
+            mSettingPosition = false;
         } else {
-            mState = EElevatorState.NORMAL;            // mDesiredPower = clamp(kP * error, mPosition.mSetPointPower);
-            mDesiredPower = pidController.calculate(Math.abs(pDesiredPosition.mEncoderThreshold - mCurrentEncoderTicks), pNow);
-            lastError = error;
+            mCurrentPosition = pDesiredPosition;
+            mSettingPosition = true;
         }
+
+        //If we make it to or beyond our position, then hold.
+        if (!mSettingPosition) {
+            power = EElevatorState.HOLD.getPower();
+        } else {
+            PIDController pidController = new PIDController(SystemSettings.kElevatorGains,
+                    SystemSettings.kELevatorControlLoopPeriod);
+            pidController.setSetpoint(pDesiredPosition.mEncoderThreshold); //Our set point is the threshold of the destination state
+            power = pidController.calculate(mCurrentEncoderTicks, pCurrentTime);
+            power = Util.limit(mDesiredPower, mMinPower, mMaxPower); //limit power from -1.0 - 1.0
+        }
+
+        return power;
  
     }
 
@@ -187,7 +191,6 @@ public class Elevator extends Module {
         mDesiredPower = pPower;
     }
 
-    //TODO idk if this is the best way to get the position
     public boolean getDirection() {
         return mDesiredDirectionUp;
     }
@@ -202,31 +205,63 @@ public class Elevator extends Module {
         return mMasterElevator.getBusVoltage();
     }
 
-    
-
     public double getMasterCurrent() {
         return mMasterElevator.getOutputCurrent();
     }
 
-   
-
     public boolean finishedPositioning() {
-        return mAtDesiredPosition;
+        return !mSettingPosition;
     }
 
     public int getEnocderPosition() {
-        return 0;
+        return mEncoder.getSelectedSensorPosition(0);
     }
 
+    //Need to find a way to set the encoder position
     public void setEncoderPosition(int pTicks) {
-
+        mEncoder.setSelectedSensorPosition(0);
     }
 
 
-    public static double clamp(double pVal, double pMaxMagnitude) {
-        double value = Math.abs(pVal);
-        value = Math.min(value, pMaxMagnitude);
-        return value * (pVal > 0d ? 1d : -1d);
+    private double determineActualPower(EElevatorState pCurrentState) {
+
+        double actualPower = 0d;
+
+        switch (pCurrentState) {
+        case NORMAL:
+            actualPower = Util.limit(mDesiredPower, mMinPower, mMaxPower); //The actual power equals what the driver wants
+            mSettingPosition = false;
+            break;
+        case DECEL_TOP:
+            //TODO test decelerating
+            actualPower = Math.min(mDesiredPower, pCurrentState.getPower()); //Use the lower value to ease into the top
+            break;
+        case DECEL_BOTTOM:
+            actualPower = Math.max(mDesiredPower, pCurrentState.getPower()); //Use the higher value to ease into the bottom
+            break;
+        case HOLD:
+            actualPower = mHoldVoltage / getBusVoltage(); //Need to test
+            break;
+        case STOP:
+            actualPower = EElevatorState.STOP.getPower(); //Essentially zero, but we don't like magic numbers
+            break;
+        case SET_POSITION:
+            actualPower = setPosition(mDesiredPosition, Timer.getFPGATimestamp()); //Start setting position with the current time
+            break;
+        default:
+            System.out.println("Somehow reached an unaccounted state"); //In case, somehow, we reach this
+        }
+
+        return actualPower;
+
+    }
+
+    //This method is made to be called from outside the method
+    //the state should only reach set point when driver input call it
+    public void setStatePosition(EElevatorPosition pToPosition) {
+        mCurrentState = EElevatorState.SET_POSITION;
+        mDesiredPosition = pToPosition;
+        mSettingPosition = true; //Keeps track that we are in the process of setting the position
     }
 
 }

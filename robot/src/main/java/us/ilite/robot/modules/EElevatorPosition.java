@@ -2,7 +2,7 @@ package us.ilite.robot.modules;
 
 public enum EElevatorPosition {
 
-    //TODO change vars
+    //TODO find encoder threshold
     BOTTOM(0d,0),
     MIDDLE(0d,0),
     TOP(0d,0);
@@ -11,9 +11,7 @@ public enum EElevatorPosition {
     public double mEncoderThreshold;
     public double mSetPointPower;
 
-    //TODO implement PID
-
-    EElevatorPosition( double pPower, int pEncoderThreshold  ) {
+    EElevatorPosition( double pPower, int pEncoderThreshold ) {
         this.mSetPointPower = pPower;
         this.mEncoderThreshold = pEncoderThreshold;
 

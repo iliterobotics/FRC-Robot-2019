@@ -94,10 +94,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDrivePosition_kF = 0;
 
     // =============================================================================
-    // (Hypothetical) Elevator Constants
+    // Elevator Constants
     // =============================================================================
 
-    //TODO Actually change this please
+    //All these values will be changed once we have a better idea of what the
+    //elevator's properties will be like
     public static int kTopEncoderTicks = 0;
 
     public static double kElevatorP = 0; 
@@ -105,7 +106,12 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kElevatorD = 0;
     public static double kElevatorF = 0;
     public static PIDGains kElevatorGains = new PIDGains(kElevatorP, kElevatorI, kElevatorD, kElevatorF);
-    public static double kELevatorControlLoopPeriod = 0.01; //Change this value
+    public static double kELevatorControlLoopPeriod = 0.01;
+    public static int kUpperElevatorEncoderThreshold = 0;
+    public static int kLowerElevatorEncoderThreshold = 0;
+
+    // public static int kCansparkMasterId = 0;
+    // public static int kTalonId = 0;
 
     //This is the value that it was last year. It will most likely change. 
     public static int kELEVATOR_ENCODER_DEADBAND = 20;
@@ -121,6 +127,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static final int ULTRASONIC_PORT = 2;
+
 
 
     // =============================================================================
