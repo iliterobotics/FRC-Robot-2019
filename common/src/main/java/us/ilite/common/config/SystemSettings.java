@@ -190,14 +190,14 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kElevatorNEOEncoderAddress = -1;
     // public static int kElevatorRedundantEncoderAddress = -1;
 
-    public static int kFourBarNEO1Address = -1;
-    public static int kFourBarNEO2Address = -1;
-    public static int kFourBarDoubleSolenoidForwardAddress = -1;
-    public static int kFourBarDoubleSolenoidReverseAddress = -1;
+    public static int kFourBarNEO1Address = 9;
+    public static int kFourBarNEO2Address = 10;
+    public static int kFourBarDoubleSolenoidForwardAddress = 1; // TEMPORARY!
+    public static int kFourBarDoubleSolenoidReverseAddress = 2; // TEMPORARY!
     public static int kFourBarTBDSensorAddress = -1;
 
-    public static int kHatchFlowerOpenCloseSolenoidAddress = -1;
-    public static int kHatchFlowerExtensionSolenoidAddress = -1;
+    public static int kHatchFlowerOpenCloseSolenoidAddress = 3; // TEMPORARY!
+    public static int kHatchFlowerExtensionSolenoidAddress = 4; // TEMPORARY!
 
     public static int kIntakeSPX1Address = -1;
     public static int kIntakeSPX2Address = -1;
