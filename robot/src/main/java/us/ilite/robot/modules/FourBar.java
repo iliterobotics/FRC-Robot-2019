@@ -30,8 +30,8 @@ public class FourBar extends Module {
 
     public FourBar() {
         // TODO Construction
-        mNeo1 = new CANSparkMax(SystemSettings.kFourBarNEO1Address, CANSparkMaxLowLevel.MotorType.kBrushless);
-        mNeo2 = new CANSparkMax(SystemSettings.kFourBarNEO2Address, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mNeo1 = new CANSparkMax(9, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mNeo2 = new CANSparkMax(10, CANSparkMaxLowLevel.MotorType.kBrushless);
     
         // Connect the NEO's to the encoders
         mNeo1Encoder = mNeo1.getEncoder();
