@@ -62,8 +62,9 @@ public class FourBar extends Module {
             mNeo1.set( -mOutput );
             mNeo2.set( mOutput );
         } else {
-            mNeo1.set( 0 );
-            mNeo2.set( 0 );
+            mOutput = 0;
+            mNeo1.stopMotor();
+            mNeo2.stopMotor();
         }
         updateCodex();
     }
