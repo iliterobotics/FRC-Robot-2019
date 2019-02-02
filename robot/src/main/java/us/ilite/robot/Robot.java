@@ -53,10 +53,10 @@ public class Robot extends TimedRobot {
     private Superstructure mSuperstructure = new Superstructure();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
-    
-    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData);
-    private Limelight mLimelight = new Limelight();
     private HatchFlower mHatchFlower = new HatchFlower();
+    
+    private DriverInput mDriverInput = new DriverInput(mDrive, mHatchFlower, mSuperstructure, mData);
+    private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
 

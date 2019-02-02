@@ -184,8 +184,10 @@ public class HatchFlower extends Module {
         // this.mController = pController;
 
         // TODO Do we need to pass the CAN Addresses in via the constructor?
-        grabSolenoid = new Solenoid(SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
-        pushSolenoid = new Solenoid(SystemSettings.kHatchFlowerExtensionSolenoidAddress);
+        // grabSolenoid = new Solenoid(SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
+        // pushSolenoid = new Solenoid(SystemSettings.kHatchFlowerExtensionSolenoidAddress);
+        grabSolenoid = new Solenoid(4); //Ball Grabber/Holder (2016 robot)
+        pushSolenoid = new Solenoid(3); //Ball Kicker (2016 robot)
 
         // Init Hatch Flower to grab state - Per JKnight we will start with a hatch or cargo onboard
         this.mCurrentState = HatchFlowerStates.CAPTURE;

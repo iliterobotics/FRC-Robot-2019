@@ -16,6 +16,7 @@ import us.ilite.robot.Data;
 import us.ilite.robot.commands.Delay;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
+import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.Module;
 import us.ilite.robot.modules.Superstructure;
 
@@ -25,6 +26,7 @@ public class DriverInput extends Module {
     private ILog mLog = Logger.createLog(DriverInput.class);
 
     protected final Drive driveTrain;
+    protected final HatchFlower hatchFlower;
     protected final Superstructure mSuperstructure;
 
     private boolean mDriverStartedCommands;
@@ -36,8 +38,9 @@ public class DriverInput extends Module {
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, HatchFlower pHatchFlower, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
+        this.hatchFlower = pHatchFlower;
         this.mSuperstructure = pSuperstructure;
         this.mData = pData;
         this.mDriverInputCodex = mData.driverinput;
@@ -50,8 +53,8 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData) {
-        this(pDrivetrain, pSuperstructure, pData, false);
+    public DriverInput(Drive pDrivetrain, HatchFlower pHatchFlower, Superstructure pSuperstructure, Data pData) {
+        this(pDrivetrain, pHatchFlower, pSuperstructure, pData, false);
     }
 
     @Override
@@ -92,8 +95,18 @@ public class DriverInput extends Module {
         // Teleop control
         if (!mSuperstructure.isRunningCommands()) {
             updateDriveTrain();
+            updateHatchFlower();
         } 
 
+    }
+
+    private void updateHatchFlower() {
+        if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_PUSH_BTN)) {
+            hatchFlower.captureHatch();
+        }
+        if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_CAPTURE_BTN)) {
+            hatchFlower.pushHatch();
+        }
     }
 
     private void updateDriveTrain() {
