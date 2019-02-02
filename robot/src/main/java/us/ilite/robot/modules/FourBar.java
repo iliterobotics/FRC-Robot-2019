@@ -44,6 +44,7 @@ public class FourBar extends Module {
     @Override
     public void modeInit(double pNow) {
         mLog.error("MODE INIT");
+        mOutput = 0;
     }
 
     @Override
@@ -58,6 +59,9 @@ public class FourBar extends Module {
             mNeo1.set( -mOutput );
             mNeo2.set( mOutput );
             updateCodex();
+        } else {
+            mNeo1.set( 0 );
+            mNeo2.set( 0 );
         }
     }
 
