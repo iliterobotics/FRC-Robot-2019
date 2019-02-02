@@ -34,8 +34,8 @@ public class FourBar extends Module {
         mNeo2 = new CANSparkMax(SystemSettings.kFourBarNEO2Address, CANSparkMaxLowLevel.MotorType.kBrushless);
     
         // Connect the NEO's to the encoders
-        mNeo1Encoder = new CANEncoder( mNeo1 );
-        mNeo2Encoder = new CANEncoder( mNeo2 );
+        mNeo1Encoder = mNeo1.getEncoder();
+        mNeo2Encoder = mNeo2.getEncoder();
     
         mDoubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
     }
