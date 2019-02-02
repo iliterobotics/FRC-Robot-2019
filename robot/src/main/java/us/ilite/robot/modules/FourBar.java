@@ -69,6 +69,12 @@ public class FourBar extends Module {
         updateCodex();
     }
 
+    @Override
+    public void shutdown(double pNow) {
+        mNeo1.disable();
+        mNeo1.disable();
+    }
+
     public void updateCodex() {
         // TO-DO: log angle of fourbar
         mData.fourbar.set( EFourBarData.A_OUTPUT, -mOutput );
