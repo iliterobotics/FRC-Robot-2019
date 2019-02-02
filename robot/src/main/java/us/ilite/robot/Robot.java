@@ -25,9 +25,11 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+import us.ilite.common.types.MatchMetadata;
 import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.io.CodexUtils;
 import us.ilite.common.io.Network;
 
 import com.team254.lib.geometry.Pose2dWithCurvature;
@@ -79,6 +81,8 @@ public class Robot extends TimedRobot {
     private CANSparkMax mTestNeo = new CANSparkMax(0, MotorType.kBrushless);
     private CANEncoder mTestNeoEncoder = mTestNeo.getEncoder();
     private Joystick mTestJoystick = new Joystick(2);
+
+    private MatchMetadata mMatchMeta = null;
     
 
     @Override
@@ -200,6 +204,13 @@ public class Robot extends TimedRobot {
     public void testPeriodic() {
 
         
+    }
+
+    private void initMatchMetadata() {
+        if(mMatchMeta == null) {
+            mMatchMeta = new MatchMetadata();
+            int gid = CodexUtils.getMatchGlobalId(mMatchMeta);
+        }
     }
 
     public String toString() {
