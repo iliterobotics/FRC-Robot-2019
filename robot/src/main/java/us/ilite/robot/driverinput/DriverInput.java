@@ -14,6 +14,7 @@ import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.robot.commands.Delay;
+import us.ilite.robot.modules.Arm;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.Module;
@@ -35,6 +36,8 @@ public class DriverInput extends Module {
     private Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
 
     private Data mData;
+
+    private Arm mArm;
 
     public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
@@ -92,7 +95,9 @@ public class DriverInput extends Module {
         // Teleop control
         if (!mSuperstructure.isRunningCommands()) {
             updateDriveTrain();
+            updateArm();
         } 
+
 
     }
 
@@ -117,6 +122,35 @@ public class DriverInput extends Module {
             driveMessage.setControlMode(ControlMode.PercentOutput);
 
             driveTrain.setDriveMessage(driveMessage);
+        }
+    }
+
+    /**
+     * Commands the superstructure to update where the arm should move 
+     * depending on joystick movements. (in progress)
+     */
+    protected void updateArm()
+    {
+        //temporarily assuming this setpoint will be set by the operator Y button
+        if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_UP ) )
+        {
+            
+        }
+        //temporarily assuming this setpoint will be set by the operator A button
+        if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_DOWN ) )
+        {
+            
+        }
+        //temporarily assuming this setpoint will be set by the operator B button
+        if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_OUT ) )
+        {
+            
+        }
+        //temporarily assuming the arm will be controlled by the operator joystick
+        if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_MOTION ) )
+        {
+            //mArm.setArmAngle( mArm.getCurrentArmAngle() + mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) );
+            mArm.setDesiredOutput( mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * 0.1 );
         }
     }
 
