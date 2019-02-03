@@ -83,19 +83,27 @@ public class FourBar extends Module {
     public void setDesiredState( EFourBarState desiredState ) {
         switch ( desiredState ) {
             case NORMAL:
+                // do nothing
                 mCurrentOutput = 0;
             case STOP:
+                // hold in place
                 mCurrentOutput = gravityCompAtPosition();
             case ACCELERATE:
+                // output is gravity comp + some increasing light pid output
                 hasRun = true;
+                // mCurrentOutput = pid + gravityCompAtPosition();
             case CRUISE_1:
-            
+                // output is gravity compensation + last accelerate output
+                // mCurrentOutput = x + gravityCompAtPosition();
             case CRUISE_2:
-            
+                // output is gravity compensation + a little less than cruise 1
+                // mCurrentOutput = x + gravityCompAtPosition();
             case DECELERATE:
-            
+                // output less than gravity compensation to let gravity handle
+                // mCurrentOutput = gravityCompAtPosition() - x;
             case LANDED:
-
+                // output to handle motor until off the ground
+                // mCurrentOutput = x;
 
         }
         updateCodex();
