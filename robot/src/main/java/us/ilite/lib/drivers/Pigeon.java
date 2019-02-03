@@ -57,7 +57,7 @@ public class Pigeon extends IMU{
 	}
 	
 	public Rotation2d getHeading() {
-	  return Rotation2d.fromDegrees(mPigeon.getFusedHeading());
+	  return Rotation2d.fromDegrees(mPigeon.getFusedHeading()).inverse();
 	}
 	
 	public double getYaw() {
