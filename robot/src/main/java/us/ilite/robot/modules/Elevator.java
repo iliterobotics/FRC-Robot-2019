@@ -22,7 +22,7 @@ import us.ilite.common.Data;
 
 public class Elevator extends Module {
 
-
+    private Data mData;
     private boolean mAtBottom = true;
     private boolean mAtTop = false;
     private int mCurrentEncoderTicks;
@@ -50,6 +50,9 @@ public class Elevator extends Module {
     TalonSRX mEncoder = TalonSRXFactory.createDefaultTalon(0);
 
     public Elevator(Data pData) {
+
+        this.mData = pData;
+
         //Create default NEO and set the ramp rate
         mMasterElevator = SparkMaxFactory.createDefaultSparkMax(kCansparkId, MotorType.kBrushless);
         mMasterElevator.setIdleMode(IdleMode.kBrake);
@@ -228,7 +231,7 @@ public class Elevator extends Module {
 
         switch (pCurrentState) {
         case NORMAL:
-            power = mDesiredPower; //The actual power equals what the driver wants
+            power = mDesiredPower; //10% of the actual power equals what the driver wants
             mSettingPosition = false;
             break;
         case DECEL_TOP:
@@ -261,6 +264,10 @@ public class Elevator extends Module {
         mCurrentState = EElevatorState.SET_POSITION;
         mDesiredPosition = pToPosition;
         mSettingPosition = true; //Keeps track that we are in the process of setting the position
+    }
+
+    public double getCurrent() {
+        return mMasterElevator.getOutputCurrent();
     }
 
 

@@ -25,6 +25,7 @@ public class DriverInput extends Module {
     private ILog mLog = Logger.createLog(DriverInput.class);
 
     protected final Drive driveTrain;
+    protected final Elevator mElevator;
     protected final Superstructure mSuperstructure;
 
     private boolean mDriverStartedCommands;
@@ -36,14 +37,16 @@ public class DriverInput extends Module {
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, boolean pSimulated, Elevator pElevator) {
         this.driveTrain = pDrivetrain;
         this.mSuperstructure = pSuperstructure;
         this.mData = pData;
         this.mDriverInputCodex = mData.driverinput;
         this.mOperatorInputCodex = mData.operatorinput;
+        this.mElevator = pElevator;
         if(pSimulated) {
             // Use a different joystick library?
+            
         } else {
             this.mDriverJoystick = new Joystick(0);
             this.mOperatorJoystick = new Joystick(1);
@@ -56,7 +59,7 @@ public class DriverInput extends Module {
 
     @Override
     public void modeInit(double pNow) {
-// TODO Auto-generated method stub
+    // TODO Auto-generated method stub
         mDriverStartedCommands = false;
     }
 
@@ -92,18 +95,19 @@ public class DriverInput extends Module {
         // Teleop control
         if (!mSuperstructure.isRunningCommands()) {
             updateDriveTrain();
+            updateElevator();
         } 
 
     }
 
     private void updateDriveTrain() {
-        if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_THROTTLE_AXIS) &&
-           mData.driverinput.isSet(DriveTeamInputMap.DRIVER_TURN_AXIS) &&
-           mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS)) {
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_THROTTLE_AXIS)
+                && mData.driverinput.isSet(DriveTeamInputMap.DRIVER_TURN_AXIS)
+                && mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS)) {
             double rotate = mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
             double throttle = -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
 
-//		    throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
+            //		    throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
             rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
             rotate = Util.limit(rotate, 0.7);
 
@@ -118,6 +122,17 @@ public class DriverInput extends Module {
 
             driveTrain.setDriveMessage(driveMessage);
         }
+    }
+
+    private void updateElevator() {
+
+        double power = 0.0d;
+
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_THROTTLE_AXIS)) {
+            power = mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
+            power *= 0.10d; //10% of the driver input.
+        }
+
     }
 
     /**

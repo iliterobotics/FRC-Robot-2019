@@ -31,6 +31,7 @@ import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.Limelight;
+import us.ilite.robot.modules.Elevator;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
 
@@ -53,6 +54,7 @@ public class Robot extends TimedRobot {
     private Superstructure mSuperstructure = new Superstructure();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
+    private Elevator mElevator = new Elevator(mData);
     
     private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData);
     private Limelight mLimelight = new Limelight();
@@ -135,7 +137,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        mRunningModules.setModules(mDriverInput, mLimelight);
+        mRunningModules.setModules(mDriverInput, mLimelight, mElevator);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
