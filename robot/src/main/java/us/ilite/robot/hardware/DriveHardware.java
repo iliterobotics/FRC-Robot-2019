@@ -18,10 +18,12 @@ import com.team254.lib.drivers.talon.TalonSRXChecker.CheckerConfigBuilder;
 import com.team254.lib.drivers.talon.TalonSRXFactory;
 import com.team254.lib.geometry.Rotation2d;
 
+import edu.wpi.first.wpilibj.SerialPort;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.util.Conversions;
 import us.ilite.lib.drivers.IMU;
+import us.ilite.lib.drivers.NavX;
 import us.ilite.lib.drivers.Pigeon;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
@@ -43,8 +45,8 @@ public class DriveHardware implements IDriveHardware {
     private NeutralMode mLeftNeutralMode, mRightNeutralMode;
 
     public DriveHardware() {
-        mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kDriveCollisionThreshold);
-
+//        mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kDriveCollisionThreshold);
+        mGyro = new NavX(SerialPort.Port.kMXP);
 
         mLeftMaster = TalonSRXFactory.createDefaultTalon(SystemSettings.kDriveLeftMasterTalonId);
         mLeftRear = TalonSRXFactory.createPermanentSlaveTalon(SystemSettings.kDriveLeftRearTalonId, SystemSettings.kDriveLeftMasterTalonId);

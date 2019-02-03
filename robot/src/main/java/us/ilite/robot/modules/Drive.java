@@ -3,25 +3,22 @@ package us.ilite.robot.modules;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.flybotix.hfr.util.lang.IUpdate;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.LogOutput;
 import com.flybotix.hfr.util.log.Logger;
-import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.ReflectingCSVWriter;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.DriveController;
 import com.team254.frc2018.planners.DriveMotionPlanner;
 import com.team254.lib.physics.DriveOutput;
 import us.ilite.common.lib.util.Conversions;
+import us.ilite.common.lib.util.PerfTimer;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.drivers.Clock;
@@ -55,7 +52,10 @@ public class Drive extends Loop {
 
 	ReflectingCSVWriter<DebugOutput> mDebugLogger = null;
 	DebugOutput debugOutput = new DebugOutput();
-	String mStatus;
+
+//	PerfTimer mUpdateTimer = new PerfTimer().alwayLog();
+//	PerfTimer mCalculateTimer = new PerfTimer().alwayLog().setLogMessage("Calculate: %s");
+//	PerfTimer mMotionPlannerTimer = new PerfTimer().alwayLog().setLogMessage("Planner: %s");
 
 	public Drive(Data data, DriveController pDriveController, Clock pSimClock, boolean pSimulated)
 	{
@@ -90,7 +90,7 @@ public class Drive extends Loop {
 
 	@Override
 	public void modeInit(double pNow) {
-		mDriveController.setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDFORWARD_ONLY);
+		mDriveController.setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
         // Other gains to try: (2.0, 0.7), (0.65, 0.175), (0.0, 0.0)
 		mDriveController.getController().setGains(2.0, 0.7);
 
@@ -104,6 +104,7 @@ public class Drive extends Loop {
 
 	@Override
 	public void periodicInput(double pNow) {
+
 		mData.drive.set(EDriveData.LEFT_POS_INCHES, mDriveHardware.getLeftInches());
 		mData.drive.set(EDriveData.RIGHT_POS_INCHES, mDriveHardware.getRightInches());
 //		mData.drive.set(EDriveData.LEFT_VEL_IPS, mDriveHardware.getLeftVelInches());
@@ -152,15 +153,18 @@ public class Drive extends Loop {
 
 	@Override
 	public void loop(double pNow) {
+//		mUpdateTimer.start();
 		switch(mDriveState) {
 			case PATH_FOLLOWING:
+//				mCalculateTimer.start();
+//				mMotionPlannerTimer.start();
 				// Update controller - calculates new robot position and retrieves motion planner output
 				DriveOutput output = mDriveController.update(
 						pNow,
 						mData.drive.get(EDriveData.LEFT_POS_INCHES),
 						mData.drive.get(EDriveData.RIGHT_POS_INCHES),
 						Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES)));
-
+//				mMotionPlannerTimer.stop();
 				// Convert controller output into something compatible with Talons
 				DriveMessage driveMessage = new DriveMessage(
 						Conversions.radiansPerSecondToTicksPer100ms(output.left_velocity),
@@ -186,14 +190,13 @@ public class Drive extends Loop {
 				driveMessage.setNeutralMode(NeutralMode.Brake);
 
 				mDriveMessage = driveMessage;
+//				mCalculateTimer.stop();
 
-//				// Big overhead on update()!
 				if(mDebugLogger != null) {
 					debugOutput.update(pNow, output);
 					mDebugLogger.add(debugOutput);
 				}
-//				debugOutput.update(pNow, output);
-				// debugOutput.outputToLiveDashboard();
+
 				break;
 			case NORMAL:
 				break;
@@ -202,13 +205,16 @@ public class Drive extends Loop {
 				break;
 		}
 		mDriveHardware.set(mDriveMessage);
+//		mUpdateTimer.stop();
 	}
 
-	public void followPath(Trajectory<TimedState<Pose2dWithCurvature>> pPath, boolean pResetPoseToStart) {
+	public void setPathFollowing() {
 		mDriveState = EDriveState.PATH_FOLLOWING;
 		mDriveHardware.configureMode(ControlMode.Velocity);
 		mDriveHardware.set(new DriveMessage(0.0, 0.0, ControlMode.Velocity));
+	}
 
+	public void setPath(Trajectory<TimedState<Pose2dWithCurvature>> pPath, boolean pResetPoseToStart) {
 		mDriveController.setTrajectory(pPath, pResetPoseToStart);
 		if(pResetPoseToStart) {
 			mDriveHardware.zero();
@@ -290,7 +296,7 @@ public class Drive extends Loop {
 			leftVel = mData.drive.get(EDriveData.LEFT_VEL_IPS);
 			rightVel = mData.drive.get(EDriveData.RIGHT_VEL_IPS);
 
-			status = Logger.getRecentLogs().stream().filter(logOutput -> logOutput.thread.equals(this.getClass().getName())).collect(Collectors.toList());
+//			status = Logger.getRecentLogs().stream().filter(logOutput -> logOutput.thread.equals(this.getClass().getName())).collect(Collectors.toList());
 //			targetX = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().x();
 //			targetY = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().y();
 //			x = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().getTranslation().x();

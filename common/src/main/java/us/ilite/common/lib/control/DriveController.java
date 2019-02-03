@@ -15,6 +15,7 @@ import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.frc2018.Kinematics;
 import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.RobotProfile;
+import us.ilite.common.lib.util.PerfTimer;
 
 /**
  * High level manager for pose tracking, path/trajectory following, and pose stabilization.
@@ -29,6 +30,9 @@ public class DriveController {
     private final NonlinearFeedbackController mController;
     private final DriveMotionPlanner mDriveMotionPlanner;
     private final RobotStateEstimator mRobotStateEstimator;
+
+//    private PerfTimer mStateEstimatorTimer = new PerfTimer().alwayLog().setLogMessage("State Estimation: %s");
+//    private PerfTimer mMotionPlannerTimer = new PerfTimer().alwayLog().setLogMessage("Motion Plan Update: %s");
 
     public DriveController(RobotProfile pRobotProfile) {
         mRobotProfile = pRobotProfile;
@@ -46,15 +50,21 @@ public class DriveController {
     }
 
     public DriveOutput update(double pTimestamp, double pLeftAbsolutePos, double pRightAbsolutePos, Rotation2d pHeading) {
-        mRobotStateEstimator.update(pTimestamp, pLeftAbsolutePos, pRightAbsolutePos, pHeading);
+//        mStateEstimatorTimer.start();
+        Pose2d currentPose = mRobotStateEstimator.update(pTimestamp, pLeftAbsolutePos, pRightAbsolutePos, pHeading);
+//        mStateEstimatorTimer.stop();
 
-        return mDriveMotionPlanner.update(pTimestamp, mRobotStateEstimator.getRobotState().getLatestFieldToVehiclePose());
+//        mMotionPlannerTimer.start();
+        DriveOutput output = mDriveMotionPlanner.update(pTimestamp, currentPose);
+//        mMotionPlannerTimer.stop();
+
+        return output;
     }
 
     public DriveOutput update(double pTimestamp, double pLeftAbsolutePos, double pRightAbsolutePos) {
-        mRobotStateEstimator.update(pTimestamp, pLeftAbsolutePos, pRightAbsolutePos);
+        Pose2d currentPose = mRobotStateEstimator.update(pTimestamp, pLeftAbsolutePos, pRightAbsolutePos);
 
-        return mDriveMotionPlanner.update(pTimestamp, mRobotStateEstimator.getRobotState().getLatestFieldToVehiclePose());
+        return mDriveMotionPlanner.update(pTimestamp, currentPose);
     }
 
     public DriveController setPlannerMode(DriveMotionPlanner.PlannerMode pPlannerMode) {

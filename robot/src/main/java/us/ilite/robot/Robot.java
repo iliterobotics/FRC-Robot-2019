@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+import us.ilite.common.lib.util.PerfTimer;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.paths.TestAuto;
@@ -64,6 +65,7 @@ public class Robot extends TimedRobot {
 
     private SystemSettings mSettings = new SystemSettings();
 
+    private PerfTimer mClockUpdateTimer = new PerfTimer();
 
     @Override
     public void robotInit() {
@@ -81,14 +83,14 @@ public class Robot extends TimedRobot {
         // Init the actual robot
         initTimer.reset();
         initTimer.start();
-        Logger.setLevel(ELevel.INFO);
+        Logger.setLevel(ELevel.ERROR);
         mLogger.info("Starting Robot Initialization...");
 
         mRunningModules.setModules();
 
         TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
         List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(/*new CentripetalAccelerationConstraint(60.0)*/);
-        trajectory = mTrajectoryGenerator.generateTrajectory(false, TestAuto.kPath, kTrajectoryConstraints, 60.0, 80.0, 6.0);
+        trajectory = mTrajectoryGenerator.generateTrajectory(false, TestAuto.kPath, kTrajectoryConstraints, 60.0, 40.0, 6.0);
 
         mSettings.writeToNetworkTables();
 
@@ -109,12 +111,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        mSettings.loadFromNetworkTables();
-
         initTimer.reset();
         initTimer.start();
         mLogger.info("Starting Autonomous Initialization...");
 
+        mSettings.loadFromNetworkTables();
 
         // Init modules after commands are set
         mRunningModules.setModules(mSuperstructure);
