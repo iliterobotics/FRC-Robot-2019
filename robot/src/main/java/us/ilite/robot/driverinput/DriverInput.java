@@ -101,6 +101,7 @@ public class DriverInput extends Module {
 
     }
 
+    // TO-DO: Make sure both driver and operator are holding the buttons
     private void updateFourBar() {
         if ( mData.driverinput.isSet( ELogitech310.B_BTN ) ) {
             mFourBar.setDesiredOutput( mData.driverinput.get( ELogitech310.LEFT_Y_AXIS ) );
@@ -109,6 +110,7 @@ public class DriverInput extends Module {
         }
     }
 
+    // TO-DO: Make sure both driver and operator are holding the buttons
     private void updateDriveTrain() {
         if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_THROTTLE_AXIS) &&
            mData.driverinput.isSet(DriveTeamInputMap.DRIVER_TURN_AXIS) &&
