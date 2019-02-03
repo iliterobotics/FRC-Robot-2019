@@ -112,7 +112,8 @@ public class DriverInput extends Module {
     private void updateDriveTrain() {
         if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_THROTTLE_AXIS) &&
            mData.driverinput.isSet(DriveTeamInputMap.DRIVER_TURN_AXIS) &&
-           mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS)) {
+           mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) &&
+           !mData.driverinput.isSet(ELogitech310.B_BTN)) {
             double rotate = mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
             double throttle = -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
 
