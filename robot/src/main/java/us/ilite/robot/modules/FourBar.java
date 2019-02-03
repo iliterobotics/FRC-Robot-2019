@@ -16,20 +16,19 @@ import us.ilite.common.types.input.ELogitech310;
 public class FourBar extends Module {
 
     private ILog mLog = Logger.createLog(FourBar.class);
+    private Data mData;
 
     private CANSparkMax mNeo1;
     private CANSparkMax mNeo2;
-
     private CANEncoder mNeo1Encoder;
     private CANEncoder mNeo2Encoder;
-
     private DoubleSolenoid mDoubleSolenoid;
 
     // varying output according to angle of fourbar to counteract gravity
     // private double mGravityComp = SystemSettings.kMass * 10 * Math.cos( mFourBarAngle ) * SystemSettings.kFourBarCenterOfGravity * SystemSettings.kT;
     private double mOutput;
 
-    public FourBar( /*Data pData*/ ) {
+    public FourBar( Data pData ) {
         // Later: SystemSettings address
         mNeo1 = new CANSparkMax(9, CANSparkMaxLowLevel.MotorType.kBrushless);
         mNeo2 = new CANSparkMax(10, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -39,6 +38,8 @@ public class FourBar extends Module {
         mNeo2Encoder = mNeo2.getEncoder();
     
         // mDoubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
+
+        mData = pData;
     }
 
 
@@ -82,14 +83,14 @@ public class FourBar extends Module {
         mNeo2.stopMotor();
     }
 
-    // public void updateCodex() {
-    //     // TO-DO: log angle of fourbar
-    //     // mData.fourbar.set( EFourBarData.A_OUTPUT, -mNeo1.get() );
-    //     // mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeo1.getBusVoltage() );
-    //     // mData.fourbar.set( EFourBarData.A_CURRENT, mNeo1.getOutputCurrent() );
+    public void updateCodex() {
+        // TO-DO: log angle of fourbar
+        mData.fourbar.set( EFourBarData.A_OUTPUT, -mNeo1.get() );
+        mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeo1.getBusVoltage() );
+        mData.fourbar.set( EFourBarData.A_CURRENT, mNeo1.getOutputCurrent() );
 
-    //     mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
-    //     mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getBusVoltage() );
-    //     mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
-    // }
+        mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
+        mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getBusVoltage() );
+        mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
+    }
 }

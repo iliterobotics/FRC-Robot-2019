@@ -54,7 +54,7 @@ public class Robot extends TimedRobot {
     private Superstructure mSuperstructure = new Superstructure();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
-    private FourBar mFourBar = new FourBar();
+    private FourBar mFourBar = new FourBar( mData );
 
     private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData, mFourBar);
     private Limelight mLimelight = new Limelight();
