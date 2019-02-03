@@ -25,6 +25,8 @@ public class FourBar extends Module {
 
     private DoubleSolenoid mDoubleSolenoid;
 
+    // varying output according to angle of fourbar to counteract gravity
+    // private double mGravityComp = SystemSettings.kMass * 10 * Math.cos( mFourBarAngle ) * SystemSettings.kFourBarCenterOfGravity * SystemSettings.kT;
     private double mOutput;
 
     public FourBar( /*Data pData*/ ) {
@@ -69,7 +71,7 @@ public class FourBar extends Module {
 
     // later use states to determine output
     public void setDesiredOutput( double output ) {
-        mOutput = output;
+        mOutput = output /*+ kGravitationalConstant*/;
         // updateCodex();
     }
     
