@@ -16,6 +16,7 @@ import us.ilite.common.types.input.ELogitech310;
 import us.ilite.robot.commands.Delay;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
+import us.ilite.robot.modules.FourBar;
 import us.ilite.robot.modules.Module;
 import us.ilite.robot.modules.Superstructure;
 
@@ -27,6 +28,8 @@ public class DriverInput extends Module {
     protected final Drive driveTrain;
     protected final Superstructure mSuperstructure;
 
+    private FourBar mFourBar;
+
     private boolean mDriverStartedCommands;
 
     private Joystick mDriverJoystick;
@@ -36,12 +39,13 @@ public class DriverInput extends Module {
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, FourBar pFourBar, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
         this.mSuperstructure = pSuperstructure;
         this.mData = pData;
         this.mDriverInputCodex = mData.driverinput;
         this.mOperatorInputCodex = mData.operatorinput;
+        this.mFourBar = pFourBar;
         if(pSimulated) {
             // Use a different joystick library?
         } else {
@@ -50,8 +54,8 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData) {
-        this(pDrivetrain, pSuperstructure, pData, false);
+    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, FourBar pFourBar) {
+        this(pDrivetrain, pSuperstructure, pData, pFourBar, false);
     }
 
     @Override
@@ -98,7 +102,11 @@ public class DriverInput extends Module {
     }
 
     private void updateFourBar() {
-        // Discuss buttons for fourbar use later
+        if ( mData.driverinput.isSet( ELogitech310.B_BTN ) ) {
+            mFourBar.setDesiredOutput( mData.driverinput.get( ELogitech310.LEFT_Y_AXIS ) );
+        } else {
+            mFourBar.stop();
+        }
     }
 
     private void updateDriveTrain() {
