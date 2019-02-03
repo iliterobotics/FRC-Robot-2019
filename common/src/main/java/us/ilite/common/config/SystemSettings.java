@@ -113,6 +113,13 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static int ULTRASONIC_PORT = 2;
 
+    // =============================================================================
+    // Robot constants
+    // =============================================================================
+    public static double kMass = 0.0;
+    public static double kFourBarCenterOfGravity = 0.0;
+    public static double kT = 0.0;
+
 
     // =============================================================================
     // LimeLight Camera Constants
