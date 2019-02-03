@@ -104,8 +104,14 @@ public class DriverInput extends Module {
     private void updateFourBar() {
         if ( mData.driverinput.isSet( ELogitech310.B_BTN ) &&
              mData.operatorinput.isSet( ELogitech310.B_BTN ) ) {
-            driveTrain.setDriveMessage( DriveMessage.fromThrottleAndTurn( 0.0, 0.0 ) );
-            // mFourBar.setDesiredState( );
+                 driveTrain.setDriveMessage( DriveMessage.fromThrottleAndTurn( 0.0, 0.0 ) );
+                 if ( mData.driverinput.get( ELogitech310.LEFT_Y_AXIS ) > 0 ) {
+                     // set desired state to accelerate
+                 } else if ( mData.driverinput.get( ELogitech310.LEFT_Y_AXIS ) < 0 ) {
+                     // handle landing
+                 } else {
+                     // set desired state to stop
+                 }
         } else {
             mFourBar.handleStopType();
         }
