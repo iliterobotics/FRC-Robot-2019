@@ -12,6 +12,7 @@ import us.ilite.common.lib.util.SimpleNetworkTable;
 
 import com.team254.lib.util.ConstantsBase;
 
+import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.util.NetworkTablesConstantsBase;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.ELogitech310;
@@ -113,6 +114,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static int ULTRASONIC_PORT = 2;
 
+    // =============================================================================
+    // Turn-To PID constants
+    // =============================================================================
+    public static PIDGains kPIDGains = new PIDGains( 0.0, 0.0, 0.0, 0.085 );
+
 
     // =============================================================================
     // LimeLight Camera Constants
@@ -183,8 +189,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // 2019 Module Addresses
     // =============================================================================
-    public static int kCargoSpitSPX1Address = 13;
-    public static int kCargoSpitSPX2Address = 14;
+    public static int kCargoSpitLeftSPXAddress = 13;
+    public static int kCargoSpitRightSPXAddress = 14;
     public static double kCargoSpitSPXCurrentLimit = -1.0;
 
     public static int kElevatorNEOAddress = -15;
@@ -202,8 +208,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kHatchFlowerOpenCloseSolenoidAddress = 5;
     public static int kHatchFlowerExtensionSolenoidAddress = 6;
 
-    public static int kIntakeSPXUpperAddress = 11;
-    public static int kIntakeSPXLowerAddress = 12;
+    public static int kHatchIntakeSPXAddress = 11;
+    public static int kCargoIntakeSPXLowerAddress = 12;
     // TO-DO DIO spreadsheet empty
     public static int kIntakeBeamBreakAddress = -1;
 
