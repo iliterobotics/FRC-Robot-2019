@@ -12,7 +12,9 @@ import com.team254.lib.util.Util;
 
 public class Arm extends Module
 {
-    private static final double MAX_CURRENT_V_RATIO = 5; //tune - overcurrent ratio for arm motor
+    private static final double MAX_CURRENT_V_RATIO = 1; //tune - overcurrent ratio for arm motor
+    private static final double MOTOR_OFF_TIME = 0.5;
+    private static final double MAX_STALL_TIME = 0.1;
     // private double mVoltage;
     // private double mActualTheta;
     // private double mDesiredTheta;
@@ -66,16 +68,18 @@ public class Arm extends Module
         
             if(!stalled)
 	        {
+                stalled = true;
                 mTimer.start();
             }
             else
             {
-            if( mTimer.hasPeriodPassed(MAX_STALL_TIME) )
-            {
-                mDesiredOutput = 0;
-                motorOff = true;
-                mTimer.stop();
-                mTimer.start(); //starting for cool-off period
+                if( mTimer.hasPeriodPassed(MAX_STALL_TIME) )
+                {
+                    mDesiredOutput = 0;
+                    motorOff = true;
+                    mTimer.stop();
+                    mTimer.start(); //starting for cool-off period
+                }
             }
         }
         else
@@ -133,7 +137,7 @@ public class Arm extends Module
     }
 
 
-    private double calculateOutput()
+    private double calculateOutput() //not running on desired output - check later
     {
         pid.setSetpoint(this.desiredNumTicks);
         double tempOutput = pid.calculate( talon.getSelectedSensorPosition(), Timer.getFPGATimestamp() );
