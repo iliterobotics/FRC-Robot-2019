@@ -32,10 +32,4 @@ public class Units {
     public static double radians_to_degrees(double radians) {
         return Math.toDegrees(radians);
     }
-
-    public static double clamp(double pVal, double pMaxMagnitude) {
-        double value = Math.abs(pVal);
-        value = Math.min(value, pMaxMagnitude);
-        return value * (pVal > 0d ? 1d : -1d);
-    }
 }

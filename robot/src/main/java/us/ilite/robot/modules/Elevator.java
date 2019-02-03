@@ -14,11 +14,10 @@ import us.ilite.lib.drivers.SparkMaxFactory;
 
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
-// import sun.security.krb5.internal.rcache.DflCache;
-import us.ilite.robot.Data;
 import us.ilite.common.lib.control.PIDController;
 import us.ilite.common.lib.control.PIDGains;
 import com.team254.lib.util.Util;
+import us.ilite.common.Data;
 
 
 public class Elevator extends Module {
@@ -87,7 +86,7 @@ public class Elevator extends Module {
         mDesiredDirectionUp = (mDesiredPower > 0);
 
         updateElevator(pNow);
-        mDesiredPower = determineActualPower(mCurrentState);
+        mDesiredPower = calculateDesiredPower(mCurrentState);
 
         mMasterElevator.set(Util.limit(mDesiredPower, mMinPower, mMaxPower));
 
@@ -153,15 +152,15 @@ public class Elevator extends Module {
         double power;
         //If the current encoder ticks is less than the threshold of the desired position, then
         //The desired position is above the initial position
-        mDesiredPositionAboveInitial = (mCurrentEncoderTicks < pDesiredPosition.mEncoderThreshold);
+        mDesiredPositionAboveInitial = (mCurrentEncoderTicks < pDesiredPosition.kEncoderThreshold);
         
         
 
         //If the we are under the desired position and we are not in the encoder position for said
         //position, then we are still setting position
-        if (mDesiredPositionAboveInitial && mCurrentEncoderTicks >= pDesiredPosition.mEncoderThreshold) {
+        if (mDesiredPositionAboveInitial && mCurrentEncoderTicks >= pDesiredPosition.kEncoderThreshold) {
             mSettingPosition = false;
-        } else if(!mDesiredPositionAboveInitial && mCurrentEncoderTicks <= pDesiredPosition.mEncoderThreshold) { //if we are above it, same logic
+        } else if(!mDesiredPositionAboveInitial && mCurrentEncoderTicks <= pDesiredPosition.kEncoderThreshold) { //if we are above it, same logic
             mSettingPosition = false;
         } else {
             mCurrentPosition = pDesiredPosition;
@@ -174,7 +173,7 @@ public class Elevator extends Module {
         } else {
             PIDController pidController = new PIDController(SystemSettings.kElevatorGains,
                     SystemSettings.kELevatorControlLoopPeriod);
-            pidController.setSetpoint(pDesiredPosition.mEncoderThreshold); //Our set point is the threshold of the destination state
+            pidController.setSetpoint(pDesiredPosition.kEncoderThreshold); //Our set point is the threshold of the destination state
             power = pidController.calculate(mCurrentEncoderTicks, pCurrentTime);
             power = Util.limit(mDesiredPower, mMinPower, mMaxPower); //limit power from -1.0 - 1.0
         }
@@ -223,36 +222,36 @@ public class Elevator extends Module {
     }
 
 
-    private double determineActualPower(EElevatorState pCurrentState) {
+    private double calculateDesiredPower(EElevatorState pCurrentState) {
 
-        double actualPower = 0d;
+        double power = 0d;
 
         switch (pCurrentState) {
         case NORMAL:
-            actualPower = Util.limit(mDesiredPower, mMinPower, mMaxPower); //The actual power equals what the driver wants
+            power = mDesiredPower; //The actual power equals what the driver wants
             mSettingPosition = false;
             break;
         case DECEL_TOP:
             //TODO test decelerating
-            actualPower = Math.min(mDesiredPower, pCurrentState.getPower()); //Use the lower value to ease into the top
+            power = Math.min(mDesiredPower, pCurrentState.getPower()); //Use the lower value to ease into the top
             break;
         case DECEL_BOTTOM:
-            actualPower = Math.max(mDesiredPower, pCurrentState.getPower()); //Use the higher value to ease into the bottom
+            power = Math.max(mDesiredPower, pCurrentState.getPower()); //Use the higher value to ease into the bottom
             break;
         case HOLD:
-            actualPower = mHoldVoltage / getBusVoltage(); //Need to test
+            power = mHoldVoltage / getBusVoltage(); //Need to test
             break;
         case STOP:
-            actualPower = EElevatorState.STOP.getPower(); //Essentially zero, but we don't like magic numbers
+            power = EElevatorState.STOP.getPower(); //Essentially zero, but we don't like magic numbers
             break;
         case SET_POSITION:
-            actualPower = setPosition(mDesiredPosition, Timer.getFPGATimestamp()); //Start setting position with the current time
+            power = setPosition(mDesiredPosition, Timer.getFPGATimestamp()); //Start setting position with the current time
             break;
         default:
-            System.out.println("Somehow reached an unaccounted state"); //In case, somehow, we reach this
+            System.out.println("Somehow reached an unaccounted state with " + pCurrentState.toString()); //In case, somehow, we reach this
         }
 
-        return actualPower;
+        return Util.limit(power, mMinPower, mMaxPower);
 
     }
 
@@ -263,5 +262,6 @@ public class Elevator extends Module {
         mDesiredPosition = pToPosition;
         mSettingPosition = true; //Keeps track that we are in the process of setting the position
     }
+
 
 }

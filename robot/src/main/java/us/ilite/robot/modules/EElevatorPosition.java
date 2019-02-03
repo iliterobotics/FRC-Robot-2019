@@ -7,22 +7,21 @@ public enum EElevatorPosition {
     MIDDLE(0d,0),
     TOP(0d,0);
 
-    public double inches;
-    public double mEncoderThreshold;
-    public double mSetPointPower;
+    public final double kEncoderThreshold;
+    public final double kSetPointPower;
 
     EElevatorPosition( double pPower, int pEncoderThreshold ) {
-        this.mSetPointPower = pPower;
-        this.mEncoderThreshold = pEncoderThreshold;
+        this.kSetPointPower = pPower;
+        this.kEncoderThreshold = pEncoderThreshold;
 
     }
 
     public double getSetPointPower() {
-        return mSetPointPower;
+        return kSetPointPower;
     }
 
     public double mEncoderThreshold() {
-        return mEncoderThreshold;
+        return kEncoderThreshold;
     }
     
 }

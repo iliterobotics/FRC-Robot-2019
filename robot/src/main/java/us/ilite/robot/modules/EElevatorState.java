@@ -2,6 +2,7 @@ package us.ilite.robot.modules;
 
 public enum EElevatorState {
 
+    //TODO find all of the values for the power.
     NORMAL(0),
     STOP(0),
     HOLD(0),
