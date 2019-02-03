@@ -31,7 +31,6 @@ public class FourBar extends Module {
     private double mCurrentOutput;
 
     private boolean hasRun = false;
-    private EFourBarState mDesiredState;
     private EFourBarState mCurrentState;
 
     public FourBar( Data pData ) {
@@ -68,8 +67,9 @@ public class FourBar extends Module {
 
     @Override
     public void update(double pNow) {
-        mNeo1.set( -mCurrentOutput );
-        mNeo2.set( mCurrentOutput );
+        if ( mCurrentState == EFourBarState.ACCELERATE ) {
+
+        }
         updateCodex();
     }
 
