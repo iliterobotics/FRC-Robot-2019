@@ -1,22 +1,30 @@
 package us.ilite.robot.modules;
 
-public enum EFourBarState {
-    // TO-DO: get output
-    
-    NORMAL( 0 ),
-    STOP( 0 ),
-    ACCELERATE( 0 ),
-    CRUISE_1( 0 ),
-    CRUISE_2( 0 ),
-    DECELLERATE( 0 ),
-    LANDED( 0 );
+import static org.mockito.Mockito.RETURNS_MOCKS;
 
-    private double mOutput;
-    EFourBarState( double pOutput ) {
-        mOutput = pOutput;
+public enum EFourBarState {
+
+    // TO-DO: get angles
+    NORMAL( 0.0, 0.0 ),
+    STOP( 0.0, 0.0 ),
+    ACCELERATE( 0.0, 0.0 ),
+    CRUISE_1( 0.0, 0.0 ),
+    CRUISE_2( 0.0, 0.0 ),
+    DECELERATE( 0.0, 0.0 ),
+    LANDED( 0.0, 0.0 );
+
+    private double mLowerAngularBound;
+    private double mUpperAngularBound;
+    EFourBarState( double pLowerAngularBound, double pUpperAngularBound ) {
+        mLowerAngularBound = pLowerAngularBound;
+        mUpperAngularBound = pUpperAngularBound;
     }
 
-    public double getOutput() {
-        return mOutput;
+    public double getLowerAngularBound() {
+        return mLowerAngularBound;
+    }
+
+    public double getUpperAngularBound() {
+        return mUpperAngularBound;
     }
 }

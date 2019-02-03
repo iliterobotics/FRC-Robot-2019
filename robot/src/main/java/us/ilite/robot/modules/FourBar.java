@@ -28,8 +28,11 @@ public class FourBar extends Module {
     private double mPreviousNeo2Rotations;
 
     // varying output according to angle of fourbar to counteract gravity
-    private double mGravityComp;
-    private double mOutput;
+    private double mCurrentOutput;
+
+    private boolean hasRun = false;
+    private EFourBarState mDesiredState;
+    private EFourBarState mCurrentState;
 
     public FourBar( Data pData ) {
         // Later: SystemSettings address
@@ -43,7 +46,6 @@ public class FourBar extends Module {
         // mDoubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
 
         mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
-        mGravityComp = SystemSettings.kMass * 10 * Math.cos( mAngularPosition ) * SystemSettings.kFourBarCenterOfGravity * SystemSettings.kT;
         mData = pData;
     }
 
@@ -51,7 +53,7 @@ public class FourBar extends Module {
     @Override
     public void modeInit(double pNow) {
         mLog.error("FourBar Initialized...");
-        mOutput = 0;
+        mCurrentOutput = 0;
         mPreviousNeo1Rotations = mNeo1Encoder.getPosition();
         mPreviousNeo2Rotations = mNeo2Encoder.getPosition();
 
@@ -66,8 +68,8 @@ public class FourBar extends Module {
 
     @Override
     public void update(double pNow) {
-        mNeo1.set( -mOutput );
-        mNeo2.set( mOutput );
+        mNeo1.set( -mCurrentOutput );
+        mNeo2.set( mCurrentOutput );
         updateCodex();
     }
 
@@ -78,11 +80,23 @@ public class FourBar extends Module {
     }
 
     // later use states to determine output
-    public void setDesiredOutput( double output, boolean isIdle ) {
-        if ( isIdle ) {
-            mOutput = 0;
-        } else {
-            mOutput = output + mGravityComp;
+    public void setDesiredState( EFourBarState desiredState ) {
+        switch ( desiredState ) {
+            case NORMAL:
+                mCurrentOutput = 0;
+            case STOP:
+                mCurrentOutput = gravityCompAtPosition();
+            case ACCELERATE:
+                hasRun = true;
+            case CRUISE_1:
+            
+            case CRUISE_2:
+            
+            case DECELERATE:
+            
+            case LANDED:
+
+
         }
         updateCodex();
     }
@@ -101,13 +115,6 @@ public class FourBar extends Module {
         } else {
             setDesiredState( EFourBarState.NORMAL );
         }
-    }
-
-    // later add to setDesiredOutput after states added in
-    public void stop() {
-        setDesiredOutput( 0, true );
-        mNeo1.stopMotor();
-        mNeo2.stopMotor();
     }
 
     public void updateCodex() {
