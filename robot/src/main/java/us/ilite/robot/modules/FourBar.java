@@ -75,8 +75,12 @@ public class FourBar extends Module {
     }
 
     // later use states to determine output
-    public void setDesiredOutput( double output ) {
-        mOutput = output + mGravityComp;
+    public void setDesiredOutput( double output, boolean isIdle ) {
+        if ( isIdle ) {
+            mOutput = 0;
+        } else {
+            mOutput = output + mGravityComp;
+        }
         updateCodex();
     }
 
@@ -90,7 +94,7 @@ public class FourBar extends Module {
     
     // later add to setDesiredOutput after states added in
     public void stop() {
-        setDesiredOutput( 0 );
+        setDesiredOutput( 0, true );
         mNeo1.stopMotor();
         mNeo2.stopMotor();
     }
