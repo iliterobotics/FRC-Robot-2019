@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Collections;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.team254.lib.geometry.Rotation2d;
+import us.ilite.common.config.SystemSettings;
 
 public class Pigeon extends IMU{
 
@@ -25,6 +27,8 @@ public class Pigeon extends IMU{
 		ypr = new double[3];
 		xyz = new short[3];
 		this.mPigeon = pPigeon;
+		mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 5, SystemSettings.kLongCANTimeoutMs);
+		mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 5, SystemSettings.kLongCANTimeoutMs);
 		setCollisionThreshold_DeltaG(pCollisionThreshold_DeltaG);
 		//mAccelerationX = new FilteredAverage(kCollisionGains);
 		//mAccelerationY = new FilteredAverage(kCollisionGains);

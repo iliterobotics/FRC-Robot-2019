@@ -21,6 +21,8 @@ import com.team254.lib.geometry.Rotation2d;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.util.Conversions;
+import us.ilite.lib.drivers.IMU;
+import us.ilite.lib.drivers.Pigeon;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
@@ -34,16 +36,15 @@ public class DriveHardware implements IDriveHardware {
 
     private final ILog mLogger = Logger.createLog(DriveHardware.class);
 
-    private final PigeonIMU mGyro;
+    private final IMU mGyro;
 
     private final TalonSRX mLeftMaster, mRightMaster, mLeftRear, mRightRear;
     private ControlMode mLeftControlMode, mRightControlMode;
     private NeutralMode mLeftNeutralMode, mRightNeutralMode;
 
     public DriveHardware() {
-        mGyro = new PigeonIMU(SystemSettings.kPigeonId);
-        mGyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 5, SystemSettings.kLongCANTimeoutMs);
-        mGyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 5, SystemSettings.kLongCANTimeoutMs);
+        mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kDriveCollisionThreshold);
+
 
         mLeftMaster = TalonSRXFactory.createDefaultTalon(SystemSettings.kDriveLeftMasterTalonId);
         mLeftRear = TalonSRXFactory.createPermanentSlaveTalon(SystemSettings.kDriveLeftRearTalonId, SystemSettings.kDriveLeftMasterTalonId);
@@ -84,8 +85,7 @@ public class DriveHardware implements IDriveHardware {
 
     @Override
     public void zero() {
-        mGyro.setFusedHeading(Rotation2d.identity().getDegrees(), SystemSettings.kCANTimeoutMs);
-        mGyro.setYaw(Rotation2d.identity().getDegrees(), SystemSettings.kCANTimeoutMs);
+        mGyro.zeroAll();
 
         mLeftMaster.setSelectedSensorPosition(0, 0, SystemSettings.kCANTimeoutMs);
         mRightMaster.setSelectedSensorPosition(0, 0, SystemSettings.kCANTimeoutMs);
@@ -228,7 +228,7 @@ public class DriveHardware implements IDriveHardware {
     }
 
     public Rotation2d getHeading() {
-        return Rotation2d.fromDegrees(mGyro.getFusedHeading());
+        return mGyro.getHeading();
     }
 
     public double getLeftInches() {
