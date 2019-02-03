@@ -25,8 +25,9 @@ public class FourBar extends Module {
     private DoubleSolenoid mDoubleSolenoid;
 
     public double mAngularPosition;
+
     // varying output according to angle of fourbar to counteract gravity
-    // private double mGravityComp = SystemSettings.kMass * 10 * Math.cos( mFourBarAngle ) * SystemSettings.kFourBarCenterOfGravity * SystemSettings.kT;
+    private double mGravityComp;
     private double mOutput;
 
     public FourBar( Data pData ) {
@@ -41,6 +42,7 @@ public class FourBar extends Module {
         // mDoubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
 
         mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
+        mGravityComp = SystemSettings.kMass * 10 * Math.cos( mAngularPosition ) * SystemSettings.kFourBarCenterOfGravity * SystemSettings.kT;
         mData = pData;
     }
 
@@ -56,14 +58,14 @@ public class FourBar extends Module {
 
     @Override
     public void periodicInput(double pNow) {
-        
+        updateCodex();
     }
 
     @Override
     public void update(double pNow) {
         mNeo1.set( -mOutput );
         mNeo2.set( mOutput );
-        // updateCodex();
+        updateCodex();
     }
 
     @Override
@@ -74,8 +76,14 @@ public class FourBar extends Module {
 
     // later use states to determine output
     public void setDesiredOutput( double output ) {
-        mOutput = output /*+ kGravitationalConstant*/;
-        // updateCodex();
+        mOutput = output + mGravityComp;
+        updateCodex();
+    }
+
+    public double gravityCompAtPosition() {
+        return SystemSettings.kMass * 10 * Math.cos( mAngularPosition ) * SystemSettings.kFourBarCenterOfGravity * SystemSettings.kT;
+    }
+
     public void updateAngularPosition() {
         mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
     }
@@ -96,6 +104,7 @@ public class FourBar extends Module {
         mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
         mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getBusVoltage() );
         mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
+
         mData.fourbar.set( EFourBarData.ANGLE, mAngularPosition );
     }
 }
