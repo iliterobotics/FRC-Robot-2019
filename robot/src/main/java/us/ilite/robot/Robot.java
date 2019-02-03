@@ -81,7 +81,7 @@ public class Robot extends TimedRobot {
         // Init the actual robot
         initTimer.reset();
         initTimer.start();
-        Logger.setLevel(ELevel.ERROR);
+        Logger.setLevel(ELevel.DEBUG);
         mLogger.info("Starting Robot Initialization...");
 
         mRunningModules.setModules();
@@ -136,10 +136,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        mRunningModules.setModules(mDriverInput, mLimelight);
+        mRunningModules.setModules(mDriverInput,mSuperstructure, mLimelight);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
-        mLimelight.setPipeline(ETrackingType.CARGO_LEFT.getPipeline());
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
@@ -151,9 +150,9 @@ public class Robot extends TimedRobot {
         mRunningModules.update(mClock.getCurrentTime());
         Data.kSmartDashboard.putDouble("Neo Position", mTestNeoEncoder.getPosition());
         Data.kSmartDashboard.putDouble("Neo Velocity", mTestNeoEncoder.getVelocity());
-        System.out.println(mLimelight.toString());
+        //System.out.println(mLimelight.toString());
         
-        mData.sendCodices();
+//        mData.sendCodices();
     }
 
     @Override

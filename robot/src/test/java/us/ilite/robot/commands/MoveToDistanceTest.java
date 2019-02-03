@@ -31,7 +31,7 @@ public class MoveToDistanceTest {
         boolean isDone = distanceToCommand.update(System.currentTimeMillis());
 
         assertFalse(isDone);
-        verify(drive, times(1)).setDriveMessage(argThat(getArgMatcher(1, 1)));
+        verify(drive, times(1)).setDriveMessage(argThat(getArgMatcher(0.5, 0.5)));
 
     }
 
@@ -42,7 +42,7 @@ public class MoveToDistanceTest {
         boolean isDone = distanceToCommand.update(System.currentTimeMillis());
 
         assertFalse(isDone);
-        verify(drive, times(1)).setDriveMessage(argThat(getArgMatcher(-1, -1)));
+        verify(drive, times(1)).setDriveMessage(argThat(getArgMatcher(-0.5, -0.5)));
 
     }
 

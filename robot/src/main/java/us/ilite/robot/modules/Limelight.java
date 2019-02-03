@@ -44,24 +44,27 @@ public class Limelight extends Module implements ITargetDataProvider {
     public void update(double pNow) {
         mData.limelight.reset();
         if(mVisionTarget != null) {
-            mData.limelight.set(ETargetingData.tv, mTable.getEntry("tv").getBoolean(false) ? 1d : 0d);
-            mData.limelight.set(ETargetingData.tx, mTable.getEntry("tx").getDouble(Double.NaN));
-            mData.limelight.set(ETargetingData.ty,mTable.getEntry("ty").getDouble(Double.NaN));
-            mData.limelight.set(ETargetingData.ta,mTable.getEntry("ta").getDouble(Double.NaN));
-            mData.limelight.set(ETargetingData.ts,mTable.getEntry("ts").getDouble(Double.NaN));
-            mData.limelight.set(ETargetingData.tl,mTable.getEntry("tl").getDouble(Double.NaN));
-            mData.limelight.set(ETargetingData.tshort,mTable.getEntry("tshort").getDouble(Double.NaN));
-            mData.limelight.set(ETargetingData.tlong,mTable.getEntry("tlong").getDouble(Double.NaN));
-            mData.limelight.set(ETargetingData.thoriz,mTable.getEntry("thoriz").getDouble(Double.NaN));
-            mData.limelight.set(ETargetingData.tvert,mTable.getEntry("tvert").getDouble(Double.NaN));
+            boolean targetValid = mTable.getEntry("tv").getDouble(0.0) > 0.0;
+            mData.limelight.set(ETargetingData.tv, targetValid ? 1.0d : null);
 
-            mData.limelight.set(ETargetingData.targetOrdinal, (double)mVisionTarget.ordinal());
-            mData.limelight.set(ETargetingData.calcDistToTarget, calcTargetDistance(mVisionTarget));
-            mData.limelight.set(calcAngleToTarget, calcTargetApproachAngle());
-            Optional<Translation2d> p = calcTargetLocation(mVisionTarget);
-            if(p.isPresent()) {
-                mData.limelight.set(ETargetingData.calcTargetX, p.get().x());
-                mData.limelight.set(ETargetingData.calcTargetX, p.get().y());
+            if(targetValid) {
+                mData.limelight.set(ETargetingData.tx, mTable.getEntry("tx").getDouble(Double.NaN));
+                mData.limelight.set(ETargetingData.ty,mTable.getEntry("ty").getDouble(Double.NaN));
+                mData.limelight.set(ETargetingData.ta,mTable.getEntry("ta").getDouble(Double.NaN));
+                mData.limelight.set(ETargetingData.ts,mTable.getEntry("ts").getDouble(Double.NaN));
+                mData.limelight.set(ETargetingData.tl,mTable.getEntry("tl").getDouble(Double.NaN));
+                mData.limelight.set(ETargetingData.tshort,mTable.getEntry("tshort").getDouble(Double.NaN));
+                mData.limelight.set(ETargetingData.tlong,mTable.getEntry("tlong").getDouble(Double.NaN));
+                mData.limelight.set(ETargetingData.thoriz,mTable.getEntry("thoriz").getDouble(Double.NaN));
+                mData.limelight.set(ETargetingData.tvert,mTable.getEntry("tvert").getDouble(Double.NaN));
+                mData.limelight.set(ETargetingData.targetOrdinal, (double)mVisionTarget.ordinal());
+                mData.limelight.set(ETargetingData.calcDistToTarget, calcTargetDistance(mVisionTarget));
+                mData.limelight.set(calcAngleToTarget, calcTargetApproachAngle());
+                Optional<Translation2d> p = calcTargetLocation(mVisionTarget);
+                if(p.isPresent()) {
+                    mData.limelight.set(ETargetingData.calcTargetX, p.get().x());
+                    mData.limelight.set(ETargetingData.calcTargetX, p.get().y());
+                }
             }
         }
 
