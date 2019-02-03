@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
     private Drive mDrive = new Drive(mData, mDriveController);
     private Elevator mElevator = new Elevator(mData);
     
-    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData);
+    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData, mElevator);
     private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;

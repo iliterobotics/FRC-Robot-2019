@@ -18,6 +18,7 @@ import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.Module;
 import us.ilite.robot.modules.Superstructure;
+import us.ilite.robot.modules.Elevator;
 
 public class DriverInput extends Module {
 
@@ -53,8 +54,8 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData) {
-        this(pDrivetrain, pSuperstructure, pData, false);
+    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, Elevator pElevator) {
+        this(pDrivetrain, pSuperstructure, pData, false, pElevator);
     }
 
     @Override
@@ -132,7 +133,7 @@ public class DriverInput extends Module {
             power = mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
             power *= 0.10d; //10% of the driver input.
         }
-
+        
     }
 
     /**

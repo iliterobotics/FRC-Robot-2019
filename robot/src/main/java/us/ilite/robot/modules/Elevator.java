@@ -34,8 +34,8 @@ public class Elevator extends Module {
     private double mMinPower = -1.0d;
     private double mHoldVoltage = 0.5; //NOT final
     private boolean mSettingPosition = false;
-    private int kCansparkId = 0; //TODO change ID
-    private int kTalonId = 0; //TODO change ID
+    private int kCansparkId = 15; //TODO change ID
+    private int kTalonId = 15; //TODO change ID
 
     //TODO need to figure out these encoder thresholds
     private int mDownEncoderThreshold = SystemSettings.kLowerElevatorEncoderThreshold;
@@ -47,7 +47,7 @@ public class Elevator extends Module {
     EElevatorPosition mDesiredPosition;
 
     CANSparkMax mMasterElevator;
-    TalonSRX mEncoder = TalonSRXFactory.createDefaultTalon(0);
+    TalonSRX mEncoder = TalonSRXFactory.createDefaultTalon(kTalonId);
 
     public Elevator(Data pData) {
 

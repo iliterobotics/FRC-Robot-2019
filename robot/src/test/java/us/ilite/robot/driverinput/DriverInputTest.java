@@ -15,6 +15,7 @@ import us.ilite.robot.commands.Delay;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
+import us.ilite.robot.modules.Elevator;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -26,6 +27,7 @@ public class DriverInputTest {
     @Mock private Drive mDrive;
     // We want to see Superstructure's actual behavior, so we make it a spy
     private Superstructure mSuperstructure;
+    private Elevator mElevator;
 
 
     private DriverInput mDriverInput;
@@ -43,7 +45,7 @@ public class DriverInputTest {
         mClock = new Clock().simulated();
         mModuleList = new ModuleList();
         mSuperstructure = spy(new Superstructure());
-        mDriverInput = spy(new DriverInput(mDrive, mSuperstructure, mData, true));
+        mDriverInput = spy(new DriverInput(mDrive, mSuperstructure, mData, mElevator));
 
         mModuleList.setModules(mDriverInput, mSuperstructure, mDrive);
         mModuleList.modeInit(mClock.getCurrentTime());

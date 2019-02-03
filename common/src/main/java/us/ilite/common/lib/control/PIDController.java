@@ -54,30 +54,6 @@ public class PIDController {
         mDefaultDT = kDefaultDT;
     }
 
-    private boolean mContinuous = false;
-
-    private double mPreviousTime;
-    private PIDGains mPIDGains;
-    private double mDt;
-    private double mMaximumOutput = 1.0;
-    private double mMinimumOutput = -1.0;
-    private double mMaximumInput = 0.0;
-    private double mMinimumInput = 0.0;
-
-    private double mPrevError = 0.0;
-    private double mTotalError = 0.0;
-    private double mSetpoint = 0.0;
-    private double mError = 100.0;
-    private double mResult = 0.0;
-    private double mLastInput = Double.NaN;
-    private double mDeadband = 0.0; // If the absolute error is less than
-                                    // deadband
-                                    // then treat error for the proportional
-                                    // term as 0
-    private double mInputForCodex;
-    private double mOutputForCodex;
-    private double mDefaultDT;
-
     /**
      * Calculating output based on pid constants
      * @param input the current position
