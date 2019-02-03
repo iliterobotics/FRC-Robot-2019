@@ -8,6 +8,7 @@ import com.flybotix.hfr.codex.Codex;
 
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.PIDController;
+import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.types.ETargetingData;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
@@ -48,8 +49,7 @@ public class TargetLock implements ICommand {
 
     @Override
     public void init(double pNow) {
-        PIDGains PIDGains = new PIDGains(kP, kI, kD, 0);
-        mPID = new PIDController(PIDGains, SystemSettings.kControlLoopPeriod);
+        mPID = new PIDController( new PIDGains( kP, kI, kD ), SystemSettings.kControlLoopPeriod );
         mPID.setOutputRange(kMIN_POWER, kMAX_POWER);
         mPID.setInputRange(kMIN_INPUT, kMAX_INPUT);
         mPID.setSetpoint(0);

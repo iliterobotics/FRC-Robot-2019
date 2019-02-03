@@ -17,6 +17,7 @@ public class MoveToDistanceTest {
     private Drive drive;
     private IAbsoluteDistanceProvider absoluteDistanceProvider;
     private final double DESIRED_DISTANCE_IN_INCHES = 25;
+    private static final double DRIVER_VALUE = 0.5;
 
     @Before
     public void init() {
@@ -31,7 +32,7 @@ public class MoveToDistanceTest {
         boolean isDone = distanceToCommand.update(System.currentTimeMillis());
 
         assertFalse(isDone);
-        verify(drive, times(1)).setDriveMessage(argThat(getArgMatcher(1, 1)));
+        verify(drive, times(1)).setDriveMessage(argThat(getArgMatcher(DRIVER_VALUE, DRIVER_VALUE)));
 
     }
 
@@ -42,7 +43,7 @@ public class MoveToDistanceTest {
         boolean isDone = distanceToCommand.update(System.currentTimeMillis());
 
         assertFalse(isDone);
-        verify(drive, times(1)).setDriveMessage(argThat(getArgMatcher(-1, -1)));
+        verify(drive, times(1)).setDriveMessage(argThat(getArgMatcher(-DRIVER_VALUE, -DRIVER_VALUE)));
 
     }
 

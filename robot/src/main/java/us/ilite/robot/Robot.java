@@ -1,13 +1,22 @@
 package us.ilite.robot;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.flybotix.hfr.codex.CodexMetadata;
 import com.flybotix.hfr.codex.ICodexTimeProvider;
+
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.trajectory.timing.TimingConstraint;
 
 import us.ilite.common.Data;
 import us.ilite.common.lib.control.DriveController;
@@ -25,7 +34,12 @@ import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
+import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+
 import us.ilite.lib.drivers.Clock;
+import us.ilite.robot.auto.paths.TestAuto;
+import us.ilite.robot.commands.CommandQueue;
+import us.ilite.robot.commands.TurnToDegree;
 import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
@@ -34,9 +48,7 @@ import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.Elevator;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
-
-import java.util.Arrays;
-import java.util.List;
+import us.ilite.common.lib.control.DriveController;
 
 public class Robot extends TimedRobot {
     
@@ -45,10 +57,13 @@ public class Robot extends TimedRobot {
     // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
     private LoopManager mLoopManager = new LoopManager(SystemSettings.kControlLoopPeriod);
     private ModuleList mRunningModules = new ModuleList();
+    private CommandQueue mCommandQueue = new CommandQueue();
 
     private Clock mClock = new Clock();
     private Data mData = new Data();
     private Timer initTimer = new Timer();
+    private SystemSettings mSettings = new SystemSettings();
+
 
     // Module declarations here
     private Superstructure mSuperstructure = new Superstructure();
@@ -82,8 +97,10 @@ public class Robot extends TimedRobot {
         // Init the actual robot
         initTimer.reset();
         initTimer.start();
-        Logger.setLevel(ELevel.ERROR);
+        Logger.setLevel(ELevel.INFO);
         mLogger.info("Starting Robot Initialization...");
+
+        mSettings.writeToNetworkTables();
 
         mRunningModules.setModules();
 
@@ -102,19 +119,17 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
-//        mLogger.info(this.toString());
-
         mClock.cycleEnded();
     }
 
     @Override
     public void autonomousInit() {
+        
         initTimer.reset();
         initTimer.start();
         mLogger.info("Starting Autonomous Initialization...");
 
-        mSuperstructure.startCommands(new FollowTrajectory(trajectory, mDrive, true));
-//        mCommandQueue.startCommands(new CharacterizeDrive(mDrive, false, false));
+        mSettings.loadFromNetworkTables();
 
         // Init modules after commands are set
         mRunningModules.setModules(mSuperstructure);
@@ -124,6 +139,11 @@ public class Robot extends TimedRobot {
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
 
+        mCommandQueue.setCommands(
+            new TurnToDegree(mDrive, Rotation2d.fromDegrees(90.0), 2.5, mData), 
+            new TurnToDegree(mDrive, Rotation2d.fromDegrees(-90.0), 2.5, mData));
+        mCommandQueue.init(mClock.getCurrentTime());
+
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");
     }
@@ -132,7 +152,6 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
-//        mDrive.flushTelemetry();
     }
 
     @Override
@@ -180,8 +199,7 @@ public class Robot extends TimedRobot {
     @Override
     public void testPeriodic() {
 
-//        mRunningModules.periodicInput(mClock.getCurrentTime());
-//        mRunningModules.update(mClock.getCurrentTime());
+        
     }
 
     public String toString() {
