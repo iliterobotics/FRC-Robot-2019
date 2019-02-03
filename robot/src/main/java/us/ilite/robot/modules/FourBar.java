@@ -28,12 +28,12 @@ public class FourBar extends Module {
     private double mOutput;
 
     public FourBar( /*Data pData*/ ) {
-        // TODO Construction
-        // mNeo1 = new CANSparkMax(9, CANSparkMaxLowLevel.MotorType.kBrushless);
+        // Later: SystemSettings address
+        mNeo1 = new CANSparkMax(9, CANSparkMaxLowLevel.MotorType.kBrushless);
         mNeo2 = new CANSparkMax(10, CANSparkMaxLowLevel.MotorType.kBrushless);
     
         // Connect the NEO's to the encoders
-        // mNeo1Encoder = mNeo1.getEncoder();
+        mNeo1Encoder = mNeo1.getEncoder();
         mNeo2Encoder = mNeo2.getEncoder();
     
         // mDoubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
@@ -45,7 +45,7 @@ public class FourBar extends Module {
         mLog.error("FourBar Initialized...");
         mOutput = 0;
 
-        // mNeo1.setSmartCurrentLimit( 20 );
+        mNeo1.setSmartCurrentLimit( 20 );
         mNeo2.setSmartCurrentLimit( 20 );
     }
 
@@ -56,14 +56,14 @@ public class FourBar extends Module {
 
     @Override
     public void update(double pNow) {
-        // mNeo1.set( -mOutput );
+        mNeo1.set( -mOutput );
         mNeo2.set( mOutput );
         // updateCodex();
     }
 
     @Override
     public void shutdown(double pNow) {
-        // mNeo1.disable();
+        mNeo1.disable();
         mNeo2.disable();
     }
 
@@ -76,7 +76,7 @@ public class FourBar extends Module {
     // later add to setDesiredOutput after states added in
     public void stop() {
         setDesiredOutput( 0 );
-        // mNeo1.stopMotor();
+        mNeo1.stopMotor();
         mNeo2.stopMotor();
     }
 
