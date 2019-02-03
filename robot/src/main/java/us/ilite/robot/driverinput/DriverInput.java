@@ -53,8 +53,9 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData) {
+    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, Arm pArm) {
         this(pDrivetrain, pSuperstructure, pData, false);
+        this.mArm = pArm;
     }
 
     @Override
@@ -150,7 +151,10 @@ public class DriverInput extends Module {
         if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_MOTION ) )
         {
             //mArm.setArmAngle( mArm.getCurrentArmAngle() + mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) );
-            mArm.setDesiredOutput( mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * 0.1 );
+            // System.out.println(mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
+            // mArm.setDesiredOutput( mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * 0.1 );
+             System.out.println(mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
+            mArm.setDesiredOutput( mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) );
         }
     }
 

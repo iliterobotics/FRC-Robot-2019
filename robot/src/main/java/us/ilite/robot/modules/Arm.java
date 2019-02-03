@@ -1,6 +1,7 @@
 package us.ilite.robot.modules;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team254.lib.drivers.talon.TalonSRXFactory;
 
@@ -25,7 +26,7 @@ public class Arm extends Module
     private double kD;
     private int maxNumTicks = 383; //number of ticks at max arm angle
     private int minNumTicks = 0; //number of ticks at min arm angle
-    private static int talonPortId = 0; //placeholder constant; change later in SystemSettings
+    private static int talonPortId = 6; //placeholder constant; change later in SystemSettings
     private TalonSRX talon = TalonSRXFactory.createDefaultTalon(talonPortId);
     private PIDController pid;
     // private boolean settingPosition;
@@ -40,8 +41,11 @@ public class Arm extends Module
 
     public Arm()
     {
+        this.currentNumTicks = 0;
         pid = new PIDController( new PIDGains(kP, kI, kD), SystemSettings.kControlLoopPeriod );
         pid.setInputRange( 0, 383 ); //min and max ticks of arm
+        talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.kLongCANTimeoutMs);
+        talon.setSelectedSensorPosition(0);
     }
 
     @Override
@@ -59,53 +63,54 @@ public class Arm extends Module
     @Override
     public void update(double pNow)
     {
+        currentNumTicks = talon.getSelectedSensorPosition();
+        System.out.println( "desired output a = " + this.mDesiredOutput );
         double current = talon.getOutputCurrent();
         double voltage = talon.getMotorOutputVoltage();
         double ratio = current / voltage;
 
-        if(ratio > MAX_CURRENT_V_RATIO)
-        {
-        
-            if(!stalled)
-	        {
-                stalled = true;
-                mTimer.start();
-            }
-            else
-            {
-                if( mTimer.hasPeriodPassed(MAX_STALL_TIME) )
-                {
-                    mDesiredOutput = 0;
-                    motorOff = true;
-                    mTimer.stop();
-                    mTimer.start(); //starting for cool-off period
-                }
-            }
-        }
-        else
-        {
-            stalled = false;
-        }
+        // if(ratio > MAX_CURRENT_V_RATIO)
+        // {
+        //     System.out.println( "desired output b = " + this.mDesiredOutput );
+        //     if(!this.stalled)
+	    //     {
+        //         this.stalled = true;
+        //         mTimer.start();
+        //     }
+        //     else
+        //     {
+        //         if( mTimer.hasPeriodPassed(MAX_STALL_TIME) )
+        //         {
+        //             System.out.println( "desired output c = " + this.mDesiredOutput );
+        //             this.mDesiredOutput = 0;
+        //             this.motorOff = true;
+        //             mTimer.stop();
+        //             mTimer.start(); //starting for cool-off period
+        //         }
+        //     }
+        // }
+        // else
+        // {
+        //     this.stalled = false;
+        // }
 
-        if(motorOff)
-        {
-            if( mTimer.hasPeriodPassed(MOTOR_OFF_TIME) )
-            {
-                motorOff = false;
-                mTimer.stop();
-            }
-            else
-            {
-                mDesiredOutput = 0;
-            }
-        }
-        else //motor is not off
-        {
-            double output = this.mDesiredOutput; //= calculateOutput();
-        }
-
-        currentNumTicks = talon.getSelectedSensorPosition();
-        talon.set(ControlMode.PercentOutput, output);
+        // if(this.motorOff)
+        // {
+        //     if( mTimer.hasPeriodPassed(MOTOR_OFF_TIME) )
+        //     {
+        //         this.motorOff = false;
+        //         this.mTimer.stop();
+        //     }
+        //     else
+        //     {
+        //         System.out.println( "desired output d = " + this.mDesiredOutput );
+        //         this.mDesiredOutput = 0;
+        //     }
+        // }
+        System.out.println( "about to set desired output = " + this.mDesiredOutput );
+        System.out.println("ticks =" + this.currentNumTicks);
+        this.currentNumTicks = talon.getSelectedSensorPosition();
+        talon.set(ControlMode.PercentOutput, this.mDesiredOutput);
         
     }
 
