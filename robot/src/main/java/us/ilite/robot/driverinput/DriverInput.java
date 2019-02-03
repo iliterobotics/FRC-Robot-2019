@@ -104,7 +104,7 @@ public class DriverInput extends Module {
     // TO-DO: Make sure both driver and operator are holding the buttons
     private void updateFourBar() {
         if ( mData.driverinput.isSet( ELogitech310.B_BTN ) ) {
-            mFourBar.setDesiredOutput( mData.driverinput.get( ELogitech310.LEFT_Y_AXIS ) );
+            driveTrain.setDriveMessage( DriveMessage.fromThrottleAndTurn( 0.0, 0.0 ) );
         } else {
             mFourBar.stop();
         }
