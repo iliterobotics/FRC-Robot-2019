@@ -118,13 +118,13 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Turn-To PID constants
     // =============================================================================
     public static PIDGains kPIDGains = new PIDGains( 0.0, 0.0, 0.0, 0.085 );
-    
+   
     // =============================================================================
-    // Robot constants
+    // Robot constants (configure later)
     // =============================================================================
-    public static double kMass = 0.0;
-    public static double kFourBarCenterOfGravity = 0.0;
-    public static double kT = 0.0;
+    public static double kMass = 120;
+    public static double kFourBarCenterOfGravity = 18;
+    public static double kT = 1;
 
 
     // =============================================================================
