@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.EFourBarData;
-import us.ilite.common.types.input.ELogitech310;
 
 
 public class FourBar extends Module {
@@ -25,6 +24,8 @@ public class FourBar extends Module {
     private DoubleSolenoid mDoubleSolenoid;
 
     public double mAngularPosition;
+    private double mPreviousNeo1Rotations;
+    private double mPreviousNeo2Rotations;
 
     // varying output according to angle of fourbar to counteract gravity
     private double mGravityComp;
@@ -51,6 +52,8 @@ public class FourBar extends Module {
     public void modeInit(double pNow) {
         mLog.error("FourBar Initialized...");
         mOutput = 0;
+        mPreviousNeo1Rotations = mNeo1Encoder.getPosition();
+        mPreviousNeo2Rotations = mNeo2Encoder.getPosition();
 
         mNeo1.setSmartCurrentLimit( 20 );
         mNeo2.setSmartCurrentLimit( 20 );
@@ -89,7 +92,7 @@ public class FourBar extends Module {
     }
 
     public void updateAngularPosition() {
-        mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
+        mAngularPosition = ( ( mNeo1Encoder.getPosition() - mPreviousNeo1Rotations / 300 ) + ( mNeo2Encoder.getPosition() - mPreviousNeo2Rotations / 300 ) ) / 2;
     }
     
     // later add to setDesiredOutput after states added in
