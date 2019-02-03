@@ -119,7 +119,6 @@ public class DriverInput extends Module {
             double rotate = mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
             double throttle = -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
 
-//		    throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
             rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
             rotate = Util.limit(rotate, 0.7);
 
