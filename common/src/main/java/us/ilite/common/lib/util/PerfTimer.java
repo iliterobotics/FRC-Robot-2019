@@ -18,9 +18,11 @@ public class PerfTimer {
     public double stop() {
         double delta = getSeconds() - mStartTime;
 
-        if(mWarningThreshold != Double.NaN && mWarningThreshold >= delta) {
-            mLog.warn(mWarningMessage);
+        if(mWarningThreshold != Double.NaN && mWarningThreshold <= delta) {
+            mLog.warn(String.format(mWarningMessage, delta));
         }
+
+        return delta;
     }
 
     public PerfTimer logWhenTimeGreaterThan(double pTime) {
