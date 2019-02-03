@@ -16,7 +16,6 @@ import us.ilite.common.types.input.ELogitech310;
 public class FourBar extends Module {
 
     private ILog mLog = Logger.createLog(FourBar.class);
-    private Data mData = new Data();
 
     private CANSparkMax mNeo1;
     private CANSparkMax mNeo2;
@@ -28,16 +27,16 @@ public class FourBar extends Module {
 
     private double mOutput;
 
-    public FourBar() {
+    public FourBar( /*Data pData*/ ) {
         // TODO Construction
-        mNeo1 = new CANSparkMax(9, CANSparkMaxLowLevel.MotorType.kBrushless);
+        // mNeo1 = new CANSparkMax(9, CANSparkMaxLowLevel.MotorType.kBrushless);
         mNeo2 = new CANSparkMax(10, CANSparkMaxLowLevel.MotorType.kBrushless);
     
         // Connect the NEO's to the encoders
-        mNeo1Encoder = mNeo1.getEncoder();
+        // mNeo1Encoder = mNeo1.getEncoder();
         mNeo2Encoder = mNeo2.getEncoder();
     
-        mDoubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
+        // mDoubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
     }
 
 
@@ -46,7 +45,7 @@ public class FourBar extends Module {
         mLog.error("FourBar Initialized...");
         mOutput = 0;
 
-        mNeo1.setSmartCurrentLimit( 20 );
+        // mNeo1.setSmartCurrentLimit( 20 );
         mNeo2.setSmartCurrentLimit( 20 );
     }
 
@@ -57,32 +56,38 @@ public class FourBar extends Module {
 
     @Override
     public void update(double pNow) {
-        if ( mData.driverinput.isSet( ELogitech310.B_BTN ) ) {
-            mOutput = mData.driverinput.get( ELogitech310.LEFT_Y_AXIS );
-            mNeo1.set( -mOutput );
-            mNeo2.set( mOutput );
-        } else {
-            mOutput = 0;
-            mNeo1.stopMotor();
-            mNeo2.stopMotor();
-        }
-        updateCodex();
+        // mNeo1.set( -mOutput );
+        mNeo2.set( mOutput );
+        // updateCodex();
     }
 
     @Override
     public void shutdown(double pNow) {
-        mNeo1.disable();
-        mNeo1.disable();
+        // mNeo1.disable();
+        mNeo2.disable();
     }
 
-    public void updateCodex() {
-        // TO-DO: log angle of fourbar
-        mData.fourbar.set( EFourBarData.A_OUTPUT, -mNeo1.get() );
-        mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeo1.getBusVoltage() );
-        mData.fourbar.set( EFourBarData.A_CURRENT, mNeo1.getOutputCurrent() );
-
-        mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
-        mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getBusVoltage() );
-        mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
+    // later use states to determine output
+    public void setDesiredOutput( double output ) {
+        mOutput = output;
+        // updateCodex();
     }
+    
+    // later add to setDesiredOutput after states added in
+    public void stop() {
+        setDesiredOutput( 0 );
+        // mNeo1.stopMotor();
+        mNeo2.stopMotor();
+    }
+
+    // public void updateCodex() {
+    //     // TO-DO: log angle of fourbar
+    //     // mData.fourbar.set( EFourBarData.A_OUTPUT, -mNeo1.get() );
+    //     // mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeo1.getBusVoltage() );
+    //     // mData.fourbar.set( EFourBarData.A_CURRENT, mNeo1.getOutputCurrent() );
+
+    //     mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
+    //     mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getBusVoltage() );
+    //     mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
+    // }
 }
