@@ -105,9 +105,9 @@ public class DriverInput extends Module {
         if ( mData.driverinput.isSet( ELogitech310.B_BTN ) &&
              mData.operatorinput.isSet( ELogitech310.B_BTN ) ) {
             driveTrain.setDriveMessage( DriveMessage.fromThrottleAndTurn( 0.0, 0.0 ) );
-            mFourBar.setDesiredOutput( mData.driverinput.get( ELogitech310.LEFT_Y_AXIS ), false );
+            // mFourBar.setDesiredState( );
         } else {
-            mFourBar.stop();
+            mFourBar.handleStopType();
         }
     }
 

@@ -95,6 +95,14 @@ public class FourBar extends Module {
         mAngularPosition = ( ( mNeo1Encoder.getPosition() - mPreviousNeo1Rotations / 300 ) + ( mNeo2Encoder.getPosition() - mPreviousNeo2Rotations / 300 ) ) / 2;
     }
     
+    public void handleStopType() {
+        if ( hasRun ) {
+            setDesiredState( EFourBarState.STOP );
+        } else {
+            setDesiredState( EFourBarState.NORMAL );
+        }
+    }
+
     // later add to setDesiredOutput after states added in
     public void stop() {
         setDesiredOutput( 0, true );
