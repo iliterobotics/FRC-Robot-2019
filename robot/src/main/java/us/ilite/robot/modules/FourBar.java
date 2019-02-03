@@ -24,6 +24,7 @@ public class FourBar extends Module {
     private CANEncoder mNeo2Encoder;
     private DoubleSolenoid mDoubleSolenoid;
 
+    public double mAngularPosition;
     // varying output according to angle of fourbar to counteract gravity
     // private double mGravityComp = SystemSettings.kMass * 10 * Math.cos( mFourBarAngle ) * SystemSettings.kFourBarCenterOfGravity * SystemSettings.kT;
     private double mOutput;
@@ -39,6 +40,7 @@ public class FourBar extends Module {
     
         // mDoubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
 
+        mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
         mData = pData;
     }
 
@@ -74,6 +76,8 @@ public class FourBar extends Module {
     public void setDesiredOutput( double output ) {
         mOutput = output /*+ kGravitationalConstant*/;
         // updateCodex();
+    public void updateAngularPosition() {
+        mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
     }
     
     // later add to setDesiredOutput after states added in
@@ -84,7 +88,7 @@ public class FourBar extends Module {
     }
 
     public void updateCodex() {
-        // TO-DO: log angle of fourbar
+        updateAngularPosition();
         mData.fourbar.set( EFourBarData.A_OUTPUT, -mNeo1.get() );
         mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeo1.getBusVoltage() );
         mData.fourbar.set( EFourBarData.A_CURRENT, mNeo1.getOutputCurrent() );
@@ -92,5 +96,6 @@ public class FourBar extends Module {
         mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
         mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getBusVoltage() );
         mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
+        mData.fourbar.set( EFourBarData.ANGLE, mAngularPosition );
     }
 }
