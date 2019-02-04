@@ -67,9 +67,8 @@ public class FourBar extends Module {
 
     @Override
     public void update(double pNow) {
-        if ( mCurrentState == EFourBarState.ACCELERATE ) {
-
-        }
+        mNeo1.set( -mCurrentOutput );
+        mNeo2.set( mCurrentOutput );
         updateCodex();
     }
 
@@ -123,6 +122,10 @@ public class FourBar extends Module {
         } else {
             setDesiredState( EFourBarState.NORMAL );
         }
+    }
+
+    public void handleUpState() {
+        setDesiredState( EFourBarState.fromDegrees( mAngularPosition ) );
     }
 
     public void updateCodex() {
