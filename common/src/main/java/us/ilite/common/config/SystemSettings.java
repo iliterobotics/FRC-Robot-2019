@@ -67,6 +67,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = kDriveEffectiveWheelbase * Math.PI;
     public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360.0;
     public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / kDriveWheelDiameterInches;
+    public static double kDriveCollisionThreshold = 0.0;
 
     // =============================================================================
     // Input Constants
@@ -109,9 +110,9 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static int kDriveVelocityTolerance = 0;
     public static int kDriveVelocityLoopSlot = 0;
-    public static double kDriveVelocity_kP = 1.0;
+    public static double kDriveVelocity_kP = 0.5;
     public static double kDriveVelocity_kI = 0.0;
-    public static double kDriveVelocity_kD = 10.0;
+    public static double kDriveVelocity_kD = 0.0;
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static int ULTRASONIC_PORT = 2;
@@ -173,7 +174,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
         }
 
         /**
-         * @return the heightfE
+         * @return the height
          */
         public double getHeight() {
             return height;

@@ -45,6 +45,7 @@ public class Data {
 
     //Stores writers per codex needed for CSV logging
     private Map<String, Writer> mWriters = new HashMap<String, Writer>();
+    private boolean mHasMadeWriters = false;
 
     private List<CodexNetworkTablesParser> mLoggedCodexes;
 
@@ -56,18 +57,6 @@ public class Data {
             new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
             new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR")
         );
-
-        //This loop makes a Writer for each parser and sticks it into mWriters
-        for (CodexNetworkTablesParser parser : mLoggedCodexes) {
-            try {
-                File file = parser.file();
-                handleCreation(file);
-                mWriters.put(parser.getCSVIdentifier(), new BufferedWriter(new FileWriter(parser.file())));
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     /**
@@ -96,6 +85,22 @@ public class Data {
      * Logs codex values to its corresponding csv
      */
     public void logFromCodexToCSVLog() {
+
+        if(!mHasMadeWriters) {
+            //This loop makes a Writer for each parser and sticks it into mWriters
+            for (CodexNetworkTablesParser parser : mLoggedCodexes) {
+                try {
+                    File file = parser.file();
+                    handleCreation(file);
+                    mWriters.put(parser.getCSVIdentifier(), new BufferedWriter(new FileWriter(parser.file())));
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            mHasMadeWriters = true;
+        }
+
         for (CodexNetworkTablesParser parser : mLoggedCodexes) {
             try {
                 Writer logger = mWriters.get(parser.getCSVIdentifier());
@@ -124,7 +129,7 @@ public class Data {
     /**
      * Makes the log file if it doesn't already exist
      */
-    private void handleCreation(File pFile) throws IOException {
+    private void handleCreation(File pFile) {
         //Makes every folder before the file if the CSV's parent folder doesn't exist
         if(!pFile.getParentFile().exists()) {
             pFile.getParentFile().mkdirs();
@@ -132,7 +137,11 @@ public class Data {
 
         //Creates the .CSV if it doesn't exist
         if(!pFile.exists()) {
-            pFile.createNewFile();
+            try {
+                pFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

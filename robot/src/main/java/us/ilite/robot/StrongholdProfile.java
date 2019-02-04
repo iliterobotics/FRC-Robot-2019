@@ -7,32 +7,32 @@ import com.team254.lib.util.Units;
 public class StrongholdProfile implements RobotProfile {
     @Override
     public double getLeftVoltPerAccel() {
-        return 0.006004249716616279;
+        return 0.020548508346599333;
     }
 
     @Override
     public double getLeftVoltPerSpeed() {
-        return 0.1532122569317568;
+        return 0.393530524546484;
     }
 
     @Override
     public double getLeftFrictionVoltage() {
-        return 0.8889335719734218;
+        return 1.099701306138158;
     }
 
     @Override
     public double getRightVoltPerAccel() {
-        return 0.007596397142391264;
+        return 0.018778029411794406;
     }
 
     @Override
     public double getRightVoltPerSpeed() {
-        return 0.1644602870912295;
+        return 0.37658382623100706;
     }
 
     @Override
     public double getRightFrictionVoltage() {
-        return 0.8655779296499259;
+        return 1.0488696460140612;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class StrongholdProfile implements RobotProfile {
 
     @Override
     public double getLinearInertia() {
-        return 1;
+        return 54.4311;
     }
 
     @Override
