@@ -40,9 +40,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Encoders are on the rear Talons, so ID's are temporarily flipped around
     public static  int kDriveLeftMasterTalonId = 1;
-    public static  int kDriveLeftRearTalonId = 3;
+    public static int kDriveLeftMiddleTalonId = 3;
+    public static  int kDriveLeftRearTalonId = 5;
     public static  int kDriveRightMasterTalonId = 2;
-    public static  int kDriveRightRearTalonId = 4;
+    public static int kDriveRightMiddleTalonId = 4;
+    public static  int kDriveRightRearTalonId = 6;
 
     public static int kPigeonId = 3;
 
@@ -54,7 +56,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static double kDriveClosedLoopVoltageRampRate = 0.0;
     public static double kDriveOpenLoopVoltageRampRate = 0.1;
-    public static int kDriveCurrentLimitAmps = 80;
+    public static int kDriveCurrentLimitAmps = 40;
     public static double kDriveWheelDiameterInches = 6.0;
     public static double  DRIVETRAIN_WHEEL_DIAMETER_FEET = kDriveWheelDiameterInches / 12.0;
     public static double kDriveWheelCircumference = kDriveWheelDiameterInches * Math.PI;
