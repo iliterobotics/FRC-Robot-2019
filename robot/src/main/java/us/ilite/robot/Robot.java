@@ -97,7 +97,8 @@ public class Robot extends TimedRobot {
         // Init the actual robot
         initTimer.reset();
         initTimer.start();
-        Logger.setLevel(ELevel.INFO);
+        // Logger.setLevel(ELevel.INFO);
+        Logger.setLevel(ELevel.ERROR);
         mLogger.info("Starting Robot Initialization...");
 
         mSettings.writeToNetworkTables();
