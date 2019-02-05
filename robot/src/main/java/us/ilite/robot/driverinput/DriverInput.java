@@ -129,11 +129,11 @@ public class DriverInput extends Module {
 
         double power = 0.0d;
 
-        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_THROTTLE_AXIS)) {
-            power = mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
+        if (mData.driverinput.isSet(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR)) {
+            power = mData.driverinput.get(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR);
             power *= 0.10d; //10% of the driver input.
         }
-        
+        pElevator.setPower(power);
     }
 
     /**
