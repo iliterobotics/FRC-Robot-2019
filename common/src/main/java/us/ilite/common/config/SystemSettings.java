@@ -42,7 +42,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static  int kDriveLeftMasterTalonId = 1;
     public static  int kDriveLeftRearTalonId = 3;
     public static  int kDriveRightMasterTalonId = 2;
-    public static  int kDriveRightRearTalonId = 4;
+    public static int kDriveRightRearTalonId = 4;
+    
+    //TODO Hypothetical elevator talons
+    // public static int kElevatorMasterTalonId
+    // public static int kElevatorFollowerTalonId
 
     public static int kPigeonId = 3;
 
@@ -103,6 +107,29 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDrivePosition_kF = 0;
 
     // =============================================================================
+    // Elevator Constants
+    // =============================================================================
+
+    //All these values will be changed once we have a better idea of what the
+    //elevator's properties will be like
+    public static int kTopEncoderTicks = 0;
+
+    public static double kElevatorP = 0; 
+    public static double kElevatorI = 0; 
+    public static double kElevatorD = 0;
+    public static double kElevatorF = 0;
+    public static PIDGains kElevatorGains = new PIDGains(kElevatorP, kElevatorI, kElevatorD, kElevatorF);
+    public static double kELevatorControlLoopPeriod = 0.01;
+    public static int kUpperElevatorEncoderThreshold = 0;
+    public static int kLowerElevatorEncoderThreshold = 0;
+
+    // public static int kCansparkMasterId = 0;
+    // public static int kTalonId = 0;
+
+    //This is the value that it was last year. It will most likely change. 
+    public static int kELEVATOR_ENCODER_DEADBAND = 20;
+
+    // =============================================================================
     // Closed-Loop Velocity Constants
     // =============================================================================
     public static int kDriveVelocityTolerance = 0;
@@ -118,6 +145,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Turn-To PID constants
     // =============================================================================
     public static PIDGains kPIDGains = new PIDGains( 0.0, 0.0, 0.0, 0.085 );
+
 
 
     // =============================================================================
@@ -189,37 +217,42 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // 2019 Module Addresses
     // =============================================================================
-    public static int kCargoSpitSPXAddress = -1;
+    public static int kCargoSpitLeftSPXAddress = 13;
+    public static int kCargoSpitRightSPXAddress = 14;
     public static double kCargoSpitSPXCurrentLimit = -1.0;
 
-    public static int kElevatorNEOAddress = -1;
+    public static int kElevatorNEOAddress = -15;
+    // TO-DO: Elevator encoder address?
     public static int kElevatorNEOEncoderAddress = -1;
     // public static int kElevatorRedundantEncoderAddress = -1;
 
-    public static int kFourBarNEO1Address = -1;
-    public static int kFourBarNEO2Address = -1;
-    public static int kFourBarDoubleSolenoidForwardAddress = -1;
-    public static int kFourBarDoubleSolenoidReverseAddress = -1;
+    public static int kFourBarNEO1Address = 9;
+    public static int kFourBarNEO2Address = 10;
+    // TO-DO: label solenoid as forward/reverse in spreadsheet
+    public static int kFourBarDoubleSolenoidForwardAddress = 0;
+    public static int kFourBarDoubleSolenoidReverseAddress = 1;
     public static int kFourBarTBDSensorAddress = -1;
 
-    public static int kHatchFlowerOpenCloseSolenoidAddress = -1;
-    public static int kHatchFlowerExtensionSolenoidAddress = -1;
+    public static int kHatchFlowerOpenCloseSolenoidAddress = 5;
+    public static int kHatchFlowerExtensionSolenoidAddress = 6;
 
-    public static int kIntakeSPX1Address = -1;
-    public static int kIntakeSPX2Address = -1;
+    public static int kHatchIntakeSPXAddress = 11;
+    public static int kCargoIntakeSPXLowerAddress = 12;
+    // TO-DO DIO spreadsheet empty
     public static int kIntakeBeamBreakAddress = -1;
 
-    public static int kIntakeWristSRXAddress = -1;
+    public static int kIntakeWristSRXAddress = 16;
+    // TO-DO Writs encoder addresses?
     public static int kIntakeWristEncoderA_Address = -1;
     public static int kIntakeWristEncoderB_Address = -1;
     public static double kIntakeWristCurrentLimit = -1.0;
 
-    public static int kDriveTrainRightSRXAddress = -1;
-    public static int kDriveTrainRightSPX1Address = -1;
-    public static int kDriveTrainRightSPX2Address = -1;
-    public static int kDriveTrainLeftSRXAddress = -1;
-    public static int kDriveTrainLeftSPX1Address = -1;
-    public static int kDriveTrainLeftSPX2Address = -1;
+    public static int kDriveTrainRightSRX1Address = 2;
+    public static int kDriveTrainRightSPX2Address = 4;
+    public static int kDriveTrainRightSPX3Address = 6;
+    public static int kDriveTrainLeftSRX1Address = 1;
+    public static int kDriveTrainLeftSPX2Address = 3;
+    public static int kDriveTrainLeftSPX3Address = 5;
 
 
 

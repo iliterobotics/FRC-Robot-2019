@@ -25,8 +25,8 @@ public class Intake extends Module {
     
     public Intake() {
         // Construction
-        spx1 = new VictorSPX(SystemSettings.kIntakeSPX1Address);
-        spx2 = new VictorSPX(SystemSettings.kIntakeSPX2Address);
+        spx1 = new VictorSPX(SystemSettings.kHatchIntakeSPXAddress);
+        spx2 = new VictorSPX(SystemSettings.kCargoIntakeSPXLowerAddress);
     
         // TODO Add a "Beam Break" Sensor
     
