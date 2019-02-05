@@ -14,6 +14,7 @@ import com.team254.lib.util.ReflectingCSVWriter;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.DriveController;
 import com.team254.frc2018.planners.DriveMotionPlanner;
@@ -22,7 +23,6 @@ import us.ilite.common.lib.util.Conversions;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.Data;
 import us.ilite.robot.hardware.DriveHardware;
 import us.ilite.robot.hardware.IDriveHardware;
 import us.ilite.robot.hardware.SimDriveHardware;
@@ -187,6 +187,8 @@ public class Drive extends Loop {
 				// debugOutput.outputToLiveDashboard();
 
 				break;
+			case NORMAL:
+				break;
 			default:
 				mLogger.warn("Got drive state: " + mDriveState+" which is unhandled");
 		}
@@ -296,8 +298,8 @@ public class Drive extends Loop {
 			livedashboard.getEntry("Path X").setDouble(targetPose.getTranslation().x() / 12.0);
 			livedashboard.getEntry("Path Y").setDouble((targetPose.getTranslation().y() + 13.5) / 12.0);
 
-			Data.kSmartDashboard.getEntry("Left Vel Error Inches").setDouble(targetLeftVel - leftVel);
-			Data.kSmartDashboard.getEntry("Right Vel Error Inches").setDouble(targetRightVel - rightVel);
+			//Data.kSmartDashboard.getEntry("Left Vel Error Inches").setDouble(targetLeftVel - leftVel);
+			//Data.kSmartDashboard.getEntry("Right Vel Error Inches").setDouble(targetRightVel - rightVel);
 		}
 
 	}
