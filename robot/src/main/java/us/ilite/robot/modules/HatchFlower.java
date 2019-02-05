@@ -184,10 +184,10 @@ public class HatchFlower extends Module {
         // this.mController = pController;
 
         // TODO Do we need to pass the CAN Addresses in via the constructor?
-        // grabSolenoid = new Solenoid(SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
-        // pushSolenoid = new Solenoid(SystemSettings.kHatchFlowerExtensionSolenoidAddress);
-        grabSolenoid = new Solenoid(4); //Ball Grabber/Holder (2016 robot)
-        pushSolenoid = new Solenoid(3); //Ball Kicker (2016 robot)
+         grabSolenoid = new Solenoid(SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
+         pushSolenoid = new Solenoid(SystemSettings.kHatchFlowerExtensionSolenoidAddress);
+//        grabSolenoid = new Solenoid(4); //Ball Grabber/Holder (2016 robot)
+//        pushSolenoid = new Solenoid(3); //Ball Kicker (2016 robot)
 
         // Init Hatch Flower to grab state - Per JKnight we will start with a hatch or cargo onboard
         this.mCurrentState = HatchFlowerStates.CAPTURE;
@@ -262,18 +262,18 @@ public class HatchFlower extends Module {
                     // We must be in the RELEASE state before we can capture:
 
                     // Step1: set the end state
-                    SetStateCommand step1 = new SetStateCommand(HatchFlowerStates.CAPTURE);
+                    SetStateCommand endState = new SetStateCommand(HatchFlowerStates.CAPTURE);
 
                     // Step2: Start the solenoids moving to the capture configuration
-                    List<ICommand> step2List = Arrays.asList(
+                    List<ICommand> toCaptureState = Arrays.asList(
                         new GrabSolenoidCommand(GrabberState.GRAB), 
                         new PushSolenoidCommand(PusherState.RESET), 
                         new Delay(SystemSettings.kHatchFlowerSolenoidReleaseTimeSec)
                     );
 
-                    ParallelCommand step2= new ParallelCommand(step2List);
+                    ParallelCommand step2= new ParallelCommand(toCaptureState);
 
-                    mCurrentCommandQueue.setCommands(step1, step2);
+                    mCurrentCommandQueue.setCommands(endState, step2);
 
                 break;
 
@@ -307,47 +307,41 @@ public class HatchFlower extends Module {
 
                     //// STEP 1 /////
                     // Step1: set the start state
-                    SetStateCommand step1 = new SetStateCommand(HatchFlowerStates.PUSH);
+                    SetStateCommand initialState = new SetStateCommand(HatchFlowerStates.PUSH);
 
                     //// STEP 2 /////
                     // Step2: Start pushing the hatch
-                    List<ICommand> step2List = Arrays.asList(
-                        new GrabSolenoidCommand(GrabberState.GRAB), 
-                        new PushSolenoidCommand(PusherState.PUSH), 
-                        // The delay between start of push and release of grab
-                        new Delay(SystemSettings.kHatchFlowerGrabToPushTransitionTimeSec) 
+                    ParallelCommand pushState = new ParallelCommand(
+                            new GrabSolenoidCommand(GrabberState.GRAB),
+                            new PushSolenoidCommand(PusherState.PUSH),
+                            // The delay between start of push and release of grab
+                            new Delay(SystemSettings.kHatchFlowerGrabToPushTransitionTimeSec)
                     );
-
-                    ParallelCommand step2 = new ParallelCommand(step2List);
 
                     //// STEP 3 /////
                     // Step3: Start releasing the grabber
-                    List<ICommand> step3List = Arrays.asList(
-                        new GrabSolenoidCommand(GrabberState.RELEASE), 
-                        new PushSolenoidCommand(PusherState.PUSH), 
-                        // The time to leave pusher out (Solenoid settle + push time)
-                        new Delay(SystemSettings.kHatchFlowerPushDurationSec) 
+                    ParallelCommand releaseGrabberState = new ParallelCommand(
+                            new GrabSolenoidCommand(GrabberState.RELEASE),
+                            new PushSolenoidCommand(PusherState.PUSH),
+                            // The time to leave pusher out (Solenoid settle + push time)
+                            new Delay(SystemSettings.kHatchFlowerPushDurationSec)
                     );
-
-                    ParallelCommand step3 = new ParallelCommand(step3List);
 
                     //// STEP 4 /////
                     // Step4: Set Start reseting the push
-                    List<ICommand> step4List = Arrays.asList(
-                        new GrabSolenoidCommand(GrabberState.RELEASE), 
-                        new PushSolenoidCommand(PusherState.RESET), 
-                        // Time to allow the solenoid to reset
-                        new Delay(SystemSettings.kHatchFlowerSolenoidReleaseTimeSec)
+                    ParallelCommand resetPushState = new ParallelCommand(
+                            new GrabSolenoidCommand(GrabberState.RELEASE),
+                            new PushSolenoidCommand(PusherState.RESET),
+                            // Time to allow the solenoid to reset
+                            new Delay(SystemSettings.kHatchFlowerSolenoidReleaseTimeSec)
                     );
-
-                    ParallelCommand step4 = new ParallelCommand(step4List);
 
                     //// STEP 5 /////
                     // Step5: set the end state
-                    SetStateCommand step5 = new SetStateCommand(HatchFlowerStates.RELEASE);
+                    SetStateCommand endState = new SetStateCommand(HatchFlowerStates.RELEASE);
 
                     // start the push command running
-                    mCurrentCommandQueue.setCommands(step1, step2, step3, step4, step5);
+                    mCurrentCommandQueue.setCommands(initialState, pushState, releaseGrabberState, resetPushState, endState);
 
                 case PUSH :
                     // We must complete the Push before we can Push again, do nothing
