@@ -4,6 +4,14 @@ import us.ilite.common.lib.RobotProfile;
 import us.ilite.common.config.SystemSettings;
 import com.team254.lib.util.Units;
 
+/**
+ * These values were obtained by running the "CharacterizeDrive" command with the robot on blocks.
+ *
+ * Wheelbase and wheel radius were obtained theoretically (from physical measurements with a tape measure). This shouldn't
+ * affect performance, as this robot has corner omnis and thus does not experience wheel scrub.
+ *
+ * Linear and angular inertia terms are theoretically calculated (or not calculated at all...)
+ */
 public class StrongholdProfile implements RobotProfile {
     @Override
     public double getLeftVoltPerAccel() {
