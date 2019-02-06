@@ -6,11 +6,9 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.PIDController;
-import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.types.EFourBarData;
 
 

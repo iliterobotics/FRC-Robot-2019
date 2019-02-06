@@ -1,7 +1,5 @@
 package us.ilite.robot.modules;
 
-import static org.mockito.Mockito.RETURNS_MOCKS;
-
 public enum EFourBarState {
 
     // TO-DO: get angles

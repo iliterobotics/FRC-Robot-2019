@@ -107,10 +107,8 @@ public class DriverInput extends Module {
                  driveTrain.setDriveMessage( DriveMessage.fromThrottleAndTurn( 0.0, 0.0 ) );
                  if ( mData.driverinput.get( ELogitech310.LEFT_Y_AXIS ) > 0 ) {
                      mFourBar.handleUpState();
-                 } else if ( mData.driverinput.get( ELogitech310.LEFT_Y_AXIS ) < 0 ) {
-                     // handleDownState
                  } else {
-                     // set desired state to stop
+                     mFourBar.handleStopType();
                  }
         } else {
             mFourBar.handleStopType();
