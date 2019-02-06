@@ -86,7 +86,9 @@ public class FourBar extends Module {
                 mCurrentOutput = 0;
             case STOP:
                 // hold in place
-                mCurrentOutput = gravityCompAtPosition();
+                mCurrentOutput = 0;
+                mNeo1.stopMotor();
+                mNeo2.stopMotor();
             case ACCELERATE:
                 // output is gravity comp + some increasing light pid output
                 hasRun = true;
