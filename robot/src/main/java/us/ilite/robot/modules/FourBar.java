@@ -85,10 +85,13 @@ public class FourBar extends Module {
                 // do nothing
                 mCurrentOutput = 0;
             case STOP:
-                // hold in place
+                // stop climber, cut off power
                 mCurrentOutput = 0;
                 mNeo1.stopMotor();
                 mNeo2.stopMotor();
+            case HOLD:
+                // hold in place
+                mCurrentOutput = gravityCompAtPosition();
             case ACCELERATE:
                 // output is gravity comp + some increasing light pid output
                 hasRun = true;
@@ -110,7 +113,7 @@ public class FourBar extends Module {
     
     public void handleStopType() {
         if ( hasRun ) {
-            setDesiredState( EFourBarState.STOP );
+            setDesiredState( EFourBarState.HOLD );
         } else {
             setDesiredState( EFourBarState.NORMAL );
         }
