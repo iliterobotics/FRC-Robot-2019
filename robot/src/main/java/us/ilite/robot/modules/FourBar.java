@@ -32,11 +32,8 @@ public class FourBar extends Module {
     private double mCurrentTime;
 
     private double mCurrentOutput;
-    private PIDGains kPIDAccelerateGains = SystemSettings.kFourBarAccelerateGains;
-    private PIDGains kPIDDecelerateGains = SystemSettings.kFourBarDecelerateGains;
 
     private boolean hasRun = false;
-    private EFourBarState mCurrentState;
 
     public FourBar( Data pData ) {
         // Later: SystemSettings address
@@ -46,11 +43,9 @@ public class FourBar extends Module {
         // Connect the NEO's to the encoders
         mNeo1Encoder = mNeo1.getEncoder();
         mNeo2Encoder = mNeo2.getEncoder();
-    
-        // mDoubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
 
         mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
-        mPIDController = new PIDController( kPIDAccelerateGains, SystemSettings.kControlLoopPeriod );
+        mPIDController = new PIDController( SystemSettings.kFourBarAccelerateGains, SystemSettings.kControlLoopPeriod );
         mData = pData;
     }
 
@@ -128,7 +123,7 @@ public class FourBar extends Module {
     public void updateAngularPosition() {
         mAngularPosition = ( ( mNeo1Encoder.getPosition() - mPreviousNeo1Rotations / 300 ) + ( mNeo2Encoder.getPosition() - mPreviousNeo2Rotations / 300 ) ) / 2;
     }
-    
+
     public void handleStopType() {
         if ( hasRun ) {
             setDesiredState( EFourBarState.HOLD );
