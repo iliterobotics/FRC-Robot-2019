@@ -9,6 +9,8 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.lib.control.PIDController;
+import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.types.EFourBarData;
 
 
@@ -16,6 +18,7 @@ public class FourBar extends Module {
 
     private ILog mLog = Logger.createLog(FourBar.class);
     private Data mData;
+    private PIDController mPIDController;
 
     private CANSparkMax mNeo1;
     private CANSparkMax mNeo2;
@@ -26,9 +29,11 @@ public class FourBar extends Module {
     public double mAngularPosition;
     private double mPreviousNeo1Rotations;
     private double mPreviousNeo2Rotations;
+    private double mCurrentTime;
 
-    // varying output according to angle of fourbar to counteract gravity
     private double mCurrentOutput;
+    private PIDGains kPIDAccelerateGains = SystemSettings.kFourBarAccelerateGains;
+    private PIDGains kPIDDecelerateGains = SystemSettings.kFourBarDecelerateGains;
 
     private boolean hasRun = false;
     private EFourBarState mCurrentState;
@@ -45,6 +50,7 @@ public class FourBar extends Module {
         // mDoubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
 
         mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
+        mPIDController = new PIDController( kPIDAccelerateGains, SystemSettings.kControlLoopPeriod );
         mData = pData;
     }
 
@@ -58,6 +64,9 @@ public class FourBar extends Module {
 
         mNeo1.setSmartCurrentLimit( 20 );
         mNeo2.setSmartCurrentLimit( 20 );
+
+        mPIDController.setInputRange( 0, 135 );
+        mPIDController.setOutputRange( -1, 1 );
     }
 
     @Override
@@ -67,9 +76,13 @@ public class FourBar extends Module {
 
     @Override
     public void update(double pNow) {
+        mCurrentTime = pNow;
         mNeo1.set( -mCurrentOutput );
         mNeo2.set( mCurrentOutput );
         updateCodex();
+        if ( mAngularPosition >= 135 ) {
+            setDesiredState( EFourBarState.STOP );
+        }
     }
 
     @Override
@@ -78,7 +91,6 @@ public class FourBar extends Module {
         mNeo2.disable();
     }
 
-    // later use states to determine output
     public void setDesiredState( EFourBarState desiredState ) {
         switch ( desiredState ) {
             case NORMAL:
@@ -93,11 +105,17 @@ public class FourBar extends Module {
                 // hold in place
                 mCurrentOutput = gravityCompAtPosition();
             case ACCELERATE:
-                // output is gravity comp + some increasing light pid output
+                // apply pid to output
+                mPIDController.setPIDGains( SystemSettings.kFourBarAccelerateGains );
+                mPIDController.setSetpoint( EFourBarState.ACCELERATE.getUpperAngularBound() );
+                mCurrentOutput = mPIDController.calculate( mAngularPosition, mCurrentTime );
+                mCurrentOutput += Math.signum( mCurrentOutput ) * gravityCompAtPosition();
                 hasRun = true;
-                // mCurrentOutput = pid + gravityCompAtPosition();
             case DECELERATE:
                 // outpit is pid
+                mPIDController.setPIDGains( SystemSettings.kFourBarDecelerateGains );
+                mPIDController.setSetpoint( EFourBarState.DECELERATE.getUpperAngularBound() );
+                mCurrentOutput = mPIDController.calculate( mAngularPosition, mCurrentTime );
 
         }
         updateCodex();
