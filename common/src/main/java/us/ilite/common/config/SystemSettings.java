@@ -192,6 +192,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     }
 
+    // =============================================================================
+    // Climber constants
+    // TO-DO: tune pid
+    // =============================================================================
+    public static PIDGains kFourBarGains = new PIDGains( 0.0, 0.0, 0.0 );
 
     // =============================================================================
     // 2019 Module Addresses
