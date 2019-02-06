@@ -91,18 +91,8 @@ public class FourBar extends Module {
                 // output is gravity comp + some increasing light pid output
                 hasRun = true;
                 // mCurrentOutput = pid + gravityCompAtPosition();
-            case CRUISE_1:
-                // output is gravity compensation + last accelerate output
-                // mCurrentOutput = x + gravityCompAtPosition();
-            case CRUISE_2:
-                // output is gravity compensation + a little less than cruise 1
-                // mCurrentOutput = x + gravityCompAtPosition();
             case DECELERATE:
-                // output less than gravity compensation to let gravity handle
-                // mCurrentOutput = gravityCompAtPosition() - x;
-            case LANDED:
-                // output to handle motor until off the ground
-                // mCurrentOutput = x;
+                // outpit is pid
 
         }
         updateCodex();

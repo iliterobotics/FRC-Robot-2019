@@ -8,10 +8,7 @@ public enum EFourBarState {
     NORMAL( 0.0, 0.0 ),
     STOP( 0.0, 0.0 ),
     ACCELERATE( 0.0, 0.0 ),
-    CRUISE_1( 0.0, 0.0 ),
-    CRUISE_2( 0.0, 0.0 ),
-    DECELERATE( 0.0, 0.0 ),
-    LANDED( 0.0, 0.0 );
+    DECELERATE( 0.0, 0.0 );
 
     private double mLowerAngularBound;
     private double mUpperAngularBound;
@@ -24,10 +21,7 @@ public enum EFourBarState {
         EFourBarState[] states = { EFourBarState.NORMAL,
                                    EFourBarState.STOP,
                                    EFourBarState.ACCELERATE,
-                                   EFourBarState.CRUISE_1,
-                                   EFourBarState.CRUISE_2,
-                                   EFourBarState.DECELERATE,
-                                   EFourBarState.LANDED };
+                                   EFourBarState.DECELERATE };
         for ( EFourBarState state : states ) {
             if ( currentDegrees >= state.getLowerAngularBound() &&
                  currentDegrees <= state.getUpperAngularBound() ) {
