@@ -24,7 +24,6 @@ public class FourBar extends Module {
     private CANSparkMax mNeo2;
     private CANEncoder mNeo1Encoder;
     private CANEncoder mNeo2Encoder;
-    private DoubleSolenoid mDoubleSolenoid;
 
     public double mAngularPosition;
     private double mPreviousNeo1Rotations;
