@@ -69,5 +69,12 @@ public class HatchFlower extends Module {
 
     }
 
+    public void setFlowerExtended(boolean pFlowerExtended) {
+
+    }
+
+    public boolean isExtended() {
+        return true;
+    }
 
 }

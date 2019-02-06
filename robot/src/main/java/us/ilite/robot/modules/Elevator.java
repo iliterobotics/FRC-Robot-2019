@@ -270,5 +270,8 @@ public class Elevator extends Module {
         return mMasterElevator.getOutputCurrent();
     }
 
+    public boolean isAtPosition(EElevatorPosition pPosition) {
+        return true;
+    }
 
 }

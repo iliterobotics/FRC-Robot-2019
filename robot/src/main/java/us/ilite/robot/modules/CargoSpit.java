@@ -50,4 +50,16 @@ public class CargoSpit extends Module {
         return false;
     }
 
+    public void setIntaking() {
+
+    }
+
+    public void setOuttaking() {
+
+    }
+
+    public boolean hasCargo() {
+
+    }
+
 }

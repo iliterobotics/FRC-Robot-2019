@@ -6,7 +6,6 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.drivers.talon.TalonSRXFactory;
 
-import edu.wpi.first.wpilibj.Encoder;
 import us.ilite.common.config.SystemSettings;
 
 
@@ -14,26 +13,33 @@ public class Intake extends Module {
 
     private ILog mLog = Logger.createLog(Intake.class);
 
-    private VictorSPX spx1;
-    private VictorSPX spx2;
+    private VictorSPX mIntakeRoller;
 
     // Wrist control
-    private TalonSRX wristSRX;
-    private Encoder encoder;
+    private TalonSRX mWrist;
 
     // Monitor the wrist SRX current
-    
+
+    public enum EWristPosition {
+        GROUND(0.0), HANDOFF(0.0), STOWED(0.0);
+
+        public final double kWristAngleDegrees;
+
+        EWristPosition(double pWristAngle) {
+            kWristAngleDegrees = pWristAngle;
+        }
+
+    }
+
     public Intake() {
         // Construction
-        spx1 = new VictorSPX(SystemSettings.kHatchIntakeSPXAddress);
-        spx2 = new VictorSPX(SystemSettings.kCargoIntakeSPXLowerAddress);
-    
+        mIntakeRoller = new VictorSPX(SystemSettings.kHatchIntakeSPXAddress);
+
         // TODO Add a "Beam Break" Sensor
     
         // Wrist control
-        wristSRX = TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress);
-        encoder = new Encoder(SystemSettings.kIntakeWristEncoderA_Address, SystemSettings.kIntakeWristEncoderB_Address);
-        }
+        mWrist = TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress);
+    }
 
     @Override
     public void modeInit(double pNow) {
@@ -58,6 +64,52 @@ public class Intake extends Module {
     @Override
     public boolean checkModule(double pNow) {
         return false;
+    }
+
+    public void setWrist(EWristPosition pWristPosition) {
+
+    }
+
+    public void setRollerExtended(boolean pExtended) {
+
+    }
+
+    // TODO Speed depends on gamepiece? On robot speed? On both?
+    public void setRollerPower(double pPower) {
+
+    }
+
+    public void setIntakingCargo() {
+        setWrist(EWristPosition.GROUND);
+        setRollerExtended(true);
+//        setRollerPower();
+    }
+
+    public void setIntakingHatch() {
+        setWrist(EWristPosition.GROUND);
+        setRollerExtended(false);
+//        setRollerPower();
+    }
+
+    public void setHandoffCargo() {
+        setWrist(EWristPosition.HANDOFF);
+//        setRollerPower();
+    }
+
+    public void setHandoffHatch() {
+        setWrist(EWristPosition.HANDOFF);
+    }
+
+    public void stow() {
+
+    }
+
+    public boolean hasHatch() {
+        return true;
+    }
+
+    public boolean isAtPosition(EWristPosition pWristPosition) {
+        return true;
     }
 
 }
