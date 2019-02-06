@@ -38,7 +38,7 @@ public class DriverInput extends Module {
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, boolean pSimulated, Elevator pElevator) {
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
         this.mSuperstructure = pSuperstructure;
         this.mData = pData;
@@ -54,8 +54,8 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, Elevator pElevator) {
-        this(pDrivetrain, pSuperstructure, pData, false, pElevator);
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, Superstructure pSuperstructure, Data pData) {
+        this(pDrivetrain, pElevator, pSuperstructure, pData, false);
     }
 
     @Override
@@ -131,9 +131,8 @@ public class DriverInput extends Module {
 
         if (mData.driverinput.isSet(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR)) {
             power = mData.driverinput.get(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR);
-            power *= 0.10d; //10% of the driver input.
         }
-        pElevator.setPower(power);
+        mElevator.setPower(power);
     }
 
     /**

@@ -36,6 +36,8 @@ public class Elevator extends Module {
     private boolean mSettingPosition = false;
     private int kCansparkId = 15; //TODO change ID
     private int kTalonId = 15; //TODO change ID
+    private PIDController mPidController;
+    private double mCurrentTime;
 
     //TODO need to figure out these encoder thresholds
     private int mDownEncoderThreshold = SystemSettings.kLowerElevatorEncoderThreshold;
@@ -49,9 +51,10 @@ public class Elevator extends Module {
     CANSparkMax mMasterElevator;
     TalonSRX mEncoder = TalonSRXFactory.createDefaultTalon(kTalonId);
 
-    public Elevator(Data pData) {
+    public Elevator(PIDController pPidController, Data pData) {
 
         this.mData = pData;
+        this.mPidController = pPidController;
 
         //Create default NEO and set the ramp rate
         mMasterElevator = SparkMaxFactory.createDefaultSparkMax(kCansparkId, MotorType.kBrushless);
@@ -84,12 +87,15 @@ public class Elevator extends Module {
 
     public void update(double pNow) {
 
+        mCurrentTime = pNow;
+
         //Get encoder value from secondary Talon
-        mCurrentEncoderTicks = getEnocderPosition();
+        mCurrentEncoderTicks = getEncoderPosition();
         mDesiredDirectionUp = (mDesiredPower > 0);
 
         updateElevator(pNow);
         mDesiredPower = calculateDesiredPower(mCurrentState);
+        mDesiredPower *= 0.10d; //10% of the desired power
 
         mMasterElevator.set(Util.limit(mDesiredPower, mMinPower, mMaxPower));
 
@@ -174,10 +180,8 @@ public class Elevator extends Module {
         if (!mSettingPosition) {
             power = EElevatorState.HOLD.getPower();
         } else {
-            PIDController pidController = new PIDController(SystemSettings.kElevatorGains,
-                    SystemSettings.kELevatorControlLoopPeriod);
-            pidController.setSetpoint(pDesiredPosition.kEncoderThreshold); //Our set point is the threshold of the destination state
-            power = pidController.calculate(mCurrentEncoderTicks, pCurrentTime);
+            mPidController.setSetpoint(pDesiredPosition.kEncoderThreshold); //Our set point is the threshold of the destination state
+            power = mPidController.calculate(mCurrentEncoderTicks, pCurrentTime);
             power = Util.limit(mDesiredPower, mMinPower, mMaxPower); //limit power from -1.0 - 1.0
         }
 
@@ -215,7 +219,7 @@ public class Elevator extends Module {
         return !mSettingPosition;
     }
 
-    public int getEnocderPosition() {
+    public int getEncoderPosition() {
         return mEncoder.getSelectedSensorPosition(0);
     }
 
@@ -248,7 +252,7 @@ public class Elevator extends Module {
             power = EElevatorState.STOP.getPower(); //Essentially zero, but we don't like magic numbers
             break;
         case SET_POSITION:
-            power = setPosition(mDesiredPosition, Timer.getFPGATimestamp()); //Start setting position with the current time
+            power = setPosition(mDesiredPosition, mCurrentTime); //Start setting position with the current time
             break;
         default:
             System.out.println("Somehow reached an unaccounted state with " + pCurrentState.toString()); //In case, somehow, we reach this

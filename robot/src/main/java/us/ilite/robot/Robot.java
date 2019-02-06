@@ -49,7 +49,8 @@ import us.ilite.robot.modules.Elevator;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
 import us.ilite.common.lib.control.DriveController;
-
+import us.ilite.common.lib.control.PIDGains;
+import us.ilite.common.lib.control.PIDController;
 public class Robot extends TimedRobot {
     
     private ILog mLogger = Logger.createLog(this.getClass());
@@ -69,7 +70,7 @@ public class Robot extends TimedRobot {
     private Superstructure mSuperstructure = new Superstructure();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
-    private Elevator mElevator = new Elevator(mData);
+    private Elevator mElevator = new Elevator(new PIDController(new PIDGains(mSettings.kElevatorP, mSettings.kElevatorI, mSettings.kElevatorD) ), mData);
     
     private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData, mElevator);
     private Limelight mLimelight = new Limelight();

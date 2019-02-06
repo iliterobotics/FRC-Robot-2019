@@ -118,7 +118,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kElevatorI = 0; 
     public static double kElevatorD = 0;
     public static double kElevatorF = 0;
-    public static PIDGains kElevatorGains = new PIDGains(kElevatorP, kElevatorI, kElevatorD, kElevatorF);
     public static double kELevatorControlLoopPeriod = 0.01;
     public static int kUpperElevatorEncoderThreshold = 0;
     public static int kLowerElevatorEncoderThreshold = 0;
