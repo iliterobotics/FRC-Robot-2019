@@ -48,16 +48,16 @@ public class DriveHardware implements IDriveHardware {
     private NeutralMode mLeftNeutralMode, mRightNeutralMode;
 
     public DriveHardware() {
-//        mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kDriveCollisionThreshold);
-        mGyro = new NavX(SerialPort.Port.kMXP);
+        mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kDriveCollisionThreshold);
+        // mGyro = new NavX(SerialPort.Port.kMXP);
 
         mLeftMaster = TalonSRXFactory.createDefaultTalon(SystemSettings.kDriveLeftMasterTalonId);
-        mLeftMiddle = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveLeftMiddleTalonId, SystemSettings.kDriveLeftMasterTalonId);
-        mLeftRear = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveLeftRearTalonId, SystemSettings.kDriveLeftMasterTalonId);
+        mLeftMiddle = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveLeftMiddleTalonId, mLeftMaster);
+        mLeftRear = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveLeftRearTalonId, mLeftMaster);
 
         mRightMaster = TalonSRXFactory.createDefaultTalon(SystemSettings.kDriveRightMasterTalonId);
-        mRightMiddle = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveRightMiddleTalonId, SystemSettings.kDriveRightMasterTalonId);
-        mRightRear = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveRightRearTalonId, SystemSettings.kDriveRightMasterTalonId);
+        mRightMiddle = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveRightMiddleTalonId, mRightMaster);
+        mRightRear = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveRightRearTalonId, mRightMaster);
 
         configureMaster(mLeftMaster, true);
         configureMotor(mLeftMaster);
@@ -104,8 +104,8 @@ public class DriveHardware implements IDriveHardware {
         // Bypass state machine in set() and configure directly
         configTalonForPercentOutput(mLeftMaster);
         configTalonForPercentOutput(mRightMaster);
-        setNeutralMode(NeutralMode.Brake, mRightMaster, mRightRear);
-        setNeutralMode(NeutralMode.Brake, mLeftMaster, mLeftRear);
+        setNeutralMode(NeutralMode.Brake, mLeftMaster, mLeftMiddle, mLeftRear);
+        setNeutralMode(NeutralMode.Brake, mRightMaster, mRightMiddle, mRightRear);
 
         mLeftMaster.set(ControlMode.PercentOutput, 0.0);
         mRightMaster.set(ControlMode.PercentOutput, 0.0);
@@ -116,16 +116,11 @@ public class DriveHardware implements IDriveHardware {
         mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pDriveMessage.leftControlMode);
         mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pDriveMessage.rightControlMode);
 
-        mLeftNeutralMode = configForNeutralMode(mLeftNeutralMode, pDriveMessage.leftNeutralMode, mLeftMaster, mLeftRear);
-        mRightNeutralMode = configForNeutralMode(mRightNeutralMode, pDriveMessage.rightNeutralMode, mRightMaster, mRightRear);
+        mLeftNeutralMode = configForNeutralMode(mLeftNeutralMode, pDriveMessage.leftNeutralMode, mLeftMaster, mLeftMiddle, mLeftRear);
+        mRightNeutralMode = configForNeutralMode(mRightNeutralMode, pDriveMessage.rightNeutralMode, mRightMaster, mRightMiddle, mRightRear);
 
         mLeftMaster.set(mLeftControlMode, pDriveMessage.leftOutput, pDriveMessage.leftDemandType, pDriveMessage.leftDemand);
         mRightMaster.set(mRightControlMode, pDriveMessage.rightOutput, pDriveMessage.rightDemandType, pDriveMessage.rightDemand);
-
-        Data.kSmartDashboard.putDouble("left_error", mLeftMaster.getClosedLoopError());
-        Data.kSmartDashboard.putDouble("right_error", mRightMaster.getClosedLoopError());
-        Data.kSmartDashboard.putString("left_controlmode", mLeftMaster.getControlMode().name());
-        Data.kSmartDashboard.putString("right_controlmode", mRightMaster.getControlMode().name());
     }
 
     /**
@@ -204,11 +199,11 @@ public class DriveHardware implements IDriveHardware {
         motorController.configVelocityMeasurementWindow(64, SystemSettings.kLongCANTimeoutMs);
         motorController.configOpenloopRamp(SystemSettings.kDriveOpenLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
         motorController.configClosedloopRamp(SystemSettings.kDriveClosedLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
-        motorController.configNeutralDeadband(0.04, 0);
+        // motorController.configNeutralDeadband(0.04, 0);
     }
 
     private void configTalonForPercentOutput(TalonSRX talon) {
-        talon.configNeutralDeadband(0.04, 0);
+        // talon.configNeutralDeadband(0.04, 0);
     }
 
     private void configTalonForPosition(TalonSRX talon) {

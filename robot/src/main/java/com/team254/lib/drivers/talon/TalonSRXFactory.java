@@ -72,9 +72,9 @@ public class TalonSRXFactory {
         return talon;
     }
 
-    public static VictorSPX createPermanentSlaveVictor(int id, int master_id) {
+    public static VictorSPX createPermanentSlaveVictor(int id, TalonSRX master) {
         final VictorSPX victor = createVictor(id, kSlaveConfiguration);
-        victor.set(ControlMode.Follower, master_id);
+        victor.follow(master);
         return victor;
     }
 
@@ -82,73 +82,73 @@ public class TalonSRXFactory {
         VictorSPX victor = new VictorSPX(id);
         victor.configFactoryDefault();
 
-        victor.set(ControlMode.PercentOutput, 0.0);
+        // victor.set(ControlMode.PercentOutput, 0.0);
 
-        victor.changeMotionControlFramePeriod(config.MOTION_CONTROL_FRAME_PERIOD_MS);
-        victor.clearMotionProfileHasUnderrun(kTimeoutMs);
-        victor.clearMotionProfileTrajectories();
+        // victor.changeMotionControlFramePeriod(config.MOTION_CONTROL_FRAME_PERIOD_MS);
+        // victor.clearMotionProfileHasUnderrun(kTimeoutMs);
+        // victor.clearMotionProfileTrajectories();
 
-        victor.clearStickyFaults(kTimeoutMs);
+        // victor.clearStickyFaults(kTimeoutMs);
 
-        victor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
-                LimitSwitchNormal.NormallyOpen, kTimeoutMs);
-        // victor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+        // victor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
         //         LimitSwitchNormal.NormallyOpen, kTimeoutMs);
-        victor.overrideLimitSwitchesEnable(config.ENABLE_LIMIT_SWITCH);
+        // // victor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+        // //         LimitSwitchNormal.NormallyOpen, kTimeoutMs);
+        // victor.overrideLimitSwitchesEnable(config.ENABLE_LIMIT_SWITCH);
 
-        // Turn off re-zeroing by default.
-        victor.configSetParameter(
-                ParamEnum.eClearPositionOnLimitF, 0, 0, 0, kTimeoutMs);
-                victor.configSetParameter(
-                ParamEnum.eClearPositionOnLimitR, 0, 0, 0, kTimeoutMs);
+        // // Turn off re-zeroing by default.
+        // victor.configSetParameter(
+        //         ParamEnum.eClearPositionOnLimitF, 0, 0, 0, kTimeoutMs);
+        //         victor.configSetParameter(
+        //         ParamEnum.eClearPositionOnLimitR, 0, 0, 0, kTimeoutMs);
 
-        victor.configNominalOutputForward(0, kTimeoutMs);
-        victor.configNominalOutputReverse(0, kTimeoutMs);
-        victor.configNeutralDeadband(config.NEUTRAL_DEADBAND, kTimeoutMs);
+        // victor.configNominalOutputForward(0, kTimeoutMs);
+        // victor.configNominalOutputReverse(0, kTimeoutMs);
+        // victor.configNeutralDeadband(config.NEUTRAL_DEADBAND, kTimeoutMs);
 
-        victor.configPeakOutputForward(1.0, kTimeoutMs);
-        victor.configPeakOutputReverse(-1.0, kTimeoutMs);
+        // victor.configPeakOutputForward(1.0, kTimeoutMs);
+        // victor.configPeakOutputReverse(-1.0, kTimeoutMs);
 
-        victor.setNeutralMode(config.NEUTRAL_MODE);
+        // victor.setNeutralMode(config.NEUTRAL_MODE);
 
-        victor.configForwardSoftLimitThreshold(config.FORWARD_SOFT_LIMIT, kTimeoutMs);
-        victor.configForwardSoftLimitEnable(config.ENABLE_SOFT_LIMIT, kTimeoutMs);
+        // victor.configForwardSoftLimitThreshold(config.FORWARD_SOFT_LIMIT, kTimeoutMs);
+        // victor.configForwardSoftLimitEnable(config.ENABLE_SOFT_LIMIT, kTimeoutMs);
 
-        victor.configReverseSoftLimitThreshold(config.REVERSE_SOFT_LIMIT, kTimeoutMs);
-        victor.configReverseSoftLimitEnable(config.ENABLE_SOFT_LIMIT, kTimeoutMs);
-        victor.overrideSoftLimitsEnable(config.ENABLE_SOFT_LIMIT);
+        // victor.configReverseSoftLimitThreshold(config.REVERSE_SOFT_LIMIT, kTimeoutMs);
+        // victor.configReverseSoftLimitEnable(config.ENABLE_SOFT_LIMIT, kTimeoutMs);
+        // victor.overrideSoftLimitsEnable(config.ENABLE_SOFT_LIMIT);
 
-        victor.setInverted(config.INVERTED);
-        victor.setSensorPhase(config.SENSOR_PHASE);
+        // victor.setInverted(config.INVERTED);
+        // victor.setSensorPhase(config.SENSOR_PHASE);
 
-        victor.selectProfileSlot(0, 0);
+        // victor.selectProfileSlot(0, 0);
 
-        victor.configVelocityMeasurementPeriod(config.VELOCITY_MEASUREMENT_PERIOD, kTimeoutMs);
-        victor.configVelocityMeasurementWindow(config.VELOCITY_MEASUREMENT_ROLLING_AVERAGE_WINDOW,
-                kTimeoutMs);
+        // victor.configVelocityMeasurementPeriod(config.VELOCITY_MEASUREMENT_PERIOD, kTimeoutMs);
+        // victor.configVelocityMeasurementWindow(config.VELOCITY_MEASUREMENT_ROLLING_AVERAGE_WINDOW,
+        //         kTimeoutMs);
 
-                victor.configOpenloopRamp(config.OPEN_LOOP_RAMP_RATE, kTimeoutMs);
-        victor.configClosedloopRamp(config.CLOSED_LOOP_RAMP_RATE, kTimeoutMs);
+        //         victor.configOpenloopRamp(config.OPEN_LOOP_RAMP_RATE, kTimeoutMs);
+        // victor.configClosedloopRamp(config.CLOSED_LOOP_RAMP_RATE, kTimeoutMs);
 
-        victor.configVoltageCompSaturation(0.0, kTimeoutMs);
-        victor.configVoltageMeasurementFilter(32, kTimeoutMs);
-        victor.enableVoltageCompensation(false);
+        // victor.configVoltageCompSaturation(0.0, kTimeoutMs);
+        // victor.configVoltageMeasurementFilter(32, kTimeoutMs);
+        // victor.enableVoltageCompensation(false);
 
-        // victor.enableCurrentLimit(config.ENABLE_CURRENT_LIMIT);
+        // // victor.enableCurrentLimit(config.ENABLE_CURRENT_LIMIT);
 
-        // victor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General,
-        //         config.GENERAL_STATUS_FRAME_RATE_MS, kTimeoutMs);
-        //         victor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0,
-        //         config.FEEDBACK_STATUS_FRAME_RATE_MS, kTimeoutMs);
+        // // victor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General,
+        // //         config.GENERAL_STATUS_FRAME_RATE_MS, kTimeoutMs);
+        // //         victor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0,
+        // //         config.FEEDBACK_STATUS_FRAME_RATE_MS, kTimeoutMs);
 
-        // victor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature,
-        //         config.QUAD_ENCODER_STATUS_FRAME_RATE_MS, kTimeoutMs);
-        // victor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat,
-        //         config.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS, kTimeoutMs);
-        // victor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth,
-        //         config.PULSE_WIDTH_STATUS_FRAME_RATE_MS, kTimeoutMs);
+        // // victor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature,
+        // //         config.QUAD_ENCODER_STATUS_FRAME_RATE_MS, kTimeoutMs);
+        // // victor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat,
+        // //         config.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS, kTimeoutMs);
+        // // victor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth,
+        // //         config.PULSE_WIDTH_STATUS_FRAME_RATE_MS, kTimeoutMs);
 
-        victor.setControlFramePeriod(ControlFrame.Control_3_General, config.CONTROL_FRAME_PERIOD_MS);
+        // victor.setControlFramePeriod(ControlFrame.Control_3_General, config.CONTROL_FRAME_PERIOD_MS);
 
         return victor; 
     }
