@@ -21,7 +21,8 @@ import us.ilite.robot.modules.Superstructure;
 
 public class DriverInput extends Module {
 
-    private static final double DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
+    protected static final double 
+    DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
     private ILog mLog = Logger.createLog(DriverInput.class);
 
     protected final Drive driveTrain;
@@ -32,7 +33,7 @@ public class DriverInput extends Module {
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
 
-    private Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
+    protected Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
 
     private Data mData;
 
@@ -96,7 +97,7 @@ public class DriverInput extends Module {
 
     }
 
-    private void updateDriveTrain() {
+    protected void updateDriveTrain() {
         if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_THROTTLE_AXIS) &&
            mData.driverinput.isSet(DriveTeamInputMap.DRIVER_TURN_AXIS) &&
            mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS)) {

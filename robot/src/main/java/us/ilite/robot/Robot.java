@@ -46,6 +46,7 @@ import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.TurnToDegree;
 import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
+import us.ilite.robot.driverinput.SplitArcadeTriggerAxisFlip;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.Limelight;
@@ -73,7 +74,7 @@ public class Robot extends TimedRobot {
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
     
-    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData);
+    private DriverInput mDriverInput = new SplitArcadeTriggerAxisFlip(mDrive, mSuperstructure, mData);
     private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
