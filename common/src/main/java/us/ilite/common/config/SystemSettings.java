@@ -12,6 +12,7 @@ import us.ilite.common.lib.util.SimpleNetworkTable;
 
 import com.team254.lib.util.ConstantsBase;
 
+import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.util.NetworkTablesConstantsBase;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.ELogitech310;
@@ -114,6 +115,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static int ULTRASONIC_PORT = 2;
 
+    // =============================================================================
+    // Turn-To PID constants
+    // =============================================================================
+    public static PIDGains kPIDGains = new PIDGains( 0.0, 0.0, 0.0, 0.085 );
+
 
     // =============================================================================
     // LimeLight Camera Constants
@@ -180,6 +186,16 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     }
 
+    // =============================================================================
+    // Hatch Flower constants
+    // =============================================================================
+    public static double kHatchFlowerSolenoidReleaseTimeSec = 0.250;
+    public static double kHatchFlowerPushDurationSec = 0.250;
+
+    // kHatchFlowerGrabToPushTransitionTimeSec is the time between releasing the 
+    // grab solenoid and engaging the push solenoid.
+    public static double kHatchFlowerGrabToPushTransitionTimeSec = 0.250;
+
 
     // =============================================================================
     // 2019 Module Addresses
@@ -197,8 +213,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kFourBarDoubleSolenoidReverseAddress = -1;
     public static int kFourBarTBDSensorAddress = -1;
 
-    public static int kHatchFlowerOpenCloseSolenoidAddress = -1;
-    public static int kHatchFlowerExtensionSolenoidAddress = -1;
+    public static int kHatchFlowerOpenCloseSolenoidAddress = 0;
+    public static int kHatchFlowerExtensionSolenoidAddress = 1;
 
     public static int kIntakeSPX1Address = -1;
     public static int kIntakeSPX2Address = -1;
