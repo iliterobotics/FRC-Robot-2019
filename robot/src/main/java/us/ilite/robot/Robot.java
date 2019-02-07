@@ -167,7 +167,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
-        mData.sendCodices();
+        // mData.sendCodices();
     }
 
     @Override
