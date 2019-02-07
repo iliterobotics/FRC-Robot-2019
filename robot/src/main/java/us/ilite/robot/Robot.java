@@ -78,8 +78,6 @@ public class Robot extends TimedRobot {
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
 
-    private SystemSettings mSettings = new SystemSettings();
-
     private PerfTimer mClockUpdateTimer = new PerfTimer();
 
     @Override

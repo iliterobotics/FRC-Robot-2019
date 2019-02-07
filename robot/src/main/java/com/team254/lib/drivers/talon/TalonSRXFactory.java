@@ -143,10 +143,10 @@ public class TalonSRXFactory {
 
         // victor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature,
         //         config.QUAD_ENCODER_STATUS_FRAME_RATE_MS, kTimeoutMs);
-        victor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat,
-                config.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS, kTimeoutMs);
-        victor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth,
-                config.PULSE_WIDTH_STATUS_FRAME_RATE_MS, kTimeoutMs);
+        // victor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat,
+        //         config.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS, kTimeoutMs);
+        // victor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth,
+        //         config.PULSE_WIDTH_STATUS_FRAME_RATE_MS, kTimeoutMs);
 
         victor.setControlFramePeriod(ControlFrame.Control_3_General, config.CONTROL_FRAME_PERIOD_MS);
 

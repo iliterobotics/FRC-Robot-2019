@@ -57,6 +57,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveClosedLoopVoltageRampRate = 0.0;
     public static double kDriveOpenLoopVoltageRampRate = 0.1;
     public static int kDriveCurrentLimitAmps = 40;
+    public static int kDriveCurrentLimitTriggerDurationMs = 100;
     public static double kDriveWheelDiameterInches = 6.0;
     public static double  DRIVETRAIN_WHEEL_DIAMETER_FEET = kDriveWheelDiameterInches / 12.0;
     public static double kDriveWheelCircumference = kDriveWheelDiameterInches * Math.PI;

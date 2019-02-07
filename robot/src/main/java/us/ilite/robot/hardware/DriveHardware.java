@@ -56,11 +56,18 @@ public class DriveHardware implements IDriveHardware {
         mLeftRear = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveLeftRearTalonId, SystemSettings.kDriveLeftMasterTalonId);
 
         mRightMaster = TalonSRXFactory.createDefaultTalon(SystemSettings.kDriveRightMasterTalonId);
-        mRightMiddle = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveRightMiddleTalonId, SystemSettings.kDriveLeftMasterTalonId);
-        mRightRear = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveRightRearTalonId, SystemSettings.kDriveLeftMasterTalonId);
+        mRightMiddle = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveRightMiddleTalonId, SystemSettings.kDriveRightMasterTalonId);
+        mRightRear = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveRightRearTalonId, SystemSettings.kDriveRightMasterTalonId);
 
         configureMaster(mLeftMaster, true);
+        configureMotor(mLeftMaster);
+        configureMotor(mLeftMiddle);
+        configureMotor(mLeftRear);
+
         configureMaster(mRightMaster, false);
+        configureMotor(mRightMaster);
+        configureMotor(mRightMiddle);
+        configureMotor(mRightRear);
 
         mLeftMaster.setInverted(true);
         mLeftMiddle.setInverted(true);
@@ -183,15 +190,21 @@ public class DriveHardware implements IDriveHardware {
         if (sensorPresent != ErrorCode.OK) {
             mLogger.error("Could not detect " + (pIsLeft ? "left" : "right") + " encoder: " + sensorPresent);
         }
-        talon.enableVoltageCompensation(true);
-        talon.configVoltageCompSaturation(12.0, SystemSettings.kLongCANTimeoutMs);
-        talon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, SystemSettings.kLongCANTimeoutMs);
-        talon.configVelocityMeasurementWindow(64, SystemSettings.kLongCANTimeoutMs);
-        talon.configOpenloopRamp(SystemSettings.kDriveOpenLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
-        talon.configClosedloopRamp(SystemSettings.kDriveClosedLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
+
         talon.enableCurrentLimit(true);
         talon.configContinuousCurrentLimit(SystemSettings.kDriveCurrentLimitAmps, SystemSettings.kLongCANTimeoutMs);
-        talon.configNeutralDeadband(0.04, 0);
+        talon.configPeakCurrentLimit(SystemSettings.kDriveCurrentLimitAmps, SystemSettings.kLongCANTimeoutMs);
+        talon.configPeakCurrentDuration(SystemSettings.kDriveCurrentLimitTriggerDurationMs, SystemSettings.kLongCANTimeoutMs);
+    }
+
+    private void configureMotor(BaseMotorController motorController) {
+        motorController.enableVoltageCompensation(true);
+        motorController.configVoltageCompSaturation(12.0, SystemSettings.kLongCANTimeoutMs);
+        motorController.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, SystemSettings.kLongCANTimeoutMs);
+        motorController.configVelocityMeasurementWindow(64, SystemSettings.kLongCANTimeoutMs);
+        motorController.configOpenloopRamp(SystemSettings.kDriveOpenLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
+        motorController.configClosedloopRamp(SystemSettings.kDriveClosedLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
+        motorController.configNeutralDeadband(0.04, 0);
     }
 
     private void configTalonForPercentOutput(TalonSRX talon) {
