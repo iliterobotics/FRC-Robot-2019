@@ -58,8 +58,12 @@ public class CargoSpit extends Module {
 
     }
 
-    public boolean hasCargo() {
+    public void stop() {
 
+    }
+
+    public boolean hasCargo() {
+        return true;
     }
 
 }

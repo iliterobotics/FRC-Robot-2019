@@ -97,6 +97,9 @@ public class DriverInput extends Module {
         if (!mSuperstructure.isRunningCommands()) {
             updateDriveTrain();
             updateElevator();
+            updateElevator();
+            updateIntake();
+            updateHatchGrabber();
         } 
 
     }
@@ -134,6 +137,18 @@ public class DriverInput extends Module {
             power *= 0.10d; //10% of the driver input.
         }
         
+    }
+
+    private void updateIntake() {
+
+    }
+
+    private void updateHatchGrabber() {
+
+    }
+
+    private void updateCargoSpit() {
+
     }
 
     /**

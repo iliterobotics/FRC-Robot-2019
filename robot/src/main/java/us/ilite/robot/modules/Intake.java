@@ -91,6 +91,10 @@ public class Intake extends Module {
 //        setRollerPower();
     }
 
+    public void stop() {
+
+    }
+
     public void setHandoffCargo() {
         setWrist(EWristPosition.HANDOFF);
 //        setRollerPower();

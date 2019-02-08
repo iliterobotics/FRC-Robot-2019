@@ -73,7 +73,15 @@ public class HatchFlower extends Module {
 
     }
 
+    /**
+     *
+     * @return Whether the hatch grabber is extended based on actuation time.
+     */
     public boolean isExtended() {
+        return true;
+    }
+
+    public boolean hasHatch() {
         return true;
     }
 
