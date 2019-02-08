@@ -75,6 +75,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static double kSnailModePercentThrottleReduction = .5;
     public static double kSnailModePercentRotateReduction = .4;
+    public static double kDriverInputTurnMaxMagnitude = 0.5;
     public static double  INPUT_DEADBAND_F310_JOYSTICK = 0.05;
     public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
     public static int     JOYSTICK_PORT_DRIVER = 0;

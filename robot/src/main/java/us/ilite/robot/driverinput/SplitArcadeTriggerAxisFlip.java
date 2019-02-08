@@ -40,6 +40,8 @@ public class SplitArcadeTriggerAxisFlip extends DriverInput {
             rotate = rotate;
         }
 
+        rotate = Util.limit(rotate, SystemSettings.kDriverInputTurnMaxMagnitude);
+
 		// throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
         // rotate = Util.limit(rotate, 0.7);
 
