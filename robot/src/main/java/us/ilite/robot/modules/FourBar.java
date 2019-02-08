@@ -89,7 +89,6 @@ public class FourBar extends Module {
             hasRun = true;
             mOutput = desiredOutput + gravityCompAtPosition();
         }
-        updateCodex();
     }
 
     /**
