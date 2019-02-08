@@ -16,6 +16,7 @@ import us.ilite.common.types.input.ELogitech310;
 import us.ilite.robot.commands.Delay;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
+import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.Module;
 import us.ilite.robot.modules.Superstructure;
 import us.ilite.robot.modules.Elevator;
@@ -26,7 +27,6 @@ public class DriverInput extends Module {
     private ILog mLog = Logger.createLog(DriverInput.class);
 
     protected final Drive driveTrain;
-    protected final Elevator mElevator;
     protected final Superstructure mSuperstructure;
 
     private boolean mDriverStartedCommands;
@@ -38,13 +38,12 @@ public class DriverInput extends Module {
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, boolean pSimulated, Elevator pElevator) {
+    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
         this.mSuperstructure = pSuperstructure;
         this.mData = pData;
         this.mDriverInputCodex = mData.driverinput;
         this.mOperatorInputCodex = mData.operatorinput;
-        this.mElevator = pElevator;
         if(pSimulated) {
             // Use a different joystick library?
             
@@ -54,8 +53,8 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, Elevator pElevator) {
-        this(pDrivetrain, pSuperstructure, pData, false, pElevator);
+    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData) {
+        this(pDrivetrain, pSuperstructure, pData, false);
     }
 
     @Override
@@ -96,12 +95,12 @@ public class DriverInput extends Module {
         // Teleop control
         if (!mSuperstructure.isRunningCommands()) {
             updateDriveTrain();
-            updateElevator();
-            updateElevator();
-            updateIntake();
-            updateHatchGrabber();
+            updateSuperstructure();
         } 
 
+    }
+
+    private void updateHatchFlower() {
     }
 
     private void updateDriveTrain() {
@@ -128,26 +127,7 @@ public class DriverInput extends Module {
         }
     }
 
-    private void updateElevator() {
-
-        double power = 0.0d;
-
-        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_THROTTLE_AXIS)) {
-            power = mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
-            power *= 0.10d; //10% of the driver input.
-        }
-        
-    }
-
-    private void updateIntake() {
-
-    }
-
-    private void updateHatchGrabber() {
-
-    }
-
-    private void updateCargoSpit() {
+    private void updateSuperstructure() {
 
     }
 

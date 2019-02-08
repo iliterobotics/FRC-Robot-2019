@@ -43,11 +43,7 @@ import us.ilite.robot.commands.TurnToDegree;
 import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
-import us.ilite.robot.modules.Drive;
-import us.ilite.robot.modules.Limelight;
-import us.ilite.robot.modules.Elevator;
-import us.ilite.robot.modules.ModuleList;
-import us.ilite.robot.modules.Superstructure;
+import us.ilite.robot.modules.*;
 import us.ilite.common.lib.control.DriveController;
 
 public class Robot extends TimedRobot {
@@ -66,12 +62,16 @@ public class Robot extends TimedRobot {
 
 
     // Module declarations here
-    private Superstructure mSuperstructure = new Superstructure();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
     private Elevator mElevator = new Elevator(mData);
-    
-    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData, mElevator);
+    private Intake mIntake = new Intake();
+    private CargoSpit mCargoSpit = new CargoSpit();
+    private HatchFlower mHatchFlower = new HatchFlower();
+    private Superstructure mSuperstructure = new Superstructure(mElevator, mIntake, mHatchFlower, mCargoSpit);
+
+
+    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData);
     private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
@@ -156,7 +156,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        mRunningModules.setModules(mDriverInput, mLimelight, mElevator);
+        mRunningModules.setModules(mDriverInput, mLimelight, mElevator, mHatchFlower);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
