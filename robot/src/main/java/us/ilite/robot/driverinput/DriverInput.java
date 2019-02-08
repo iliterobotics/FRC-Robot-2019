@@ -14,12 +14,8 @@ import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.robot.commands.Delay;
-import us.ilite.robot.modules.Drive;
-import us.ilite.robot.modules.DriveMessage;
-import us.ilite.robot.modules.HatchFlower;
+import us.ilite.robot.modules.*;
 import us.ilite.robot.modules.Module;
-import us.ilite.robot.modules.Superstructure;
-import us.ilite.robot.modules.Elevator;
 
 public class DriverInput extends Module {
 
@@ -95,14 +91,13 @@ public class DriverInput extends Module {
         // Teleop control
         if (!mSuperstructure.isRunningCommands()) {
             updateDriveTrain();
-            updateSuperstructure();
+            updateAcquistion();
+            updateScoring();
+            updateElevator();
         } 
 
     }
-
-    private void updateHatchFlower() {
-    }
-
+    
     private void updateDriveTrain() {
         if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_THROTTLE_AXIS)
                 && mData.driverinput.isSet(DriveTeamInputMap.DRIVER_TURN_AXIS)
@@ -127,8 +122,55 @@ public class DriverInput extends Module {
         }
     }
 
-    private void updateSuperstructure() {
+    private void updateAcquistion() {
 
+        if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_INTAKE_GROUND_CARGO_AXIS)) {
+            mSuperstructure.setIntaking(Superstructure.EAcquisitionState.GROUND_CARGO);
+        } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_INTAKE_GROUND_HATCH_AXIS)) {
+            mSuperstructure.setIntaking(Superstructure.EAcquisitionState.GROUND_HATCH);
+        }
+
+        if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_HATCH_PUSH)) {
+            mSuperstructure.setScoring(EScoreState.SCORE_HATCH);
+        } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_CARGO_SPIT)) {
+            mSuperstructure.setScoring(EScoreState.SCORE_CARGO);
+        }
+
+        if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_HATCH_EXTEND)) {
+            mSuperstructure.extendHatchGrabber(true);
+        } else {
+            mSuperstructure.extendHatchGrabber(false);
+        }
+
+        if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_HATCH_GRAB)) {
+            mSuperstructure.grabHatch(true);
+        } else {
+            mSuperstructure.grabHatch(false);
+        }
+    }
+    
+    private void updateScoring() {
+        
+    }
+    
+    private void updateElevator() {
+        if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_CARGO_BUTTON)) {
+            if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_LEVEL_THREE)) {
+                
+            } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_LEVEL_TWO)) {
+                
+            } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_GROUND)) {
+                
+            }
+        } else {
+            if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_LEVEL_THREE)) {
+
+            } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_LEVEL_TWO)) {
+
+            } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_ELEVATOR_GROUND)) {
+
+            }
+        }
     }
 
     /**

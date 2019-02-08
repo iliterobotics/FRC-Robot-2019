@@ -90,76 +90,16 @@ public class Superstructure extends Module {
         handleRequestedRobotState();
         handleCurrentRobotState();
 
-//        switch(mRequestedAcquistionState) {
-//            case LOADING_STATION:
-//
-//                mIntake.stow();
-//                mElevator.setStatePosition(EElevatorPosition.BOTTOM);
-//                mHatchFlower.setFlowerExtended(true);
-//
-//                // Update state
-//                mAcquisitionState = EAcquisitionState.LOADING_STATION;
-//                break;
-//            case GROUND_HATCH:
-//
-//                mElevator.setStatePosition(EElevatorPosition.BOTTOM);
-//                mHatchFlower.setFlowerExtended(true);
-//                mIntake.setIntakingHatch();
-//
-//                if(mElevator.isAtPosition(EElevatorPosition.BOTTOM) && mIntake.hasHatch()) {
-//                    mRequestedAcquistionState = EAcquisitionState.HANDING_OFF;
-//                }
-//
-//                mAcquisitionState = EAcquisitionState.GROUND_HATCH;
-//                break;
-//            case GROUND_CARGO:
-//
-//                mElevator.setStatePosition(EElevatorPosition.BOTTOM);
-//                mHatchFlower.setFlowerExtended(false);
-//
-//                if(mElevator.isAtPosition(EElevatorPosition.BOTTOM)) {
-//                    mIntake.setIntakingCargo();
-//                    mCargoSpit.setIntaking();
-//                }
-//
-//                if(mCargoSpit.hasCargo()) {
-//                    mRequestedAcquistionState = EAcquisitionState.HANDING_OFF;
-//                }
-//
-//                mAcquisitionState = EAcquisitionState.GROUND_CARGO;
-//                break;
-//            case HANDING_OFF:
-//
-//                mElevator.setStatePosition(EElevatorPosition.BOTTOM);
-//
-//                if(mAcquisitionState.equals(EAcquisitionState.GROUND_HATCH)) {
-//                    mHatchFlower.setFlowerExtended(true);
-//                    mIntake.setHandoffHatch();
-//                    if(mIntake.isAtPosition(Intake.EWristPosition.HANDOFF)) {
-//                        if(mHatchFlower.isExtended()) {
-//                            mHatchFlower.captureHatch();
-//                        }
-//                    }
-//                }
-//
-//                if(mAcquisitionState.equals(EAcquisitionState.GROUND_CARGO)) {
-//                    mIntake.setHandoffCargo();
-//                    mCargoSpit.setIntaking();
-//
-//                    if(mCargoSpit.hasCargo()) {
-//                        mRequestedAcquistionState =
-//                    }
-//                }
-//
-//                mAcquisitionState = EAcquisitionState.HANDING_OFF;
-//                break;
-//            case STOWED:
-//
-//                mAcquisitionState = EAcquisitionState.STOWED;
-//                break;
-//            default:
-//                break;
-//        }
+        // If we are handing off we don't want the grabber to collide with the hatch
+        if(mHatchGrabberGrabRequested && mAcquisitionState != EAcquisitionState.HANDOFF) {
+            mHatchFlower.captureHatch();
+        }
+
+
+        // No collisions here
+        if(mHatchGrabberExtendRequested) {
+            mHatchFlower.setFlowerExtended(true);
+        }
 
     }
 
