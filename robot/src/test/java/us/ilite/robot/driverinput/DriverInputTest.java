@@ -29,7 +29,7 @@ public class DriverInputTest {
     @Mock private HatchFlower mHatchFlower;
     // We want to see Superstructure's actual behavior, so we make it a spy
     private Superstructure mSuperstructure;
-    private Elevator mElevator;
+    @Mock private Elevator mElevator;
 
 
     private DriverInput mDriverInput;
@@ -47,7 +47,7 @@ public class DriverInputTest {
         mClock = new Clock().simulated();
         mModuleList = new ModuleList();
         mSuperstructure = spy(new Superstructure());
-        mDriverInput = spy(new DriverInput(mDrive, mElevator, mSuperstructure, mData));
+        mDriverInput = spy(new DriverInput(mDrive, mElevator, mHatchFlower, mSuperstructure, mData));
 
         mModuleList.setModules(mDriverInput, mSuperstructure, mDrive);
         mModuleList.modeInit(mClock.getCurrentTime());
