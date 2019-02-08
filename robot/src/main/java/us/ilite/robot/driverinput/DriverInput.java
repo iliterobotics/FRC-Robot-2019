@@ -132,31 +132,41 @@ public class DriverInput extends Module {
      */
     protected void updateArm()
     {
+        double mult = 1.0;
         //temporarily assuming this setpoint will be set by the operator Y button
         if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_UP ) )
         {
-            
+            mult = 0.05;
         }
         //temporarily assuming this setpoint will be set by the operator A button
         if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_DOWN ) )
         {
-            
+            mult = 0.15;
         }
         //temporarily assuming this setpoint will be set by the operator B button
         if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_OUT ) )
         {
-            
+            mult = 0.25;
         }
         //temporarily assuming the arm will be controlled by the operator joystick
         if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_MOTION ) )
         {
             //mArm.setArmAngle( mArm.getCurrentArmAngle() + mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) );
             // System.out.println(mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
-            // mArm.setDesiredOutput( mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * 0.1 );
-           //  System.out.println( "DriverInput operator joystick: " + mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
-           // mArm.setDesiredOutput( mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * 0.25 );
-           double angle = (mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION )+ 1 ) / 2 * 135;
-           mArm.setArmAngle(angle);
+
+            // // Drive the arm directly with the joystick.  Joystick output is -1 to 1
+            // // Talon desired output range is -1 to 1
+            // // Scale the output by the button pressed
+            // System.out.println( "DriverInput operator joystick: " + mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
+            // // which of these is correct???  both?
+            // mArm.setDesiredOutput( mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * mult );
+            // mArm.setDesiredOutput( mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * mult );
+
+            // Drive the arm to track the joystick
+            // Assuming a mapping of 0 to 135 deg for the joysticks -1 to 1
+            // angle = ((joystick + 1)/2) * 135
+            double angle = (mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) + 1 ) / 2 * 135;
+            mArm.setArmAngle(angle);
 
         }
     }

@@ -2,51 +2,54 @@ package us.ilite.robot.modules;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team254.lib.drivers.talon.TalonSRXFactory;
 
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.
 common.config.SystemSettings;
+import us.ilite.common.config.SystemSettings.ArmPosition;
 import us.ilite.common.lib.control.PIDController;
 import us.ilite.common.lib.control.PIDGains;
+import us.ilite.robot.loops.Loop;
+
 import com.team254.lib.util.Util;
 
-public class Arm extends Module
+public class Arm extends Loop
 {
-    private static final double MAX_CURRENT_V_RATIO = 1; //tune - overcurrent ratio for arm motor
-    private static final double MOTOR_OFF_TIME = 0.5;
-    private static final double MAX_STALL_TIME = 0.1;
     // private double mVoltage;
     // private double mActualTheta;
     // private double mDesiredTheta;
     // private ESetPoint mDesiredSetPoint;
     // private ESetPoint mCurrentSetPoint;
-    private double kP = 0.1;
-    private double kI = 0.0;
-    private double kD = 0.01;
-    private static final int maxNumTicks = 383; //number of ticks at max arm angle
-    private static final int minNumTicks = 0; //number of ticks at min arm angle
-    private static int talonPortId = 6; //placeholder constant; change later in SystemSettings
-    private TalonSRX talon = new TalonSRX(talonPortId); //TalonSRXFactory.createDefaultTalon(talonPortId);
+    // private double kP = 0.002;
+    // private double kI = 0.001;
+    // private double kD = 0.0;
+    // private static final int maxNumTicks = 383; //number of ticks at max arm angle
+    // private static final int minNumTicks = 0; //number of ticks at min arm angle
+    private TalonSRX talon = new TalonSRX(SystemSettings.kArmTalonSRXAddress); //TalonSRXFactory.createDefaultTalon(SystemSettings.kArmTalonSRXAddress);
     private PIDController pid;
     // private boolean settingPosition;
     private int currentNumTicks = 0; //revisit this and check if correct for encoder type
     private int desiredNumTicks = 0;
     private double mDesiredOutput;
     private boolean stalled = false;
-    private boolean motorOff = false; // off because of current limiting
+    private boolean motorOff = false; // Motor turned off for a time because of current limiting
     private Timer mTimer;
-    
-    // 1024 ticks/360 degrees = 2.84 ticks/degree (.351 degrees/tick)
 
+    // Constants used for translating ticks to angle, values based on ticks per full rotation
+    private double tickPerDegree = SystemSettings.kArmPositionEncoderTicksPerRotation / 360.0;
+    private double degreePerTick = 360.0 / SystemSettings.kArmPositionEncoderTicksPerRotation;
+    
     public Arm()
     {
         this.currentNumTicks = 0;
-        pid = new PIDController( new PIDGains(kP, kI, kD), SystemSettings.kControlLoopPeriod );
+        pid = new PIDController( SystemSettings.kArmPIDGains /*new PIDGains(kP, kI, kD)*/, SystemSettings.kControlLoopPeriod );
         pid.setInputRange( 0, 383 ); //min and max ticks of arm
         talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.kLongCANTimeoutMs);
         talon.setSelectedSensorPosition(0);
+        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5);
 
         // init the timer
         this.mTimer = new Timer();
@@ -56,7 +59,8 @@ public class Arm extends Module
     @Override
     public void modeInit(double pNow)
     {
-        
+        // rezero on enable
+        talon.setSelectedSensorPosition(0);
     }
 
     @Override
@@ -78,7 +82,7 @@ public class Arm extends Module
         System.out.println("Arm.update: talon sensor ticks = " + this.currentNumTicks);
 
         // Directly control the output 
-        //double output = this.mDesiredOutput;
+        // double output = this.mDesiredOutput;
 
         // Calculate the output to control arm position
          double output = this.calculateOutput();
@@ -92,13 +96,12 @@ public class Arm extends Module
         // When the motor is not running the voltage is zero and divide by zero 
         // is undefined, we will calculate the ratio when the voltage is above
         // a minimum value
-        // TODO Parameterize the minimum ratio voltage.
-        if ( voltage > 0.1 ) {
+        if ( voltage > SystemSettings.kArmMinMotorStallVoltage ) {
             ratio = current / voltage;
         }
 
         // debug
-        //System.out.println( "Arm.update initial output = " + output );
+        System.out.println( "Arm.update initial output = " + output );
         //System.out.println( "Arm.update: current = " + current + ", voltage = " + voltage + ", ratio = " + ratio);
         //System.out.println( "Arm.update: motorOff = " + this.motorOff + ", stalled = " + this.stalled);
 
@@ -107,7 +110,7 @@ public class Arm extends Module
         if(this.motorOff)
         {
             System.out.println("*************** Motor OFF **********************************************");
-            if( mTimer.hasPeriodPassed(MOTOR_OFF_TIME) )
+            if( mTimer.hasPeriodPassed(SystemSettings.kArmMotorOffTimeSec) )
             {
                 // Cool Off Period has passed, turn the motor back on
                 this.motorOff = false;
@@ -123,7 +126,7 @@ public class Arm extends Module
         else 
         {
             // check for stalled motor
-            if(ratio > MAX_CURRENT_V_RATIO)
+            if(ratio > SystemSettings.kArmMaxCurrentVoltRatio)
             {
                 System.err.println("++++++++++++++++++++++++++ Motor STALLED ++++++++++++++++++++++++++++++++++++++");
                 System.out.println( "Arm.update: stalled: " + this.stalled);
@@ -139,7 +142,7 @@ public class Arm extends Module
                 else
                 {
                     // Already stalled, check for maximum stall time
-                    if( mTimer.hasPeriodPassed(MAX_STALL_TIME) )
+                    if( mTimer.hasPeriodPassed(SystemSettings.kArmMaxStallTimeSec) )
                     {
                         // We've exceeded the max stall time, stop the motor
                         System.out.println( "Arm.update Max stall time exceeded." );
@@ -179,26 +182,31 @@ public class Arm extends Module
 
     }
 
-    public int getSetPoints(ESetPoint pPoint)
-    {
-        switch( pPoint )
-        {
-            case FULLY_OUT:
-            //90 degrees * 2.84 ticks/degree = 256
-            return 256;
-
-            case FULLY_UP:
-            //135 degrees * 2.84 ticks/degree = 383
-            return 383;
-
-            case FULLY_DOWN:
-            return 0;
-
-            case MANUAL_STATE:
-            default:
-            return 0;
-        }
+    @Override
+    public void loop(double pNow) {
+        update(pNow);
     }
+
+    // public int getSetPoints(ESetPoint pPoint)
+    // {
+    //     switch( pPoint )
+    //     {
+    //         case FULLY_OUT:
+    //         //90 degrees
+    //         return angleToTicks(90.0);
+
+    //         case FULLY_UP:
+    //         //135 degrees
+    //         return angleToTicks(135.0);
+
+    //         case FULLY_DOWN: // 0 deg
+    //         return angleToTicks(0.0);
+
+    //         case MANUAL_STATE:
+    //         default:
+    //         return 0;
+    //     }
+    // }
 
 
     private double calculateOutput() //not running on desired output - check later
@@ -207,30 +215,34 @@ public class Arm extends Module
         double tempOutput = pid.calculate( talon.getSelectedSensorPosition(), Timer.getFPGATimestamp() );
 
         // Constrain output to min/max values for the Talon
-        return Util.limit(tempOutput, -1, 1) * .25;
+        // return Util.limit(tempOutput, -1, 1) * .25;
+        return Util.limit(tempOutput, SystemSettings.kArmPIDOutputMinLimit, SystemSettings.kArmPIDOutputMaxLimit);
 
     }
 
     private int angleToTicks(double angle)
     {
-        // 1024 ticks/360 degrees = 2.84 ticks/degree (.351 degrees/tick)
-        // TODO Parametrize this constant, also calculate the constant for more accuracy
-        return (int) (angle * 512 / 360);
+        return (int) (angle * this.tickPerDegree);
     }
 
     private double ticksToAngle(int numTicks)
     {
-        // 1024 ticks/360 degrees = 2.84 ticks/degree (.351 degrees/tick)
-        // TODO Parametrize this constant, also calculate the constant for more accuracy
-        return numTicks * 360 / 512;
+        return numTicks * this.degreePerTick;
     }
 
     /**
      * Choose a predetermined set point.
      */
-    public void setPoint(ESetPoint pDesiredPoint) 
-    {
-        this.desiredNumTicks = getSetPoints(pDesiredPoint);
+    // public void setPoint(ESetPoint pDesiredPoint) 
+    // {
+    //     this.desiredNumTicks = getSetPoints(pDesiredPoint);
+    // }
+
+    /**
+     * Choose a predefined arm position
+     */
+    public void setArmPosition( ArmPosition position ) {
+        this.setArmAngle(position.getAngle());
     }
 
     public void setArmAngle( double angle )
@@ -238,7 +250,7 @@ public class Arm extends Module
         // TODO Parameterize the angle limits
         // Constrain the angle to the allowed values
         System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ angle = " + angle);
-        angle = Util.limit(angle, 0, 135);
+        angle = Util.limit(angle, SystemSettings.kArmMinAngle, SystemSettings.kArmMaxAngle);
         this.desiredNumTicks = angleToTicks( angle );
     }
 

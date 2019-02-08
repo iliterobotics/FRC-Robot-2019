@@ -157,11 +157,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        mRunningModules.setModules(mDriverInput, mLimelight, mArm);
+        mRunningModules.setModules(mDriverInput, mLimelight);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
-        mLoopManager.setRunningLoops(mDrive);
+        mLoopManager.setRunningLoops(mDrive, mArm);
         mLoopManager.start();
     }
 

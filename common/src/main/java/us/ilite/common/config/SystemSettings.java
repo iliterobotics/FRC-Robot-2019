@@ -120,6 +120,44 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static PIDGains kPIDGains = new PIDGains( 0.0, 0.0, 0.0, 0.085 );
 
 
+
+
+    // =============================================================================
+    // Arm Constants
+    // =============================================================================
+    // PID Gains                                        kP,    kI,    kD
+    public static PIDGains kArmPIDGains = new PIDGains( 0.002, 0.001, 0.0 );
+    public static int kArmPositionEncoderTicksPerRotation = 512;
+    public static double kArmMinAngle = 0.0;
+    public static double kArmMaxAngle = 135.0;
+    public static double kArmMaxCurrentVoltRatio = 1; //tune - overcurrent ratio for arm motor
+    public static double kArmMotorOffTimeSec = 0.5; // seconds
+    public static double kArmMaxStallTimeSec = 0.1; // seconds
+    public static double kArmMinMotorStallVoltage = 0.1;
+    public static double kArmPIDOutputMaxLimit = 0.25; // max 1.0
+    public static double kArmPIDOutputMinLimit = -0.25; // min -1.0
+
+    // Predefined arm  positions
+    public enum ArmPosition {
+        FULLY_OUT(90.0),
+        FULLY_UP(135.0),
+        FULLY_DOWN(0.0);
+
+        private final double angle;
+
+        ArmPosition( double angle ) {
+            this.angle = angle;
+        }
+
+        public double getAngle() {
+            return this.angle;
+        }
+    }
+    // =============================================================================
+
+
+
+
     // =============================================================================
     // LimeLight Camera Constants
     // Note: These constants need to be recalculted for a specific robot geometry
@@ -221,6 +259,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kDriveTrainLeftSPX1Address = -1;
     public static int kDriveTrainLeftSPX2Address = -1;
 
+    public static int kArmTalonSRXAddress = 6;
 
 
 
