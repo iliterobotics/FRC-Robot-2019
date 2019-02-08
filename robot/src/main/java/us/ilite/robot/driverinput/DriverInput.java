@@ -153,8 +153,11 @@ public class DriverInput extends Module {
             //mArm.setArmAngle( mArm.getCurrentArmAngle() + mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) );
             // System.out.println(mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
             // mArm.setDesiredOutput( mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * 0.1 );
-             System.out.println( "DriverInput operator joystick: " + mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
-            mArm.setDesiredOutput( mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * 0.25 );
+           //  System.out.println( "DriverInput operator joystick: " + mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
+           // mArm.setDesiredOutput( mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * 0.25 );
+           double angle = (mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION )+ 1 ) / 2 * 135;
+           mArm.setArmAngle(angle);
+
         }
     }
 

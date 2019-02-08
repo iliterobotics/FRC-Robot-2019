@@ -6,7 +6,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team254.lib.drivers.talon.TalonSRXFactory;
 
 import edu.wpi.first.wpilibj.Timer;
-import us.ilite.common.config.SystemSettings;
+import us.ilite.
+common.config.SystemSettings;
 import us.ilite.common.lib.control.PIDController;
 import us.ilite.common.lib.control.PIDGains;
 import com.team254.lib.util.Util;
@@ -21,13 +22,13 @@ public class Arm extends Module
     // private double mDesiredTheta;
     // private ESetPoint mDesiredSetPoint;
     // private ESetPoint mCurrentSetPoint;
-    private double kP = 0.0;
+    private double kP = 0.1;
     private double kI = 0.0;
-    private double kD = 0.0;
+    private double kD = 0.01;
     private static final int maxNumTicks = 383; //number of ticks at max arm angle
     private static final int minNumTicks = 0; //number of ticks at min arm angle
     private static int talonPortId = 6; //placeholder constant; change later in SystemSettings
-    private TalonSRX talon = TalonSRXFactory.createDefaultTalon(talonPortId);
+    private TalonSRX talon = new TalonSRX(talonPortId); //TalonSRXFactory.createDefaultTalon(talonPortId);
     private PIDController pid;
     // private boolean settingPosition;
     private int currentNumTicks = 0; //revisit this and check if correct for encoder type
@@ -77,28 +78,29 @@ public class Arm extends Module
         System.out.println("Arm.update: talon sensor ticks = " + this.currentNumTicks);
 
         // Directly control the output 
-        double output = this.mDesiredOutput;
+        //double output = this.mDesiredOutput;
 
         // Calculate the output to control arm position
-        // double output = this.calculateOutput();
+         double output = this.calculateOutput();
         
-        // Calculate the current/voltage ration to detect a motor stall
+        // Calculate the current/voltage ratio to detect a motor stall
         double current = talon.getOutputCurrent();
         double voltage = talon.getMotorOutputVoltage();
         double ratio = 0.0;
+        System.out.println("-----------Current ratio = " + ratio + "------------");
 
         // When the motor is not running the voltage is zero and divide by zero 
         // is undefined, we will calculate the ratio when the voltage is above
         // a minimum value
         // TODO Parameterize the minimum ratio voltage.
-        if ( voltage > 0.5 ) {
+        if ( voltage > 0.1 ) {
             ratio = current / voltage;
         }
 
         // debug
-        System.out.println( "Arm.update initial output = " + output );
-        System.out.println( "Arm.update: current = " + current + ", voltage = " + voltage + ", ratio = " + ratio);
-        System.out.println( "Arm.update: motorOff = " + this.motorOff + ", stalled = " + this.stalled);
+        //System.out.println( "Arm.update initial output = " + output );
+        //System.out.println( "Arm.update: current = " + current + ", voltage = " + voltage + ", ratio = " + ratio);
+        //System.out.println( "Arm.update: motorOff = " + this.motorOff + ", stalled = " + this.stalled);
 
 
         // If the motor is off check for completion of the cool off period
@@ -205,7 +207,7 @@ public class Arm extends Module
         double tempOutput = pid.calculate( talon.getSelectedSensorPosition(), Timer.getFPGATimestamp() );
 
         // Constrain output to min/max values for the Talon
-        return Util.limit(tempOutput, -1, 1);
+        return Util.limit(tempOutput, -1, 1) * .25;
 
     }
 
@@ -213,14 +215,14 @@ public class Arm extends Module
     {
         // 1024 ticks/360 degrees = 2.84 ticks/degree (.351 degrees/tick)
         // TODO Parametrize this constant, also calculate the constant for more accuracy
-        return (int) (angle * 2.84);
+        return (int) (angle * 512 / 360);
     }
 
     private double ticksToAngle(int numTicks)
     {
         // 1024 ticks/360 degrees = 2.84 ticks/degree (.351 degrees/tick)
         // TODO Parametrize this constant, also calculate the constant for more accuracy
-        return numTicks * .351;
+        return numTicks * 360 / 512;
     }
 
     /**
@@ -235,6 +237,7 @@ public class Arm extends Module
     {
         // TODO Parameterize the angle limits
         // Constrain the angle to the allowed values
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ angle = " + angle);
         angle = Util.limit(angle, 0, 135);
         this.desiredNumTicks = angleToTicks( angle );
     }
