@@ -38,8 +38,6 @@ public class FourBar extends Module {
         // Connect the NEO's to the encoders
         mNeo1Encoder = mNeo1.getEncoder();
         mNeo2Encoder = mNeo2.getEncoder();
-    
-        // mDoubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
 
         mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
         hasRun = false;
