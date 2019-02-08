@@ -13,7 +13,7 @@ import us.ilite.common.types.EFourBarData;
 
 public class FourBar extends Module {
 
-    private ILog mLog = Logger.createLog(FourBar.class);
+    private ILog mLog = Logger.createLog( FourBar.class );
     private Data mData;
 
     private CANSparkMax mNeo1;
@@ -33,8 +33,8 @@ public class FourBar extends Module {
      */
     public FourBar( Data pData ) {
         // Later: SystemSettings address
-        mNeo1 = new CANSparkMax(9, CANSparkMaxLowLevel.MotorType.kBrushless);
-        mNeo2 = new CANSparkMax(10, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mNeo1 = new CANSparkMax( 9, CANSparkMaxLowLevel.MotorType.kBrushless );
+        mNeo2 = new CANSparkMax( 10, CANSparkMaxLowLevel.MotorType.kBrushless );
     
         // Connect the NEO's to the encoders
         mNeo1Encoder = mNeo1.getEncoder();
@@ -46,8 +46,8 @@ public class FourBar extends Module {
 
 
     @Override
-    public void modeInit(double pNow) {
-        mLog.error("FourBar Initialized...");
+    public void modeInit( double pNow ) {
+        mLog.error( "FourBar Initialized..." );
         mOutput = 0;
         mPreviousNeo1Rotations = mNeo1Encoder.getPosition();
         mPreviousNeo2Rotations = mNeo2Encoder.getPosition();
@@ -57,18 +57,18 @@ public class FourBar extends Module {
     }
 
     @Override
-    public void periodicInput(double pNow) {
+    public void periodicInput( double pNow ) {
         updateCodex();
     }
 
     @Override
-    public void update(double pNow) {
+    public void update( double pNow ) {
         mNeo1.set( -mOutput );
         mNeo2.set( mOutput );
     }
 
     @Override
-    public void shutdown(double pNow) {
+    public void shutdown( double pNow ) {
         mNeo1.disable();
         mNeo2.disable();
     }
@@ -76,13 +76,12 @@ public class FourBar extends Module {
     /**
      * Sets output to desired output
      * @param desiredOutput the desired percent output
-     * @param isIdle whether it is idle or not (don't add gravity comp if just b is being held)
+     * @param isIdle whether it is idle or not ( don't add gravity comp if just b is being held )
      */
     public void setDesiredOutput( double desiredOutput, boolean isIdle ) {
         if ( isIdle ) {
             mOutput = 0;
         } else {
-            hasRun = true;
             mOutput = desiredOutput + gravityCompAtPosition();
         }
     }
