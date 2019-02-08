@@ -21,14 +21,13 @@ public class FourBar extends Module {
     private CANSparkMax mNeo2;
     private CANEncoder mNeo1Encoder;
     private CANEncoder mNeo2Encoder;
-    private DoubleSolenoid mDoubleSolenoid;
 
     public double mAngularPosition;
     private double mPreviousNeo1Rotations;
     private double mPreviousNeo2Rotations;
 
-    // varying output according to angle of fourbar to counteract gravity
-    private double mGravityComp;
+    private boolean hasRun;
+
     private double mOutput;
 
     public FourBar( Data pData ) {
@@ -43,7 +42,7 @@ public class FourBar extends Module {
         // mDoubleSolenoid = new DoubleSolenoid(SystemSettings.kFourBarDoubleSolenoidForwardAddress, SystemSettings.kFourBarDoubleSolenoidReverseAddress);
 
         mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
-        mGravityComp = SystemSettings.kMass * 10 * Math.cos( mAngularPosition ) * SystemSettings.kFourBarCenterOfGravity * SystemSettings.kT;
+        hasRun = false;
         mData = pData;
     }
 
@@ -77,12 +76,12 @@ public class FourBar extends Module {
         mNeo2.disable();
     }
 
-    // later use states to determine output
     public void setDesiredOutput( double output, boolean isIdle ) {
         if ( isIdle ) {
             mOutput = 0;
         } else {
-            mOutput = output + mGravityComp;
+            hasRun = true;
+            mOutput = output + gravityCompAtPosition();
         }
         updateCodex();
     }
@@ -95,7 +94,18 @@ public class FourBar extends Module {
         mAngularPosition = ( ( mNeo1Encoder.getPosition() - mPreviousNeo1Rotations / 300 ) + ( mNeo2Encoder.getPosition() - mPreviousNeo2Rotations / 300 ) ) / 2;
     }
     
-    // later add to setDesiredOutput after states added in
+    public void handleStopType() {
+        if ( hasRun ) {
+            hold();
+        } else {
+            stop();
+        }
+    }
+
+    public void hold() {
+        mOutput = gravityCompAtPosition();
+    }
+
     public void stop() {
         setDesiredOutput( 0, true );
         mNeo1.stopMotor();
