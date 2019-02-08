@@ -6,7 +6,6 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.EFourBarData;
@@ -26,8 +25,6 @@ public class FourBar extends Module {
     private double mPreviousNeo1Rotations;
     private double mPreviousNeo2Rotations;
 
-    private boolean hasRun;
-
     private double mOutput;
 
     /**
@@ -44,7 +41,6 @@ public class FourBar extends Module {
         mNeo2Encoder = mNeo2.getEncoder();
 
         mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
-        hasRun = false;
         mData = pData;
     }
 
