@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import us.ilite.common.Data;
 import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.lib.util.RangeScale;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
@@ -38,6 +39,7 @@ public class DriverInput extends Module {
     private Data mData;
 
     private Arm mArm;
+    private RangeScale armJoyStickToAngleScaler = new RangeScale(-1.0, 1.0, SystemSettings.kArmMinAngle, SystemSettings.kArmMaxAngle);
 
     public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
@@ -165,7 +167,8 @@ public class DriverInput extends Module {
             // Drive the arm to track the joystick
             // Assuming a mapping of 0 to 135 deg for the joysticks -1 to 1
             // angle = ((joystick + 1)/2) * 135
-            double angle = (mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) + 1 ) / 2 * 135;
+            // double angle = (mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) + 1 ) / 2 * 135;
+            double angle = this.armJoyStickToAngleScaler.scaleAtoB(mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
             mArm.setArmAngle(angle);
 
         }
