@@ -70,9 +70,9 @@ public class Robot extends TimedRobot {
     private Superstructure mSuperstructure = new Superstructure();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
-    private Elevator mElevator = new Elevator(new PIDController(new PIDGains(mSettings.kElevatorP, mSettings.kElevatorI, mSettings.kElevatorD) ), mData);
+    private Elevator mElevator = new Elevator(mData);
     
-    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData, mElevator);
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mSuperstructure, mData);
     private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;

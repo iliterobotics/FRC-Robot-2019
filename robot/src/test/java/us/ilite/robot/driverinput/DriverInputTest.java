@@ -45,7 +45,7 @@ public class DriverInputTest {
         mClock = new Clock().simulated();
         mModuleList = new ModuleList();
         mSuperstructure = spy(new Superstructure());
-        mDriverInput = spy(new DriverInput(mDrive, mSuperstructure, mData, mElevator));
+        mDriverInput = spy(new DriverInput(mDrive, mElevator, mSuperstructure, mData));
 
         mModuleList.setModules(mDriverInput, mSuperstructure, mDrive);
         mModuleList.modeInit(mClock.getCurrentTime());

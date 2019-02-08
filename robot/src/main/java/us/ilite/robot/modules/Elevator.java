@@ -51,15 +51,17 @@ public class Elevator extends Module {
     CANSparkMax mMasterElevator;
     TalonSRX mEncoder = TalonSRXFactory.createDefaultTalon(kTalonId);
 
-    public Elevator(PIDController pPidController, Data pData) {
+    public Elevator(Data pData) {
 
         this.mData = pData;
-        this.mPidController = pPidController;
+        PIDGains pidGains = new PIDGains( SystemSettings.kElevatorP, SystemSettings.kElevatorI, SystemSettings.kElevatorD );
+        this.mPidController = new PIDController( pidGains, SystemSettings.kELevatorControlLoopPeriod );
 
         //Create default NEO and set the ramp rate
         mMasterElevator = SparkMaxFactory.createDefaultSparkMax(kCansparkId, MotorType.kBrushless);
         mMasterElevator.setIdleMode(IdleMode.kBrake);
         mMasterElevator.setRampRate(SystemSettings.kELevatorControlLoopPeriod);
+
 
         //We start at the bottom
         mAtBottom = true;
@@ -193,7 +195,7 @@ public class Elevator extends Module {
         return mCurrentEncoderTicks;
     }
 
-    public void setPower( int pPower ) {
+    public void setPower( double pPower ) {
         mDesiredPower = pPower;
     }
 
