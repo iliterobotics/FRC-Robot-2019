@@ -30,6 +30,10 @@ public class FourBar extends Module {
 
     private double mOutput;
 
+    /**
+     * Construct a FourBar with a Data object
+     * @param pData a Data object used to log to codex
+     */
     public FourBar( Data pData ) {
         // Later: SystemSettings address
         mNeo1 = new CANSparkMax(9, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -65,7 +69,6 @@ public class FourBar extends Module {
     public void update(double pNow) {
         mNeo1.set( -mOutput );
         mNeo2.set( mOutput );
-        updateCodex();
     }
 
     @Override
@@ -74,42 +77,67 @@ public class FourBar extends Module {
         mNeo2.disable();
     }
 
-    public void setDesiredOutput( double output, boolean isIdle ) {
+    /**
+     * Sets output to desired output
+     * @param desiredOutput the desired percent output
+     * @param isIdle whether it is idle or not (don't add gravity comp if just b is being held)
+     */
+    public void setDesiredOutput( double desiredOutput, boolean isIdle ) {
         if ( isIdle ) {
             mOutput = 0;
         } else {
             hasRun = true;
-            mOutput = output + gravityCompAtPosition();
+            mOutput = desiredOutput + gravityCompAtPosition();
         }
         updateCodex();
     }
 
+    /**
+     * Calculates necessary output to counter gravity
+     * @return the percent output to counter gravity
+     */
     public double gravityCompAtPosition() {
         return SystemSettings.kMass * 10 * Math.cos( mAngularPosition ) * SystemSettings.kFourBarCenterOfGravity * SystemSettings.kT;
     }
 
+    /**
+     * Update angular position based on current rotations
+     */
     public void updateAngularPosition() {
         mAngularPosition = ( ( mNeo1Encoder.getPosition() - mPreviousNeo1Rotations / 300 ) + ( mNeo2Encoder.getPosition() - mPreviousNeo2Rotations / 300 ) ) / 2;
     }
     
+    /**
+     * Handle stop type based on location
+     * Hold if not at 0
+     */
     public void handleStopType() {
-        if ( hasRun ) {
+        if ( mAngularPosition != 0 ) {
             hold();
         } else {
             stop();
         }
     }
 
+    /**
+     * holds arm at current location using gravity compensation
+     */
     public void hold() {
         mOutput = gravityCompAtPosition();
     }
 
+    /**
+     * Cut power to the motor
+     */
     public void stop() {
         setDesiredOutput( 0, true );
         mNeo1.stopMotor();
         mNeo2.stopMotor();
     }
 
+    /**
+     * Update tracked variables in the codex
+     */
     public void updateCodex() {
         updateAngularPosition();
         mData.fourbar.set( EFourBarData.A_OUTPUT, -mNeo1.get() );
