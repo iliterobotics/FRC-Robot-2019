@@ -101,22 +101,22 @@ public class DriverInput extends Module {
 
     }
 
-    // TO-DO: Make sure both driver and operator are holding the buttons
     private void updateFourBar() {
-        if ( mData.driverinput.isSet( ELogitech310.B_BTN ) ) {
+        if ( mData.driverinput.isSet( ELogitech310.B_BTN ) &&
+             mData.operatorinput.isSet( ELogitech310.B_BTN ) ) {
             driveTrain.setDriveMessage( DriveMessage.fromThrottleAndTurn( 0.0, 0.0 ) );
             mFourBar.setDesiredOutput( mData.driverinput.get( ELogitech310.LEFT_Y_AXIS ), false );
         } else {
-            mFourBar.stop();
+            mFourBar.handleStopType();
         }
     }
 
-    // TO-DO: Make sure both driver and operator are holding the buttons
     private void updateDriveTrain() {
         if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_THROTTLE_AXIS) &&
            mData.driverinput.isSet(DriveTeamInputMap.DRIVER_TURN_AXIS) &&
            mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) &&
-           !mData.driverinput.isSet(ELogitech310.B_BTN)) {
+           ( !mData.driverinput.isSet(ELogitech310.B_BTN) &&
+             !mData.operatorinput.isSet(ELogitech310.B_BTN) ) ) {
             double rotate = mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
             double throttle = -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
 
