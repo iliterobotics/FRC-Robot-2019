@@ -30,8 +30,10 @@ public class FourBar extends Module {
 
     private double mCurrentOutput;
 
-    private boolean hasRun = false;
-
+    /**
+     * Builds a four bar with a Data object for logging
+     * @param pData pass in Data object to update FourBar codex
+     */
     public FourBar( Data pData ) {
         // Later: SystemSettings address
         mNeo1 = new CANSparkMax(9, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -71,7 +73,6 @@ public class FourBar extends Module {
         mCurrentTime = pNow;
         mNeo1.set( -mCurrentOutput );
         mNeo2.set( mCurrentOutput );
-        updateCodex();
         if ( mAngularPosition >= 135 ) {
             setDesiredState( EFourBarState.STOP );
         }
@@ -83,6 +84,10 @@ public class FourBar extends Module {
         mNeo2.disable();
     }
 
+    /**
+     * Handles motor output based on desired state
+     * @param desiredState the state used to apply output
+     */
     public void setDesiredState( EFourBarState desiredState ) {
         switch ( desiredState ) {
             case NORMAL:
@@ -97,42 +102,56 @@ public class FourBar extends Module {
                 // hold in place
                 mCurrentOutput = gravityCompAtPosition();
             case ACCELERATE:
-                // apply pid to output
+                // apply pid to output on accelerate controller settings
                 mPIDController.setPIDGains( SystemSettings.kFourBarAccelerateGains );
                 mPIDController.setSetpoint( EFourBarState.ACCELERATE.getUpperAngularBound() );
-                mCurrentOutput = mPIDController.calculate( mAngularPosition, mCurrentTime );
-                mCurrentOutput += Math.signum( mCurrentOutput ) * gravityCompAtPosition();
-                hasRun = true;
+                mCurrentOutput = mPIDController.calculate( mAngularPosition, mCurrentTime ) + gravityCompAtPosition();
             case DECELERATE:
-                // outpit is pid
+                // apply pid to output on decelerate controller settings
                 mPIDController.setPIDGains( SystemSettings.kFourBarDecelerateGains );
                 mPIDController.setSetpoint( EFourBarState.DECELERATE.getUpperAngularBound() );
-                mCurrentOutput = mPIDController.calculate( mAngularPosition, mCurrentTime );
+                mCurrentOutput = mPIDController.calculate( mAngularPosition, mCurrentTime ) + gravityCompAtPosition();
 
         }
         updateCodex();
     }
 
+    /**
+     * Get the output for gravity compensation at the current angle
+     * @return the percent output to compensate for gravity
+     */
     public double gravityCompAtPosition() {
         return SystemSettings.kMass * 10 * Math.cos( mAngularPosition ) * SystemSettings.kFourBarCenterOfGravity * SystemSettings.kT;
     }
 
+    /**
+     * Updates the angular position based on rotations
+     */
     public void updateAngularPosition() {
         mAngularPosition = ( ( mNeo1Encoder.getPosition() - mPreviousNeo1Rotations / 300 ) + ( mNeo2Encoder.getPosition() - mPreviousNeo2Rotations / 300 ) ) / 2;
     }
 
+    /**
+     * Holds in place if the current angle 0/not at rest
+     */
     public void handleStopType() {
-        if ( hasRun ) {
+        if ( mAngularPosition != 0 ) {
             setDesiredState( EFourBarState.HOLD );
         } else {
             setDesiredState( EFourBarState.NORMAL );
         }
     }
 
+    /**
+     * Sets desired state based on current degrees
+     */
     public void handleUpState() {
         setDesiredState( EFourBarState.fromDegrees( mAngularPosition ) );
     }
 
+    /**
+     * Updates all tracking variables to the codex
+     */
     public void updateCodex() {
         updateAngularPosition();
         mData.fourbar.set( EFourBarData.A_OUTPUT, -mNeo1.get() );
