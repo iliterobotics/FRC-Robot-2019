@@ -44,6 +44,7 @@ import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.Drive;
+import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.Elevator;
 import us.ilite.robot.modules.ModuleList;
@@ -71,6 +72,7 @@ public class Robot extends TimedRobot {
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
     private Elevator mElevator = new Elevator(mData);
+    private HatchFlower mHatchFlower = new HatchFlower();
     
     private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mSuperstructure, mData);
     private Limelight mLimelight = new Limelight();

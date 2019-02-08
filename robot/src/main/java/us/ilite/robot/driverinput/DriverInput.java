@@ -16,6 +16,7 @@ import us.ilite.common.types.input.ELogitech310;
 import us.ilite.robot.commands.Delay;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
+import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.Module;
 import us.ilite.robot.modules.Superstructure;
 import us.ilite.robot.modules.Elevator;
@@ -27,6 +28,7 @@ public class DriverInput extends Module {
 
     protected final Drive driveTrain;
     protected final Elevator mElevator;
+    protected final HatchFlower hatchFlower;
     protected final Superstructure mSuperstructure;
 
     private boolean mDriverStartedCommands;
@@ -40,6 +42,7 @@ public class DriverInput extends Module {
 
     public DriverInput(Drive pDrivetrain, Elevator pElevator, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
+        this.hatchFlower = pHatchFlower;
         this.mSuperstructure = pSuperstructure;
         this.mData = pData;
         this.mDriverInputCodex = mData.driverinput;
@@ -99,6 +102,15 @@ public class DriverInput extends Module {
             updateElevator();
         } 
 
+    }
+
+    private void updateHatchFlower() {
+        if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_CAPTURE_BTN)) {
+            hatchFlower.captureHatch();
+        }
+        else if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_PUSH_BTN)) {
+            hatchFlower.pushHatch();
+        }
     }
 
     private void updateDriveTrain() {

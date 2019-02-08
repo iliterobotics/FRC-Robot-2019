@@ -212,6 +212,16 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     }
 
+    // =============================================================================
+    // Hatch Flower constants
+    // =============================================================================
+    public static double kHatchFlowerSolenoidReleaseTimeSec = 0.250;
+    public static double kHatchFlowerPushDurationSec = 0.250;
+
+    // kHatchFlowerGrabToPushTransitionTimeSec is the time between releasing the 
+    // grab solenoid and engaging the push solenoid.
+    public static double kHatchFlowerGrabToPushTransitionTimeSec = 0.250;
+
 
     // =============================================================================
     // 2019 Module Addresses
@@ -232,8 +242,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kFourBarDoubleSolenoidReverseAddress = 1;
     public static int kFourBarTBDSensorAddress = -1;
 
-    public static int kHatchFlowerOpenCloseSolenoidAddress = 5;
-    public static int kHatchFlowerExtensionSolenoidAddress = 6;
+    public static int kHatchFlowerOpenCloseSolenoidAddress = 0;
+    public static int kHatchFlowerExtensionSolenoidAddress = 1;
 
     public static int kHatchIntakeSPXAddress = 11;
     public static int kCargoIntakeSPXLowerAddress = 12;
