@@ -20,22 +20,23 @@ public class RobotStateEstimator {
         reset();
     }
 
-    public void update(double pTimestamp, double pLeftPosition, double pRightPosition) {
+    public Pose2d update(double pTimestamp, double pLeftPosition, double pRightPosition) {
 
         double dt = pTimestamp - mLastTimestamp;
 
         Twist2d delta = mRobotState.generateOdometryFromSensors(pLeftPosition - mLastLeftPosition, pRightPosition - mLastRightPosition);
         Twist2d velocity = new Twist2d(delta.dx / dt, delta.dy / dt, delta.dtheta / dt);
 
-        mRobotState.addObservations(pTimestamp, delta, velocity);
+        Pose2d currentPose = mRobotState.addObservations(pTimestamp, delta, velocity);
 
         mLastTimestamp = pTimestamp;
         mLastLeftPosition = pLeftPosition;
         mLastRightPosition = pRightPosition;
 
+        return currentPose;
     }
 
-    public void update(double pTimestamp, double pLeftPosition, double pRightPosition, Rotation2d pCurrentHeading) {
+    public Pose2d update(double pTimestamp, double pLeftPosition, double pRightPosition, Rotation2d pCurrentHeading) {
 
         double dt = pTimestamp - mLastTimestamp;
 
@@ -43,26 +44,29 @@ public class RobotStateEstimator {
                 pCurrentHeading);
         Twist2d velocity = new Twist2d(delta.dx / dt, delta.dy / dt, delta.dtheta / dt);
 
-        mRobotState.addObservations(pTimestamp, delta, velocity);
+        Pose2d currentPose = mRobotState.addObservations(pTimestamp, delta, velocity);
 
         mLastTimestamp = pTimestamp;
         mLastLeftPosition = pLeftPosition;
         mLastRightPosition = pRightPosition;
 
+        return currentPose;
     }
 
-    public void update(double pTimestamp, double pLeftPosition, double pRightPosition, double pLeftVelocity, double pRightVelocity, Rotation2d pCurrentHeading) {
+    public Pose2d update(double pTimestamp, double pLeftPosition, double pRightPosition, double pLeftVelocity, double pRightVelocity, Rotation2d pCurrentHeading) {
 
 
         Twist2d delta = mRobotState.generateOdometryFromSensors(pLeftPosition - mLastLeftPosition, pRightPosition - mLastRightPosition,
                 pCurrentHeading);
         Twist2d velocity = mKinematicModel.forwardKinematics(pLeftVelocity, pRightVelocity);
 
-        mRobotState.addObservations(pTimestamp, delta, velocity);
+        Pose2d currentPose = mRobotState.addObservations(pTimestamp, delta, velocity);
 
         mLastTimestamp = pTimestamp;
         mLastLeftPosition = pLeftPosition;
         mLastRightPosition = pRightPosition;
+
+        return currentPose;
     }
 
     public final void reset() {
