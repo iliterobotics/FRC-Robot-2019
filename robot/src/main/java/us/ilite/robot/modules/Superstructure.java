@@ -15,8 +15,8 @@ public class Superstructure extends Module {
 
     private EAcquisitionState mAcquisitionState = EAcquisitionState.STOWED;
     private EAcquisitionState mRequestedAcquistionState = EAcquisitionState.STOWED;
-    private EScoreState mScoringState = EScoreState.NONE;
-    private EScoreState mRequestedScoringState = EScoreState.NONE;
+    private EScoringState mScoringState = EScoringState.NONE;
+    private EScoringState mRequestedScoringState = EScoringState.NONE;
 
     private boolean mHatchGrabberExtendRequested = false;
     private boolean mHatchGrabberGrabRequested = false;
@@ -168,9 +168,11 @@ public class Superstructure extends Module {
 
         if(mRequestedScoringState != mScoringState) {
             switch(mRequestedScoringState) {
-                case SCORE_CARGO:
+                case HATCH:
                     break;
-                case SCORE_HATCH:
+                case CARGO:
+                    break;
+                case CLIMB:
                     break;
                 case NONE:
                     break;
@@ -226,12 +228,12 @@ public class Superstructure extends Module {
         so that we can stop the sequence if we want to acquire a game piece.
          */
         switch(mScoringState) {
-            case SCORE_CARGO:
+            case CARGO:
 
                 mCargoSpit.setOuttaking();
 
                 break;
-            case SCORE_HATCH:
+            case HATCH:
 
                 // Don't interrupt handoff
                 if(mAcquisitionState != EAcquisitionState.HANDOFF) {
@@ -239,12 +241,14 @@ public class Superstructure extends Module {
                 }
 
                 break;
+            case CLIMB:
+                break;
             case NONE:
 
                 /*
                 If we aren't requesting to score, make sure all motors are stopped.
                 This should be handled automatically by each module, but provides a
-                safety in case sensors are broken.
+                safety in case sensors are broken or not used.
                  */
                 if(mAcquisitionState == EAcquisitionState.STOWED) {
                     mIntake.stop();
@@ -297,7 +301,7 @@ public class Superstructure extends Module {
         mAcquisitionState = pAcquisitionState;
     }
 
-    public void setScoring(EScoreState pScoringState) {
+    public void setScoring(EScoringState pScoringState) {
         mScoringState = pScoringState;
     }
 

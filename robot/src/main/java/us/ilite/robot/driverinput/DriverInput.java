@@ -131,9 +131,9 @@ public class DriverInput extends Module {
         }
 
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_HATCH_PUSH)) {
-            mSuperstructure.setScoring(EScoreState.SCORE_HATCH);
+            mSuperstructure.setScoring(Superstructure.EScoringState.HATCH);
         } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_CARGO_SPIT)) {
-            mSuperstructure.setScoring(EScoreState.SCORE_CARGO);
+            mSuperstructure.setScoring(Superstructure.EScoringState.CARGO);
         }
 
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_HATCH_EXTEND)) {
