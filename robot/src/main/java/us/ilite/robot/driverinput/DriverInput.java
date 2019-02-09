@@ -22,7 +22,8 @@ import us.ilite.robot.modules.Superstructure;
 
 public class DriverInput extends Module {
 
-    private static final double DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
+    protected static final double 
+    DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
     private ILog mLog = Logger.createLog(DriverInput.class);
 
     protected final Drive driveTrain;
@@ -34,7 +35,7 @@ public class DriverInput extends Module {
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
 
-    private Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
+    protected Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
 
     private Data mData;
 
@@ -131,6 +132,37 @@ public class DriverInput extends Module {
 
             driveTrain.setDriveMessage(driveMessage);
         }
+    }
+
+    private void updateSplitTriggerAxisFlip() {
+
+        double rotate = mDriverInputCodex.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
+        double throttle = -mDriverInputCodex.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
+
+        if(mDriverInputCodex.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.3) {
+            rotate = rotate;
+            throttle = throttle;
+        } else if(mDriverInputCodex.get(ELogitech310.LEFT_TRIGGER_AXIS) > 0.3) {
+            throttle = -throttle;
+            rotate = rotate;
+        }
+
+        rotate = Util.limit(rotate, SystemSettings.kDriverInputTurnMaxMagnitude);
+
+		// throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
+        // rotate = Util.limit(rotate, 0.7);
+
+        // if (mDriverInputCodex.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
+        //     throttle *= SystemSettings.kSnailModePercentThrottleReduction;
+        //     rotate *= SystemSettings.kSnailModePercentRotateReduction;
+        // }
+
+        DriveMessage driveMessage = DriveMessage.fromThrottleAndTurn(throttle, rotate);
+        driveMessage.setNeutralMode(NeutralMode.Brake);
+        driveMessage.setControlMode(ControlMode.PercentOutput);
+
+        driveTrain.setDriveMessage(driveMessage);
+
     }
 
     /**

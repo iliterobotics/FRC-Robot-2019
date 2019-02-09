@@ -33,6 +33,11 @@ import us.ilite.common.lib.control.DriveController;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.types.MatchMetadata;
 import us.ilite.lib.drivers.Clock;
+import us.ilite.robot.commands.CharacterizeDrive;
+import us.ilite.robot.commands.CommandQueue;
+import us.ilite.robot.auto.paths.TestAuto;
+import us.ilite.robot.commands.CommandQueue;
+import us.ilite.robot.commands.TurnToDegree;
 import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.robot.commands.CommandQueue;
@@ -165,7 +170,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
-        mData.sendCodices();
+        // mData.sendCodices();
     }
 
     @Override
