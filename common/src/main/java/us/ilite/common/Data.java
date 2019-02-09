@@ -27,10 +27,14 @@ public class Data {
     public CodexNetworkTables mCodexNT = CodexNetworkTables.getInstance();
     
     //Add new codexes here as we need more
-    public Codex<Double, EGyro> imu = Codex.of.thisEnum(EGyro.class);
-    public Codex<Double, EDriveData> drive = Codex.of.thisEnum(EDriveData.class);
-    public Codex<Double, ELogitech310> driverinput = Codex.of.thisEnum(ELogitech310.class);
-    public Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
+    public final Codex<Double, EGyro> imu = Codex.of.thisEnum(EGyro.class);
+    public final Codex<Double, EDriveData> drive = Codex.of.thisEnum(EDriveData.class);
+    public final Codex<Double, ELogitech310> driverinput = Codex.of.thisEnum(ELogitech310.class);
+    public final Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
+
+    public final Codex[] mLoggedCodexes = new Codex[] {
+        imu, drive, driverinput, operatorinput
+    };
 
     public static NetworkTableInstance kInst = NetworkTableInstance.getDefault();
     public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
@@ -46,11 +50,11 @@ public class Data {
     //Stores writers per codex needed for CSV logging
     private Map<String, Writer> mWriters = new HashMap<String, Writer>();
 
-    private List<CodexNetworkTablesParser> mLoggedCodexes;
+    private List<CodexNetworkTablesParser> mParsers;
 
     public Data() {
         //Add new codexes as we support more into this list
-        mLoggedCodexes = Arrays.asList(
+        mParsers = Arrays.asList(
             new CodexNetworkTablesParser<EGyro>(imu),
             new CodexNetworkTablesParser<EDriveData>(drive),
             new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
@@ -58,7 +62,7 @@ public class Data {
         );
 
         //This loop makes a Writer for each parser and sticks it into mWriters
-        for (CodexNetworkTablesParser parser : mLoggedCodexes) {
+        for (CodexNetworkTablesParser parser : mParsers) {
             try {
                 File file = parser.file();
                 handleCreation(file);
@@ -71,17 +75,17 @@ public class Data {
     }
 
     /**
-     * Translate NT to on-computer codex for each CodexNetworkTablesParser in mLoggedCodexes
+     * Translate NT to on-computer codex for each CodexNetworkTablesParser in mParsers
      */
     public void logFromNetworkTables() {
-        mLoggedCodexes.forEach(c -> c.parseFromNetworkTables());
+        mParsers.forEach(c -> c.parseFromNetworkTables());
     }
 
     /**
-     * Makes a csv file and writes the starting row/header for each CodexNetworkTablesParser in mLoggedCodexes
+     * Makes a csv file and writes the starting row/header for each CodexNetworkTablesParser in mParsers
      */
     public void logFromCodexToCSVHeader() {
-        for (CodexNetworkTablesParser parser : mLoggedCodexes) {
+        for (CodexNetworkTablesParser parser : mParsers) {
             try {
                 Writer logger = mWriters.get(parser.getCSVIdentifier());
                 logger.append(parser.codexToCSVHeader());
@@ -96,7 +100,7 @@ public class Data {
      * Logs codex values to its corresponding csv
      */
     public void logFromCodexToCSVLog() {
-        for (CodexNetworkTablesParser parser : mLoggedCodexes) {
+        for (CodexNetworkTablesParser parser : mParsers) {
             try {
                 Writer logger = mWriters.get(parser.getCSVIdentifier());
                 logger.append(parser.codexToCSVLog());

@@ -3,6 +3,7 @@ package us.ilite.robot;
 import java.util.Arrays;
 import java.util.List;
 
+import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexMetadata;
 import com.flybotix.hfr.codex.ICodexTimeProvider;
 import com.flybotix.hfr.util.log.ELevel;
@@ -198,12 +199,9 @@ public class Robot extends TimedRobot {
         if(mMatchMeta == null) {
             mMatchMeta = new MatchMetadata();
             int gid = mMatchMeta.hash;
-            mData.drive.meta().setGlobalId(gid);
-            mData.operatorinput.meta().setGlobalId(gid);
-            mData.driverinput.meta().setGlobalId(gid);
-            mData.drive.meta().setGlobalId(gid);
-            mData.drive.meta().setGlobalId(gid);
-            //TODO - add other subsystems
+            for(Codex c : mData.mLoggedCodexes) {
+                c.meta().setGlobalId(gid);
+            }
         }
     }
 
