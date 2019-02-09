@@ -16,6 +16,7 @@ import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.robot.commands.Delay;
 import us.ilite.robot.modules.Arm;
+import us.ilite.robot.modules.ArmMotionMagic;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.Module;
@@ -38,7 +39,8 @@ public class DriverInput extends Module {
 
     private Data mData;
 
-    private Arm mArm;
+    //TODO: Change ArmMotionMagic back to Arm after testing
+    private ArmMotionMagic mArm;
     private RangeScale armJoyStickToAngleScaler = new RangeScale(-1.0, 1.0, SystemSettings.kArmMinAngle, SystemSettings.kArmMaxAngle);
 
     public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
@@ -55,7 +57,8 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, Arm pArm) {
+    //TODO: Change ArmMotionMagic back to Arm after testing
+    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, ArmMotionMagic pArm) {
         this(pDrivetrain, pSuperstructure, pData, false);
         this.mArm = pArm;
     }

@@ -61,8 +61,6 @@ public class ArmMotionMagic extends Loop
     private boolean motorOff = false; // Motor turned off for a time because of current limiting
     private Timer mTimer;
 
-    public static int ARM_ACCELERATION = 100;
-    public static int ARM_CRUISE = 300;
 
     // Constants used for translating ticks to angle, values based on ticks per full rotation
     private double tickPerDegree = SystemSettings.kArmPositionEncoderTicksPerRotation / 360.0;
@@ -74,8 +72,8 @@ public class ArmMotionMagic extends Loop
         int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
 
         this.currentNumTicks = 0;
-        pid = new PIDController( SystemSettings.kArmPIDGains /*new PIDGains(kP, kI, kD)*/, SystemSettings.kControlLoopPeriod );
-        pid.setInputRange( minTickPosition, maxTickPosition ); //min and max ticks of arm
+        // pid = new PIDController( SystemSettings.kArmPIDGains /*new PIDGains(kP, kI, kD)*/, SystemSettings.kControlLoopPeriod );
+        // pid.setInputRange( minTickPosition, maxTickPosition ); //min and max ticks of arm
         talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.kLongCANTimeoutMs);
         talon.setSelectedSensorPosition(0);
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5);
@@ -93,12 +91,14 @@ public class ArmMotionMagic extends Loop
         talon.setNeutralMode(NeutralMode.Brake);
         talon.configSelectedFeedbackSensor(FeedbackDevice.Analog, 0, SystemSettings.CTRE_TIMEOUT_INIT);
 
-        talon.config_kP(0, 1, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kI(0, 0.01, SystemSettings.CTRE_TIMEOUT_INIT);
-
+        talon.selectProfileSlot(0, 0);
+        talon.config_kP(0, SystemSettings.kArmPidP, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kI(0, SystemSettings.kArmPidI, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kD(0, SystemSettings.kArmPidD, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kF(0, SystemSettings.kArmPidF, SystemSettings.CTRE_TIMEOUT_INIT);
         
         setArmSoftLimits(minTickPosition, maxTickPosition);
-        setArmMotionProfile(ARM_ACCELERATION, ARM_CRUISE);
+        setArmMotionProfile(SystemSettings.K_ARM_ACCELERATION, SystemSettings.K_ARM_CRUISE);
 
         talon.configAllowableClosedloopError(0, 2, SystemSettings.CTRE_TIMEOUT_INIT);
     }
@@ -108,6 +108,14 @@ public class ArmMotionMagic extends Loop
     {
         // rezero on enable
         talon.setSelectedSensorPosition(0);
+        talon.config_kP(0, SystemSettings.kArmPidP, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kI(0, SystemSettings.kArmPidI, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kD(0, SystemSettings.kArmPidD, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kF(0, SystemSettings.kArmPidF, SystemSettings.CTRE_TIMEOUT_INIT);
+        int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
+        int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
+        setArmSoftLimits(minTickPosition, maxTickPosition);
+        setArmMotionProfile(SystemSettings.K_ARM_ACCELERATION, SystemSettings.K_ARM_CRUISE);
     }
 
     @Override
