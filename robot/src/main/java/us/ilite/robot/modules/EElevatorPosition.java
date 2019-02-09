@@ -7,8 +7,8 @@ public enum EElevatorPosition {
     MIDDLE(0d,0),
     TOP(0d,0);
 
-    public final double kEncoderThreshold;
-    public final double kSetPointPower;
+    private final double kEncoderThreshold;
+    private final double kSetPointPower;
 
     EElevatorPosition( double pPower, int pEncoderThreshold ) {
         this.kSetPointPower = pPower;

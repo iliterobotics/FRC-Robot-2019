@@ -124,6 +124,9 @@ public class DriverInput extends Module {
             rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
             rotate = Util.limit(rotate, 0.7);
 
+            throttle = 0;
+            rotate = 0;
+
             if (mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
                 throttle *= SystemSettings.kSnailModePercentThrottleReduction;
                 rotate *= SystemSettings.kSnailModePercentRotateReduction;
@@ -142,7 +145,7 @@ public class DriverInput extends Module {
         double power = 0.0d;
 
         if (mData.driverinput.isSet(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR)) {
-            power = mData.driverinput.get(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR);
+            power = mData.operatorinput.get(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR);
         }
         mElevator.setPower(power);
     }
