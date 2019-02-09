@@ -94,7 +94,7 @@ public class Data {
 
         if(!mHasMadeWriters) {
             //This loop makes a Writer for each parser and sticks it into mWriters
-            for (CodexNetworkTablesParser parser : mLoggedCodexes) {
+            for (CodexNetworkTablesParser parser : mParsers) {
                 try {
                     File file = parser.file();
                     handleCreation(file);
@@ -107,7 +107,7 @@ public class Data {
             mHasMadeWriters = true;
         }
 
-        for (CodexNetworkTablesParser parser : mLoggedCodexes) {
+        for (CodexNetworkTablesParser parser : mParsers) {
             try {
                 Writer logger = mWriters.get(parser.getCSVIdentifier());
                 logger.append(parser.codexToCSVLog());
