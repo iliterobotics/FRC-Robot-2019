@@ -16,7 +16,8 @@ import edu.wpi.first.wpilibj.SerialPort.Port;
 	
  	public NavX(Port pPort){
  	  super(kCollisionGains);
- 	  iahrs = new AHRS(pPort);
+ 	  iahrs = new AHRS(pPort, AHRS.SerialDataType.kProcessedData, (byte)200);
+ 	  System.out.println("NavX Update Rate: " + iahrs.getActualUpdateRate());
  	}
 
  	public double getInitialAngle() {
