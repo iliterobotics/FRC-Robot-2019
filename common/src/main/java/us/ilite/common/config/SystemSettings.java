@@ -137,13 +137,14 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kArmPIDOutputMaxLimit = 0.25; // max 1.0
     public static double kArmPIDOutputMinLimit = -0.25; // min -1.0
 
-    public static double kArmPidP = 0.1;
-    public static double kArmPidI = 0.001;
+    // MotionMagicArm Constants
+    public static double kArmPidP = 20.0;
+    public static double kArmPidI = 0.05;
     public static double kArmPidD = 0;
     public static double kArmPidF = 0.1;
 
-    public static int K_ARM_ACCELERATION = 100;
-    public static int K_ARM_CRUISE = 300;
+    public static int K_ARM_ACCELERATION = 512;
+    public static int K_ARM_CRUISE = 4096;
 
     // Predefined arm  positions
     public enum ArmPosition {

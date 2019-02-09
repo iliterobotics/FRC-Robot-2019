@@ -5,11 +5,14 @@
 
 package us.ilite.robot.modules;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.drivers.talon.TalonSRXFactory;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -24,6 +27,10 @@ import com.team254.lib.util.Util;
 
 public class ArmMotionMagic extends Loop
 {
+
+    private ILog mLogger = Logger.createLog(this.getClass());
+
+
     // Standard wrist positions.  This assumes the pot is mounted such that lower values 
     // correspond to front arm positions.
     // public enum ArmPosAngle {
@@ -52,7 +59,7 @@ public class ArmMotionMagic extends Loop
     // private static final int maxNumTicks = 383; //number of ticks at max arm angle
     // private static final int minNumTicks = 0; //number of ticks at min arm angle
     private TalonSRX talon = new TalonSRX(SystemSettings.kArmTalonSRXAddress); //TalonSRXFactory.createDefaultTalon(SystemSettings.kArmTalonSRXAddress);
-    private PIDController pid;
+    // private PIDController pid;
     // private boolean settingPosition;
     private int currentNumTicks = 0; //revisit this and check if correct for encoder type
     private int desiredNumTicks = 0;
@@ -74,7 +81,9 @@ public class ArmMotionMagic extends Loop
         this.currentNumTicks = 0;
         // pid = new PIDController( SystemSettings.kArmPIDGains /*new PIDGains(kP, kI, kD)*/, SystemSettings.kControlLoopPeriod );
         // pid.setInputRange( minTickPosition, maxTickPosition ); //min and max ticks of arm
-        talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.kLongCANTimeoutMs);
+        if ( talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.kLongCANTimeoutMs) != ErrorCode.OK ) {
+            mLogger.error("ArmMotionMagic talon.configSelectedFeedbackSensor error");
+        }
         talon.setSelectedSensorPosition(0);
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5);
 
@@ -89,7 +98,7 @@ public class ArmMotionMagic extends Loop
         talon.enableCurrentLimit(true);
 
         talon.setNeutralMode(NeutralMode.Brake);
-        talon.configSelectedFeedbackSensor(FeedbackDevice.Analog, 0, SystemSettings.CTRE_TIMEOUT_INIT);
+        // talon.configSelectedFeedbackSensor(FeedbackDevice.Analog, 0, SystemSettings.CTRE_TIMEOUT_INIT);
 
         talon.selectProfileSlot(0, 0);
         talon.config_kP(0, SystemSettings.kArmPidP, SystemSettings.CTRE_TIMEOUT_INIT);
@@ -106,7 +115,7 @@ public class ArmMotionMagic extends Loop
     @Override
     public void modeInit(double pNow)
     {
-        // rezero on enable
+        // reconfigure on enable
         talon.setSelectedSensorPosition(0);
         talon.config_kP(0, SystemSettings.kArmPidP, SystemSettings.CTRE_TIMEOUT_INIT);
         talon.config_kI(0, SystemSettings.kArmPidI, SystemSettings.CTRE_TIMEOUT_INIT);
@@ -285,16 +294,16 @@ public class ArmMotionMagic extends Loop
     // }
 
 
-    private double calculateOutput() //not running on desired output - check later
-    {
-        pid.setSetpoint(this.desiredNumTicks);
-        double tempOutput = pid.calculate( talon.getSelectedSensorPosition(), Timer.getFPGATimestamp() );
+    // private double calculateOutput() //not running on desired output - check later
+    // {
+    //     pid.setSetpoint(this.desiredNumTicks);
+    //     double tempOutput = pid.calculate( talon.getSelectedSensorPosition(), Timer.getFPGATimestamp() );
 
-        // Constrain output to min/max values for the Talon
-        // return Util.limit(tempOutput, -1, 1) * .25;
-        return Util.limit(tempOutput, SystemSettings.kArmPIDOutputMinLimit, SystemSettings.kArmPIDOutputMaxLimit);
+    //     // Constrain output to min/max values for the Talon
+    //     // return Util.limit(tempOutput, -1, 1) * .25;
+    //     return Util.limit(tempOutput, SystemSettings.kArmPIDOutputMinLimit, SystemSettings.kArmPIDOutputMaxLimit);
 
-    }
+    // }
 
     private int angleToTicks(double angle)
     {
