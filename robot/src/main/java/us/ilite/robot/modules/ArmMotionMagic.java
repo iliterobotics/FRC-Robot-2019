@@ -97,8 +97,8 @@ public class ArmMotionMagic extends Loop
         talon.config_kI(0, 0.01, SystemSettings.CTRE_TIMEOUT_INIT);
 
         
-        setWristSoftLimits(minTickPosition, maxTickPosition);
-        setWristMotionProfile(ARM_ACCELERATION, ARM_CRUISE);
+        setArmSoftLimits(minTickPosition, maxTickPosition);
+        setArmMotionProfile(ARM_ACCELERATION, ARM_CRUISE);
 
         talon.configAllowableClosedloopError(0, 2, SystemSettings.CTRE_TIMEOUT_INIT);
     }
@@ -126,19 +126,19 @@ public class ArmMotionMagic extends Loop
     public void update(double pNow)
     {
         this.currentNumTicks = talon.getSelectedSensorPosition();
-        System.out.println("Arm.update: talon sensor ticks = " + this.currentNumTicks);
+        // System.out.println("Arm.update: talon sensor ticks = " + this.currentNumTicks);
+        // talon.set(ControlMode.MotionMagic, desiredNumTicks);
 
         // Directly control the output 
         // double output = this.mDesiredOutput;
 
         // Calculate the output to control arm position
-         double output = this.calculateOutput();
+         //double output = this.calculateOutput();
         
         // Calculate the current/voltage ratio to detect a motor stall
         double current = talon.getOutputCurrent();
         double voltage = talon.getMotorOutputVoltage();
         double ratio = 0.0;
-        System.out.println("-----------Current ratio = " + ratio + "------------");
 
         // When the motor is not running the voltage is zero and divide by zero 
         // is undefined, we will calculate the ratio when the voltage is above
@@ -146,9 +146,10 @@ public class ArmMotionMagic extends Loop
         if ( voltage > SystemSettings.kArmMinMotorStallVoltage ) {
             ratio = current / voltage;
         }
+        System.out.println("-----------Current ratio = " + ratio + "------------");
 
         // debug
-        System.out.println( "Arm.update initial output = " + output );
+        // System.out.println( "Arm.update initial output = " + output );
         //System.out.println( "Arm.update: current = " + current + ", voltage = " + voltage + ", ratio = " + ratio);
         //System.out.println( "Arm.update: motorOff = " + this.motorOff + ", stalled = " + this.stalled);
 
@@ -167,7 +168,6 @@ public class ArmMotionMagic extends Loop
             else
             {
                 // The motor is off, make sure the output is 0.0
-                output = 0.0;
             }
         }
         else 
@@ -176,13 +176,14 @@ public class ArmMotionMagic extends Loop
             if(ratio > SystemSettings.kArmMaxCurrentVoltRatio)
             {
                 System.err.println("++++++++++++++++++++++++++ Motor STALLED ++++++++++++++++++++++++++++++++++++++");
-                System.out.println( "Arm.update: stalled: " + this.stalled);
+                // System.out.println( "Arm.update: stalled: " + this.stalled);
                 // Motor is stalled, where we stalled already
                 if(!this.stalled)
                 {
                     // Initial motor stall
                     this.stalled = true;
                     // Start counting stall time
+                    mTimer.stop();
                     mTimer.reset();
                     mTimer.start();
                 }
@@ -192,19 +193,19 @@ public class ArmMotionMagic extends Loop
                     if( mTimer.hasPeriodPassed(SystemSettings.kArmMaxStallTimeSec) )
                     {
                         // We've exceeded the max stall time, stop the motor
-                        System.out.println( "Arm.update Max stall time exceeded." );
+                        // System.out.println( "Arm.update Max stall time exceeded." );
 
                         // We're stopping the motor so reset the stall flag
                         this.stalled = false;
 
                         // Setting output to 0.0 stops the motor
-                        output = 0.0;
                         this.motorOff = true;
 
                         // Restart the timer to measure the cooling off time after the stall
                         mTimer.stop();
                         mTimer.reset();
                         mTimer.start(); // starting for cool-off period
+
                     }
                 }
             }
@@ -215,11 +216,18 @@ public class ArmMotionMagic extends Loop
                 mTimer.stop();
                 mTimer.reset();
             }
+
+
         }
 
-        System.out.println( "Arm.update: About to set talon output = " + output );
-
-        talon.set(ControlMode.PercentOutput, output);
+        if(motorOff)
+        {
+            talon.set(ControlMode.PercentOutput, 0);
+        }
+        else
+        {
+            talon.set(ControlMode.MotionMagic, this.desiredNumTicks);
+        }
         
     }
 
@@ -234,7 +242,7 @@ public class ArmMotionMagic extends Loop
         update(pNow);
     }
 
-    public void setWristSoftLimits(int reverseSoftLimit, int forwardSoftLimit) {
+    public void setArmSoftLimits(int reverseSoftLimit, int forwardSoftLimit) {
         talon.configReverseSoftLimitEnable(true, SystemSettings.CTRE_TIMEOUT_PERIODIC);
         talon.configReverseSoftLimitThreshold(reverseSoftLimit, SystemSettings.CTRE_TIMEOUT_PERIODIC);
 
@@ -242,7 +250,7 @@ public class ArmMotionMagic extends Loop
         talon.configForwardSoftLimitThreshold(forwardSoftLimit, SystemSettings.CTRE_TIMEOUT_PERIODIC);
     }
 
-    private void setWristMotionProfile(int acceleration, int cruise) {
+    private void setArmMotionProfile(int acceleration, int cruise) {
         talon.configMotionAcceleration(acceleration, SystemSettings.CTRE_TIMEOUT_INIT);
         talon.configMotionCruiseVelocity(cruise, SystemSettings.CTRE_TIMEOUT_INIT);
     }
