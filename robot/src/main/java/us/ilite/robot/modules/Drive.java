@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.LogOutput;
 import com.flybotix.hfr.util.log.Logger;
+import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
@@ -43,6 +44,7 @@ public class Drive extends Loop {
 	private Data mData;
 
 	private IDriveHardware mDriveHardware;
+	private Rotation2d mGyroOffset = new Rotation2d();
 
 	private EDriveState mDriveState;
 	private DriveMessage mDriveMessage;
@@ -130,7 +132,7 @@ public class Drive extends Loop {
 //		mData.drive.set(EDriveData.LEFT_MESSAGE_DEMAND, mDriveMessage.leftDemand);
 //		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND, mDriveMessage.rightDemand);
 //
-		mData.imu.set(EGyro.YAW_DEGREES, mDriveHardware.getHeading().getDegrees());
+		mData.imu.set(EGyro.YAW_DEGREES, getHeading().getDegrees());
 
 //		SimpleNetworkTable.writeCodexToSmartDashboard(EDriveData.class, mData.drive, mClock.getCurrentTime());
 	}
@@ -258,6 +260,14 @@ public class Drive extends Loop {
 
     public synchronized DriveMessage getDriveMessage() {
 		return mDriveMessage;
+	}
+
+	public synchronized Rotation2d getHeading() {
+		return mDriveHardware.getHeading().rotateBy(mGyroOffset);
+	}
+
+	public synchronized void setHeading(Rotation2d pHeading) {
+		mGyroOffset = pHeading.rotateBy(mDriveHardware.getHeading().inverse());
 	}
 
     public Drive simulated() {
