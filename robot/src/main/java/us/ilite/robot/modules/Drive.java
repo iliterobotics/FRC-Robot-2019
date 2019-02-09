@@ -285,7 +285,7 @@ public class Drive extends Loop {
 		public double t = 0.0;
 
 		public double targetLeftVel = 0.0, targetRightVel = 0.0, leftVel = 0.0, rightVel = 0.0;
-//		public double targetX = 0.0, targetY = 0.0, x = 0.0, y = 0.0;
+		public double targetX = 0.0, targetY = 0.0, x = 0.0, y = 0.0;
 
 //		public double leftAppliedVolts = 0.0, rightAppliedVolts = 0.0;
 
@@ -307,10 +307,10 @@ public class Drive extends Loop {
 			rightVel = mData.drive.get(EDriveData.RIGHT_VEL_IPS);
 
 //			status = Logger.getRecentLogs().stream().filter(logOutput -> logOutput.thread.equals(this.getClass().getName())).collect(Collectors.toList());
-//			targetX = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().x();
-//			targetY = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().y();
-//			x = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().getTranslation().x();
-//			y = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().getTranslation().y();
+			targetX = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().x();
+			targetY = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().y();
+			x = mDriveController.getCurrentPose().getTranslation().x();
+			y = mDriveController.getCurrentPose().getTranslation().y();
 
 //			leftAppliedVolts = mData.drive.get(EDriveData.LEFT_VOLTAGE);
 //			rightAppliedVolts = mData.drive.get(EDriveData.RIGHT_VOLTAGE);
