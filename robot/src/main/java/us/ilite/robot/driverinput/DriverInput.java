@@ -149,6 +149,7 @@ public class DriverInput extends Module {
             power = mData.operatorinput.get(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR);
         }
         mElevator.setPower(power);
+    }
       
     private void updateSplitTriggerAxisFlip() {
 
