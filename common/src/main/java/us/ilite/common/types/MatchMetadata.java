@@ -12,6 +12,7 @@ public class MatchMetadata {
     public final MatchType mMatchType;
     public final int mReplayNumber;
     public final int mMatchNumber;
+    public final int hash;
 
     public MatchMetadata() {
         
@@ -22,6 +23,11 @@ public class MatchMetadata {
             mMatchType = DriverStation.getInstance().getMatchType();
             mReplayNumber = DriverStation.getInstance().getReplayNumber();
             mMatchNumber = DriverStation.getInstance().getMatchNumber();
+            int i = 7;
+            i += mEventName.hashCode();
+            i += 7 * mMatchType.ordinal();
+            i += 7 * mMatchNumber;
+            hash = i;
         } else {
             mEventName = "Test";
             mLocation = 0;
@@ -29,23 +35,7 @@ public class MatchMetadata {
             mMatchType = MatchType.None;
             mReplayNumber = 0;
             mMatchNumber = (int)(Math.random() * (double)Integer.MAX_VALUE);
+            hash = mMatchNumber;
         }
-    }
-
-    public int hashCode() {
-        int result = 17;
-        result += 17 * mMatchType.ordinal();
-        result += 17 * mMatchNumber;
-        return result;
-    }
-
-    public boolean equals(Object pOther) {
-        if(pOther instanceof MatchMetadata) {
-            MatchMetadata m = (MatchMetadata) pOther;
-            return m.mEventName == this.mEventName
-                && m.mMatchNumber == this.mMatchNumber
-                && m.mMatchType == this.mMatchType;
-        }
-        return false;
     }
 }
