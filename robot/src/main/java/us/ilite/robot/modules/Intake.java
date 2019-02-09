@@ -66,10 +66,19 @@ public class Intake extends Module {
         return false;
     }
 
+    /**
+     * Sets the wrist position to a preset position.
+     * @param pWristPosition
+     */
     public void setWrist(EWristPosition pWristPosition) {
 
     }
 
+    /**
+     * Sets whether the roller arm is extended. In other words, sets whether the intake is in
+     * "cargo mode" or "hatch mode".
+     * @param pExtended
+     */
     public void setRollerExtended(boolean pExtended) {
 
     }
@@ -79,39 +88,75 @@ public class Intake extends Module {
 
     }
 
+    /**
+     * Tells the intake to begin the intaking sequence for cargo. Sequence:
+     * 1) Lower intake
+     * 2) Extend the roller to "cargo" position
+     * 3) Flag that the intaking sequence has started for cargo
+     * 4) Set roller speed and current limit based on game piece type and (potentially) robot speed
+     */
     public void setIntakingCargo() {
         setWrist(EWristPosition.GROUND);
         setRollerExtended(true);
 //        setRollerPower();
     }
 
+    /**
+     * Tells the intake to begin the intaking sequence for the hatch. Sequence:
+     * 1) Lower intake
+     * 2) Retract the roller to "hatch" position
+     * 3) Flag that the intaking sequence has started for hatch
+     * 4) Set roller speed and current limit based on game piece type and (potentially) robot speed
+     * 6) Stop roller if we have exceeded current limit for hatch intaking in update()
+     */
     public void setIntakingHatch() {
         setWrist(EWristPosition.GROUND);
         setRollerExtended(false);
 //        setRollerPower();
     }
 
+    /**
+     * Stop the roller and wrist
+     */
     public void stop() {
 
     }
 
+    /**
+     * Stop rollers and set wrist to "handoff" position for cargo.
+     */
     public void setHandoffCargo() {
         setWrist(EWristPosition.HANDOFF);
 //        setRollerPower();
     }
 
+    /**
+     * Stop rollers and set wrist to "handoff" position for hatch.
+     */
     public void setHandoffHatch() {
         setWrist(EWristPosition.HANDOFF);
     }
 
+    /**
+     * Stop rollers and set intake to "stowed" position.
+     */
     public void stow() {
 
     }
 
+    /**
+     *
+     * @return The sensor value indicating whether we have acquired a hatch.
+     */
     public boolean hasHatch() {
         return true;
     }
 
+    /**
+     *
+     * @param pWristPosition
+     * @return Whether the wrist had been at the specified setpoint for a certain amount of time within a certain deadband.
+     */
     public boolean isAtPosition(EWristPosition pWristPosition) {
         return true;
     }
