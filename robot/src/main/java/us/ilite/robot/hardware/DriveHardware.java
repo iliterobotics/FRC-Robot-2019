@@ -18,8 +18,13 @@ import com.team254.lib.drivers.talon.TalonSRXChecker.CheckerConfigBuilder;
 import com.team254.lib.drivers.talon.TalonSRXFactory;
 import com.team254.lib.geometry.Rotation2d;
 
+import edu.wpi.first.wpilibj.SerialPort;
+import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.util.Conversions;
+import us.ilite.lib.drivers.IMU;
+import us.ilite.lib.drivers.NavX;
+import us.ilite.lib.drivers.Pigeon;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
@@ -33,16 +38,15 @@ public class DriveHardware implements IDriveHardware {
 
     private final ILog mLogger = Logger.createLog(DriveHardware.class);
 
-    private final PigeonIMU mGyro;
+    private final IMU mGyro;
 
     private final TalonSRX mLeftMaster, mRightMaster, mLeftRear, mRightRear;
     private ControlMode mLeftControlMode, mRightControlMode;
     private NeutralMode mLeftNeutralMode, mRightNeutralMode;
 
     public DriveHardware() {
-        mGyro = new PigeonIMU(SystemSettings.kPigeonId);
-        mGyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 5, SystemSettings.kLongCANTimeoutMs);
-        mGyro.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 5, SystemSettings.kLongCANTimeoutMs);
+//        mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kDriveCollisionThreshold);
+        mGyro = new NavX(SerialPort.Port.kMXP);
 
         mLeftMaster = TalonSRXFactory.createDefaultTalon(SystemSettings.kDriveLeftMasterTalonId);
         mLeftRear = TalonSRXFactory.createPermanentSlaveTalon(SystemSettings.kDriveLeftRearTalonId, SystemSettings.kDriveLeftMasterTalonId);
@@ -75,22 +79,21 @@ public class DriveHardware implements IDriveHardware {
         mLeftControlMode = mRightControlMode = ControlMode.PercentOutput;
         mLeftNeutralMode = mRightNeutralMode = NeutralMode.Brake;
 
-        // Bypass state machine in set() and configure directly
-        configTalonForPercentOutput(mLeftMaster);
-        configTalonForPercentOutput(mRightMaster);
-        setNeutralMode(mLeftNeutralMode, mRightMaster, mRightRear);
-        setNeutralMode(mLeftNeutralMode, mLeftMaster, mRightMaster);
-
         set(DriveMessage.kNeutral);
     }
 
     @Override
     public void zero() {
-        mGyro.setFusedHeading(Rotation2d.identity().getDegrees(), SystemSettings.kCANTimeoutMs);
-        mGyro.setYaw(Rotation2d.identity().getDegrees(), SystemSettings.kCANTimeoutMs);
+        mGyro.zeroAll();
 
         mLeftMaster.setSelectedSensorPosition(0, 0, SystemSettings.kCANTimeoutMs);
         mRightMaster.setSelectedSensorPosition(0, 0, SystemSettings.kCANTimeoutMs);
+
+        // Bypass state machine in set() and configure directly
+        configTalonForPercentOutput(mLeftMaster);
+        configTalonForPercentOutput(mRightMaster);
+        setNeutralMode(NeutralMode.Brake, mRightMaster, mRightRear);
+        setNeutralMode(NeutralMode.Brake, mLeftMaster, mLeftRear);
 
         mLeftMaster.set(ControlMode.PercentOutput, 0.0);
         mRightMaster.set(ControlMode.PercentOutput, 0.0);
@@ -106,6 +109,11 @@ public class DriveHardware implements IDriveHardware {
 
         mLeftMaster.set(mLeftControlMode, pDriveMessage.leftOutput, pDriveMessage.leftDemandType, pDriveMessage.leftDemand);
         mRightMaster.set(mRightControlMode, pDriveMessage.rightOutput, pDriveMessage.rightDemandType, pDriveMessage.rightDemand);
+
+        Data.kSmartDashboard.putDouble("left_error", mLeftMaster.getClosedLoopError());
+        Data.kSmartDashboard.putDouble("right_error", mRightMaster.getClosedLoopError());
+        Data.kSmartDashboard.putString("left_controlmode", mLeftMaster.getControlMode().name());
+        Data.kSmartDashboard.putString("right_controlmode", mRightMaster.getControlMode().name());
     }
 
     /**
@@ -172,11 +180,11 @@ public class DriveHardware implements IDriveHardware {
         }
         talon.enableVoltageCompensation(true);
         talon.configVoltageCompSaturation(12.0, SystemSettings.kLongCANTimeoutMs);
-        talon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_50Ms, SystemSettings.kLongCANTimeoutMs);
-        talon.configVelocityMeasurementWindow(1, SystemSettings.kLongCANTimeoutMs);
-        talon.configOpenloopRamp(SystemSettings.kDriveOpenLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
-        talon.configClosedloopRamp(SystemSettings.kDriveClosedLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
-        talon.configContinuousCurrentLimit(SystemSettings.kDriveCurrentLimitAmps, SystemSettings.kLongCANTimeoutMs);
+        talon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, SystemSettings.kLongCANTimeoutMs);
+        talon.configVelocityMeasurementWindow(64, SystemSettings.kLongCANTimeoutMs);
+        // talon.configOpenloopRamp(SystemSettings.kDriveOpenLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
+        // talon.configClosedloopRamp(SystemSettings.kDriveClosedLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
+        // talon.configContinuousCurrentLimit(SystemSettings.kDriveCurrentLimitAmps, SystemSettings.kLongCANTimeoutMs);
         talon.configNeutralDeadband(0.04, 0);
     }
 
@@ -219,7 +227,7 @@ public class DriveHardware implements IDriveHardware {
     }
 
     public Rotation2d getHeading() {
-        return Rotation2d.fromDegrees(mGyro.getFusedHeading()).inverse();
+        return mGyro.getHeading();
     }
 
     public double getLeftInches() {
@@ -237,13 +245,21 @@ public class DriveHardware implements IDriveHardware {
     public int getRightVelTicks() {
         return mRightMaster.getSelectedSensorVelocity(0);
     }
-    
+
+    public double getLeftTarget() {
+        return mLeftMaster.getClosedLoopTarget();
+    }
+
+    public double getRightTarget() {
+        return mRightMaster.getClosedLoopTarget();
+    }
+
     public double getLeftVelInches() {
-        return Conversions.ticksPer100msToInchesPerSecond(mLeftMaster.getSelectedSensorVelocity(0));
+        return Conversions.ticksPer100msToRadiansPerSecond(mLeftMaster.getSelectedSensorVelocity());
     }
 
     public double getRightVelInches() {
-        return Conversions.ticksPer100msToInchesPerSecond(mRightMaster.getSelectedSensorVelocity(0));
+        return Conversions.ticksPer100msToRadiansPerSecond(mRightMaster.getSelectedSensorVelocity());
     }
 
     @Override

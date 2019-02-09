@@ -31,7 +31,6 @@ public class Clock {
             mCurrentTime = (mIsSimulated) ? getJavaTime() : getRobotTime();
             mCurrentTime -= mStartTime;
             hasTimeUpdatedThisCycle = true;
-           mLogger.debug("Updated time to: " + mCurrentTime);
         }
 
         return mCurrentTime;
