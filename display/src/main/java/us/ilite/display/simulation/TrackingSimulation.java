@@ -23,6 +23,8 @@ import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.StrongholdProfile;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideRocket;
+import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToMiddleCargo;
+import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideCargo;
 import us.ilite.robot.modules.Drive;
 
 public class TrackingSimulation {
@@ -75,7 +77,7 @@ public class TrackingSimulation {
         // timeDriven += mDriveSimulation.driveTrajectory(generate(NearScaleAuto.kScaleToFirstCube.getRotation(), NearScaleAuto.kTurnFromFirstCubeToScale.getRotation()));
         // timeDriven += mDriveSimulation.driveTrajectory(generate(NearScaleAuto.kFirstCubeToScalePath), false);
 
-        timeDriven += mDriveSimulation.driveTrajectory(generate(MiddleToMiddleCargoToSideRocket.kStartToMiddleLeftHatchPath), true);
+        timeDriven += mDriveSimulation.driveTrajectory(generate(MiddleToMiddleCargoToMiddleCargo.kStartToMiddleLeftHatchPath), true);
 
         System.out.println("Time Driven:" + timeDriven);
 
