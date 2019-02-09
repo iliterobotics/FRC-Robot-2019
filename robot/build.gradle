@@ -36,7 +36,7 @@ deploy {
 dependencies {
 
     compile project(':common')
-    implementation 'com.github.flybotix:highfrequencyrobots:2019.1.13a'
+    implementation 'com.github.flybotix:highfrequencyrobots:2019.1.26'
     implementation group: 'commons-io', name: 'commons-io', version: '2.6'
 
     
