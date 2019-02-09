@@ -16,6 +16,10 @@ public class DriveTeamInputMap {
 
     DRIVER_TRACK_CARGO_BTN = ELogitech310.X_BTN,
     DRIVER_TRACK_TARGET_BTN = ELogitech310.A_BTN,
-    DRIVER_TRACK_HATCH_BTN = ELogitech310.B_BTN;
+    DRIVER_TRACK_HATCH_BTN = ELogitech310.B_BTN,
+
+    // Hatch Flower Control
+    DRIVER_HATCH_FLOWER_CAPTURE_BTN = ELogitech310.BACK,
+    DRIVER_HATCH_FLOWER_PUSH_BTN = ELogitech310.START;
 
 }
