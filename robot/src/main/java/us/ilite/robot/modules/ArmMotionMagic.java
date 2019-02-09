@@ -1,7 +1,13 @@
+/** 
+ * Motion control copied from https://github.com/TripleHelixProgramming/DeepSpace/blob/master/src/main/java/frc/robot/subsystems/JesterWrist.java 
+ **/
+
+
 package us.ilite.robot.modules;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.team254.lib.drivers.talon.TalonSRXFactory;
@@ -16,8 +22,25 @@ import us.ilite.robot.loops.Loop;
 
 import com.team254.lib.util.Util;
 
-public class Arm extends Loop
+public class ArmMotionMagic extends Loop
 {
+    // Standard wrist positions.  This assumes the pot is mounted such that lower values 
+    // correspond to front arm positions.
+    // public enum ArmPosAngle {
+    //     START(0.0),                             // Wrist starting position
+    //     FRONT_LIMIT(ArmPosAngle.START.angle + 135),      // True Limit given to PID control
+    //     FRONT(ArmPosAngle.START.angle + 300),           // Normal Position when arm is to the front
+    //     TRANSITION(ArmPosAngle.START.angle + 400),      // Position to in when above the highest hatch level
+    //     BACK(ArmPosAngle.START.angle + 500),            // Normal Position when arm is to back
+    //     BACK_LIMIT(ArmPosAngle.START.angle + 700);      // Ture Limit given to PID Control
+
+    //     public final double angle;
+
+    //     ArmPosAngle(double angle) {
+    //         this.angle = angle;
+    //     }
+    // }
+
     // private double mVoltage;
     // private double mActualTheta;
     // private double mDesiredTheta;
@@ -38,11 +61,14 @@ public class Arm extends Loop
     private boolean motorOff = false; // Motor turned off for a time because of current limiting
     private Timer mTimer;
 
+    public static int ARM_ACCELERATION = 100;
+    public static int ARM_CRUISE = 300;
+
     // Constants used for translating ticks to angle, values based on ticks per full rotation
     private double tickPerDegree = SystemSettings.kArmPositionEncoderTicksPerRotation / 360.0;
     private double degreePerTick = 360.0 / SystemSettings.kArmPositionEncoderTicksPerRotation;
     
-    public Arm()
+    public ArmMotionMagic()
     {
         int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
         int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
@@ -57,6 +83,24 @@ public class Arm extends Loop
         // init the timer
         this.mTimer = new Timer();
         this.mTimer.reset();
+
+        // Protect the motors and protect from brown out
+        talon.configContinuousCurrentLimit(40, 0);
+        talon.configPeakCurrentLimit(60, 0);
+        talon.configPeakCurrentDuration(100, 0);
+        talon.enableCurrentLimit(true);
+
+        talon.setNeutralMode(NeutralMode.Brake);
+        talon.configSelectedFeedbackSensor(FeedbackDevice.Analog, 0, SystemSettings.CTRE_TIMEOUT_INIT);
+
+        talon.config_kP(0, 1, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kI(0, 0.01, SystemSettings.CTRE_TIMEOUT_INIT);
+
+        
+        setWristSoftLimits(minTickPosition, maxTickPosition);
+        setWristMotionProfile(ARM_ACCELERATION, ARM_CRUISE);
+
+        talon.configAllowableClosedloopError(0, 2, SystemSettings.CTRE_TIMEOUT_INIT);
     }
 
     @Override
@@ -188,6 +232,19 @@ public class Arm extends Loop
     @Override
     public void loop(double pNow) {
         update(pNow);
+    }
+
+    public void setWristSoftLimits(int reverseSoftLimit, int forwardSoftLimit) {
+        talon.configReverseSoftLimitEnable(true, SystemSettings.CTRE_TIMEOUT_PERIODIC);
+        talon.configReverseSoftLimitThreshold(reverseSoftLimit, SystemSettings.CTRE_TIMEOUT_PERIODIC);
+
+        talon.configForwardSoftLimitEnable(true, SystemSettings.CTRE_TIMEOUT_PERIODIC);
+        talon.configForwardSoftLimitThreshold(forwardSoftLimit, SystemSettings.CTRE_TIMEOUT_PERIODIC);
+    }
+
+    private void setWristMotionProfile(int acceleration, int cruise) {
+        talon.configMotionAcceleration(acceleration, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.configMotionCruiseVelocity(cruise, SystemSettings.CTRE_TIMEOUT_INIT);
     }
 
     // public int getSetPoints(ESetPoint pPoint)

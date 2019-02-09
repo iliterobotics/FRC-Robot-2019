@@ -153,6 +153,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
             return this.angle;
         }
     }
+
+    public static int CTRE_TIMEOUT_INIT = 10;
+    public static int CTRE_TIMEOUT_PERIODIC = 0;
+
     // =============================================================================
 
 
