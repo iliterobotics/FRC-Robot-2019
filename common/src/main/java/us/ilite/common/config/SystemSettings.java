@@ -73,7 +73,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // IMU Constants
     // =============================================================================
     public static double kGyroCollisionThreshold = 0.0;
-    public static int kGyroUpdateRate = 200.0;
+    public static int kGyroUpdateRate = 200;
 
     // =============================================================================
     // Input Constants
