@@ -143,7 +143,18 @@ public class SuperstructureTest {
      */
     @Test
     public void testManualHatchGrabberGrab() {
+        mData.operatorinput.set(DriveTeamInputMap.OPERATOR_HATCH_GRAB, 1.0);
+        updateRobot();
 
+        verify(mHatchFlower).captureHatch();
+
+        mData.operatorinput.set(DriveTeamInputMap.OPERATOR_INTAKE_GROUND_HATCH_AXIS, 1.0);
+        updateRobot();
+
+        mSuperstructure.mRequestedAcquisitionState = Superstructure.EAcquisitionState.HANDOFF;
+        mSuperstructure.mAcquisitionState =  Superstructure.EAcquisitionState.HANDOFF;
+
+        verify(mHatchFlower, times(2)).captureHatch();
     }
 
     private void updateRobot() {
