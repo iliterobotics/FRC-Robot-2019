@@ -47,7 +47,7 @@ public class DriveSimulation {
         double startTime = time;
 
         mDrive.modeInit(startTime);
-        mDrive.followPath(pTrajectoryToDrive, pResetPoseToTrajectoryStart);
+        mDrive.setPath(pTrajectoryToDrive, pResetPoseToTrajectoryStart);
 
         simulate(3.5);
 

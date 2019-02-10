@@ -4,7 +4,7 @@ echo Removing locally stored logs...
 rm *.csv
 
 echo Retrieving most recent logs from robot...
-scp lvuser@172.22.11.2:*.csv .
+scp lvuser@10.18.85.2:*.csv .
 
 echo Cleaning up log files on robot...
-ssh lvuser@172.22.11.2 "rm *.csv"
+ssh lvuser@10.18.85.2 "rm *.csv"

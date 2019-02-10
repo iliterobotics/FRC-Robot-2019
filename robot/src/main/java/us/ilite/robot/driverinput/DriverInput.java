@@ -13,16 +13,22 @@ import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
+import us.ilite.robot.commands.Delay;
+import us.ilite.robot.modules.Drive;
+import us.ilite.robot.modules.DriveMessage;
+import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.commands.TargetLock;
 import us.ilite.robot.modules.*;
 import us.ilite.robot.modules.Module;
 
 public class DriverInput extends Module implements IThrottleProvider, ITurnProvider {
 
-    private static final double DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
+    protected static final double 
+    DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
     private ILog mLog = Logger.createLog(DriverInput.class);
 
     protected final Drive mDrive;
+    protected final HatchFlower hatchFlower;
     protected final Superstructure mSuperstructure;
 
     private boolean mDriverStartedCommands;
@@ -30,7 +36,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
 
-    private Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
+    protected Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
 
     private Data mData;
 
@@ -96,8 +102,18 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             // Teleop control
         if (!mSuperstructure.isRunningCommands()) {
             updateDriveTrain();
+            updateHatchFlower();
         } 
 
+    }
+
+    private void updateHatchFlower() {
+        if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_CAPTURE_BTN)) {
+            hatchFlower.captureHatch();
+        }
+        else if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_PUSH_BTN)) {
+            hatchFlower.pushHatch();
+        }
     }
 
     private void updateDriveTrain() {
@@ -118,6 +134,37 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         driveMessage.setControlMode(ControlMode.PercentOutput);
 
         mDrive.setDriveMessage(driveMessage);
+    }
+
+    private void updateSplitTriggerAxisFlip() {
+
+        double rotate = mDriverInputCodex.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
+        double throttle = -mDriverInputCodex.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
+
+        if(mDriverInputCodex.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.3) {
+            rotate = rotate;
+            throttle = throttle;
+        } else if(mDriverInputCodex.get(ELogitech310.LEFT_TRIGGER_AXIS) > 0.3) {
+            throttle = -throttle;
+            rotate = rotate;
+        }
+
+        rotate = Util.limit(rotate, SystemSettings.kDriverInputTurnMaxMagnitude);
+
+		// throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
+        // rotate = Util.limit(rotate, 0.7);
+
+        // if (mDriverInputCodex.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
+        //     throttle *= SystemSettings.kSnailModePercentThrottleReduction;
+        //     rotate *= SystemSettings.kSnailModePercentRotateReduction;
+        // }
+
+        DriveMessage driveMessage = DriveMessage.fromThrottleAndTurn(throttle, rotate);
+        driveMessage.setNeutralMode(NeutralMode.Brake);
+        driveMessage.setControlMode(ControlMode.PercentOutput);
+
+        driveTrain.setDriveMessage(driveMessage);
+
     }
 
     /**

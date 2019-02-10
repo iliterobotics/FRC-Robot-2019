@@ -6,7 +6,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.codex.Codex;
 
+import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.PIDController;
+import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.robot.modules.Drive;

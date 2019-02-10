@@ -13,6 +13,7 @@ import us.ilite.common.types.input.ELogitech310;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.commands.Delay;
 import us.ilite.robot.modules.Drive;
+import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
@@ -25,6 +26,7 @@ public class DriverInputTest {
 
     // We're only testing integration between Superstructure and DriverInput, so we can mock this
     @Mock private Drive mDrive;
+    @Mock private HatchFlower mHatchFlower;
     // We want to see Superstructure's actual behavior, so we make it a spy
     private Superstructure mSuperstructure;
 

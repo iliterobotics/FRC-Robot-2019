@@ -13,7 +13,7 @@ public class Conversions {
     }
 
     public static double inchesToRotations(double inches) {
-        return inches / (SystemSettings.kDriveWheelDiameterInches * Math.PI);
+        return inches / SystemSettings.kDriveWheelCircumference;
     }
 
     public static double inchesPerSecondToRpm(double inches_per_second) {
@@ -33,7 +33,7 @@ public class Conversions {
     }
 
     public static double ticksPer100msToRotationsPerSecond(int ticks) {
-        return ticksToRotations(ticks) * 10.0;
+        return ticks / SystemSettings.kDriveTicksPerRotation * 10.0;
     }
 
     public static double ticksPer100msToInchesPerSecond(int ticks) {
@@ -41,7 +41,7 @@ public class Conversions {
     }
 
     public static double ticksPer100msToRadiansPerSecond(int ticks) {
-        return ticksPer100msToRotationsPerSecond(ticks) * (2.0 * Math.PI);
+        return ticksPer100msToRotationsPerSecond(ticks) * (Math.PI * 2.0);
     }
     
 }

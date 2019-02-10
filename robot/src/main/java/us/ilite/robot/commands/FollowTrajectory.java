@@ -3,6 +3,7 @@ package us.ilite.robot.commands;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
+import edu.wpi.first.wpilibj.Timer;
 import us.ilite.robot.modules.Drive;
 
 public class FollowTrajectory implements ICommand {
@@ -19,7 +20,8 @@ public class FollowTrajectory implements ICommand {
 
     @Override
     public void init(double pNow) {
-        mDrive.followPath(mTrajectory, mResetPose);
+        mDrive.setPathFollowing();
+        mDrive.setPath(mTrajectory, mResetPose);
     }
 
     @Override
