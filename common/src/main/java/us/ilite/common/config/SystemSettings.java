@@ -146,7 +146,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kArmPositionEncoderTicksPerRotation = 512;
     public static double kArmMinAngle = 0.0;
     public static double kArmMaxAngle = 135.0;
-    public static double kArmMaxCurrentVoltRatio = 1; //tune - overcurrent ratio for arm motor
+    public static double kArmMaxCurrentVoltRatio = 2; //tune - overcurrent ratio for arm motor
     public static double kArmMotorOffTimeSec = 0.5; // seconds
     public static double kArmMaxStallTimeSec = 0.1; // seconds
     public static double kArmMinMotorStallVoltage = 0.1;
@@ -154,11 +154,15 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     //////// BasicArm Constants /////////
     // PID Gains                                        kP,    kI,    kD
-    public static PIDGains kArmPIDGains = new PIDGains( 0.004, 0.00, 0.00 );
+    public static PIDGains kArmPIDGains = new PIDGains( 0.01, 0.000, 0.0008 );
     // Dampen as we get close to our target
-    public static PIDGains kArmLandingPIDGains = new PIDGains( 0.004, 0.00, 0.0002 );
+    public static PIDGains kArmLandingPIDGains = new PIDGains( 0.02, 0.003, 0.001 );
+    // public static PIDGains kArmLandingPIDGains = kArmPIDGains;
     // Range +/- of target angle where we apply the landing PID Gains
-    public static double kArmLandingRangeAngle = 5.0;
+    public static double kArmLandingRangeAngle = 10.0;
+
+    // For gravity compensation Kg = % power to hold arm horizontal
+    public static double kArmKg = 0.7;
 
     // Control power clamping limits
     public static double kArmPIDOutputMaxLimit = 1.0; // max 1.0
@@ -169,8 +173,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     ///// MotionMagicArm Constants //////
     // PID Gains
     public static double kArmPidP = 20.0;
-    public static double kArmPidI = 0.05;
-    public static double kArmPidD = 0;
+    public static double kArmPidI = 0.020;
+    public static double kArmPidD = 0.0;
     public static double kArmPidF = 0.1;
     public static int K_ARM_ACCELERATION = 512;
     public static int K_ARM_CRUISE = 4096;

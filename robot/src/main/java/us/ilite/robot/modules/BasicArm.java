@@ -9,6 +9,7 @@ import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.util.Util;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.config.SystemSettings.ArmPosition;
 import us.ilite.common.lib.control.PIDController;
@@ -71,6 +72,7 @@ public class BasicArm extends Arm {
         this.currentNumTicks = 0;
         pid.setPIDGains(SystemSettings.kArmPIDGains);
         pid.setInputRange( minTickPosition, maxTickPosition ); //min and max ticks of arm
+
         talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.kLongCANTimeoutMs);
         talon.setSelectedSensorPosition(0);
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5);
@@ -123,12 +125,16 @@ public class BasicArm extends Arm {
 
         // Calculate the output to control arm position
          double output = this.calculateOutput();
+
+         // Add the gravity compensation
+        //  output += SystemSettings.kArmKg * Math.cos( this.ticksToAngle(this.currentNumTicks) - 90.0 );
         
         // Calculate the current/voltage ratio to detect a motor stall
         double current = talon.getOutputCurrent();
         double voltage = talon.getMotorOutputVoltage();
         double ratio = 0.0;
         // System.out.println("-----------Current ratio = " + ratio + "------------");
+
 
         // When the motor is not running the voltage is zero and divide by zero 
         // is undefined, we will calculate the ratio when the voltage is above
@@ -137,6 +143,12 @@ public class BasicArm extends Arm {
             ratio = current / voltage;
         }
 
+        SmartDashboard.putNumber("BasicArmVoltage", voltage);
+        SmartDashboard.putNumber("BasicArmCurrent", current);
+        SmartDashboard.putNumber("BasicArmStallRatio", ratio);
+        SmartDashboard.putNumber("BasicArmCurrentAngle", this.ticksToAngle(this.currentNumTicks));
+        SmartDashboard.putNumber("BasicArmDesiredAngle", this.ticksToAngle(this.desiredNumTicks));
+        SmartDashboard.putNumber("BasicArmDesiredAngleDelta", this.ticksToAngle(this.desiredNumTicks - this.currentNumTicks));
         // debug
         // System.out.println( "Arm.update initial output = " + output );
         //System.out.println( "Arm.update: current = " + current + ", voltage = " + voltage + ", ratio = " + ratio);
@@ -297,6 +309,7 @@ public class BasicArm extends Arm {
         // Constrain the angle to the allowed values
         // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ angle = " + angle);
         angle = Util.limit(angle, SystemSettings.kArmMinAngle, SystemSettings.kArmMaxAngle);
+        // this.desiredNumTicks = angleToTicks( angle );
         this.desiredNumTicks = angleToTicks( angle );
         // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!!!!! angle = " + angle);
         // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ticks = " + this.desiredNumTicks);

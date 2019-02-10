@@ -35,7 +35,7 @@ public class SettingsTable implements IDisplayComponent {
     public Node getRootNode() {
 
         mSettingsNetworkTable.addEntryListener((table, key, entry, value, flags) -> {
-            mLog.debug("Change");
+            mLog.debug("Change for table ", table, " with key ", key);
             mSettingsTableView.refresh();
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate | EntryListenerFlags.kLocal);
 

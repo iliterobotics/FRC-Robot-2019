@@ -140,20 +140,20 @@ public class DriverInput extends Module {
         //temporarily assuming this setpoint will be set by the operator Y button
         if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_UP ) )
         {
-            mult = 0.05;
+            mArm.setArmAngle(SystemSettings.ArmPosition.FULLY_UP.getAngle());
         }
         //temporarily assuming this setpoint will be set by the operator A button
-        if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_DOWN ) )
+        else if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_DOWN ) )
         {
-            mult = 0.15;
+            mArm.setArmAngle(SystemSettings.ArmPosition.FULLY_DOWN.getAngle());
         }
         //temporarily assuming this setpoint will be set by the operator B button
-        if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_OUT ) )
+        else if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_OUT ) )
         {
-            mult = 0.25;
+            mArm.setArmAngle(SystemSettings.ArmPosition.FULLY_OUT.getAngle());
         }
         //temporarily assuming the arm will be controlled by the operator joystick
-        if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_MOTION ) )
+        else if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_MOTION ) )
         {
             //mArm.setArmAngle( mArm.getCurrentArmAngle() + mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) );
             // System.out.println(mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));

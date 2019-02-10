@@ -2,7 +2,6 @@
  * Motion control copied from https://github.com/TripleHelixProgramming/DeepSpace/blob/master/src/main/java/frc/robot/subsystems/JesterWrist.java 
  **/
 
-
 package us.ilite.robot.modules;
 
 import com.ctre.phoenix.ErrorCode;
@@ -16,6 +15,7 @@ import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.drivers.talon.TalonSRXFactory;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.
 common.config.SystemSettings;
 import us.ilite.common.config.SystemSettings.ArmPosition;
@@ -162,7 +162,13 @@ public class MotionMagicArm extends Arm
         if ( voltage > SystemSettings.kArmMinMotorStallVoltage ) {
             ratio = current / voltage;
         }
-        System.out.println("-----------Current ratio = " + ratio + "------------");
+
+        SmartDashboard.putNumber("MMArmVoltage", voltage);
+        SmartDashboard.putNumber("MMArmCurrent", current);
+        SmartDashboard.putNumber("MMArmStallRatio", ratio);
+
+
+        // System.out.println("-----------Current ratio = " + ratio + "------------");
 
         // debug
         // System.out.println( "Arm.update initial output = " + output );
@@ -173,7 +179,7 @@ public class MotionMagicArm extends Arm
         // If the motor is off check for completion of the cool off period
         if(this.motorOff)
         {
-            System.out.println("*************** Motor OFF **********************************************");
+            // System.out.println("*************** Motor OFF **********************************************");
             if( mTimer.hasPeriodPassed(SystemSettings.kArmMotorOffTimeSec) )
             {
                 // Cool Off Period has passed, turn the motor back on
@@ -191,7 +197,7 @@ public class MotionMagicArm extends Arm
             // check for stalled motor
             if(ratio > SystemSettings.kArmMaxCurrentVoltRatio)
             {
-                System.err.println("++++++++++++++++++++++++++ Motor STALLED ++++++++++++++++++++++++++++++++++++++");
+                // System.err.println("++++++++++++++++++++++++++ Motor STALLED ++++++++++++++++++++++++++++++++++++++");
                 // System.out.println( "Arm.update: stalled: " + this.stalled);
                 // Motor is stalled, where we stalled already
                 if(!this.stalled)
@@ -333,7 +339,7 @@ public class MotionMagicArm extends Arm
     {
         // TODO Parameterize the angle limits
         // Constrain the angle to the allowed values
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ angle = " + angle);
+        // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ angle = " + angle);
         angle = Util.limit(angle, SystemSettings.kArmMinAngle, SystemSettings.kArmMaxAngle);
         this.desiredNumTicks = angleToTicks( angle );
     }
