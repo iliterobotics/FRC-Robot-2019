@@ -150,10 +150,6 @@ public class DriverInput extends Module {
                 // If driver wants to seek right, switch from "_LEFT" enum to "_RIGHT" enum
                 trackingType = ETrackingType.values()[trackingTypeOrdinal + 1];
             }
-            //System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-            //System.out.println(mLimelight.toString());
-            //System.out.println(trackingType);
-            //mLimelight.setPipeline(trackingType.getPipeline());
             
             mSuperstructure.stopRunningCommands();
             mLimelight.setPipeline(trackingType.getPipeline());
