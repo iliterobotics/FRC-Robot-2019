@@ -13,6 +13,7 @@ import us.ilite.common.types.ETargetingData;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
+import us.ilite.common.lib.control.PIDGains;
 
 public class TargetLock implements ICommand {
     private Drive mDrive;

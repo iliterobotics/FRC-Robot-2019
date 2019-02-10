@@ -50,11 +50,15 @@ import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.Limelight;
+import us.ilite.robot.modules.Elevator;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
+import us.ilite.common.lib.control.DriveController;
+import us.ilite.common.lib.control.PIDGains;
+import us.ilite.common.lib.control.PIDController;
 
 public class Robot extends TimedRobot {
-    
+
     private ILog mLogger = Logger.createLog(this.getClass());
 
     // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
@@ -72,16 +76,18 @@ public class Robot extends TimedRobot {
     private Superstructure mSuperstructure = new Superstructure();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
+    private Elevator mElevator = new Elevator(mData);
     private HatchFlower mHatchFlower = new HatchFlower();
-    
-    private DriverInput mDriverInput = new DriverInput(mDrive, mHatchFlower, mSuperstructure, mData);
+
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mSuperstructure, mData);
     private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
 
     private MatchMetadata mMatchMeta = null;
-    
+
     private PerfTimer mClockUpdateTimer = new PerfTimer();
+
 
     @Override
     public void robotInit() {
@@ -91,7 +97,7 @@ public class Robot extends TimedRobot {
 
         ICodexTimeProvider provider = new ICodexTimeProvider() {
             public long getTimestamp() {
-                return (long)mClock.getCurrentTimeInNanos();
+                return (long) mClock.getCurrentTimeInNanos();
             }
         };
         CodexMetadata.overrideTimeProvider(provider);
@@ -158,7 +164,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         initMatchMetadata();
-        mRunningModules.setModules(mDriverInput, mLimelight, mHatchFlower);
+        mRunningModules.setModules(mDriverInput, mLimelight, mHatchFlower, mElevator);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
@@ -197,14 +203,14 @@ public class Robot extends TimedRobot {
     @Override
     public void testPeriodic() {
 
-        
+
     }
 
     private void initMatchMetadata() {
-        if(mMatchMeta == null) {
+        if (mMatchMeta == null) {
             mMatchMeta = new MatchMetadata();
             int gid = mMatchMeta.hash;
-            for(Codex c : mData.mLoggedCodexes) {
+            for (Codex c : mData.mLoggedCodexes) {
                 c.meta().setGlobalId(gid);
             }
         }
@@ -216,20 +222,20 @@ public class Robot extends TimedRobot {
         String mRobotEnabledDisabled = "Unknown";
         double mNow = Timer.getFPGATimestamp();
 
-        if(this.isAutonomous()) {
+        if (this.isAutonomous()) {
             mRobotMode = "Autonomous";
         }
-        if(this.isOperatorControl()) {
+        if (this.isOperatorControl()) {
             mRobotMode = "Operator Control";
         }
-        if(this.isTest()) {
+        if (this.isTest()) {
             mRobotEnabledDisabled = "Test";
         }
 
-        if(this.isEnabled()) {
+        if (this.isEnabled()) {
             mRobotEnabledDisabled = "Enabled";
         }
-        if(this.isDisabled()) {
+        if (this.isDisabled()) {
             mRobotEnabledDisabled = "Disabled";
         }
 
