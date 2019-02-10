@@ -17,9 +17,7 @@ public enum EFourBarState {
     }
     
     public static EFourBarState fromDegrees( double currentDegrees ) {
-        EFourBarState[] states = { EFourBarState.NORMAL,
-                                   EFourBarState.STOP,
-                                   EFourBarState.ACCELERATE,
+        EFourBarState[] states = { EFourBarState.ACCELERATE,
                                    EFourBarState.DECELERATE };
         for ( EFourBarState state : states ) {
             if ( currentDegrees >= state.getLowerAngularBound() &&
