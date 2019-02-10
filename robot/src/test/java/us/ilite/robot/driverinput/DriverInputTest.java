@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
+import us.ilite.TestingUtils;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.input.ELogitech310;
@@ -51,6 +52,9 @@ public class DriverInputTest {
 
         mModuleList.setModules(mDriverInput, mSuperstructure, mDrive);
         mModuleList.modeInit(mClock.getCurrentTime());
+
+        TestingUtils.fillNonButtons(mData.driverinput, 0.0);
+        TestingUtils.fillNonButtons(mData.operatorinput, 0.0);
     }
 
     /**
