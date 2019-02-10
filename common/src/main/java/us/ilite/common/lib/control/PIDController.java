@@ -93,8 +93,8 @@ public class PIDController {
         // Don't blow away mError so as to not break derivative
         double proportionalError = Math.abs( mError ) < mDeadband ? 0 : mError;
 
-        mResult = ( mPIDGains.kP * proportionalError + mPIDGains.kI * mTotalError + mPIDGains.kD * ( mError - mPrevError ) / mDt
-                + mPIDGains.kF * mSetpoint );
+        mResult = (mPIDGains.kP * proportionalError) + (mPIDGains.kI * mTotalError) + (mPIDGains.kD * ( mError - mPrevError ) / mDt)
+                + (mPIDGains.kF * mSetpoint );
         mPrevError = mError;
 
         mResult = Util.limit( mResult, mMaximumOutput );

@@ -30,12 +30,15 @@ public class BasicArm extends Arm {
     private TalonSRX talon = new TalonSRX(SystemSettings.kArmTalonSRXAddress); //TalonSRXFactory.createDefaultTalon(SystemSettings.kArmTalonSRXAddress);
     private PIDController pid;
     // private boolean settingPosition;
-    private int currentNumTicks = 0; //revisit this and check if correct for encoder type
-    private int desiredNumTicks = 0;
-    private double mDesiredOutput;
+    private int currentNumTicks = 0; // Our current angle in ticks
+    private int desiredNumTicks = 0; // Our desired angle in ticks
+    private double mDesiredOutput; // This is used for direct driving the arm
     private boolean stalled = false;
     private boolean motorOff = false; // Motor turned off for a time because of current limiting
     private Timer mTimer;
+
+    public double maxOutputSeen = 0.0;
+    public double minOutputSeen = 0.0;
 
     // Constants used for translating ticks to angle, values based on ticks per full rotation
     private double tickPerDegree = SystemSettings.kArmPositionEncoderTicksPerRotation / 360.0;
@@ -62,7 +65,24 @@ public class BasicArm extends Arm {
     public void modeInit(double pNow)
     {
         // rezero on enable
+        int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
+        int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
+
+        this.currentNumTicks = 0;
+        pid.setPIDGains(SystemSettings.kArmPIDGains);
+        pid.setInputRange( minTickPosition, maxTickPosition ); //min and max ticks of arm
+        talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.kLongCANTimeoutMs);
         talon.setSelectedSensorPosition(0);
+        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5);
+
+        // init the timer
+        this.mTimer.stop();
+        this.mTimer.reset();
+
+        // for debug
+        maxOutputSeen = 0.0;
+        minOutputSeen = 0.0;
+    
     }
 
     @Override
@@ -76,12 +96,27 @@ public class BasicArm extends Arm {
      * If the timer expires and the motor is stalled, the motor will be stopped and the 
      * timer will be started to measure a cooling off period for the motor.  Once the 
      * cooling off period has expired, the motor will be re-enabled.
+     * 
+     * We will adjust the PID Gain to add additional damping as we get with in the landing range
+     * of the desired target. See SystemSettings.kArmLandingRangeAngle.
      */
     @Override
     public void update(double pNow)
     {
         this.currentNumTicks = talon.getSelectedSensorPosition();
-        System.out.println("Arm.update: talon sensor ticks = " + this.currentNumTicks);
+
+        // Check to see if we are with in the landing range
+        double deltaAngle = this.ticksToAngle(Math.abs(this.desiredNumTicks - this.currentNumTicks));
+        if ( deltaAngle <= SystemSettings.kArmLandingRangeAngle ) {
+            // We are with in the landing range, use the landing PID Gain values'
+            pid.setPIDGains(SystemSettings.kArmLandingPIDGains);
+        }
+        else {
+            // use the normal PID gains
+            pid.setPIDGains(SystemSettings.kArmPIDGains);
+        }
+
+        // System.out.println("Arm.update: talon sensor ticks = " + this.currentNumTicks);
 
         // Directly control the output 
         // double output = this.mDesiredOutput;
@@ -93,7 +128,7 @@ public class BasicArm extends Arm {
         double current = talon.getOutputCurrent();
         double voltage = talon.getMotorOutputVoltage();
         double ratio = 0.0;
-        System.out.println("-----------Current ratio = " + ratio + "------------");
+        // System.out.println("-----------Current ratio = " + ratio + "------------");
 
         // When the motor is not running the voltage is zero and divide by zero 
         // is undefined, we will calculate the ratio when the voltage is above
@@ -103,7 +138,7 @@ public class BasicArm extends Arm {
         }
 
         // debug
-        System.out.println( "Arm.update initial output = " + output );
+        // System.out.println( "Arm.update initial output = " + output );
         //System.out.println( "Arm.update: current = " + current + ", voltage = " + voltage + ", ratio = " + ratio);
         //System.out.println( "Arm.update: motorOff = " + this.motorOff + ", stalled = " + this.stalled);
 
@@ -111,7 +146,7 @@ public class BasicArm extends Arm {
         // If the motor is off check for completion of the cool off period
         if(this.motorOff)
         {
-            System.out.println("*************** Motor OFF **********************************************");
+            // System.out.println("*************** Motor OFF **********************************************");
             if( mTimer.hasPeriodPassed(SystemSettings.kArmMotorOffTimeSec) )
             {
                 // Cool Off Period has passed, turn the motor back on
@@ -130,8 +165,8 @@ public class BasicArm extends Arm {
             // check for stalled motor
             if(ratio > SystemSettings.kArmMaxCurrentVoltRatio)
             {
-                System.err.println("++++++++++++++++++++++++++ Motor STALLED ++++++++++++++++++++++++++++++++++++++");
-                System.out.println( "Arm.update: stalled: " + this.stalled);
+                // System.err.println("++++++++++++++++++++++++++ Motor STALLED ++++++++++++++++++++++++++++++++++++++");
+                // System.out.println( "Arm.update: stalled: " + this.stalled);
                 // Motor is stalled, where we stalled already
                 if(!this.stalled)
                 {
@@ -147,7 +182,7 @@ public class BasicArm extends Arm {
                     if( mTimer.hasPeriodPassed(SystemSettings.kArmMaxStallTimeSec) )
                     {
                         // We've exceeded the max stall time, stop the motor
-                        System.out.println( "Arm.update Max stall time exceeded." );
+                        // System.out.println( "Arm.update Max stall time exceeded." );
 
                         // We're stopping the motor so reset the stall flag
                         this.stalled = false;
@@ -172,7 +207,17 @@ public class BasicArm extends Arm {
             }
         }
 
-        System.out.println( "Arm.update: About to set talon output = " + output );
+        // System.out.println( "Arm.update: About to set talon output )))))))))))))))))))))))))))))))))))))))= " + output );
+
+        if ( output < minOutputSeen ) {
+            minOutputSeen = output;
+        }
+
+        if ( output > maxOutputSeen) {
+            maxOutputSeen = output;
+        }
+
+        // System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ min = " + minOutputSeen + " max= " + maxOutputSeen);
 
         talon.set(ControlMode.PercentOutput, output);
         
@@ -217,7 +262,6 @@ public class BasicArm extends Arm {
         double tempOutput = pid.calculate( talon.getSelectedSensorPosition(), Timer.getFPGATimestamp() );
 
         // Constrain output to min/max values for the Talon
-        // return Util.limit(tempOutput, -1, 1) * .25;
         return Util.limit(tempOutput, SystemSettings.kArmPIDOutputMinLimit, SystemSettings.kArmPIDOutputMaxLimit);
 
     }
@@ -251,9 +295,12 @@ public class BasicArm extends Arm {
     {
         // TODO Parameterize the angle limits
         // Constrain the angle to the allowed values
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ angle = " + angle);
+        // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ angle = " + angle);
         angle = Util.limit(angle, SystemSettings.kArmMinAngle, SystemSettings.kArmMaxAngle);
         this.desiredNumTicks = angleToTicks( angle );
+        // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!!!!! angle = " + angle);
+        // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ticks = " + this.desiredNumTicks);
+        // System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ min = " + minOutputSeen + " max= " + maxOutputSeen);
     }
 
     public double getCurrentArmAngle()

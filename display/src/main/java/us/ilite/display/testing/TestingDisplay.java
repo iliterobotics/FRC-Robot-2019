@@ -50,8 +50,9 @@ public class TestingDisplay extends Application {
 
     public static void main(String[] args) {
         Logger.setLevel(ELevel.DEBUG);
-        kNetworkTableInst.startServer();
-        kNetworkTableInst.startClient("localhost");
+        // kNetworkTableInst.startServer();
+        // kNetworkTableInst.startClient("localhost");
+        kNetworkTableInst.startClientTeam(1885);
 
         Thread debugThread = new Thread(new Runnable() {
             SystemSettings settings = new SystemSettings();
@@ -72,7 +73,7 @@ public class TestingDisplay extends Application {
 
         });
 
-        debugThread.start();
+        // debugThread.start();
 
         launch(args);
     }

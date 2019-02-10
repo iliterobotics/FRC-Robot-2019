@@ -154,9 +154,15 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     //////// BasicArm Constants /////////
     // PID Gains                                        kP,    kI,    kD
-    public static PIDGains kArmPIDGains = new PIDGains( 0.002, 0.001, 0.0 );
-    public static double kArmPIDOutputMaxLimit = 0.25; // max 1.0
-    public static double kArmPIDOutputMinLimit = -0.25; // min -1.0
+    public static PIDGains kArmPIDGains = new PIDGains( 0.004, 0.00, 0.00 );
+    // Dampen as we get close to our target
+    public static PIDGains kArmLandingPIDGains = new PIDGains( 0.004, 0.00, 0.0002 );
+    // Range +/- of target angle where we apply the landing PID Gains
+    public static double kArmLandingRangeAngle = 5.0;
+
+    // Control power clamping limits
+    public static double kArmPIDOutputMaxLimit = 1.0; // max 1.0
+    public static double kArmPIDOutputMinLimit = -1.0; // min -1.0
     /////////////////////////////////////
 
 

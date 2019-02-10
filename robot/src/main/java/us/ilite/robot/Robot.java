@@ -72,8 +72,8 @@ public class Robot extends TimedRobot {
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
     
-    //private Arm mArm = new BasicArm();
-    private Arm mArm = new MotionMagicArm();
+    private Arm mArm = new BasicArm();
+    // private Arm mArm = new MotionMagicArm();
     private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData, mArm);
     private Limelight mLimelight = new Limelight();
 

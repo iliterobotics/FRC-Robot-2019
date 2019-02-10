@@ -161,10 +161,11 @@ public class DriverInput extends Module {
             // // Drive the arm directly with the joystick.  Joystick output is -1 to 1
             // // Talon desired output range is -1 to 1
             // // Scale the output by the button pressed
-            // System.out.println( "DriverInput operator joystick: " + mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
             // // which of these is correct???  both?
             // mArm.setDesiredOutput( mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * mult );
             // mArm.setDesiredOutput( mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * mult );
+
+            // System.out.println( "+++++++++++++++DriverInput operator joystick: " + mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
 
             // Drive the arm to track the joystick
             // Assuming a mapping of 0 to 135 deg for the joysticks -1 to 1
