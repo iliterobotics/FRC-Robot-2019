@@ -10,10 +10,10 @@ public enum ETrackingType {
     */
     TARGET_LEFT(1, -1),
     TARGET_RIGHT(2, 1),
-    CARGO_LEFT(3, 1),
-    CARGO_RIGHT(4, -1),
-    HATCH_LEFT(5, 1),
-    HATCH_RIGHT(6, -1);
+    CARGO_LEFT(3, -1),
+    CARGO_RIGHT(4, 1),
+    LINE_LEFT(5, -1),
+    LINE_RIGHT(6, 1);
 
     private final int kPipelineNum;
     private final int kTurnScalar;
