@@ -30,7 +30,6 @@ public class DriverInputTest {
     @Mock private FourBar mFourBar;
     // We want to see Superstructure's actual behavior, so we make it a spy
     private Superstructure mSuperstructure;
-    private FourBar mFourBar;
 
     private DriverInput mDriverInput;
 
