@@ -195,7 +195,7 @@ public class Drive extends Loop {
 //				mCalculateTimer.stop();
 
 				if(mDebugLogger != null) {
-					debugOutput.update(pNow, output);
+					debugOutput.update(pNow, mDriveMessage);
 					mDebugLogger.add(debugOutput);
 				}
 
@@ -295,13 +295,16 @@ public class Drive extends Loop {
 
 		public List<LogOutput> status = new ArrayList<>();
 
-		public void update(double time, DriveOutput output) {
+		public void update(double time, DriveMessage output) {
 			t = time;
 
 //			targetLeftVel = Conversions.rotationsToInches(output.left_velocity / (Math.PI * 2.0));
 //			targetRightVel = Conversions.rotationsToInches(output.right_velocity / (Math.PI * 2.0));
-			targetLeftVel = mDriveHardware.getLeftTarget();
-			targetRightVel = mDriveHardware.getRightTarget();
+//			targetLeftVel = mDriveHardware.getLeftTarget();
+//			targetRightVel = mDriveHardware.getRightTarget();
+			targetLeftVel = output.leftOutput;
+			targetRightVel = output.rightOutput;
+
 
 			leftVel = mData.drive.get(EDriveData.LEFT_VEL_IPS);
 			rightVel = mData.drive.get(EDriveData.RIGHT_VEL_IPS);

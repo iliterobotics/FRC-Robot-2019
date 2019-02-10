@@ -110,10 +110,6 @@ public class DriveHardware implements IDriveHardware {
         mLeftMaster.set(mLeftControlMode, pDriveMessage.leftOutput, pDriveMessage.leftDemandType, pDriveMessage.leftDemand);
         mRightMaster.set(mRightControlMode, pDriveMessage.rightOutput, pDriveMessage.rightDemandType, pDriveMessage.rightDemand);
 
-        Data.kSmartDashboard.putDouble("left_error", mLeftMaster.getClosedLoopError());
-        Data.kSmartDashboard.putDouble("right_error", mRightMaster.getClosedLoopError());
-        Data.kSmartDashboard.putString("left_controlmode", mLeftMaster.getControlMode().name());
-        Data.kSmartDashboard.putString("right_controlmode", mRightMaster.getControlMode().name());
     }
 
     /**
