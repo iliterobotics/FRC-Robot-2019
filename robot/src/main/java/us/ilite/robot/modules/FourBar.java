@@ -23,7 +23,7 @@ public class FourBar extends Module {
     private CANEncoder mNeo1Encoder;
     private CANEncoder mNeo2Encoder;
 
-    public double mAngularPosition;
+    private double mAngularPosition;
     private double mPreviousNeo1Rotations;
     private double mPreviousNeo2Rotations;
     private double mCurrentTime;
