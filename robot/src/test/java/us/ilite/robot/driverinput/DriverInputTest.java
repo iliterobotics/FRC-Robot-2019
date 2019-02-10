@@ -48,7 +48,7 @@ public class DriverInputTest {
         mModuleList = new ModuleList();
         mSuperstructure = spy(new Superstructure());
         mLimelight = new Limelight(mData);
-        mDriverInput = spy(new DriverInput(mDrive, mLimelight, mSuperstructure, mData, true));
+        mDriverInput = spy(new DriverInput(mDrive, mLimelight, mHatchFlower, mSuperstructure, mData, true));
 
         mModuleList.setModules(mDriverInput, mSuperstructure, mDrive);
         mModuleList.modeInit(mClock.getCurrentTime());

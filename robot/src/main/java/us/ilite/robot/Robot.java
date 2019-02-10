@@ -76,7 +76,7 @@ public class Robot extends TimedRobot {
     private Limelight mLimelight = new Limelight(mData);
     private HatchFlower mHatchFlower = new HatchFlower();
     
-    private DriverInput mDriverInput = new DriverInput(mDrive, mLimelight, mSuperstructure, mData);
+    private DriverInput mDriverInput = new DriverInput(mDrive, mLimelight, mHatchFlower, mSuperstructure, mData);
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
 
@@ -159,7 +159,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         initMatchMetadata();
-        mRunningModules.setModules(mDriverInput, mLimelight, mHatchFlower);
+        mRunningModules.setModules(mDriverInput, mLimelight, mHatchFlower, mSuperstructure);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 

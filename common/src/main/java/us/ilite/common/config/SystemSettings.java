@@ -152,7 +152,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double llRightBCoeff = -4.53956454545558;
     public static double llRightCCoeff = -0.0437470770400814;
 
-
+    // =============================================================================
+    // PID TargetLock constants
+    // =============================================================================
+    public static PIDGains kTargetLockPIDGains= new PIDGains(0.02, 0.0, 0.0);
 
     // =============================================================================
     // Target Constants

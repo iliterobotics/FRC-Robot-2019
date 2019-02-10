@@ -25,13 +25,13 @@ public class TargetLock implements ICommand {
     private static final double kP = 0.02;
     private static final double kI = 0.0;
     private static final double kD = 0.0;
-    private static final double kTURN_POWER = 0.3;
+    private static final double kTURN_POWER = 0.6;
     private static final double kFrictionFeedforward = 0.9 / 12;
 
     private Drive mDrive;
     private ITargetDataProvider mCamera;
     private IThrottleProvider mThrottleProvider;
-    private PIDController mPID = new PIDController(kP, kI, kD);
+    private PIDController mPID = new PIDController(SystemSettings.kTargetLockPIDGains, SystemSettings.kControlLoopPeriod);
     private ETrackingType mTrackingType;
 
     private double mAllowableError, mPreviousTime, mOutput = 0.0;
@@ -53,6 +53,7 @@ public class TargetLock implements ICommand {
 
     @Override
     public void init(double pNow) {
+        System.out.println("++++++++++++++++++++++++++TARGET LOCKING++++++++++++++++++++++++++++++++++++");
         mPID.setOutputRange(kMIN_POWER, kMAX_POWER);
         mPID.setInputRange(kMIN_INPUT, kMAX_INPUT);
         mPID.setSetpoint(0);

@@ -28,7 +28,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private ILog mLog = Logger.createLog(DriverInput.class);
 
     protected final Drive mDrive;
-    protected final HatchFlower hatchFlower;
+    protected final HatchFlower mHatchFlower;
     protected final Superstructure mSuperstructure;
 
     private boolean mDriverStartedCommands;
@@ -42,9 +42,10 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     private Limelight mLimelight;
 
-    public DriverInput(Drive pDrive, Limelight pLimelight, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
+    public DriverInput(Drive pDrive, Limelight pLimelight, HatchFlower pHatchFlower ,Superstructure pSuperstructure, Data pData, boolean pSimulated) {
         this.mDrive = pDrive;
         this.mLimelight = pLimelight;
+        this.mHatchFlower = pHatchFlower;
         this.mSuperstructure = pSuperstructure;
         this.mData = pData;
         this.mDriverInputCodex = mData.driverinput;
@@ -57,8 +58,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Limelight pLimelight, Superstructure pSuperstructure, Data pData) {
-        this(pDrivetrain, pLimelight, pSuperstructure, pData, false);
+    public DriverInput(Drive pDrivetrain, Limelight pLimelight, HatchFlower pHatchFlower, Superstructure pSuperstructure, Data pData) {
+        this(pDrivetrain, pLimelight, pHatchFlower, pSuperstructure, pData, false);
     }
 
     @Override
@@ -109,10 +110,10 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     private void updateHatchFlower() {
         if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_CAPTURE_BTN)) {
-            hatchFlower.captureHatch();
+            mHatchFlower.captureHatch();
         }
         else if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_PUSH_BTN)) {
-            hatchFlower.pushHatch();
+            mHatchFlower.pushHatch();
         }
     }
 
@@ -163,7 +164,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         driveMessage.setNeutralMode(NeutralMode.Brake);
         driveMessage.setControlMode(ControlMode.PercentOutput);
 
-        driveTrain.setDriveMessage(driveMessage);
+        mDrive.setDriveMessage(driveMessage);
 
     }
 
