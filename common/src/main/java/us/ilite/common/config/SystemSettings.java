@@ -40,9 +40,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Encoders are on the rear Talons, so ID's are temporarily flipped around
     public static  int kDriveLeftMasterTalonId = 1;
-    public static  int kDriveLeftRearTalonId = 3;
+    public static int kDriveLeftMiddleTalonId = 3;
+    public static  int kDriveLeftRearTalonId = 5;
     public static  int kDriveRightMasterTalonId = 2;
-    public static  int kDriveRightRearTalonId = 4;
+    public static int kDriveRightMiddleTalonId = 4;
+    public static  int kDriveRightRearTalonId = 6;
 
     public static int kPigeonId = 3;
 
@@ -54,7 +56,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static double kDriveClosedLoopVoltageRampRate = 0.0;
     public static double kDriveOpenLoopVoltageRampRate = 0.1;
-    public static int kDriveCurrentLimitAmps = 80;
+    public static int kDriveCurrentLimitAmps = 40;
+    public static int kDriveCurrentLimitTriggerDurationMs = 100;
     public static double kDriveWheelDiameterInches = 6.0;
     public static double  DRIVETRAIN_WHEEL_DIAMETER_FEET = kDriveWheelDiameterInches / 12.0;
     public static double kDriveWheelCircumference = kDriveWheelDiameterInches * Math.PI;
@@ -65,12 +68,14 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = kDriveEffectiveWheelbase * Math.PI;
     public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360.0;
     public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / kDriveWheelDiameterInches;
+    public static double kDriveCollisionThreshold = 0.0;
 
     // =============================================================================
     // Input Constants
     // =============================================================================
     public static double kSnailModePercentThrottleReduction = .5;
     public static double kSnailModePercentRotateReduction = .4;
+    public static double kDriverInputTurnMaxMagnitude = 0.5;
     public static double  INPUT_DEADBAND_F310_JOYSTICK = 0.05;
     public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
     public static int     JOYSTICK_PORT_DRIVER = 0;
@@ -107,9 +112,9 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static int kDriveVelocityTolerance = 0;
     public static int kDriveVelocityLoopSlot = 0;
-    public static double kDriveVelocity_kP = 1.0;
+    public static double kDriveVelocity_kP = 0.5;
     public static double kDriveVelocity_kI = 0.0;
-    public static double kDriveVelocity_kD = 10.0;
+    public static double kDriveVelocity_kD = 0.0;
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static int ULTRASONIC_PORT = 2;
@@ -178,7 +183,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
         }
 
         /**
-         * @return the heightfE
+         * @return the height
          */
         public double getHeight() {
             return height;
@@ -192,41 +197,56 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     }
 
+    // =============================================================================
+    // Hatch Flower constants
+    // =============================================================================
+    public static double kHatchFlowerSolenoidReleaseTimeSec = 0.250;
+    public static double kHatchFlowerPushDurationSec = 0.250;
+
+    // kHatchFlowerGrabToPushTransitionTimeSec is the time between releasing the 
+    // grab solenoid and engaging the push solenoid.
+    public static double kHatchFlowerGrabToPushTransitionTimeSec = 0.250;
+
 
     // =============================================================================
     // 2019 Module Addresses
     // =============================================================================
-    public static int kCargoSpitSPXAddress = -1;
+    public static int kCargoSpitLeftSPXAddress = 13;
+    public static int kCargoSpitRightSPXAddress = 14;
     public static double kCargoSpitSPXCurrentLimit = -1.0;
 
-    public static int kElevatorNEOAddress = -1;
+    public static int kElevatorNEOAddress = -15;
+    // TO-DO: Elevator encoder address?
     public static int kElevatorNEOEncoderAddress = -1;
     // public static int kElevatorRedundantEncoderAddress = -1;
 
-    public static int kFourBarNEO1Address = -1;
-    public static int kFourBarNEO2Address = -1;
-    public static int kFourBarDoubleSolenoidForwardAddress = 1; // TEMPORARY!
-    public static int kFourBarDoubleSolenoidReverseAddress = 2; // TEMPORARY!
+    public static int kFourBarNEO1Address = 9;
+    public static int kFourBarNEO2Address = 10;
+    // TO-DO: label solenoid as forward/reverse in spreadsheet
+    public static int kFourBarDoubleSolenoidForwardAddress = 0;
+    public static int kFourBarDoubleSolenoidReverseAddress = 1;
     public static int kFourBarTBDSensorAddress = -1;
 
-    public static int kHatchFlowerOpenCloseSolenoidAddress = 3; // TEMPORARY!
-    public static int kHatchFlowerExtensionSolenoidAddress = 4; // TEMPORARY!
+    public static int kHatchFlowerOpenCloseSolenoidAddress = 5;
+    public static int kHatchFlowerExtensionSolenoidAddress = 6;
 
-    public static int kIntakeSPX1Address = -1;
-    public static int kIntakeSPX2Address = -1;
+    public static int kHatchIntakeSPXAddress = 11;
+    public static int kCargoIntakeSPXLowerAddress = 12;
+    // TO-DO DIO spreadsheet empty
     public static int kIntakeBeamBreakAddress = -1;
 
-    public static int kIntakeWristSRXAddress = -1;
+    public static int kIntakeWristSRXAddress = 16;
+    // TO-DO Writs encoder addresses?
     public static int kIntakeWristEncoderA_Address = -1;
     public static int kIntakeWristEncoderB_Address = -1;
     public static double kIntakeWristCurrentLimit = -1.0;
 
-    public static int kDriveTrainRightSRXAddress = -1;
-    public static int kDriveTrainRightSPX1Address = -1;
-    public static int kDriveTrainRightSPX2Address = -1;
-    public static int kDriveTrainLeftSRXAddress = -1;
-    public static int kDriveTrainLeftSPX1Address = -1;
-    public static int kDriveTrainLeftSPX2Address = -1;
+    public static int kDriveTrainRightSRX1Address = 2;
+    public static int kDriveTrainRightSPX2Address = 4;
+    public static int kDriveTrainRightSPX3Address = 6;
+    public static int kDriveTrainLeftSRX1Address = 1;
+    public static int kDriveTrainLeftSPX2Address = 3;
+    public static int kDriveTrainLeftSPX3Address = 5;
 
 
 

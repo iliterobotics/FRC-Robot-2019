@@ -21,6 +21,9 @@ public interface IDriveHardware extends IHardware {
     int getLeftVelTicks();
     int getRightVelTicks();
 
+    double getLeftTarget();
+    double getRightTarget();
+
     double getLeftCurrent();
     double getRightCurrent();
 

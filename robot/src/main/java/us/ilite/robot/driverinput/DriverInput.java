@@ -16,16 +16,19 @@ import us.ilite.common.types.input.ELogitech310;
 import us.ilite.robot.commands.Delay;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
+import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.FourBar;
 import us.ilite.robot.modules.Module;
 import us.ilite.robot.modules.Superstructure;
 
 public class DriverInput extends Module {
 
-    private static final double DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
+    protected static final double 
+    DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
     private ILog mLog = Logger.createLog(DriverInput.class);
 
     protected final Drive driveTrain;
+    protected final HatchFlower hatchFlower;
     protected final Superstructure mSuperstructure;
 
     private FourBar mFourBar;
@@ -35,12 +38,13 @@ public class DriverInput extends Module {
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
 
-    private Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
+    protected Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, FourBar pFourBar, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, FourBar pFourBar, HatchFlower pHatchFlower, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
+        this.hatchFlower = pHatchFlower;
         this.mSuperstructure = pSuperstructure;
         this.mData = pData;
         this.mDriverInputCodex = mData.driverinput;
@@ -54,8 +58,8 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Superstructure pSuperstructure, Data pData, FourBar pFourBar) {
-        this(pDrivetrain, pSuperstructure, pData, pFourBar, false);
+    public DriverInput(Drive pDrivetrain, FourBar pFourBar, HatchFlower pHatchFlower, Superstructure pSuperstructure, Data pData) {
+        this(pDrivetrain, pFourBar, pHatchFlower, pSuperstructure, pData, false);
     }
 
     @Override
@@ -96,6 +100,7 @@ public class DriverInput extends Module {
         // Teleop control
         if (!mSuperstructure.isRunningCommands()) {
             updateDriveTrain();
+            updateHatchFlower();
             updateFourBar();
         } 
 
@@ -107,6 +112,15 @@ public class DriverInput extends Module {
             mFourBar.setDesiredOutput( mData.driverinput.get( ELogitech310.LEFT_Y_AXIS ), false );
         } else {
             mFourBar.handleStopType();
+        }
+    }
+
+    private void updateHatchFlower() {
+        if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_CAPTURE_BTN)) {
+            hatchFlower.captureHatch();
+        }
+        else if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_PUSH_BTN)) {
+            hatchFlower.pushHatch();
         }
     }
 
@@ -133,6 +147,37 @@ public class DriverInput extends Module {
 
             driveTrain.setDriveMessage(driveMessage);
         }
+    }
+
+    private void updateSplitTriggerAxisFlip() {
+
+        double rotate = mDriverInputCodex.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
+        double throttle = -mDriverInputCodex.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
+
+        if(mDriverInputCodex.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.3) {
+            rotate = rotate;
+            throttle = throttle;
+        } else if(mDriverInputCodex.get(ELogitech310.LEFT_TRIGGER_AXIS) > 0.3) {
+            throttle = -throttle;
+            rotate = rotate;
+        }
+
+        rotate = Util.limit(rotate, SystemSettings.kDriverInputTurnMaxMagnitude);
+
+		// throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
+        // rotate = Util.limit(rotate, 0.7);
+
+        // if (mDriverInputCodex.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
+        //     throttle *= SystemSettings.kSnailModePercentThrottleReduction;
+        //     rotate *= SystemSettings.kSnailModePercentRotateReduction;
+        // }
+
+        DriveMessage driveMessage = DriveMessage.fromThrottleAndTurn(throttle, rotate);
+        driveMessage.setNeutralMode(NeutralMode.Brake);
+        driveMessage.setControlMode(ControlMode.PercentOutput);
+
+        driveTrain.setDriveMessage(driveMessage);
+
     }
 
     /**

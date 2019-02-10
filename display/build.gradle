@@ -16,7 +16,7 @@ javafx {
 dependencies {
     compile project(':common')
     compile project(':robot')
-	implementation 'com.github.flybotix:highfrequencyrobots:2019.1.13a'
+	implementation 'com.github.flybotix:highfrequencyrobots:2019.1.26'
 
     compile name: 'jfxrt'
 
