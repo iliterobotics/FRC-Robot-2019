@@ -78,10 +78,11 @@ public class FourBar extends Module {
         }
     }
 
-    @Override
-    public void shutdown(double pNow) {
-        mNeo1.disable();
-        mNeo2.disable();
+    /**
+     * Sets desired state based on current degrees
+     */
+    public void handleUpState() {
+        setDesiredState( EFourBarState.fromDegrees( mAngularPosition ) );
     }
 
     /**
@@ -117,6 +118,17 @@ public class FourBar extends Module {
     }
 
     /**
+     * Holds in place if the current angle 0/not at rest
+     */
+    public void handleStopType() {
+        if ( mAngularPosition != 0 ) {
+            setDesiredState( EFourBarState.HOLD );
+        } else {
+            setDesiredState( EFourBarState.NORMAL );
+        }
+    }
+
+    /**
      * Get the output for gravity compensation at the current angle
      * @return the percent output to compensate for gravity
      */
@@ -131,22 +143,10 @@ public class FourBar extends Module {
         mAngularPosition = ( ( mNeo1Encoder.getPosition() - mPreviousNeo1Rotations / 300 ) + ( mNeo2Encoder.getPosition() - mPreviousNeo2Rotations / 300 ) ) / 2;
     }
 
-    /**
-     * Holds in place if the current angle 0/not at rest
-     */
-    public void handleStopType() {
-        if ( mAngularPosition != 0 ) {
-            setDesiredState( EFourBarState.HOLD );
-        } else {
-            setDesiredState( EFourBarState.NORMAL );
-        }
-    }
-
-    /**
-     * Sets desired state based on current degrees
-     */
-    public void handleUpState() {
-        setDesiredState( EFourBarState.fromDegrees( mAngularPosition ) );
+    @Override
+    public void shutdown(double pNow) {
+        mNeo1.disable();
+        mNeo2.disable();
     }
 
     /**
