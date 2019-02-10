@@ -30,6 +30,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE");
     public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
 
+    // ===========================
+    // System ID's
+    // ================================
+    public static int kCANAddressPCM = 20;
+
     //==============================================================================
     // Logging
     // =============================================================================
@@ -108,6 +113,31 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDrivePosition_kF = 0;
 
     // =============================================================================
+    // Elevator Constants
+    // =============================================================================
+
+    //All these values will be changed once we have a better idea of what the
+    //elevator's properties will be like
+    public static int kTopEncoderTicks = 0;
+
+    public static double kElevatorP = 0.1;
+    public static double kElevatorI = 0; 
+    public static double kElevatorD = 0;
+    public static double kElevatorF = 0;
+    public static double kELevatorControlLoopPeriod = 0.01;
+    // public static int kUpperElevatorEncoderThreshold = 0; //Will be calculated on the regular
+    // public static int kLowerElevatorEncoderThreshold = 0;
+    public static double kElevatorMinPower = -1.0;
+    public static double kElevatorMaxPower = 1.0;
+    public static int kElevatorCurrentLimit = 10;
+
+    // public static int kCansparkMasterId = 0;
+    // public static int kTalonId = 0;
+
+    //This is the value that it was last year. It will most likely change. 
+    public static int kELEVATOR_ENCODER_DEADBAND = 20;
+
+    // =============================================================================
     // Closed-Loop Velocity Constants
     // =============================================================================
     public static int kDriveVelocityTolerance = 0;
@@ -123,6 +153,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Turn-To PID constants
     // =============================================================================
     public static PIDGains kPIDGains = new PIDGains( 0.0, 0.0, 0.0, 0.085 );
+
 
 
     // =============================================================================
