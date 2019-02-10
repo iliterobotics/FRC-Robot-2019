@@ -58,7 +58,7 @@ public class Elevator extends Module {
         this.mD = SystemSettings.kElevatorD;
         this.mF = SystemSettings.kELevatorControlLoopPeriod;
         PIDGains pidGains = new PIDGains(mP, mI, mD);
-        this.mPidController = new PIDController(pidGains, mP);
+        this.mPidController = new PIDController(pidGains, 100, 1500, mP);
         this.mEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
 
         // Create default NEO and set the ramp rate
@@ -94,7 +94,6 @@ public class Elevator extends Module {
         zeroEncoder();
         mCurrentTime = pNow;
         mPidController.reset();
-        mPidController.setInputRange(100, 1500);
     }
 
     public void periodicInput(double pNow) {
