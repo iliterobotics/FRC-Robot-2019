@@ -2,6 +2,11 @@ package us.ilite.display;
 
 
 import com.sun.prism.paint.Gradient;
+import eu.hansolo.fx.charts.CircularPlot;
+import eu.hansolo.fx.charts.CircularPlotBuilder;
+import eu.hansolo.fx.charts.SankeyPlot;
+import eu.hansolo.fx.charts.SankeyPlotBuilder;
+import eu.hansolo.fx.charts.data.PlotItem;
 import eu.hansolo.fx.regulators.FeedbackRegulator;
 import eu.hansolo.fx.regulators.FeedbackRegulatorBuilder;
 import eu.hansolo.medusa.Gauge;
@@ -11,6 +16,7 @@ import eu.hansolo.tilesfx.TileBuilder;
 import eu.hansolo.tilesfx.addons.Indicator;
 import eu.hansolo.tilesfx.skins.BarChartItem;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -23,8 +29,14 @@ import javafx.stage.Stage;
 import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.fontawesome.FontAwesome;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class DriverStation extends Application {
-    private static final double sTILE_SIZE_PX = 400;
+    private static final double sTILE_SIZE_HEIGHT_PX = 350;
+    private static final double sTILE_SIZE_WIDTH_PX = 320;
     private final BarChartItem[] mPDPbarCharItems = new BarChartItem[16];
 
     @Override
@@ -56,13 +68,15 @@ public class DriverStation extends Application {
 //        right.getChildren().add(pdpTile);
 
         root.setLeft(createElevatorPane());
-        root.setCenter(createDriveTrainPane());
+        root.setCenter(createPDPPane());
         root.setRight(right);
 
-        Scene scene = new Scene(root, 1920, 600);
+        Scene scene = new Scene(root, 1920, 700);
         stage.setOnCloseRequest(e -> System.exit(0));
         stage.setScene(scene);
         stage.show();
+        stage.setX(0);
+        stage.setY(0);
     }
 
     private Pane createElevatorPane() {
@@ -87,7 +101,7 @@ public class DriverStation extends Application {
 
         Tile elevatorTile = TileBuilder.create()
                 .title("Elevator Height")
-                .prefSize(sTILE_SIZE_PX, sTILE_SIZE_PX)
+                .prefSize(sTILE_SIZE_WIDTH_PX, sTILE_SIZE_HEIGHT_PX)
                 .skinType(Tile.SkinType.CUSTOM)
                 .graphic(elevatorPosition)
                 .text("Target Position: Cargo 2")
@@ -96,6 +110,49 @@ public class DriverStation extends Application {
                 .build();
 
         VBox left = new VBox(elevatorTile);
+        VBox right = new VBox();
+
+        HBox columns = new HBox(left,right);
+        return columns;
+    }
+
+    private final Map<String, PlotItem> mPlotItems = new HashMap<>();
+
+    private Pane createPDPPane() {
+        mPlotItems.put("Left Drive Train", new PlotItem());
+        mPlotItems.put("Right Drive Train", new PlotItem());
+        mPlotItems.put("Elevator", new PlotItem());
+        mPlotItems.put("4-Bar Climber", new PlotItem());
+        mPlotItems.put("Intake", new PlotItem());
+        mPlotItems.put("Cargo Shooter", new PlotItem());
+        mPlotItems.put("System", new PlotItem());
+
+        PlotItem pdp = new PlotItem("Power Distribution Panel", Color.BLACK);
+        for(PlotItem pi : mPlotItems.values() ) {
+            pdp.addToOutgoing(pi, 30);
+        }
+        mPlotItems.put("Power Distribution Panel", pdp);
+
+
+        for(String k : mPlotItems.keySet()) {
+            mPlotItems.get(k).setName(k);
+            mPlotItems.get(k).setValue(30d);
+        }
+
+        SankeyPlot pdpPlot = SankeyPlotBuilder.create()
+                .items(new ArrayList<>(mPlotItems.values()))
+                .showFlowDirection(true)
+                .prefSize(2*sTILE_SIZE_WIDTH_PX, sTILE_SIZE_HEIGHT_PX)
+                .decimals(0)
+                .build();
+
+        Tile pdpTile = TileBuilder.create()
+                .skinType(Tile.SkinType.CUSTOM)
+                .graphic(pdpPlot)
+                .title("Power System")
+                .build();
+
+        VBox left = new VBox(pdpTile);
         VBox right = new VBox();
 
         HBox columns = new HBox(left,right);
@@ -116,20 +173,21 @@ public class DriverStation extends Application {
                 .title("Turn")
                 .skinType(Tile.SkinType.GAUGE)
                 .fillWithGradient(false)
-                .prefSize(sTILE_SIZE_PX,sTILE_SIZE_PX)
+                .prefSize(sTILE_SIZE_WIDTH_PX,sTILE_SIZE_HEIGHT_PX)
                 .build();
 
         Tile throttle = TileBuilder.create()
                 .title("Throttle")
                 .skinType(Tile.SkinType.CUSTOM)
                 .graphic(throttleGauge)
-                .prefSize(sTILE_SIZE_PX,2*sTILE_SIZE_PX)
+                .prefSize(sTILE_SIZE_WIDTH_PX,sTILE_SIZE_HEIGHT_PX)
                 .build();
 
         VBox left = new VBox(throttle);
         VBox right = new VBox(turn);
 
         HBox columns = new HBox(left,right);
+        columns.setPadding(new Insets(5));
         return columns;
     }
 

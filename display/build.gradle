@@ -4,10 +4,10 @@ apply plugin: 'application'
 apply plugin: 'org.openjfx.javafxplugin'
 //mainClassName = 'eu.hansolo.tilesfxdemo.Main'
 //mainClassName = 'eu.hansolo.tilesfxdemo.MiscDemo'
- mainClassName = 'us.ilite.display.DriverStation'
+// mainClassName = 'us.ilite.display.DriverStation'
 // mainClassName = 'us.ilite.display.Main'
 //mainClassName = 'us.ilite.display.testing.AutonConfigDisplay'
-//mainClassName = 'us.ilite.display.testing.TestingDisplay'
+mainClassName = 'us.ilite.display.testing.TestingDisplay'
 
 apply from: 'plot.gradle'
 
@@ -21,6 +21,7 @@ dependencies {
     compile project(':robot')
 	implementation 'com.github.flybotix:highfrequencyrobots:2019.1.26'
     implementation 'com.github.HanSolo:tilesfx:1.6.5'
+    implementation 'com.github.flybotix:charts:1.0.6.alpha'
 
     compile name: 'jfxrt'
 
