@@ -1,12 +1,17 @@
 package us.ilite.lib.drivers;
 
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
 import com.kauailabs.navx.frc.AHRS;
 
 import com.team254.lib.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SerialPort.Port;
+import us.ilite.common.config.SystemSettings;
 
- public class NavX extends IMU {
-	
+public class NavX extends IMU {
+
+	private static final ILog mLog = Logger.createLog(NavX.class);
+
  	private double initialAngle;
  	private final AHRS iahrs;
   
@@ -16,8 +21,8 @@ import edu.wpi.first.wpilibj.SerialPort.Port;
 	
  	public NavX(Port pPort){
  	  super(kCollisionGains);
- 	  iahrs = new AHRS(pPort, AHRS.SerialDataType.kProcessedData, (byte)200);
- 	  System.out.println("NavX Update Rate: " + iahrs.getActualUpdateRate());
+ 	  iahrs = new AHRS(pPort, AHRS.SerialDataType.kProcessedData, (byte) SystemSettings.kGyroUpdateRate);
+ 	  mLog.info("NavX Update Rate: " + iahrs.getActualUpdateRate());
  	}
 
  	public double getInitialAngle() {
