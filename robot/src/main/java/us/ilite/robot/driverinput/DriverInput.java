@@ -125,8 +125,6 @@ public class DriverInput extends Module {
             rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
             rotate = Util.limit(rotate, 0.7);
 
-            throttle = 0;
-            rotate = 0;
 
             if (mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
                 throttle *= SystemSettings.kSnailModePercentThrottleReduction;

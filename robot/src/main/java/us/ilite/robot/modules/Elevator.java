@@ -114,6 +114,7 @@ public class Elevator extends Module {
         mData.elevator.set( EElevator.DESIRED_POSITION_ABOVE_INITIAL, desiredPositionAboveInitialVal());
         mData.elevator.set( EElevator.DESIRED_POWER, getDesiredPower());
         mData.elevator.set( EElevator.SETTING_POSITION, settingPositionVal());
+        System.out.println(mData.elevator);
     }
 
     public void update(double pNow) {
@@ -129,7 +130,7 @@ public class Elevator extends Module {
         mDesiredPower = calculateDesiredPower(mCurrentState);
         mDesiredPower = Util.limit(mDesiredPower, -0.10d, 0.10d); // 10% of the desired power; Used for testing purposes.
 
-        mMasterElevator.set(Util.limit(mDesiredPower, mMinPower, mMaxPower));
+        mMasterElevator.set(mDesiredPower);
 
         mData.kLoggingTable.putDouble("Current Ticks", (double) getCurrentEncoderTicks());
 
