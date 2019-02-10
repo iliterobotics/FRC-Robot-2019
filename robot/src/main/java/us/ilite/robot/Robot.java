@@ -3,9 +3,9 @@ package us.ilite.robot;
 import java.util.Arrays;
 import java.util.List;
 
+import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexMetadata;
 import com.flybotix.hfr.codex.ICodexTimeProvider;
-
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -18,37 +18,41 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 
-import us.ilite.common.Data;
-import us.ilite.common.lib.control.DriveController;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import us.ilite.common.Data;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+import us.ilite.common.lib.util.PerfTimer;
+import us.ilite.common.types.drive.EDriveData;
 import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.io.Network;
-
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.timing.TimedState;
-import com.team254.lib.trajectory.timing.TimingConstraint;
+import us.ilite.common.lib.control.DriveController;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
-
+import us.ilite.common.types.MatchMetadata;
 import us.ilite.lib.drivers.Clock;
+import us.ilite.robot.commands.CharacterizeDrive;
+import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.TurnToDegree;
+import us.ilite.lib.drivers.GetLocalIP;
+import us.ilite.robot.auto.paths.TestAuto;
+import us.ilite.robot.commands.CommandQueue;
+import us.ilite.robot.commands.TurnToDegree;
+import us.ilite.robot.commands.CharacterizeDrive;
+import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.FourBar;
+import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
-import us.ilite.common.lib.control.DriveController;
 
 public class Robot extends TimedRobot {
     
@@ -70,16 +74,16 @@ public class Robot extends TimedRobot {
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
     private FourBar mFourBar = new FourBar( mData );
+    private HatchFlower mHatchFlower = new HatchFlower();
 
-    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData, mFourBar);
+    private DriverInput mDriverInput = new DriverInput(mDrive, mFourBar, mHatchFlower, mSuperstructure, mData);
     private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
 
-    private CANSparkMax mTestNeo = new CANSparkMax(0, MotorType.kBrushless);
-    private CANEncoder mTestNeoEncoder = mTestNeo.getEncoder();
-    private Joystick mTestJoystick = new Joystick(2);
+    private MatchMetadata mMatchMeta = null;
     
+    private PerfTimer mClockUpdateTimer = new PerfTimer();
 
     @Override
     public void robotInit() {
@@ -106,8 +110,9 @@ public class Robot extends TimedRobot {
 
         TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
         List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(/*new CentripetalAccelerationConstraint(60.0)*/);
-        trajectory = mTrajectoryGenerator.generateTrajectory(false, TestAuto.kPath, kTrajectoryConstraints, 60.0, 80.0, 12.0);
+        trajectory = mTrajectoryGenerator.generateTrajectory(false, TestAuto.kPath, kTrajectoryConstraints, 60.0, 40.0, 6.0);
 
+        mSettings.writeToNetworkTables();
 
         initTimer.stop();
         mLogger.info("Robot initialization finished. Took: ", initTimer.get(), " seconds");
@@ -124,7 +129,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        
+        initMatchMetadata(); // TODO - move this to a DS connection thread
         initTimer.reset();
         initTimer.start();
         mLogger.info("Starting Autonomous Initialization...");
@@ -139,10 +144,8 @@ public class Robot extends TimedRobot {
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
 
-        mCommandQueue.setCommands(
-            new TurnToDegree(mDrive, Rotation2d.fromDegrees(90.0), 2.5, mData), 
-            new TurnToDegree(mDrive, Rotation2d.fromDegrees(-90.0), 2.5, mData));
-        mCommandQueue.init(mClock.getCurrentTime());
+//        mSuperstructure.startCommands(new CharacterizeDrive(mDrive, false, false));
+        mSuperstructure.startCommands(new FollowTrajectory(trajectory, mDrive, true));
 
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");
@@ -156,7 +159,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        mRunningModules.setModules(mDriverInput, mLimelight, mFourBar);
+        initMatchMetadata();
+        mRunningModules.setModules(mDriverInput, mLimelight, mFourBar, mHatchFlower);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
@@ -168,11 +172,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
-        Data.kSmartDashboard.putDouble("Neo Position", mTestNeoEncoder.getPosition());
-        Data.kSmartDashboard.putDouble("Neo Velocity", mTestNeoEncoder.getVelocity());
-        mTestNeo.set(mTestJoystick.getX());
-        
-        mData.sendCodices();
+        // mData.sendCodices();
     }
 
     @Override
@@ -200,6 +200,16 @@ public class Robot extends TimedRobot {
     public void testPeriodic() {
 
         
+    }
+
+    private void initMatchMetadata() {
+        if(mMatchMeta == null) {
+            mMatchMeta = new MatchMetadata();
+            int gid = mMatchMeta.hash;
+            for(Codex c : mData.mLoggedCodexes) {
+                c.meta().setGlobalId(gid);
+            }
+        }
     }
 
     public String toString() {

@@ -104,6 +104,16 @@ public class SimDriveHardware implements IDriveHardware {
         return (int)mRightEncoder.getVelocity();
     }
 
+    @Override
+    public double getLeftTarget() {
+        return 0;
+    }
+
+    @Override
+    public double getRightTarget() {
+        return 0;
+    }
+
     public double getLeftVelInches() {
         return Conversions.ticksPer100msToInchesPerSecond((int)mLeftEncoder.getVelocity());
     }
