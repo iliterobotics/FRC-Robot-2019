@@ -42,7 +42,7 @@ public class DriverInput extends Module {
         this.mOperatorInputCodex = mData.operatorinput;
         if(pSimulated) {
             // Use a different joystick library?
-            
+
         } else {
             this.mDriverJoystick = new Joystick(0);
             this.mOperatorJoystick = new Joystick(1);
@@ -91,7 +91,7 @@ public class DriverInput extends Module {
         // Teleop control
         if (!mSuperstructure.isRunningCommands()) {
             updateDriveTrain();
-            updateAcquistion();
+            updateAcquisition();
             updateScoring();
             updateElevator();
         } 
@@ -122,18 +122,19 @@ public class DriverInput extends Module {
         }
     }
 
-    private void updateAcquistion() {
+    private void updateAcquisition() {
+        if(mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_INTAKE_GROUND_CARGO_AXIS) < -0.5) {
+            mSuperstructure.requestIntaking(Superstructure.EAcquisitionState.GROUND_CARGO);
+        } else if(mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_INTAKE_GROUND_HATCH_AXIS) < -0.5) {
+            mLog.info("GROUND HATCH");
 
-        if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_INTAKE_GROUND_CARGO_AXIS)) {
-            mSuperstructure.setIntaking(Superstructure.EAcquisitionState.GROUND_CARGO);
-        } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_INTAKE_GROUND_HATCH_AXIS)) {
-            mSuperstructure.setIntaking(Superstructure.EAcquisitionState.GROUND_HATCH);
+            mSuperstructure.requestIntaking(Superstructure.EAcquisitionState.GROUND_HATCH);
         }
 
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_HATCH_PUSH)) {
-            mSuperstructure.setScoring(Superstructure.EScoringState.HATCH);
+            mSuperstructure.requestIntaking(Superstructure.EScoringState.HATCH);
         } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_CARGO_SPIT)) {
-            mSuperstructure.setScoring(Superstructure.EScoringState.CARGO);
+            mSuperstructure.requestIntaking(Superstructure.EScoringState.CARGO);
         }
 
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_HATCH_EXTEND)) {

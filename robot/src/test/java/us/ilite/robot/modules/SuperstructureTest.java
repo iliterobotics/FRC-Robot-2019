@@ -8,11 +8,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import us.ilite.TestingUtils;
 import us.ilite.common.Data;
+import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.driverinput.DriverInput;
 
-import static org.mockito.Mockito.spy;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SuperstructureTest {
@@ -39,10 +42,13 @@ public class SuperstructureTest {
         mClock = new Clock().simulated();
         mModuleList = new ModuleList();
         mSuperstructure = spy(new Superstructure(mElevator, mIntake, mHatchFlower, mCargoSpit));
-        mDriverInput = spy(new DriverInput(mDrive, mSuperstructure, mData));
+        mDriverInput = spy(new DriverInput(mDrive, mSuperstructure, mData, true));
 
         mModuleList.setModules(mDriverInput, mSuperstructure);
         mModuleList.modeInit(mClock.getCurrentTime());
+
+        TestingUtils.fillNonButtons(mData.driverinput, 0.0);
+        TestingUtils.fillNonButtons(mData.operatorinput, 0.0);
     }
 
     /**
@@ -50,6 +56,32 @@ public class SuperstructureTest {
      */
     @Test
     public void testHatchHandoff() {
+
+        when(mIntake.hasHatch()).thenReturn(false);
+        when(mElevator.isAtPosition(EElevatorPosition.BOTTOM)).thenReturn(false);
+        updateRobot(3);
+
+        mData.operatorinput.set(DriveTeamInputMap.OPERATOR_INTAKE_GROUND_HATCH_AXIS, -1.0);
+        updateRobot(3);
+
+        assertEquals(Superstructure.EAcquisitionState.GROUND_HATCH, mSuperstructure.getAcquisitionState());
+
+        when(mElevator.isAtPosition(EElevatorPosition.BOTTOM)).thenReturn(false);
+        when(mHatchFlower.isExtended()).thenReturn(true);
+        updateRobot(3);
+
+        assertEquals(Superstructure.EAcquisitionState.GROUND_HATCH, mSuperstructure.getAcquisitionState());
+
+        when(mIntake.hasHatch()).thenReturn(true);
+        when(mElevator.isAtPosition(EElevatorPosition.BOTTOM)).thenReturn(true);
+        updateRobot(3);
+
+        assertEquals(Superstructure.EAcquisitionState.HANDOFF, mSuperstructure.getAcquisitionState());
+
+        when(mHatchFlower.hasHatch()).thenReturn(true);
+        updateRobot(3);
+
+        assertEquals(Superstructure.EAcquisitionState.STOWED, mSuperstructure.getAcquisitionState());
 
     }
 
@@ -59,6 +91,30 @@ public class SuperstructureTest {
     @Test
     public void testCargoHandoff() {
 
+        when(mCargoSpit.hasCargo()).thenReturn(false);
+        when(mElevator.isAtPosition(EElevatorPosition.BOTTOM)).thenReturn(false);
+        updateRobot(3);
+
+        mData.operatorinput.set(DriveTeamInputMap.OPERATOR_INTAKE_GROUND_CARGO_AXIS, -1.0);
+        updateRobot(3);
+
+        assertEquals(Superstructure.EAcquisitionState.GROUND_CARGO, mSuperstructure.getAcquisitionState());
+
+        when(mElevator.isAtPosition(EElevatorPosition.BOTTOM)).thenReturn(true);
+        when(mHatchFlower.isExtended()).thenReturn(false);
+        updateRobot(3);
+
+        assertEquals(Superstructure.EAcquisitionState.GROUND_CARGO, mSuperstructure.getAcquisitionState());
+
+        when(mCargoSpit.hasCargo()).thenReturn(true);
+        updateRobot();
+
+        assertEquals(Superstructure.EAcquisitionState.HANDOFF, mSuperstructure.getAcquisitionState());
+
+        updateRobot(3);
+
+        assertEquals(Superstructure.EAcquisitionState.STOWED, mSuperstructure.getAcquisitionState());
+
     }
 
     /**
@@ -66,6 +122,19 @@ public class SuperstructureTest {
      */
     @Test
     public void testManualHatchGrabberExtend() {
+
+        mData.operatorinput.set(DriveTeamInputMap.OPERATOR_HATCH_EXTEND, 1.0);
+        updateRobot();
+
+        verify(mHatchFlower).setFlowerExtended(true);
+
+        mData.operatorinput.set(DriveTeamInputMap.OPERATOR_INTAKE_GROUND_HATCH_AXIS, 1.0);
+        updateRobot();
+
+        mSuperstructure.mRequestedAcquisitionState = Superstructure.EAcquisitionState.HANDOFF;
+        mSuperstructure.mAcquisitionState =  Superstructure.EAcquisitionState.HANDOFF;
+
+        verify(mHatchFlower, times(2)).setFlowerExtended(true);
 
     }
 
@@ -75,6 +144,15 @@ public class SuperstructureTest {
     @Test
     public void testManualHatchGrabberGrab() {
 
+    }
+
+    private void updateRobot() {
+        mModuleList.update(mClock.getCurrentTime());
+        mClock.cycleEnded();
+    }
+
+    private void updateRobot(int times) {
+        for(int i = 1; i <= times; i++) updateRobot();
     }
 
 }

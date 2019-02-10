@@ -13,8 +13,8 @@ public class Superstructure extends Module {
     private boolean lastRunCommandQueue;
     private boolean runCommandQueue;
 
-    private EAcquisitionState mAcquisitionState = EAcquisitionState.STOWED;
-    private EAcquisitionState mRequestedAcquistionState = EAcquisitionState.STOWED;
+    EAcquisitionState mAcquisitionState = EAcquisitionState.STOWED;
+    EAcquisitionState mRequestedAcquisitionState = EAcquisitionState.STOWED;
     private EScoringState mScoringState = EScoringState.NONE;
     private EScoringState mRequestedScoringState = EScoringState.NONE;
 
@@ -87,20 +87,26 @@ public class Superstructure extends Module {
 
     private void updateRobotState() {
 
+        mLog.info("Starting Current State: ", mAcquisitionState);
+
         handleRequestedRobotState();
         handleCurrentRobotState();
 
-        // If we are handing off we don't want the grabber to collide with the hatch
-        if(mHatchGrabberGrabRequested && mAcquisitionState != EAcquisitionState.HANDOFF) {
-            mHatchFlower.captureHatch();
+        boolean handlingCargo = mAcquisitionState == EAcquisitionState.GROUND_CARGO || mAcquisitionState == EAcquisitionState.LOADING_STATION_CARGO;
+
+        if(mAcquisitionState != EAcquisitionState.HANDOFF && !handlingCargo) {
+            // If we are handing off we don't want the grabber to collide with the hatch
+            if(mHatchGrabberGrabRequested) {
+                mHatchFlower.captureHatch();
+            }
+
+            // No collisions here
+            if(mHatchGrabberExtendRequested) {
+                mHatchFlower.setFlowerExtended(true);
+            }
         }
 
-
-        // No collisions here
-        if(mHatchGrabberExtendRequested) {
-            mHatchFlower.setFlowerExtended(true);
-        }
-
+        mLog.info("Ending Current State: ", mAcquisitionState);
     }
 
     /**
@@ -109,75 +115,19 @@ public class Superstructure extends Module {
      */
     private void handleRequestedRobotState() {
 
-        if(mRequestedAcquistionState != mAcquisitionState) {
-            switch(mRequestedAcquistionState) {
-                case LOADING_STATION_HATCH:
+        // Driver can't command a new state while we are handing off
+        if(mRequestedAcquisitionState != mAcquisitionState && mAcquisitionState != EAcquisitionState.HANDOFF) {
 
-                    // Set elevator to bottom, extend hatch grabber
-                    mElevator.setStatePosition(EElevatorPosition.BOTTOM);
-                    mHatchFlower.setFlowerExtended(true);
+            mLog.info("Switching to new acquisition state: ", mRequestedAcquisitionState, " from state: ", mAcquisitionState);
+            mAcquisitionState = mRequestedAcquisitionState;
 
-                    break;
-                case LOADING_STATION_CARGO:
-                    // TODO Is this even possible?
-                    break;
-                case GROUND_HATCH:
+        } else {
 
-                    // Set elevator to bottom, extend hatch grabber, start intaking
-                    mElevator.setStatePosition(EElevatorPosition.BOTTOM);
-                    mHatchFlower.setFlowerExtended(true);
-                    mIntake.setIntakingHatch();
+            mLog.info("Not switching to acquisition state ", mRequestedAcquisitionState, " from state: ", mAcquisitionState);
 
-                    break;
-                case GROUND_CARGO:
-
-                    // Set elevator to bottom, retract hatch grabber, start intaking with both ground intake and cargo spit
-                    mElevator.setStatePosition(EElevatorPosition.BOTTOM);
-                    mHatchFlower.setFlowerExtended(false); // TODO Check
-                    mIntake.setIntakingCargo();
-                    mCargoSpit.setIntaking();
-
-
-                    break;
-                case HANDOFF:
-
-                    // Set elevator to bottom
-                    mElevator.setStatePosition(EElevatorPosition.BOTTOM);
-
-                    // Tell intake to handoff depending on what we picked up
-                    if(mAcquisitionState == EAcquisitionState.GROUND_HATCH) {
-                        mHatchFlower.setFlowerExtended(true);
-                        mIntake.setHandoffHatch();
-                    } else if(mAcquisitionState == EAcquisitionState.GROUND_CARGO) {
-                        mHatchFlower.setFlowerExtended(false); // TODO Check
-                        mIntake.setHandoffCargo();
-                    }
-
-                    break;
-                case STOWED:
-
-                    // TODO Is there a collision here? mHatchFlower.setFlowerExtended(false);
-                    mIntake.stow();
-
-                    break;
-            }
-
-            // Update state to requested
-            mAcquisitionState = mRequestedAcquistionState;
         }
 
         if(mRequestedScoringState != mScoringState) {
-            switch(mRequestedScoringState) {
-                case HATCH:
-                    break;
-                case CARGO:
-                    break;
-                case CLIMB:
-                    break;
-                case NONE:
-                    break;
-            }
-
             mScoringState = mRequestedScoringState;
         }
 
@@ -187,37 +137,81 @@ public class Superstructure extends Module {
      * Checks if the current state is finished and we can move to the next state.
      */
     private void handleCurrentRobotState() {
+
+        mLog.info("Updating state: ", mAcquisitionState);
         switch(mAcquisitionState) {
             case LOADING_STATION_HATCH:
+
+                // Set elevator to bottom, extend hatch grabber
+                mElevator.setStatePosition(EElevatorPosition.BOTTOM);
+                mHatchFlower.setFlowerExtended(true);
                 // Any further automation is handled directly by hatch grabber
+
                 break;
             case LOADING_STATION_CARGO:
-                // TODO
+                // TODO Is this even possible?
                 break;
             case GROUND_HATCH:
 
-                if(mElevator.isAtPosition(EElevatorPosition.BOTTOM) && mHatchFlower.isExtended() && mIntake.hasHatch()) {
-                    mRequestedAcquistionState = EAcquisitionState.HANDOFF;
+                // Set elevator to bottom, extend hatch grabber, start intaking
+                mElevator.setStatePosition(EElevatorPosition.BOTTOM);
+                mHatchFlower.setFlowerExtended(true);
+
+                if(mHatchFlower.isExtended() && mIntake.hasHatch() && mElevator.isAtPosition(EElevatorPosition.BOTTOM)) {
+                    mAcquisitionState = EAcquisitionState.HANDOFF;
                 }
 
                 break;
             case GROUND_CARGO:
 
+                // Set elevator to bottom, retract hatch grabber, start intaking with both ground intake and cargo spit
+                mElevator.setStatePosition(EElevatorPosition.BOTTOM);
+                mHatchFlower.setFlowerExtended(false); // TODO Check
+
+                if(!mHatchFlower.isExtended() && mElevator.isAtPosition(EElevatorPosition.BOTTOM)) {
+                    mIntake.setIntakingCargo();
+                    mCargoSpit.setIntaking();
+                }
+
                 if(mCargoSpit.hasCargo()) {
-                    mRequestedAcquistionState = EAcquisitionState.HANDOFF;
+                    mAcquisitionState = EAcquisitionState.HANDOFF;
                 }
 
                 break;
             case HANDOFF:
 
+                // Set elevator to bottom
+                mElevator.setStatePosition(EElevatorPosition.BOTTOM);
+
+                // Tell intake to handoff depending on what we picked up
+                if (mAcquisitionState == EAcquisitionState.GROUND_HATCH) {
+                    mHatchFlower.setFlowerExtended(true);
+
+                    if(mHatchFlower.isExtended()) {
+                        mIntake.setHandoffHatch();
+                    }
+
+                } else if (mAcquisitionState == EAcquisitionState.GROUND_CARGO) {
+                    mHatchFlower.setFlowerExtended(false); // TODO Check
+
+                    if(!mHatchFlower.isExtended()) {
+                        mIntake.setHandoffCargo();
+                    }
+
+                } else {
+                    mLog.error("Invalid handoff state");
+                }
+
                 // TODO Solve any interference?
                 if(mHatchFlower.hasHatch() || mCargoSpit.hasCargo()) {
-                    mRequestedAcquistionState = EAcquisitionState.STOWED;
+                    mAcquisitionState = EAcquisitionState.STOWED;
                 }
 
                 break;
             case STOWED:
 
+                // TODO Is there a collision here? mHatchFlower.setFlowerExtended(false);
+                mIntake.stow();
                 // Do nothing
 
                 break;
@@ -230,7 +224,11 @@ public class Superstructure extends Module {
         switch(mScoringState) {
             case CARGO:
 
-                mCargoSpit.setOuttaking();
+                mHatchFlower.setFlowerExtended(false);
+
+                if(!mHatchFlower.isExtended()) {
+                    mCargoSpit.setOuttaking();
+                }
 
                 break;
             case HATCH:
@@ -297,12 +295,12 @@ public class Superstructure extends Module {
         mDesiredCommandQueue.clear();
     }
 
-    public void setIntaking(EAcquisitionState pAcquisitionState) {
-        mAcquisitionState = pAcquisitionState;
+    public void requestIntaking(EAcquisitionState pAcquisitionState) {
+        mRequestedAcquisitionState = pAcquisitionState;
     }
 
-    public void setScoring(EScoringState pScoringState) {
-        mScoringState = pScoringState;
+    public void requestIntaking(EScoringState pScoringState) {
+        mRequestedScoringState = pScoringState;
     }
 
     public void extendHatchGrabber(boolean pHatchGrabberExtendRequested) {
@@ -313,6 +311,26 @@ public class Superstructure extends Module {
         mHatchGrabberGrabRequested = pHatchGrabberGrabRequested;
     }
 
+    private void setAcquisitionState(EAcquisitionState pAcquisitionState) {
+        // Update state to requested
+        mAcquisitionState = mRequestedAcquisitionState;
+        mLog.info("Changed superstructure for current state ", mAcquisitionState, " to requested state ", mRequestedAcquisitionState);
+    }
 
+    public EAcquisitionState getAcquisitionState() {
+        return mAcquisitionState;
+    }
+
+    public EAcquisitionState getRequestedAcquisitionState() {
+        return mRequestedAcquisitionState;
+    }
+
+    public EScoringState getScoringState() {
+        return mScoringState;
+    }
+
+    public EScoringState getRequestedScoringState() {
+        return mRequestedScoringState;
+    }
 
 }
