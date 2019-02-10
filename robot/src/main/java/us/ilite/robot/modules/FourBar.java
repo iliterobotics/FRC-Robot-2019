@@ -118,7 +118,7 @@ public class FourBar extends Module {
     }
 
     /**
-     * Holds in place if the current angle 0/not at rest
+     * Holds in place
      */
     public void handleStopType() {
         if ( mAngularPosition != 0 ) {
