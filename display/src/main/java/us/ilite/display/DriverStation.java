@@ -1,9 +1,6 @@
 package us.ilite.display;
 
 
-import com.sun.prism.paint.Gradient;
-import eu.hansolo.fx.charts.CircularPlot;
-import eu.hansolo.fx.charts.CircularPlotBuilder;
 import eu.hansolo.fx.charts.SankeyPlot;
 import eu.hansolo.fx.charts.SankeyPlotBuilder;
 import eu.hansolo.fx.charts.data.PlotItem;
@@ -14,70 +11,62 @@ import eu.hansolo.medusa.GaugeBuilder;
 import eu.hansolo.tilesfx.Tile;
 import eu.hansolo.tilesfx.TileBuilder;
 import eu.hansolo.tilesfx.addons.Indicator;
-import eu.hansolo.tilesfx.skins.BarChartItem;
 import javafx.application.Application;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import org.kordamp.ikonli.Ikon;
 import org.kordamp.ikonli.fontawesome.FontAwesome;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class DriverStation extends Application {
-    private static final double sTILE_SIZE_HEIGHT_PX = 350;
-    private static final double sTILE_SIZE_WIDTH_PX = 320;
-    private final BarChartItem[] mPDPbarCharItems = new BarChartItem[16];
+    private static final double sSCREEN_WIDTH = 1920;
+    private static final double sSCREEN_HEIGHT = 750;
+    private static final double sBUTTON_BAR_HEIGHT_PX = 80;
+    private static final double sTILE_SIZE_HEIGHT_PX = (sSCREEN_HEIGHT-sBUTTON_BAR_HEIGHT_PX)/2;
+    private static final double sTILE_SIZE_WIDTH_PX = sSCREEN_WIDTH/6d;
 
     @Override
     public void start(Stage stage) throws Exception {
 
         BorderPane root = new BorderPane();
 
-        HBox[] hb = new HBox[8];
-        for(int i = 0 ; i < hb.length; i++) {
-            hb[i] = createIndicatorRow("PCM " + i, 100);
-        }
-
-        for(int i = 0; i < mPDPbarCharItems.length; i++) {
-            mPDPbarCharItems[i] = new BarChartItem("PDP" + i, 0, Tile.GRAY);
-        }
-        Tile pdpTile = TileBuilder.create()
-                .skinType(Tile.SkinType.BAR_CHART)
-                .title("Power Distribution Panel")
-                .barChartItems(mPDPbarCharItems)
-
-                .decimals(0)
-                .build();
-
-
-
-
-
-        VBox right = new VBox(pdpTile);
-//        right.getChildren().add(pdpTile);
-
         root.setLeft(createElevatorPane());
         root.setCenter(createPDPPane());
-        root.setRight(right);
 
-        Scene scene = new Scene(root, 1920, 700);
-        stage.setOnCloseRequest(e -> System.exit(0));
+        Scene scene = new Scene(root, sSCREEN_WIDTH, sSCREEN_HEIGHT);
+        stage.setOnCloseRequest(e -> {
+            IliteCodexReceiver.getInstance().disconnect();
+            System.exit(0);
+        });
         stage.setScene(scene);
         stage.show();
         stage.setX(0);
         stage.setY(0);
     }
+
+    private Stop[] mElevatorGradient = new Stop[] {
+            new Stop(0.0, Color.BLACK),
+            new Stop(29d/81d, Color.BLACK),
+            new Stop(32d/81d, Color.LIMEGREEN),
+            new Stop(35d/81d, Color.BLACK),
+            new Stop(1.0, Color.BLACK)
+    };
+
 
     private Pane createElevatorPane() {
         FeedbackRegulator elevatorPosition = FeedbackRegulatorBuilder.create()
@@ -87,13 +76,7 @@ public class DriverStation extends Application {
                 .textColor(Color.RED)
                 .icon(FontAwesome.EXCLAMATION_TRIANGLE)
                 .iconColor(Color.RED)
-                .gradientStops(
-                        new Stop(0.0, Color.BLACK),
-                        new Stop(29d/81d, Color.BLACK),
-                        new Stop(32d/81d, Color.LIMEGREEN),
-                        new Stop(35d/81d, Color.BLACK),
-                        new Stop(1.0, Color.BLACK)
-                )
+                .gradientStops(mElevatorGradient)
                 .currentValue(31)
                 .targetValue(51)
                 .unit("")
@@ -142,14 +125,16 @@ public class DriverStation extends Application {
         SankeyPlot pdpPlot = SankeyPlotBuilder.create()
                 .items(new ArrayList<>(mPlotItems.values()))
                 .showFlowDirection(true)
-                .prefSize(2*sTILE_SIZE_WIDTH_PX, sTILE_SIZE_HEIGHT_PX)
+                .prefSize(2*sTILE_SIZE_WIDTH_PX, 2*sTILE_SIZE_HEIGHT_PX)
                 .decimals(0)
+                .useItemColor(true)
                 .build();
 
         Tile pdpTile = TileBuilder.create()
                 .skinType(Tile.SkinType.CUSTOM)
                 .graphic(pdpPlot)
                 .title("Power System")
+                .prefSize(sTILE_SIZE_WIDTH_PX*2, sTILE_SIZE_HEIGHT_PX)
                 .build();
 
         VBox left = new VBox(pdpTile);
@@ -187,6 +172,8 @@ public class DriverStation extends Application {
         VBox right = new VBox(turn);
 
         HBox columns = new HBox(left,right);
+        columns.setPrefHeight(2*sTILE_SIZE_HEIGHT_PX);
+        columns.setPrefWidth(4*sTILE_SIZE_WIDTH_PX);
         columns.setPadding(new Insets(5));
         return columns;
     }
@@ -208,6 +195,10 @@ public class DriverStation extends Application {
     }
 
     public static void main(String[] pArgs) {
+        // Start the receivers before we start the display
+        IliteCodexReceiver.getInstance();
+
+        // Start the display
         launch(pArgs);
     }
 }
