@@ -3,9 +3,9 @@ package us.ilite.robot;
 import java.util.Arrays;
 import java.util.List;
 
+import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexMetadata;
 import com.flybotix.hfr.codex.ICodexTimeProvider;
-
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import us.ilite.common.Data;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.lib.util.PerfTimer;
 import us.ilite.common.types.drive.EDriveData;
@@ -32,14 +33,16 @@ import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.io.Network;
-
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.timing.TimedState;
-import com.team254.lib.trajectory.timing.TimingConstraint;
+import us.ilite.common.lib.control.DriveController;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
-
+import us.ilite.common.types.MatchMetadata;
 import us.ilite.lib.drivers.Clock;
+import us.ilite.robot.commands.CharacterizeDrive;
+import us.ilite.robot.commands.CommandQueue;
+import us.ilite.robot.auto.paths.TestAuto;
+import us.ilite.robot.commands.CommandQueue;
+import us.ilite.robot.commands.TurnToDegree;
+import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.TurnToDegree;
@@ -53,7 +56,6 @@ import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
-import us.ilite.common.lib.control.DriveController;
 
 public class Robot extends TimedRobot {
     
@@ -81,6 +83,8 @@ public class Robot extends TimedRobot {
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
 
+    private MatchMetadata mMatchMeta = null;
+    
     private PerfTimer mClockUpdateTimer = new PerfTimer();
 
     @Override
@@ -129,7 +133,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        
+        initMatchMetadata(); // TODO - move this to a DS connection thread
         initTimer.reset();
         initTimer.start();
         mLogger.info("Starting Autonomous Initialization...");
@@ -159,6 +163,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        initMatchMetadata();
         mRunningModules.setModules(mDriverInput, mLimelight, mHatchFlower);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
@@ -171,7 +176,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
-//        mData.sendCodices();
+        // mData.sendCodices();
     }
 
     @Override
@@ -199,6 +204,16 @@ public class Robot extends TimedRobot {
     public void testPeriodic() {
 
         
+    }
+
+    private void initMatchMetadata() {
+        if(mMatchMeta == null) {
+            mMatchMeta = new MatchMetadata();
+            int gid = mMatchMeta.hash;
+            for(Codex c : mData.mLoggedCodexes) {
+                c.meta().setGlobalId(gid);
+            }
+        }
     }
 
     public String toString() {

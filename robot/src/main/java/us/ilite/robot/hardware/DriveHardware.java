@@ -8,7 +8,9 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
+import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.flybotix.hfr.util.log.ILog;
@@ -40,30 +42,40 @@ public class DriveHardware implements IDriveHardware {
 
     private final IMU mGyro;
 
-    private final TalonSRX mLeftMaster, mRightMaster, mLeftRear, mRightRear;
+    private final TalonSRX mLeftMaster, mRightMaster;
+    private final VictorSPX mLeftMiddle, mRightMiddle, mLeftRear, mRightRear;
     private ControlMode mLeftControlMode, mRightControlMode;
     private NeutralMode mLeftNeutralMode, mRightNeutralMode;
 
     public DriveHardware() {
-//        mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kDriveCollisionThreshold);
-        mGyro = new NavX(SerialPort.Port.kMXP);
+        mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kDriveCollisionThreshold);
+        // mGyro = new NavX(SerialPort.Port.kMXP);
 
         mLeftMaster = TalonSRXFactory.createDefaultTalon(SystemSettings.kDriveLeftMasterTalonId);
-        mLeftRear = TalonSRXFactory.createPermanentSlaveTalon(SystemSettings.kDriveLeftRearTalonId, SystemSettings.kDriveLeftMasterTalonId);
+        mLeftMiddle = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveLeftMiddleTalonId, mLeftMaster);
+        mLeftRear = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveLeftRearTalonId, mLeftMaster);
 
         mRightMaster = TalonSRXFactory.createDefaultTalon(SystemSettings.kDriveRightMasterTalonId);
-        mRightRear = TalonSRXFactory.createPermanentSlaveTalon(SystemSettings.kDriveRightRearTalonId, SystemSettings.kDriveRightMasterTalonId);
+        mRightMiddle = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveRightMiddleTalonId, mRightMaster);
+        mRightRear = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveRightRearTalonId, mRightMaster);
 
         configureMaster(mLeftMaster, true);
+        configureMotor(mLeftMaster);
+        configureMotor(mLeftMiddle);
+        configureMotor(mLeftRear);
+
         configureMaster(mRightMaster, false);
-        configureMaster(mLeftRear, true);
-        configureMaster(mRightRear, false);
+        configureMotor(mRightMaster);
+        configureMotor(mRightMiddle);
+        configureMotor(mRightRear);
 
-        mLeftMaster.setInverted(false);
-        mLeftRear.setInverted(false);
+        mLeftMaster.setInverted(true);
+        mLeftMiddle.setInverted(true);
+        mLeftRear.setInverted(true);
 
-        mRightMaster.setInverted(true);
-        mRightRear.setInverted(true);
+        mRightMaster.setInverted(false);
+        mRightMiddle.setInverted(false);
+        mRightRear.setInverted(false);
 
         mLeftMaster.setSensorPhase(false);
         mRightMaster.setSensorPhase(false);
@@ -92,8 +104,8 @@ public class DriveHardware implements IDriveHardware {
         // Bypass state machine in set() and configure directly
         configTalonForPercentOutput(mLeftMaster);
         configTalonForPercentOutput(mRightMaster);
-        setNeutralMode(NeutralMode.Brake, mRightMaster, mRightRear);
-        setNeutralMode(NeutralMode.Brake, mLeftMaster, mLeftRear);
+        setNeutralMode(NeutralMode.Brake, mLeftMaster, mLeftMiddle, mLeftRear);
+        setNeutralMode(NeutralMode.Brake, mRightMaster, mRightMiddle, mRightRear);
 
         mLeftMaster.set(ControlMode.PercentOutput, 0.0);
         mRightMaster.set(ControlMode.PercentOutput, 0.0);
@@ -104,12 +116,11 @@ public class DriveHardware implements IDriveHardware {
         mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pDriveMessage.leftControlMode);
         mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pDriveMessage.rightControlMode);
 
-        mLeftNeutralMode = configForNeutralMode(mLeftNeutralMode, pDriveMessage.leftNeutralMode, mLeftMaster, mLeftRear);
-        mRightNeutralMode = configForNeutralMode(mRightNeutralMode, pDriveMessage.rightNeutralMode, mRightMaster, mRightRear);
+        mLeftNeutralMode = configForNeutralMode(mLeftNeutralMode, pDriveMessage.leftNeutralMode, mLeftMaster, mLeftMiddle, mLeftRear);
+        mRightNeutralMode = configForNeutralMode(mRightNeutralMode, pDriveMessage.rightNeutralMode, mRightMaster, mRightMiddle, mRightRear);
 
         mLeftMaster.set(mLeftControlMode, pDriveMessage.leftOutput, pDriveMessage.leftDemandType, pDriveMessage.leftDemand);
         mRightMaster.set(mRightControlMode, pDriveMessage.rightOutput, pDriveMessage.rightDemandType, pDriveMessage.rightDemand);
-
     }
 
     /**
@@ -152,7 +163,7 @@ public class DriveHardware implements IDriveHardware {
         return controlMode;
     }
 
-    private NeutralMode configForNeutralMode(NeutralMode pCurrentNeutralMode, NeutralMode pDesiredNeutralMode, TalonSRX ... pTalons) {
+    private NeutralMode configForNeutralMode(NeutralMode pCurrentNeutralMode, NeutralMode pDesiredNeutralMode, BaseMotorController ... pTalons) {
         if(pCurrentNeutralMode != pDesiredNeutralMode) {
             setNeutralMode(pDesiredNeutralMode, pTalons);
         }
@@ -160,8 +171,8 @@ public class DriveHardware implements IDriveHardware {
         return pDesiredNeutralMode;
     }
 
-    private void setNeutralMode(NeutralMode pNeutralMode, TalonSRX ... pTalons) {
-        for(TalonSRX talon : pTalons) {
+    private void setNeutralMode(NeutralMode pNeutralMode, BaseMotorController ... pTalons) {
+        for(BaseMotorController talon : pTalons) {
             mLogger.info("Setting neutral mode to: ", pNeutralMode.name(), " for Talon ID ", talon.getDeviceID());
             talon.setNeutralMode(pNeutralMode);
         }
@@ -174,18 +185,25 @@ public class DriveHardware implements IDriveHardware {
         if (sensorPresent != ErrorCode.OK) {
             mLogger.error("Could not detect " + (pIsLeft ? "left" : "right") + " encoder: " + sensorPresent);
         }
-        talon.enableVoltageCompensation(true);
-        talon.configVoltageCompSaturation(12.0, SystemSettings.kLongCANTimeoutMs);
-        talon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, SystemSettings.kLongCANTimeoutMs);
-        talon.configVelocityMeasurementWindow(64, SystemSettings.kLongCANTimeoutMs);
-        // talon.configOpenloopRamp(SystemSettings.kDriveOpenLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
-        // talon.configClosedloopRamp(SystemSettings.kDriveClosedLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
-        // talon.configContinuousCurrentLimit(SystemSettings.kDriveCurrentLimitAmps, SystemSettings.kLongCANTimeoutMs);
-        talon.configNeutralDeadband(0.04, 0);
+
+        talon.enableCurrentLimit(true);
+        talon.configContinuousCurrentLimit(SystemSettings.kDriveCurrentLimitAmps, SystemSettings.kLongCANTimeoutMs);
+        talon.configPeakCurrentLimit(SystemSettings.kDriveCurrentLimitAmps, SystemSettings.kLongCANTimeoutMs);
+        talon.configPeakCurrentDuration(SystemSettings.kDriveCurrentLimitTriggerDurationMs, SystemSettings.kLongCANTimeoutMs);
+    }
+
+    private void configureMotor(BaseMotorController motorController) {
+        motorController.enableVoltageCompensation(true);
+        motorController.configVoltageCompSaturation(12.0, SystemSettings.kLongCANTimeoutMs);
+        motorController.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, SystemSettings.kLongCANTimeoutMs);
+        motorController.configVelocityMeasurementWindow(64, SystemSettings.kLongCANTimeoutMs);
+        motorController.configOpenloopRamp(SystemSettings.kDriveOpenLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
+        motorController.configClosedloopRamp(SystemSettings.kDriveClosedLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
+        // motorController.configNeutralDeadband(0.04, 0);
     }
 
     private void configTalonForPercentOutput(TalonSRX talon) {
-        talon.configNeutralDeadband(0.04, 0);
+        // talon.configNeutralDeadband(0.04, 0);
     }
 
     private void configTalonForPosition(TalonSRX talon) {
@@ -281,25 +299,27 @@ public class DriveHardware implements IDriveHardware {
     @Override
     public boolean checkHardware() {
 
-        CheckerConfigBuilder checkerConfigBuilder = new CheckerConfigBuilder();
-        checkerConfigBuilder.setCurrentFloor(2);
-        checkerConfigBuilder.setCurrentEpsilon(2.0);
-        checkerConfigBuilder.setRPMFloor(1500);
-        checkerConfigBuilder.setRPMEpsilon(250);
-        checkerConfigBuilder.setRPMSupplier(()->mLeftMaster.getSelectedSensorVelocity(0));
+        // TODO Implement testing for VictorSPX
+        // CheckerConfigBuilder checkerConfigBuilder = new CheckerConfigBuilder();
+        // checkerConfigBuilder.setCurrentFloor(2);
+        // checkerConfigBuilder.setCurrentEpsilon(2.0);
+        // checkerConfigBuilder.setRPMFloor(1500);
+        // checkerConfigBuilder.setRPMEpsilon(250);
+        // checkerConfigBuilder.setRPMSupplier(()->mLeftMaster.getSelectedSensorVelocity(0));
 
-        boolean leftSide = TalonSRXChecker.CheckTalons(Drive.class,
-                Arrays.asList(new TalonSRXChecker.TalonSRXConfig("left_master", mLeftMaster),
-                    new TalonSRXChecker.TalonSRXConfig("left_slave", mLeftRear)),
-                checkerConfigBuilder.build());
+        // boolean leftSide = TalonSRXChecker.CheckTalons(Drive.class,
+        //         Arrays.asList(new TalonSRXChecker.TalonSRXConfig("left_master", mLeftMaster),
+        //             new TalonSRXChecker.TalonSRXConfig("left_slave", mLeftRear)),
+        //         checkerConfigBuilder.build());
 
-        checkerConfigBuilder.setRPMSupplier(()->mRightMaster.getSelectedSensorVelocity(0));
+        // checkerConfigBuilder.setRPMSupplier(()->mRightMaster.getSelectedSensorVelocity(0));
         
-        boolean rightSide = TalonSRXChecker.CheckTalons(Drive.class,
-                Arrays.asList(new TalonSRXChecker.TalonSRXConfig("right_master", mRightMaster),
-                        new TalonSRXChecker.TalonSRXConfig("right_slave", mRightRear)), 
-                checkerConfigBuilder.build());
-        return leftSide && rightSide;
+        // boolean rightSide = TalonSRXChecker.CheckTalons(Drive.class,
+        //         Arrays.asList(new TalonSRXChecker.TalonSRXConfig("right_master", mRightMaster),
+        //                 new TalonSRXChecker.TalonSRXConfig("right_slave", mRightRear)), 
+        //         checkerConfigBuilder.build());
+        // return leftSide && rightSide;
+        return true;
     }
 
 }
