@@ -44,7 +44,8 @@ import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.Arm;
-import us.ilite.robot.modules.ArmMotionMagic;
+import us.ilite.robot.modules.BasicArm;
+import us.ilite.robot.modules.MotionMagicArm;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.ModuleList;
@@ -71,8 +72,8 @@ public class Robot extends TimedRobot {
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
     
-    //private Arm mArm = new Arm();
-    private ArmMotionMagic mArm = new ArmMotionMagic();
+    //private Arm mArm = new BasicArm();
+    private Arm mArm = new MotionMagicArm();
     private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData, mArm);
     private Limelight mLimelight = new Limelight();
 

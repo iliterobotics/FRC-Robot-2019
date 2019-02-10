@@ -125,26 +125,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Arm Constants
     // =============================================================================
-    // PID Gains                                        kP,    kI,    kD
-    public static PIDGains kArmPIDGains = new PIDGains( 0.002, 0.001, 0.0 );
-    public static int kArmPositionEncoderTicksPerRotation = 512;
-    public static double kArmMinAngle = 0.0;
-    public static double kArmMaxAngle = 135.0;
-    public static double kArmMaxCurrentVoltRatio = 1; //tune - overcurrent ratio for arm motor
-    public static double kArmMotorOffTimeSec = 0.5; // seconds
-    public static double kArmMaxStallTimeSec = 0.1; // seconds
-    public static double kArmMinMotorStallVoltage = 0.1;
-    public static double kArmPIDOutputMaxLimit = 0.25; // max 1.0
-    public static double kArmPIDOutputMinLimit = -0.25; // min -1.0
-
-    // MotionMagicArm Constants
-    public static double kArmPidP = 20.0;
-    public static double kArmPidI = 0.05;
-    public static double kArmPidD = 0;
-    public static double kArmPidF = 0.1;
-
-    public static int K_ARM_ACCELERATION = 512;
-    public static int K_ARM_CRUISE = 4096;
 
     // Predefined arm  positions
     public enum ArmPosition {
@@ -163,9 +143,35 @@ public class SystemSettings extends NetworkTablesConstantsBase {
         }
     }
 
+    public static int kArmPositionEncoderTicksPerRotation = 512;
+    public static double kArmMinAngle = 0.0;
+    public static double kArmMaxAngle = 135.0;
+    public static double kArmMaxCurrentVoltRatio = 1; //tune - overcurrent ratio for arm motor
+    public static double kArmMotorOffTimeSec = 0.5; // seconds
+    public static double kArmMaxStallTimeSec = 0.1; // seconds
+    public static double kArmMinMotorStallVoltage = 0.1;
+
+
+    //////// BasicArm Constants /////////
+    // PID Gains                                        kP,    kI,    kD
+    public static PIDGains kArmPIDGains = new PIDGains( 0.002, 0.001, 0.0 );
+    public static double kArmPIDOutputMaxLimit = 0.25; // max 1.0
+    public static double kArmPIDOutputMinLimit = -0.25; // min -1.0
+    /////////////////////////////////////
+
+
+    ///// MotionMagicArm Constants //////
+    // PID Gains
+    public static double kArmPidP = 20.0;
+    public static double kArmPidI = 0.05;
+    public static double kArmPidD = 0;
+    public static double kArmPidF = 0.1;
+    public static int K_ARM_ACCELERATION = 512;
+    public static int K_ARM_CRUISE = 4096;
+    /////////////////////////////////////
+
     public static int CTRE_TIMEOUT_INIT = 10;
     public static int CTRE_TIMEOUT_PERIODIC = 0;
-
     // =============================================================================
 
 
