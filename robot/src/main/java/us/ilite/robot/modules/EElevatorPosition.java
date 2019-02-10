@@ -3,9 +3,9 @@ package us.ilite.robot.modules;
 public enum EElevatorPosition {
 
     //TODO find encoder threshold
-    BOTTOM(0d,0),
-    MIDDLE(0d,0),
-    TOP(0d,0);
+    BOTTOM(0.1d,500),
+    MIDDLE(0.1d,1000),
+    TOP(0.1d,1500);
 
     private final double kEncoderThreshold;
     private final double kSetPointPower;

@@ -14,12 +14,8 @@ import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.robot.commands.Delay;
-import us.ilite.robot.modules.Drive;
-import us.ilite.robot.modules.DriveMessage;
-import us.ilite.robot.modules.HatchFlower;
+import us.ilite.robot.modules.*;
 import us.ilite.robot.modules.Module;
-import us.ilite.robot.modules.Superstructure;
-import us.ilite.robot.modules.Elevator;
 
 public class DriverInput extends Module {
 
@@ -140,13 +136,23 @@ public class DriverInput extends Module {
     }
 
     private void updateElevator() {
+        double throttle1 = -mData.operatorinput.get(ELogitech310.LEFT_TRIGGER_AXIS);
+        double throttle2 = mData.operatorinput.get(ELogitech310.RIGHT_TRIGGER_AXIS);
+        double throttle = throttle1 + throttle2;
 
-        double power = 0.0d;
 
-        if (mData.driverinput.isSet(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR)) {
-            power = mData.operatorinput.get(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR);
+         if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_BOTTOM_POSITION_ELEVATOR)) {
+            mElevator.setDesirecPosition(EElevatorPosition.BOTTOM);
+        } else if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_MIDDLE_POSITION_ELEVATOR)) {
+            mElevator.setDesirecPosition(EElevatorPosition.MIDDLE);
+        } else if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_TOP_POSITION_ELEVATOR)) {
+            mElevator.setDesirecPosition(EElevatorPosition.TOP);
+        } else if (mData.driverinput.isSet(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR)) {
+             double power = mData.operatorinput.get(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR);
+             mElevator.setDesiredPower(throttle);
+         } else {
+            mElevator.setDesiredPower(0d);
         }
-        mElevator.setPower(power);
     }
       
     private void updateSplitTriggerAxisFlip() {

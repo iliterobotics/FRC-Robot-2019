@@ -54,7 +54,7 @@ public enum ELogitech310 implements CodexOf<Double>{
             pCodex.set(LEFT_Y_AXIS, pJoystick.getRawAxis(1));
             pCodex.set(LEFT_TRIGGER_AXIS, pJoystick.getRawAxis(2));
             pCodex.set(RIGHT_TRIGGER_AXIS, pJoystick.getRawAxis(3));
-            pCodex.set(COMBINED_TRIGGER_AXIS, pJoystick.getRawAxis(2) - pJoystick.getRawAxis(3));
+            pCodex.set(COMBINED_TRIGGER_AXIS, pJoystick.getRawAxis(3) - pJoystick.getRawAxis(2));
             pCodex.set(RIGHT_X_AXIS, pJoystick.getRawAxis(4));
             pCodex.set(RIGHT_Y_AXIS, pJoystick.getRawAxis(5));
         }

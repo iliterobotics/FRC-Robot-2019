@@ -30,6 +30,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE");
     public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
 
+    // ===========================
+    // System ID's
+    // ================================
+    public static int kCANAddressPCM = 20;
+
     //==============================================================================
     // Logging
     // =============================================================================
@@ -115,7 +120,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     //elevator's properties will be like
     public static int kTopEncoderTicks = 0;
 
-    public static double kElevatorP = 0; 
+    public static double kElevatorP = 0.1;
     public static double kElevatorI = 0; 
     public static double kElevatorD = 0;
     public static double kElevatorF = 0;

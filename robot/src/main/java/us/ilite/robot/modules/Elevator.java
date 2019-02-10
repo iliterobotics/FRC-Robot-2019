@@ -1,21 +1,14 @@
 
 package us.ilite.robot.modules;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.flybotix.hfr.codex.Codex;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.team254.lib.util.Units;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.team254.lib.drivers.talon.TalonSRXFactory;
 
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.manipulator.EElevator;
 import us.ilite.lib.drivers.SparkMaxFactory;
 
-import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Encoder;
 import us.ilite.common.lib.control.PIDController;
 import us.ilite.common.lib.control.PIDGains;
@@ -94,13 +87,37 @@ public class Elevator extends Module {
         mP = SystemSettings.kElevatorP;
         mI = SystemSettings.kElevatorI;
         mD = SystemSettings.kElevatorD;
-        mF = SystemSettings.kELevatorControlLoopPeriod;
+        mF = SystemSettings.kElevatorF;
         mMinPower = SystemSettings.kElevatorMinPower;
         mMaxPower = SystemSettings.kElevatorMaxPower;
+        mCurrentEncoderTicks = 0;
+        zeroEncoder();
         mCurrentTime = pNow;
+        mPidController.reset();
+        mPidController.setInputRange(100, 1500);
     }
 
     public void periodicInput(double pNow) {
+    }
+
+    public void update(double pNow) {
+        System.out.println(mData.elevator);
+
+        mCurrentTime = pNow;
+
+        // Get encoder value from secondary Talon
+        mCurrentEncoderTicks = getEncoderPosition();
+        mNeoEncoderPosition = mMasterElevator.getEncoder().getPosition();
+        mDesiredDirectionUp = (mDesiredPower > 0);
+
+//        updateElevatorState(pNow);
+        double output  = calculateDesiredPower(mCurrentState);
+        output = Util.limit(output, -0.10d, 0.10d); // 10% of the desired power; Used for testing purposes.
+
+        mMasterElevator.set(output);
+
+        mData.kLoggingTable.putDouble("Current Ticks", (double) getCurrentEncoderTicks());
+
         mData.elevator.set( EElevator.AT_BOTTOM, isAtBottomVal() );
         mData.elevator.set( EElevator.AT_TOP, isAtTopVal() );
         mData.elevator.set( EElevator.BUS_VOLTAGE, getBusVoltage());
@@ -113,34 +130,16 @@ public class Elevator extends Module {
         mData.elevator.set( EElevator.DESIRED_POSITION, (double) getDesiredPosition().ordinal() );
         mData.elevator.set( EElevator.DESIRED_POSITION_ABOVE_INITIAL, desiredPositionAboveInitialVal());
         mData.elevator.set( EElevator.DESIRED_POWER, getDesiredPower());
+        mData.elevator.set(EElevator.OUTPUT_POWER, output);
         mData.elevator.set( EElevator.SETTING_POSITION, settingPositionVal());
-        System.out.println(mData.elevator);
-    }
-
-    public void update(double pNow) {
-
-        mCurrentTime = pNow;
-
-        // Get encoder value from secondary Talon
-        mCurrentEncoderTicks = getEncoderPosition();
-        mNeoEncoderPosition = mMasterElevator.getEncoder().getPosition();
-        mDesiredDirectionUp = (mDesiredPower > 0);
-
-        updateElevator(pNow);
-        mDesiredPower = calculateDesiredPower(mCurrentState);
-        mDesiredPower = Util.limit(mDesiredPower, -0.10d, 0.10d); // 10% of the desired power; Used for testing purposes.
-
-        mMasterElevator.set(mDesiredPower);
-
-        mData.kLoggingTable.putDouble("Current Ticks", (double) getCurrentEncoderTicks());
 
     }
 
-    public void updateElevator(double pNow) {
+    private void updateElevatorState(double pNow) {
 
         // TODO test this
         // Should override any automated control
-        if (mDesiredPower == 0d && !mAtBottom) { // Hold if input is absent and we aren't at the bottom
+        if (mCurrentState != EElevatorState.SET_POSITION && mDesiredPower == 0d && !mAtBottom) { // Hold if input is absent and we aren't at the bottom
             mCurrentState = EElevatorState.HOLD;
         } else {
             mCurrentState = EElevatorState.NORMAL;
@@ -198,57 +197,18 @@ public class Elevator extends Module {
     }
 
     /**
-     * Prepares the elevator to go to
-     * the bottom most level
-     */
-    public void toBottom() {
-        mDesiredPosition = EElevatorPosition.BOTTOM;
-        mCurrentState = EElevatorState.SET_POSITION;
-    }
-
-    /**
-     * Prepares the elevator to go 
-     * to the bottom most level
-     */
-    public void toTop() {
-        mDesiredPosition = EElevatorPosition.BOTTOM;
-        mCurrentState = EElevatorState.SET_POSITION;
-    }
-
-    /**
      * Takes the desired position and calculates the power required to get there
      * based on the distance between the current position and the desired one
      * using a PID loop.
-     * @param pDesiredPosition the EElevator position that we desire to reach
-     * @param pCurrentTime the current time of the method call
      */
-    private double setPosition(EElevatorPosition pDesiredPosition, double pCurrentTime) {
+    private double calculateSetpointPower() {
 
         double power;
-        // If the current encoder ticks is less than the threshold of the desired
-        // position, then
-        // The desired position is above the initial position
-        mDesiredPositionAboveInitial = (mCurrentEncoderTicks < pDesiredPosition.mEncoderThreshold());
 
-        // If the we are under the desired position and we are not in the encoder
-        // position for said
-        // position, then we are still setting position
-        if (mDesiredPositionAboveInitial && mCurrentEncoderTicks >= pDesiredPosition.mEncoderThreshold()) {
-            mSettingPosition = false;
-            mSettingPosition = false;
+        if(mPidController.isOnTarget(100)) {
+            power = 0;
         } else {
-            mCurrentPosition = pDesiredPosition;
-            mSettingPosition = true;
-        }
-
-        // If we make it to or beyond our position, then hold.
-        if (!mSettingPosition) {
-            power = EElevatorState.HOLD.getPower();
-        } else {
-            mPidController.setSetpoint(pDesiredPosition.mEncoderThreshold()); // Our set point is the threshold of the
-                                                                            // destination state
-            power = mPidController.calculate(mCurrentEncoderTicks, pCurrentTime);
-            power = Util.limit(mDesiredPower, mMinPower, mMaxPower); // limit power from -1.0 - 1.0
+            power = -mPidController.calculate(mEncoder.get(), mCurrentTime);
         }
 
         return power;
@@ -259,7 +219,8 @@ public class Elevator extends Module {
         return mCurrentEncoderTicks;
     }
 
-    public void setPower(double pPower) {
+    public void setDesiredPower(double pPower) {
+        mCurrentState = EElevatorState.NORMAL;
         mDesiredPower = pPower;
     }
 
@@ -363,21 +324,21 @@ public class Elevator extends Module {
             power = mDesiredPower; // 10% of the actual power equals what the driver wants
             mSettingPosition = false;
             break;
-        case DECEL_TOP:
-            // TODO test decelerating
-            power = Math.min(mDesiredPower, pCurrentState.getPower()); // Use the lower value to ease into the top
-            break;
-        case DECEL_BOTTOM:
-            power = Math.max(mDesiredPower, pCurrentState.getPower()); // Use the higher value to ease into the bottom
-            break;
-        case HOLD:
-            power = mHoldVoltage / getBusVoltage(); // Need to test
-            break;
+//        case DECEL_TOP:
+//            // TODO test decelerating
+//            power = Math.min(mDesiredPower, pCurrentState.getPower()); // Use the lower value to ease into the top
+//            break;
+//        case DECEL_BOTTOM:
+//            power = Math.max(mDesiredPower, pCurrentState.getPower()); // Use the higher value to ease into the bottom
+//            break;
+//        case HOLD:
+//            power = mHoldVoltage / getBusVoltage(); // Need to test
+//            break;
         case STOP:
-            power = EElevatorState.STOP.getPower(); // Essentially zero, but we don't like magic numbers
+            power = 0; // Essentially zero, but we don't like magic numbers
             break;
         case SET_POSITION:
-            power = setPosition(mDesiredPosition, mCurrentTime); // Start setting position with the current time
+            power = calculateSetpointPower(); // Start setting position with the current time
             break;
         default:
             System.out.println("Somehow reached an unaccounted state with " + pCurrentState.toString()); // In case,
@@ -391,9 +352,11 @@ public class Elevator extends Module {
 
     // This method is made to be called from outside the class
     // the state should only reach set point when driver input call it
-    public void setStatePosition(EElevatorPosition pToPosition) {
+    public void setDesirecPosition(EElevatorPosition pDesiredPosition) {
         mCurrentState = EElevatorState.SET_POSITION;
-        mDesiredPosition = pToPosition;
+        mDesiredPosition = pDesiredPosition;
+        mPidController.setSetpoint(pDesiredPosition.mEncoderThreshold()); // Our set point is the threshold of the
+        // destination state
         mSettingPosition = true; // Keeps track that we are in the process of setting the position
     }
 

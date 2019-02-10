@@ -6,6 +6,7 @@ import com.flybotix.hfr.codex.CodexOf;
 public enum EElevator implements CodexOf<Double> {
 
     DESIRED_POWER,
+    OUTPUT_POWER,
     CURRENT_ENCODER_TICKS,
     CURRENT_NEO_TICKS,
     CURRENT,
