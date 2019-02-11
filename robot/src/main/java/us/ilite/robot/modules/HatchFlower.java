@@ -357,4 +357,28 @@ public class HatchFlower extends Module {
 
     }
 
+    /**
+     * Sets the hatch mechanism to extended (true) or retracted (false)
+     * @param pFlowerExtended
+     */
+    public void setFlowerExtended(boolean pFlowerExtended) {
+
+    }
+
+    /**
+     *
+     * @return Whether the hatch grabber is extended based on actuation time.
+     */
+    public boolean isExtended() {
+        return true;
+    }
+
+    /**
+     * This should be dictated by sensor value if possible.
+     * @return Whether the hatch grabber is currently holding a hatch.
+     */
+    public boolean hasHatch() {
+        return true;
+    }
+
 }
