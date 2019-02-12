@@ -21,11 +21,13 @@ import com.team254.lib.trajectory.timing.TimingConstraint;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import us.ilite.common.Data;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.lib.util.PerfTimer;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.lib.drivers.GetLocalIP;
+import us.ilite.lib.drivers.UltraSonicSensor;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.io.Network;
@@ -62,7 +64,7 @@ public class Robot extends TimedRobot {
     private ILog mLogger = Logger.createLog(this.getClass());
 
     // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
-    private LoopManager mLoopManager = new LoopManager(SystemSettings.kControlLoopPeriod);
+    private LoopManager mLoopManagerx = new LoopManager(SystemSettings.kControlLoopPeriod);
     private ModuleList mRunningModules = new ModuleList();
     private CommandQueue mCommandQueue = new CommandQueue();
 
@@ -70,6 +72,7 @@ public class Robot extends TimedRobot {
     private Data mData = new Data();
     private Timer initTimer = new Timer();
     private SystemSettings mSettings = new SystemSettings();
+    private UltraSonicSensor ultraSonicSensor = new UltraSonicSensor( 0, 1 );
 
 
     // Module declarations here
@@ -176,6 +179,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
+        System.out.println(ultraSonicSensor.getInches() + "");
         // mData.sendCodices();
     }
 

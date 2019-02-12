@@ -2,7 +2,6 @@ package us.ilite.robot.modules;
 
 public enum EElevatorPosition {
 
-    //TODO find encoder threshold
     BOTTOM(0.1d,500),
     MIDDLE(0.1d,1000),
     TOP(0.1d,1500);

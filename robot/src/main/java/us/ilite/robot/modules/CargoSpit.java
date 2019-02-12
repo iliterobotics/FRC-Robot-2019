@@ -1,8 +1,11 @@
 package us.ilite.robot.modules;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Solenoid;
 import us.ilite.common.config.SystemSettings;
 
 
@@ -10,16 +13,33 @@ public class CargoSpit extends Module {
 
     private ILog mLog = Logger.createLog(CargoSpit.class);
 
-    private VictorSPX leftMotor, rightMotor;
+    private VictorSPX mLeftMotor, mRightMotor;
+    private Solenoid mSolenoid;
+    private DigitalInput mSensor = new DigitalInput( 0 ); //Todo figure out channel
+    private boolean mIntaking;
+    private boolean mStopped;
 
     // TODO Read the PDP for current limiting check
 
 
     public CargoSpit() {
-        // TODO Construction
 
-        leftMotor = new VictorSPX(SystemSettings.kCargoSpitLeftSPXAddress);
-        rightMotor = new VictorSPX(SystemSettings.kCargoSpitRightSPXAddress);
+
+        mLeftMotor = new VictorSPX(SystemSettings.kCargoSpitLeftSPXAddress);
+        mRightMotor = new VictorSPX(SystemSettings.kCargoSpitRightSPXAddress);
+
+        //TODO figure out these values and make them constants
+        mRightMotor.configOpenloopRamp( 0.5, 5 );
+        mLeftMotor.configOpenloopRamp( 0.5, 5 );
+
+        mLeftMotor.follow( mRightMotor );
+        mLeftMotor.setInverted( true ); //Set one motor inverted
+
+        mSolenoid.close();
+        mSensor.close();
+
+        mIntaking = false;
+        mStopped = false;
 
     }
 
@@ -52,18 +72,33 @@ public class CargoSpit extends Module {
 
     public void setIntaking() {
 
+        if ( !mStopped || !hasCargo() ) {
+            if ( !mIntaking ) {
+                mIntaking = true;
+                mSolenoid.set( true ); //Values may be swapped?
+            }
+
+            mRightMotor.set( ControlMode.PercentOutput, 0.5 ); //TODO find actual value
+
+            if ( hasCargo() ) {
+                mSolenoid.set( false ); //Values may be swapped?
+                mRightMotor.set( ControlMode.PercentOutput, 0 );
+            }
+        }
     }
 
     public void setOuttaking() {
-
+        if ( !mStopped ) {
+            
+        }
     }
 
     public void stop() {
-
+        mStopped = true;
     }
 
     public boolean hasCargo() {
-        return true;
+        return mSensor.get();
     }
 
 }
