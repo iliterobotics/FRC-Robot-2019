@@ -91,30 +91,6 @@ public class SuperstructureTest {
     @Test
     public void testCargoHandoff() {
 
-        when(mCargoSpit.hasCargo()).thenReturn(false);
-        when(mElevator.isAtPosition(EElevatorPosition.BOTTOM)).thenReturn(false);
-        updateRobot(3);
-
-        mData.operatorinput.set(DriveTeamInputMap.OPERATOR_INTAKE_GROUND_CARGO_AXIS, -1.0);
-        updateRobot(3);
-
-        assertEquals(Superstructure.EAcquisitionState.GROUND_CARGO, mSuperstructure.getAcquisitionState());
-
-        when(mElevator.isAtPosition(EElevatorPosition.BOTTOM)).thenReturn(true);
-        when(mHatchFlower.isExtended()).thenReturn(false);
-        updateRobot(3);
-
-        assertEquals(Superstructure.EAcquisitionState.GROUND_CARGO, mSuperstructure.getAcquisitionState());
-
-        when(mCargoSpit.hasCargo()).thenReturn(true);
-        updateRobot();
-
-        assertEquals(Superstructure.EAcquisitionState.HANDOFF, mSuperstructure.getAcquisitionState());
-
-        updateRobot(3);
-
-        assertEquals(Superstructure.EAcquisitionState.STOWED, mSuperstructure.getAcquisitionState());
-
     }
 
     /**
@@ -123,19 +99,6 @@ public class SuperstructureTest {
     @Test
     public void testManualHatchGrabberExtend() {
 
-        mData.operatorinput.set(DriveTeamInputMap.OPERATOR_HATCH_EXTEND, 1.0);
-        updateRobot();
-
-        verify(mHatchFlower).setFlowerExtended(true);
-
-        mData.operatorinput.set(DriveTeamInputMap.OPERATOR_INTAKE_GROUND_HATCH_AXIS, 1.0);
-        updateRobot();
-
-        mSuperstructure.mRequestedAcquisitionState = Superstructure.EAcquisitionState.HANDOFF;
-        mSuperstructure.mAcquisitionState =  Superstructure.EAcquisitionState.HANDOFF;
-
-        verify(mHatchFlower, times(2)).setFlowerExtended(true);
-
     }
 
     /**
@@ -143,18 +106,7 @@ public class SuperstructureTest {
      */
     @Test
     public void testManualHatchGrabberGrab() {
-        mData.operatorinput.set(DriveTeamInputMap.OPERATOR_HATCH_GRAB, 1.0);
-        updateRobot();
 
-        verify(mHatchFlower).captureHatch();
-
-        mData.operatorinput.set(DriveTeamInputMap.OPERATOR_INTAKE_GROUND_HATCH_AXIS, 1.0);
-        updateRobot();
-
-        mSuperstructure.mRequestedAcquisitionState = Superstructure.EAcquisitionState.HANDOFF;
-        mSuperstructure.mAcquisitionState =  Superstructure.EAcquisitionState.HANDOFF;
-
-        verify(mHatchFlower, times(2)).captureHatch();
     }
 
     private void updateRobot() {
