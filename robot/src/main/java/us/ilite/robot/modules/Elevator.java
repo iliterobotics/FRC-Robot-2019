@@ -274,4 +274,12 @@ public class Elevator extends Module {
         return true;
     }
 
+    public boolean isAbovePosition(EElevatorPosition pPosition) {
+        return true;
+    }
+
+    public boolean isBelowPosition(EElevatorPosition pPosition) {
+        return true;
+    }
+
 }

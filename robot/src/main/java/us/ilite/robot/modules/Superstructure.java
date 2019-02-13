@@ -17,6 +17,7 @@ public class Superstructure extends Module {
     EAcquisitionState mRequestedAcquisitionState = EAcquisitionState.STOWED;
     private EScoringState mScoringState = EScoringState.NONE;
     private EScoringState mRequestedScoringState = EScoringState.NONE;
+    private EElevatorPosition mElevatorPosition = EElevatorPosition.BOTTOM;
 
     private boolean mHatchGrabberExtendRequested = false;
     private boolean mHatchGrabberGrabRequested = false;
@@ -115,7 +116,11 @@ public class Superstructure extends Module {
      */
     private void handleRequestedRobotState() {
 
-        // Driver can't command a new state while we are handing off
+        /*
+        We run code for switching to a new state based on driver input only once
+        This ensures that if we are intaking and transition to handoff the driver controls don't override the handoff state and force us back to a intaking state
+        We can't switch states under any circumstance if we are handing off
+         */
         if(mRequestedAcquisitionState != mAcquisitionState && mAcquisitionState != EAcquisitionState.HANDOFF) {
 
             mLog.info("Switching to new acquisition state: ", mRequestedAcquisitionState, " from state: ", mAcquisitionState);
@@ -127,7 +132,15 @@ public class Superstructure extends Module {
 
         }
 
-        if(mRequestedScoringState != mScoringState) {
+        /*
+        Only switch scoring states once
+        Only go to a scoring state if we aren't handing off or intaking
+        */
+        if(mRequestedScoringState != mScoringState &&
+                mAcquisitionState != EAcquisitionState.HANDOFF &&
+                mAcquisitionState != EAcquisitionState.GROUND_CARGO &&
+                mAcquisitionState != EAcquisitionState.GROUND_HATCH) {
+            mElevator.setStatePosition(mElevatorPosition);
             mScoringState = mRequestedScoringState;
         }
 
@@ -142,8 +155,9 @@ public class Superstructure extends Module {
         switch(mAcquisitionState) {
             case LOADING_STATION_HATCH:
 
-                // Set elevator to bottom, extend hatch grabber
+                // Set elevator to bottom so we can grab hatch
                 mElevator.setStatePosition(EElevatorPosition.BOTTOM);
+                // Extend grabber so we can grab hatch
                 mHatchFlower.setFlowerExtended(true);
                 // Any further automation is handled directly by hatch grabber
 
@@ -153,10 +167,19 @@ public class Superstructure extends Module {
                 break;
             case GROUND_HATCH:
 
-                // Set elevator to bottom, extend hatch grabber, start intaking
+                // Set elevator to bottom so we can grab hatch with hatch grabber
                 mElevator.setStatePosition(EElevatorPosition.BOTTOM);
+                // Extend grabber so it can grab hatch when we handoff
                 mHatchFlower.setFlowerExtended(true);
+                // Tell the intake to intake a hatch
+                mIntake.setIntakingHatch();
 
+                /**
+                 * Handoff when:
+                 * Hatch grabber is fully extended
+                 * We have the hatch in the intake
+                 * The elevator is down
+                 */
                 if(mHatchFlower.isExtended() && mIntake.hasHatch() && mElevator.isAtPosition(EElevatorPosition.BOTTOM)) {
                     mAcquisitionState = EAcquisitionState.HANDOFF;
                 }
@@ -164,15 +187,25 @@ public class Superstructure extends Module {
                 break;
             case GROUND_CARGO:
 
-                // Set elevator to bottom, retract hatch grabber, start intaking with both ground intake and cargo spit
+                // Set elevator to bottom so the cargo spit can
                 mElevator.setStatePosition(EElevatorPosition.BOTTOM);
+                // Retract hatch grabber so it doesn't hit the ball
                 mHatchFlower.setFlowerExtended(false); // TODO Check
 
+                /**
+                 * Start intaking cargo when:
+                 * Hatch grabber is fully retracted
+                 * Elevator at bottom
+                 */
                 if(!mHatchFlower.isExtended() && mElevator.isAtPosition(EElevatorPosition.BOTTOM)) {
                     mIntake.setIntakingCargo();
                     mCargoSpit.setIntaking();
                 }
 
+                /**
+                 * If we have the cargo, bring the intake into a handoff state so we can check for collisions
+                 * before stowing the intake
+                 */
                 if(mCargoSpit.hasCargo()) {
                     mAcquisitionState = EAcquisitionState.HANDOFF;
                 }
@@ -180,21 +213,33 @@ public class Superstructure extends Module {
                 break;
             case HANDOFF:
 
-                // Set elevator to bottom
+                // Set elevator to bottom so we can hand off from intake to (insert mechanism here)
                 mElevator.setStatePosition(EElevatorPosition.BOTTOM);
 
-                // Tell intake to handoff depending on what we picked up
-                if (mAcquisitionState == EAcquisitionState.GROUND_HATCH) {
+                // Tell intake to handoff depending on what we asked to pick up
+                if (mRequestedAcquisitionState == EAcquisitionState.GROUND_HATCH) {
+
+                    // Make sure that grabber is extended
                     mHatchFlower.setFlowerExtended(true);
 
+                    // Wait until hatch grabber is extended to receive hatch
                     if(mHatchFlower.isExtended()) {
+                        // Bring intake to handoff position when hatch grabber is ready
                         mIntake.setHandoffHatch();
+
+                        // If the intake is ready to hand off and elevator is still down, grab the hatch
+                        // TODO If we have a sensor here this can be offloaded to the hatch grabber class
+                        if(mIntake.isAtPosition(Intake.EWristPosition.HANDOFF) && mElevator.isAtPosition(EElevatorPosition.BOTTOM)) {
+                            mHatchFlower.captureHatch();
+                        }
                     }
 
-                } else if (mAcquisitionState == EAcquisitionState.GROUND_CARGO) {
-                    mHatchFlower.setFlowerExtended(false); // TODO Check
+                } else if (mRequestedAcquisitionState == EAcquisitionState.GROUND_CARGO) {
+                    // Retract the hatch grabber so we don't hit the ball
+                    mHatchFlower.setFlowerExtended(false);
 
                     if(!mHatchFlower.isExtended()) {
+                        // Bring to intake to handoff position
                         mIntake.setHandoffCargo();
                     }
 
@@ -203,8 +248,13 @@ public class Superstructure extends Module {
                 }
 
                 // TODO Solve any interference?
+                // If we have the gamepiece then raise the elevator and stow
                 if(mHatchFlower.hasHatch() || mCargoSpit.hasCargo()) {
-                    mAcquisitionState = EAcquisitionState.STOWED;
+                    mElevator.setStatePosition(EElevatorPosition.HANDOFF_HEIGHT);
+
+                    if(mElevator.isAbovePosition(EElevatorPosition.HANDOFF_HEIGHT)) {
+                        mAcquisitionState = EAcquisitionState.STOWED;
+                    }
                 }
 
                 break;
@@ -224,8 +274,10 @@ public class Superstructure extends Module {
         switch(mScoringState) {
             case CARGO:
 
+                // Retract the hatch grabber if not already
                 mHatchFlower.setFlowerExtended(false);
 
+                // Shoot cargo when hatch grabber out of the way
                 if(!mHatchFlower.isExtended()) {
                     mCargoSpit.setOuttaking();
                 }
@@ -233,13 +285,17 @@ public class Superstructure extends Module {
                 break;
             case HATCH:
 
-                // Don't interrupt handoff
-                if(mAcquisitionState != EAcquisitionState.HANDOFF) {
+                // Extend hatch grabber if not extended
+                mHatchFlower.setFlowerExtended(true);
+
+                // Kick hatch if not already
+                if(mHatchFlower.isExtended()) {
                     mHatchFlower.pushHatch();
                 }
 
                 break;
             case CLIMB:
+
                 break;
             case NONE:
 
@@ -295,11 +351,14 @@ public class Superstructure extends Module {
         mDesiredCommandQueue.clear();
     }
 
+    /*
+    Requests
+     */
     public void requestIntaking(EAcquisitionState pAcquisitionState) {
         mRequestedAcquisitionState = pAcquisitionState;
     }
 
-    public void requestIntaking(EScoringState pScoringState) {
+    public void requestScoring(EScoringState pScoringState) {
         mRequestedScoringState = pScoringState;
     }
 
@@ -311,12 +370,9 @@ public class Superstructure extends Module {
         mHatchGrabberGrabRequested = pHatchGrabberGrabRequested;
     }
 
-    private void setAcquisitionState(EAcquisitionState pAcquisitionState) {
-        // Update state to requested
-        mAcquisitionState = mRequestedAcquisitionState;
-        mLog.info("Changed superstructure for current state ", mAcquisitionState, " to requested state ", mRequestedAcquisitionState);
-    }
-
+    /*
+    Getters
+     */
     public EAcquisitionState getAcquisitionState() {
         return mAcquisitionState;
     }
