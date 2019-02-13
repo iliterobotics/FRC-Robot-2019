@@ -1,5 +1,4 @@
 package us.ilite.common.config;
-
 /**
  * Add your docs here.
  */

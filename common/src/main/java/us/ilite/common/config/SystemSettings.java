@@ -264,10 +264,4 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kDriveTrainLeftSRX1Address = 1;
     public static int kDriveTrainLeftSPX2Address = 3;
     public static int kDriveTrainLeftSPX3Address = 5;
-
-
-
-
-
-
 }

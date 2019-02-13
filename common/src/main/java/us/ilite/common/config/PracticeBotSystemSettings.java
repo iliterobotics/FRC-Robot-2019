@@ -216,12 +216,25 @@ public class PracticeBotSystemSettings {
                 try {
                     return aField.get(baseClass);
                 } catch(Exception e) {
+                    System.err.println("Unable to get field: " + aField.getName() +" from obj: " + baseClass.getClass());
                     e.printStackTrace();
                     return null;
                 }
             }
             ));
         baseClassMap.forEach((key,val)->System.out.println(key+", " + val));
+
+        Arrays.stream(baseClass.getClass().getFields()).filter(aField->Modifier.isStatic(aField.getModifiers())).forEach(aField->{
+            Object value  = baseClassMap.get(aField.getName());
+            if(value != null) {
+                try {
+                    System.out.println("Setting field: " + aField.getName() +" to: " + value);
+                    aField.set(baseClass, value);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
 }
