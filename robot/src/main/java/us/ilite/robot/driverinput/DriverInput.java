@@ -14,12 +14,8 @@ import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.robot.commands.Delay;
-import us.ilite.robot.modules.Drive;
-import us.ilite.robot.modules.DriveMessage;
-import us.ilite.robot.modules.FourBar;
-import us.ilite.robot.modules.HatchFlower;
+import us.ilite.robot.modules.*;
 import us.ilite.robot.modules.Module;
-import us.ilite.robot.modules.Superstructure;
 
 public class DriverInput extends Module {
 
@@ -28,6 +24,7 @@ public class DriverInput extends Module {
     private ILog mLog = Logger.createLog(DriverInput.class);
 
     protected final Drive driveTrain;
+    protected final Elevator mElevator;
     protected final HatchFlower hatchFlower;
     protected final Superstructure mSuperstructure;
 
@@ -42,7 +39,7 @@ public class DriverInput extends Module {
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, FourBar pFourBar, HatchFlower pHatchFlower, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, FourBar pFourBar, Elevator pElevator, HatchFlower pHatchFlower, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
         this.hatchFlower = pHatchFlower;
         this.mSuperstructure = pSuperstructure;
@@ -50,21 +47,23 @@ public class DriverInput extends Module {
         this.mDriverInputCodex = mData.driverinput;
         this.mOperatorInputCodex = mData.operatorinput;
         this.mFourBar = pFourBar;
+        this.mElevator = pElevator;
         if(pSimulated) {
             // Use a different joystick library?
+            
         } else {
             this.mDriverJoystick = new Joystick(0);
             this.mOperatorJoystick = new Joystick(1);
         }
     }
 
-    public DriverInput(Drive pDrivetrain, FourBar pFourBar, HatchFlower pHatchFlower, Superstructure pSuperstructure, Data pData) {
-        this(pDrivetrain, pFourBar, pHatchFlower, pSuperstructure, pData, false);
+    public DriverInput(Drive pDrivetrain, FourBar pFourBar, Elevator pElevator, HatchFlower pHatchFlower, Superstructure pSuperstructure, Data pData) {
+        this(pDrivetrain, pFourBar, pElevator, pHatchFlower, pSuperstructure, pData, false);
     }
 
     @Override
     public void modeInit(double pNow) {
-// TODO Auto-generated method stub
+    // TODO Auto-generated method stub
         mDriverStartedCommands = false;
     }
 
@@ -102,6 +101,7 @@ public class DriverInput extends Module {
             updateDriveTrain();
             updateHatchFlower();
             updateFourBar();
+            updateElevator();
         } 
 
     }
@@ -137,9 +137,9 @@ public class DriverInput extends Module {
              !mData.operatorinput.isSet(ELogitech310.B_BTN)) {
             double rotate = mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
             double throttle = -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
-
             rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
             rotate = Util.limit(rotate, 0.7);
+
 
             if (mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
                 throttle *= SystemSettings.kSnailModePercentThrottleReduction;
@@ -154,6 +154,26 @@ public class DriverInput extends Module {
         }
     }
 
+    private void updateElevator() {
+        double throttle1 = -mData.operatorinput.get(ELogitech310.LEFT_TRIGGER_AXIS);
+        double throttle2 = mData.operatorinput.get(ELogitech310.RIGHT_TRIGGER_AXIS);
+        double throttle = throttle1 + throttle2;
+
+
+         if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_BOTTOM_POSITION_ELEVATOR)) {
+            mElevator.setDesirecPosition(EElevatorPosition.BOTTOM);
+        } else if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_MIDDLE_POSITION_ELEVATOR)) {
+            mElevator.setDesirecPosition(EElevatorPosition.MIDDLE);
+        } else if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_TOP_POSITION_ELEVATOR)) {
+            mElevator.setDesirecPosition(EElevatorPosition.TOP);
+        } else if (mData.driverinput.isSet(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR)) {
+             double power = mData.operatorinput.get(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR);
+             mElevator.setDesiredPower(throttle);
+         } else {
+            mElevator.setDesiredPower(0d);
+        }
+    }
+      
     private void updateSplitTriggerAxisFlip() {
 
         double rotate = mDriverInputCodex.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
