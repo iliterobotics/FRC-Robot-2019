@@ -47,10 +47,14 @@ public class PIDController {
     /**
      * Constructs a PIDController object with a PIDGains object and defaultDT
      * @param kPIDGains PIDGains object holding PIDF values
+     * @param pMinInput the minimum input for calculation
+     * @param pMaxInput the maximum input for calculation
      * @param KdefaultDT the default delta time ( SystemSettings.kControlLoopPeriod )
      */
-    public PIDController( PIDGains kPIDGains, double kDefaultDT ) {
+    public PIDController( PIDGains kPIDGains, double pMinInput, double pMaxInput, double kDefaultDT ) {
         mPIDGains = kPIDGains;
+        mMinimumInput = pMinInput;
+        mMaximumInput = pMaxInput;
         mDefaultDT = kDefaultDT;
     }
 
@@ -93,8 +97,8 @@ public class PIDController {
         // Don't blow away mError so as to not break derivative
         double proportionalError = Math.abs( mError ) < mDeadband ? 0 : mError;
 
-        mResult = ( mPIDGains.kP * proportionalError + mPIDGains.kI * mTotalError + mPIDGains.kD * ( mError - mPrevError ) / mDt
-                + mPIDGains.kF * mSetpoint );
+        mResult = ( mPIDGains.kP * proportionalError ) + ( mPIDGains.kI * mTotalError ) + ( mPIDGains.kD * ( mError - mPrevError ) / mDt )
+                + ( mPIDGains.kF * mSetpoint );
         mPrevError = mError;
 
         mResult = Util.limit( mResult, mMaximumOutput );
