@@ -1,7 +1,11 @@
 package us.ilite.common.config;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.types.ETrackingType;
@@ -202,5 +206,22 @@ public class PracticeBotSystemSettings {
     public static int kDriveTrainLeftSRX1Address = 1;
     public static int kDriveTrainLeftSPX2Address = 3;
     public static int kDriveTrainLeftSPX3Address = 5;
+
+    public static void copyOverValues(Object baseClass) {
+        Field [] allFields = PracticeBotSystemSettings.class.getFields();
+       
+        Map<String,Object>baseClassMap =  
+            Arrays.stream(allFields).filter(aField->Modifier.isStatic(aField.getModifiers())).collect(Collectors.toMap(aField->aField.getName(), aField->{
+                
+                try {
+                    return aField.get(baseClass);
+                } catch(Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+            ));
+        baseClassMap.forEach((key,val)->System.out.println(key+", " + val));
+    }
 
 }
