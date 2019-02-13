@@ -312,7 +312,7 @@ public class Elevator extends Module {
     /**
      * Calculates the desired power based on
      * the current state of the elevator.
-     * @param pCurrentSatate the current state of the elevator
+     * @param pCurrentState the current state of the elevator
      * @return the calculated power output as a double
      */
     private double calculateDesiredPower(EElevatorState pCurrentState) {
