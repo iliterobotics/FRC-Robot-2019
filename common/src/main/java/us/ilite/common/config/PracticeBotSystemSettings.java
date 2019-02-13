@@ -2,26 +2,16 @@ package us.ilite.common.config;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import us.ilite.common.lib.control.PIDGains;
-import us.ilite.common.lib.util.NetworkTablesConstantsBase;
-import us.ilite.common.lib.util.SimpleNetworkTable;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.ELogitech310;
 
-public class SystemSettings extends NetworkTablesConstantsBase {
-
+public class PracticeBotSystemSettings {
 
     public static double kControlLoopPeriod = 0.01; // seconds
 
     public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
-
-    // ==============================================================================
-    // Comms
-    // =============================================================================
-    public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE");
-    public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
 
     // ===========================
     // System ID's
@@ -118,16 +108,9 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kElevatorD = 0;
     public static double kElevatorF = 0;
     public static double kELevatorControlLoopPeriod = 0.01;
-    // public static int kUpperElevatorEncoderThreshold = 0; //Will be calculated on the regular
-    // public static int kLowerElevatorEncoderThreshold = 0;
     public static double kElevatorMinPower = -1.0;
     public static double kElevatorMaxPower = 1.0;
     public static int kElevatorCurrentLimit = 10;
-
-    // public static int kCansparkMasterId = 0;
-    // public static int kTalonId = 0;
-
-    //This is the value that it was last year. It will most likely change. 
     public static int kELEVATOR_ENCODER_DEADBAND = 20;
 
     // =============================================================================
@@ -138,7 +121,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveVelocity_kP = 0.5;
     public static double kDriveVelocity_kI = 0.0;
     public static double kDriveVelocity_kD = 0.0;
-//    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static int ULTRASONIC_PORT = 2;
 
@@ -146,8 +128,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Turn-To PID constants
     // =============================================================================
     public static PIDGains kPIDGains = new PIDGains( 0.0, 0.0, 0.0, 0.085 );
-
-
 
     // =============================================================================
     // LimeLight Camera Constants
@@ -172,48 +152,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double llRightACoeff = -54.3943883842204;
     public static double llRightBCoeff = -4.53956454545558;
     public static double llRightCCoeff = -0.0437470770400814;
-
-
-
-    // =============================================================================
-    // Target Constants
-    // Note: These constants need to be recalculted for the specific target geometry
-    // =============================================================================
-    // TODO These values are specific to the targets, not the camera, and may belong elsewhere
-    // The current target values assume the limelight processing stream is configured to target
-    // the bottom of the vision target
-    public enum VisionTarget {
-        HatchPort(25.6875), // height of the bottom of the reflective tape in inches for the hatch port
-        CargoPort(33.3125), // height of the bottom of the reflective tape in inches for the cargo port
-        Ground(0.0,"Ground_Tape_Tracking.vpr"), //The ground
-        CargoHeight(6.5d,"Cargo_Ball_Tracking.vpr");//This may change, not sure what the correct value
-
-        private final double height;
-        private final Optional<String> pipelineName;
-
-        VisionTarget(double height) {
-            this(height, null);
-        }
-        VisionTarget( double height, String pipelineName)  {
-            this.height = height;
-            this.pipelineName = Optional.ofNullable(pipelineName);
-        }
-
-        /**
-         * @return the height
-         */
-        public double getHeight() {
-            return height;
-        }
-        /**
-         * @return the pipelineName
-         */
-        public Optional<String> getPipelineName() {
-            return pipelineName;
-        }
-
-    }
-
     // =============================================================================
     // Hatch Flower constants
     // =============================================================================
@@ -264,10 +202,5 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kDriveTrainLeftSRX1Address = 1;
     public static int kDriveTrainLeftSPX2Address = 3;
     public static int kDriveTrainLeftSPX3Address = 5;
-
-
-
-
-
 
 }

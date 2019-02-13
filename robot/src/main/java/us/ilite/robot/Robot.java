@@ -1,5 +1,6 @@
 package us.ilite.robot;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,53 +10,33 @@ import com.flybotix.hfr.codex.ICodexTimeProvider;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.Data;
-import us.ilite.common.lib.trajectory.TrajectoryGenerator;
-import us.ilite.common.lib.util.PerfTimer;
-import us.ilite.common.types.drive.EDriveData;
-import us.ilite.lib.drivers.GetLocalIP;
-import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.io.Network;
 import us.ilite.common.lib.control.DriveController;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+import us.ilite.common.lib.util.PerfTimer;
 import us.ilite.common.types.MatchMetadata;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.commands.CharacterizeDrive;
-import us.ilite.robot.commands.CommandQueue;
-import us.ilite.robot.auto.paths.TestAuto;
-import us.ilite.robot.commands.CommandQueue;
-import us.ilite.robot.commands.TurnToDegree;
 import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.paths.TestAuto;
-import us.ilite.robot.commands.CommandQueue;
-import us.ilite.robot.commands.TurnToDegree;
-import us.ilite.robot.commands.CharacterizeDrive;
 import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.Drive;
+import us.ilite.robot.modules.Elevator;
 import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.Limelight;
-import us.ilite.robot.modules.Elevator;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
-import us.ilite.common.lib.control.DriveController;
-import us.ilite.common.lib.control.PIDGains;
-import us.ilite.common.lib.control.PIDController;
 
 public class Robot extends TimedRobot {
 
@@ -69,7 +50,7 @@ public class Robot extends TimedRobot {
     private Clock mClock = new Clock();
     private Data mData = new Data();
     private Timer initTimer = new Timer();
-    private SystemSettings mSettings = new SystemSettings();
+    private final SystemSettings mSettings = new SystemSettings();
 
 
     // Module declarations here
@@ -88,9 +69,19 @@ public class Robot extends TimedRobot {
 
     private PerfTimer mClockUpdateTimer = new PerfTimer();
 
+    /**
+     * Touch-file to indicate whether the practice bot constants should be loaded.
+     */
+    private static final File PRACTICE_BOT_FILE = new File(
+            System.getProperty("user.home") + File.separator + "practicebot");
+
 
     @Override
     public void robotInit() {
+        //look for practice robot config:
+        if(PRACTICE_BOT_FILE.exists()) {
+            
+        }
         // Init static variables and get singleton instances first
         Network.getInstance();
         mLogger.info("Netstat determined a driver station IP of ", GetLocalIP.getIp());
