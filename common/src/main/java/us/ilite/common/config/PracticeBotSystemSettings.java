@@ -207,16 +207,25 @@ public class PracticeBotSystemSettings {
     public static int kDriveTrainLeftSPX2Address = 3;
     public static int kDriveTrainLeftSPX3Address = 5;
 
-    public static void copyOverValues(Object baseClass) {
+    /**
+     * This method will take all of the static fields in this class and apply the values to the 
+     * passed in object's static fields that have the exact field name. 
+     * @param destinationObject 
+     *  The object that will have it's static fields updated with the fields in the {@link PracticeBotSystemSettings}
+     */
+    public static void copyOverValues(Object destinationObject) {
+        if(destinationObject == null) {
+            return;
+        }
         Field [] allFields = PracticeBotSystemSettings.class.getFields();
        
         Map<String,Object>baseClassMap =  
             Arrays.stream(allFields).filter(aField->Modifier.isStatic(aField.getModifiers())).collect(Collectors.toMap(aField->aField.getName(), aField->{
                 
                 try {
-                    return aField.get(baseClass);
+                    return aField.get(destinationObject);
                 } catch(Exception e) {
-                    System.err.println("Unable to get field: " + aField.getName() +" from obj: " + baseClass.getClass());
+                    System.err.println("Unable to get field: " + aField.getName() +" from obj: " + destinationObject.getClass());
                     e.printStackTrace();
                     return null;
                 }
@@ -224,13 +233,14 @@ public class PracticeBotSystemSettings {
             ));
         baseClassMap.forEach((key,val)->System.out.println(key+", " + val));
 
-        Arrays.stream(baseClass.getClass().getFields()).filter(aField->Modifier.isStatic(aField.getModifiers())).forEach(aField->{
+        Arrays.stream(destinationObject.getClass().getFields()).filter(aField->Modifier.isStatic(aField.getModifiers())).forEach(aField->{
             Object value  = baseClassMap.get(aField.getName());
             if(value != null) {
                 try {
                     System.out.println("Setting field: " + aField.getName() +" to: " + value);
-                    aField.set(baseClass, value);
+                    aField.set(destinationObject, value);
                 } catch(Exception e) {
+                    System.err("Unable to set the field: " + aField.getName+" on object: "+ destinationObject.getClass())
                     e.printStackTrace();
                 }
             }
