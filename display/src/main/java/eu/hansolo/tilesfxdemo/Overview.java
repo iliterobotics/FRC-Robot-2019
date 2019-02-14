@@ -267,7 +267,7 @@ public class Overview extends Application {
                                    .strokeWithGradient(true)
                                    .build();
 
-        //sparkLineTile.valueProperty().bind(value);
+        //sparkLineTile.valueProperty().bindTo(value);
 
         areaChartTile = TileBuilder.create()
                                    .skinType(SkinType.SMOOTHED_CHART)
