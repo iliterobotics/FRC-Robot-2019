@@ -126,12 +126,12 @@ public class Intake extends Module {
      * @param pExtended
      */
     public void setRollerExtended(ESolenoidState pSolenoidState) {
-        setSolenoidState(pSolenoidState);
+        mSolenoid.set(pSolenoidState.kActive);
     }
 
     // TODO Speed depends on gamepiece? On robot speed? On both?
     public void setRollerPower(double pPower) {
-        mIntakeRoller.set(ControlMode.Current, pPower);
+        mIntakeRoller.set(ControlMode.PercentOutput, pPower);
     }
 
     /**
@@ -139,14 +139,14 @@ public class Intake extends Module {
      */
     public void stopRoller() {
         double curr = 0.0;
-        mIntakeRoller.set(ControlMode.Current, curr); // TODO check
+        mIntakeRoller.set(ControlMode.PercentOutput, curr);
     }
     /**
      * Stops wrist
      */
     public void stopWrist() {
         double curr = 0.0;
-        mWrist.setDesiredOutput(curr); // TODO check
+        mWrist.setDesiredOutput(curr);
     }
 
     /**
@@ -200,13 +200,6 @@ public class Intake extends Module {
     public void setHandoffHatch() {
         stopRoller();
         setWrist(EWristPosition.HANDOFF);
-    }
-
-    /**
-     * Sets intake pneumatic to a given state
-     */
-    public void setSolenoidState(ESolenoidState pSolenoidState) {
-        mSolenoid.set(pSolenoidState.kActive);
     }
 
     /**
