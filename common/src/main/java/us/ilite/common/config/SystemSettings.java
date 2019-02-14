@@ -30,6 +30,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE");
     public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
 
+    // ===========================
+    // System ID's
+    // ================================
+    public static int kCANAddressPCM = 20;
+
     //==============================================================================
     // Logging
     // =============================================================================
@@ -45,10 +50,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static  int kDriveRightMasterTalonId = 2;
     public static int kDriveRightMiddleTalonId = 4;
     public static  int kDriveRightRearTalonId = 6;
-
-    //TODO Hypothetical elevator talons
-    // public static int kElevatorMasterTalonId
-    // public static int kElevatorFollowerTalonId
 
     public static int kPigeonId = 3;
 
@@ -87,7 +88,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int     JOYSTICK_PORT_TESTER = 2;
 
     public static int kLimelightDefaultPipeline = ETrackingType.TARGET_LEFT.getPipeline();
-    public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN,
+    public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN, 
                                                                             DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN,
                                                                             DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN);
     public static List<ELogitech310> kAutonOverrideTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_THROTTLE_AXIS,
@@ -119,25 +120,22 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     //elevator's properties will be like
     public static int kTopEncoderTicks = 0;
 
-    public static double kElevatorP = 0;
-    public static double kElevatorI = 0;
+    public static double kElevatorP = 0.1;
+    public static double kElevatorI = 0; 
     public static double kElevatorD = 0;
     public static double kElevatorF = 0;
-    public static PIDGains kElevatorGains = new PIDGains(kElevatorP, kElevatorI, kElevatorD, kElevatorF);
     public static double kELevatorControlLoopPeriod = 0.01;
-    public static int kUpperElevatorEncoderThreshold = 0;
-    public static int kLowerElevatorEncoderThreshold = 0;
+    // public static int kUpperElevatorEncoderThreshold = 0; //Will be calculated on the regular
+    // public static int kLowerElevatorEncoderThreshold = 0;
+    public static double kElevatorMinPower = -1.0;
+    public static double kElevatorMaxPower = 1.0;
+    public static int kElevatorCurrentLimit = 10;
 
     // public static int kCansparkMasterId = 0;
     // public static int kTalonId = 0;
 
-    //This is the value that it was last year. It will most likely change.
+    //This is the value that it was last year. It will most likely change. 
     public static int kELEVATOR_ENCODER_DEADBAND = 20;
-
-    // =============================================================================
-    // Carriage Constants
-    // =============================================================================
-    public static double kHatchFlowerExtensionPeriod = 1.0;
 
     // =============================================================================
     // Closed-Loop Velocity Constants
@@ -257,12 +255,14 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kHatchFlowerExtensionSolenoidAddress = 6;
 
     public static int kHatchIntakeSPXAddress = 11;
-
+    public static int kCargoIntakeSPXLowerAddress = 12;
     // TO-DO DIO spreadsheet empty
     public static int kIntakeBeamBreakAddress = -1;
 
     public static int kIntakeWristSRXAddress = 16;
-
+    // TO-DO Writs encoder addresses?
+    public static int kIntakeWristEncoderA_Address = -1;
+    public static int kIntakeWristEncoderB_Address = -1;
     public static double kIntakeWristCurrentLimit = -1.0;
 
     public static int kDriveTrainRightSRX1Address = 2;

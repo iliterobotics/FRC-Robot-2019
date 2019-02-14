@@ -20,6 +20,9 @@ public class Intake extends Module {
 
     // Monitor the wrist SRX current
 
+    /**
+     * Wrist presets
+     */
     public enum EWristPosition {
         GROUND(0.0), HANDOFF(0.0), STOWED(0.0);
 
@@ -76,7 +79,7 @@ public class Intake extends Module {
 
     /**
      * Sets whether the roller arm is extended. In other words, sets whether the intake is in
-     * "cargo mode" or "hatch mode".
+     * "cargo mode" or "hatch mode". This method may be called periodically, not just once.
      * @param pExtended
      */
     public void setRollerExtended(boolean pExtended) {
@@ -94,6 +97,7 @@ public class Intake extends Module {
      * 2) Extend the roller to "cargo" position
      * 3) Flag that the intaking sequence has started for cargo
      * 4) Set roller speed and current limit based on game piece type and (potentially) robot speed
+     * This method may be called periodically, not just once.
      */
     public void setIntakingCargo() {
         setWrist(EWristPosition.GROUND);
@@ -108,6 +112,7 @@ public class Intake extends Module {
      * 3) Flag that the intaking sequence has started for hatch
      * 4) Set roller speed and current limit based on game piece type and (potentially) robot speed
      * 6) Stop roller if we have exceeded current limit for hatch intaking in update()
+     * This method may be called periodically, not just once.
      */
     public void setIntakingHatch() {
         setWrist(EWristPosition.GROUND);
@@ -124,6 +129,7 @@ public class Intake extends Module {
 
     /**
      * Stop rollers and set wrist to "handoff" position for cargo.
+     * This method may be called periodically, not just once.
      */
     public void setHandoffCargo() {
         setWrist(EWristPosition.HANDOFF);
@@ -132,6 +138,7 @@ public class Intake extends Module {
 
     /**
      * Stop rollers and set wrist to "handoff" position for hatch.
+     * This method may be called periodically, not just once.
      */
     public void setHandoffHatch() {
         setWrist(EWristPosition.HANDOFF);

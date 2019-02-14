@@ -50,7 +50,7 @@ public class Superstructure extends Module {
         CLIMB,
         NONE
     }
-
+    
     @Override
     public void modeInit(double pNow) {
         runCommandQueue = lastRunCommandQueue = false;
@@ -64,7 +64,6 @@ public class Superstructure extends Module {
     @Override
     public void update(double pNow) {
         updateCommands(pNow);
-        updateRobotState();
     }
 
     private void updateCommands(double pNow) {
@@ -140,7 +139,7 @@ public class Superstructure extends Module {
                 mAcquisitionState != EAcquisitionState.HANDOFF &&
                 mAcquisitionState != EAcquisitionState.GROUND_CARGO &&
                 mAcquisitionState != EAcquisitionState.GROUND_HATCH) {
-            mElevator.setStatePosition(mRequestedElevatorPosition);
+            mElevator.setDesirecPosition(mRequestedElevatorPosition);
             mScoringState = mRequestedScoringState;
         }
 
@@ -156,7 +155,7 @@ public class Superstructure extends Module {
             case LOADING_STATION_HATCH:
 
                 // Set elevator to bottom so we can grab hatch
-                mElevator.setStatePosition(EElevatorPosition.BOTTOM);
+                mElevator.setDesirecPosition(EElevatorPosition.BOTTOM);
                 // Extend grabber so we can grab hatch
                 mHatchFlower.setFlowerExtended(true);
                 // Any further automation is handled directly by hatch grabber
@@ -168,7 +167,7 @@ public class Superstructure extends Module {
             case GROUND_HATCH:
 
                 // Set elevator to bottom so we can grab hatch with hatch grabber
-                mElevator.setStatePosition(EElevatorPosition.BOTTOM);
+                mElevator.setDesirecPosition(EElevatorPosition.BOTTOM);
                 // Extend grabber so it can grab hatch when we handoff
                 mHatchFlower.setFlowerExtended(true);
                 // Tell the intake to intake a hatch
@@ -188,7 +187,7 @@ public class Superstructure extends Module {
             case GROUND_CARGO:
 
                 // Set elevator to bottom so the cargo spit can
-                mElevator.setStatePosition(EElevatorPosition.BOTTOM);
+                mElevator.setDesirecPosition(EElevatorPosition.BOTTOM);
                 // Retract hatch grabber so it doesn't hit the ball
                 mHatchFlower.setFlowerExtended(false); // TODO Check
 
@@ -214,7 +213,7 @@ public class Superstructure extends Module {
             case HANDOFF:
 
                 // Set elevator to bottom so we can hand off from intake to (insert mechanism here)
-                mElevator.setStatePosition(EElevatorPosition.BOTTOM);
+                mElevator.setDesirecPosition(EElevatorPosition.BOTTOM);
 
                 // Tell intake to handoff depending on what we asked to pick up
                 if (mRequestedAcquisitionState == EAcquisitionState.GROUND_HATCH) {
@@ -250,7 +249,7 @@ public class Superstructure extends Module {
                 // TODO Solve any interference?
                 // If we have the gamepiece then raise the elevator and stow
                 if(mHatchFlower.hasHatch() || mCargoSpit.hasCargo()) {
-                    mElevator.setStatePosition(EElevatorPosition.HANDOFF_HEIGHT);
+                    mElevator.setDesirecPosition(EElevatorPosition.HANDOFF_HEIGHT);
 
                     if(mElevator.isAbovePosition(EElevatorPosition.HANDOFF_HEIGHT)) {
                         mAcquisitionState = EAcquisitionState.STOWED;

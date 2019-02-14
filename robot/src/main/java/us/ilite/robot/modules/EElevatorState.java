@@ -6,11 +6,11 @@ public enum EElevatorState {
     NORMAL(0),
     STOP(0),
     HOLD(0),
-    DECEL_TOP(0),
-    DECEL_BOTTOM(0),
-    SET_POSITION(0);
+    DECEL_TOP(0.1),
+    DECEL_BOTTOM(0.1),
+    SET_POSITION(0.1);
 
-    double mPower;
+    private double mPower;
 
     EElevatorState(double pPower) {
         this.mPower = pPower;

@@ -1,23 +1,5 @@
 package us.ilite.robot.modules;
 
-import com.flybotix.hfr.util.log.ELevel;
-import com.flybotix.hfr.util.log.Logger;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
-import us.ilite.TestingUtils;
-import us.ilite.common.Data;
-import us.ilite.common.config.DriveTeamInputMap;
-import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.driverinput.DriverInput;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
-@RunWith(MockitoJUnitRunner.class)
 public class SuperstructureTest {
 
     @Mock private Drive mDrive;
