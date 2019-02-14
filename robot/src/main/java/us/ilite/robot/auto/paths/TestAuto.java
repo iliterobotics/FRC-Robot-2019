@@ -3,7 +3,6 @@ package us.ilite.robot.auto.paths;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
