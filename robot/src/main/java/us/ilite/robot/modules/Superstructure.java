@@ -17,7 +17,7 @@ public class Superstructure extends Module {
     EAcquisitionState mRequestedAcquisitionState = EAcquisitionState.STOWED;
     private EScoringState mScoringState = EScoringState.NONE;
     private EScoringState mRequestedScoringState = EScoringState.NONE;
-    private EElevatorPosition mElevatorPosition = EElevatorPosition.BOTTOM;
+    private EElevatorPosition mRequestedElevatorPosition = EElevatorPosition.BOTTOM;
 
     private boolean mHatchGrabberExtendRequested = false;
     private boolean mHatchGrabberGrabRequested = false;
@@ -140,7 +140,7 @@ public class Superstructure extends Module {
                 mAcquisitionState != EAcquisitionState.HANDOFF &&
                 mAcquisitionState != EAcquisitionState.GROUND_CARGO &&
                 mAcquisitionState != EAcquisitionState.GROUND_HATCH) {
-            mElevator.setStatePosition(mElevatorPosition);
+            mElevator.setStatePosition(mRequestedElevatorPosition);
             mScoringState = mRequestedScoringState;
         }
 
@@ -360,6 +360,10 @@ public class Superstructure extends Module {
 
     public void requestScoring(EScoringState pScoringState) {
         mRequestedScoringState = pScoringState;
+    }
+
+    public void requestElevator(EElevatorPosition pElevatorPosition) {
+        mRequestedElevatorPosition = pElevatorPosition;
     }
 
     public void extendHatchGrabber(boolean pHatchGrabberExtendRequested) {
