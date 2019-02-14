@@ -20,6 +20,7 @@ import us.ilite.common.lib.util.SimpleNetworkTable;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.input.EDriverInputMode;
 import us.ilite.common.types.input.ELogitech310;
+import us.ilite.common.types.manipulator.EElevator;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.common.types.EFourBarData;
 
@@ -28,14 +29,16 @@ public class Data {
     public CodexNetworkTables mCodexNT = CodexNetworkTables.getInstance();
     
     //Add new codexes here as we need more
+
     public final Codex<Double, EGyro> imu = Codex.of.thisEnum(EGyro.class);
     public final Codex<Double, EDriveData> drive = Codex.of.thisEnum(EDriveData.class);
     public final Codex<Double, ELogitech310> driverinput = Codex.of.thisEnum(ELogitech310.class);
     public final Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
+    public final Codex<Double, EElevator> elevator = Codex.of.thisEnum(EElevator.class);
     public Codex<Double, EFourBarData> fourbar = Codex.of.thisEnum(EFourBarData.class);
 
     public final Codex[] mLoggedCodexes = new Codex[] {
-        imu, drive, driverinput, operatorinput
+        imu, drive, driverinput, operatorinput, elevator
     };
 
     public static NetworkTableInstance kInst = NetworkTableInstance.getDefault();
@@ -62,7 +65,8 @@ public class Data {
             new CodexNetworkTablesParser<EDriveData>(drive),
             new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
             new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR"),
-            new CodexNetworkTablesParser<EFourBarData>(fourbar)
+            new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" )
+            new CodexNetworkTablesParser<EFourBarData>(fourbar, "FOURBAR");
         );
 
     }
@@ -159,6 +163,7 @@ public class Data {
      */
     public void sendCodices() {
         mCodexNT.send(imu);
+        mCodexNT.send(elevator);
         mCodexNT.send(drive);
         mCodexNT.send("DRIVER", driverinput);
         mCodexNT.send("OPERATOR", operatorinput);
@@ -171,6 +176,7 @@ public class Data {
     public void registerCodices() {
         mCodexNT.registerCodex(EGyro.class);
         mCodexNT.registerCodex(EDriveData.class);
+        mCodexNT.registerCodex(EElevator.class);
         mCodexNT.registerCodex("DRIVER", ELogitech310.class);
         mCodexNT.registerCodex("OPERATOR", ELogitech310.class);
         mCodexNT.registerCodex(EFourBarData.class);

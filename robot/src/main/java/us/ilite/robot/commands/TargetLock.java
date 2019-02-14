@@ -13,6 +13,7 @@ import us.ilite.common.types.ETargetingData;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
+import us.ilite.common.lib.control.PIDGains;
 
 public class TargetLock implements ICommand {
     private Drive mDrive;
@@ -48,9 +49,8 @@ public class TargetLock implements ICommand {
 
     @Override
     public void init(double pNow) {
-        mPID = new PIDController( new PIDGains( kP, kI, kD ), SystemSettings.kControlLoopPeriod );
+        mPID = new PIDController( new PIDGains( kP, kI, kD ),kMIN_INPUT, kMAX_INPUT, SystemSettings.kControlLoopPeriod );
         mPID.setOutputRange(kMIN_POWER, kMAX_POWER);
-        mPID.setInputRange(kMIN_INPUT, kMAX_INPUT);
         mPID.setSetpoint(0);
 
         this.mPreviousTime = pNow;
