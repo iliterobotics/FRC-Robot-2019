@@ -240,7 +240,7 @@ public class PracticeBotSystemSettings {
                     System.out.println("Setting field: " + aField.getName() +" to: " + value);
                     aField.set(destinationObject, value);
                 } catch(Exception e) {
-                    System.err("Unable to set the field: " + aField.getName+" on object: "+ destinationObject.getClass());
+                    System.err.println("Unable to set the field: " + aField.getName()+" on object: "+ destinationObject.getClass());
                     e.printStackTrace();
                 }
             }
