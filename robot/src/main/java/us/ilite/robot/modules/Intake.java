@@ -14,11 +14,12 @@ import us.ilite.common.config.SystemSettings;
 
 public class Intake extends Module {
 
+    // TODO General: add pneumatic/wrist constraint; add flag for intake process; check code
+
     private ILog mLog = Logger.createLog(Intake.class);
 
     private VictorSPX mIntakeRoller;
 
-    // TODO change TalonSRX to BasicArm class
     // Wrist control
     private BasicArm mWrist;
 
@@ -47,10 +48,10 @@ public class Intake extends Module {
     public enum ESolenoidState {
         HATCH(false), CARGO(true);
 
-        public final boolean active;
+        public final boolean kActive;
 
         private ESolenoidState(boolean pSolenoid) {
-            this.active = pSolenoid;
+            this.kActive = pSolenoid;
         }
 
     }
@@ -82,9 +83,11 @@ public class Intake extends Module {
     @Override
     public void update(double pNow) {
         // TODO Check this
-        if (mIntakeRoller.getMotorOutputPercent() > SystemSettings.kIntakeRollerCurrentLimit) stopRoller();
+        if (mIntakeRoller.getMotorOutputPercent() > SystemSettings.kIntakeRollerCurrentLimit) {
+            stopRoller();
+        }
 
-        mWristAngle = mWrist.getAngle();
+        mWristAngle = mWrist.getCurrentArmAngle();
     }
 
     @Override
@@ -104,13 +107,13 @@ public class Intake extends Module {
     public void setWrist(EWristPosition pWristPosition) {
         switch(pWristPosition) {
             case GROUND:
-                mWrist.setArmAngle(EWristPosition.GROUND);
+                mWrist.setArmAngle(EWristPosition.GROUND.kWristAngleDegrees);
                 mWristPosition = EWristPosition.GROUND;
             case HANDOFF:
-                mWrist.setArmAngle(EWristPosition.HANDOFF);
+                mWrist.setArmAngle(EWristPosition.HANDOFF.kWristAngleDegrees);
                 mWristPosition = EWristPosition.HANDOFF;
             case STOWED:
-                mWrist.setArmAngle(EWristPosition.STOWED);
+                mWrist.setArmAngle(EWristPosition.STOWED.kWristAngleDegrees);
                 mWristPosition = EWristPosition.STOWED;
             default:
                 mLog.error("This message should not be displayed");
@@ -132,18 +135,18 @@ public class Intake extends Module {
     }
 
     /**
-     * Stops roller
+     * Sets roller current to zero
      */
     public void stopRoller() {
         double curr = 0.0;
-        mIntakeRoller.set(ControlMode.Current, curr);
+        mIntakeRoller.set(ControlMode.Current, curr); // TODO check
     }
     /**
      * Stops wrist
      */
     public void stopWrist() {
         double curr = 0.0;
-        mWrist.set(ControlMode.Current, curr);
+        mWrist.setDesiredOutput(curr); // TODO check
     }
 
     /**
@@ -203,7 +206,7 @@ public class Intake extends Module {
      * Sets intake pneumatic to a given state
      */
     public void setSolenoidState(ESolenoidState pSolenoidState) {
-        mSolenoid.set(pSolenoidState.active);
+        mSolenoid.set(pSolenoidState.kActive);
     }
 
     /**
