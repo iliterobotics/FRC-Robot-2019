@@ -1,6 +1,5 @@
 package us.ilite.robot;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,6 +17,8 @@ import com.team254.lib.trajectory.timing.TimingConstraint;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.Data;
+import us.ilite.common.config.AbstractSystemSettingsUtils;
+import us.ilite.common.config.PracticeBotSystemSettings;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.io.Network;
 import us.ilite.common.lib.control.DriveController;
@@ -69,19 +70,10 @@ public class Robot extends TimedRobot {
 
     private PerfTimer mClockUpdateTimer = new PerfTimer();
 
-    /**
-     * Touch-file to indicate whether the practice bot constants should be loaded.
-     */
-    private static final File PRACTICE_BOT_FILE = new File(
-            System.getProperty("user.home") + File.separator + "practicebot");
-
-
     @Override
     public void robotInit() {
         //look for practice robot config:
-        if(PRACTICE_BOT_FILE.exists()) {
-            
-        }
+        AbstractSystemSettingsUtils.loadPracticeSettings(mSettings);
         // Init static variables and get singleton instances first
         Network.getInstance();
         mLogger.info("Netstat determined a driver station IP of ", GetLocalIP.getIp());
