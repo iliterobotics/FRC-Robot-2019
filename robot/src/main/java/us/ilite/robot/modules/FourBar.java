@@ -44,7 +44,7 @@ public class FourBar extends Module {
         mNeo2Encoder = mNeo2.getEncoder();
 
         mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
-        mPIDController = new PIDController( SystemSettings.kFourBarAccelerateGains, SystemSettings.kControlLoopPeriod );
+        mPIDController = new PIDController( SystemSettings.kFourBarAccelerateGains, 0, 135, SystemSettings.kControlLoopPeriod );
         mData = pData;
     }
 
