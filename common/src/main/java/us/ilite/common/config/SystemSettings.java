@@ -227,8 +227,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
         }
 
     }
-
-    public static double kHatchFlowerPushDurationSec = 0.250;
     
     // =============================================================================
     // Climber constants
