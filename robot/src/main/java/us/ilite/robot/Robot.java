@@ -58,6 +58,7 @@ public class Robot extends TimedRobot {
 
     private ILog mLogger = Logger.createLog(this.getClass());
 
+    private LoopManager mLoopManager = new LoopManager(SystemSettings.kControlLoopPeriod);
     // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
     private LoopManager mLoopManagerx = new LoopManager(SystemSettings.kControlLoopPeriod);
     private ModuleList mRunningModules = new ModuleList();
@@ -76,7 +77,7 @@ public class Robot extends TimedRobot {
     private Drive mDrive = new Drive(mData, mDriveController);
     private Elevator mElevator = new Elevator(mData);
     private HatchFlower mHatchFlower = new HatchFlower();
-    private CargoSpit mCargoSpit = new CargoSpit();
+    private CargoSpit mCargoSpit = new CargoSpit(mData);
 
     private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mCargoSpit, mSuperstructure, mData);
     private Limelight mLimelight = new Limelight();

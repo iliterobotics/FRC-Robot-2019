@@ -143,8 +143,8 @@ public class CargoSpit extends Module {
         }
     }
 
-    public void setIntake(boolean pShouldIntake) {
-        shouldIntake = pShouldIntake;
+    public void setIntake(boolean pOn) {
+        shouldIntake = pOn;
     }
 
     public void setOuttake( boolean pShouldOuttake ) {
@@ -158,5 +158,7 @@ public class CargoSpit extends Module {
         return 0d;
     }
 
-
+    public boolean ismIntaking() {
+        return mIntaking;
+    }
 }
