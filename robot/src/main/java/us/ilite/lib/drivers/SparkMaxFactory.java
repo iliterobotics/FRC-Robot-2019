@@ -38,17 +38,17 @@ public class SparkMaxFactory {
         // kSlaveConfiguration.CONTROL_FRAME_PERIOD = 100;
     }
 
-    public CANSparkMax createDefaultSparkMax(int pId, MotorType pMotorType) {
+    public static CANSparkMax createDefaultSparkMax(int pId, MotorType pMotorType) {
         return createSparkMax(pId, pMotorType, kDefaultConfiguration);
     }
 
-    public CANSparkMax createPermanentSlaveSparkMax(int pId, int pFollowerId, MotorType pMotorType, ExternalFollower pExternalFollower) {
+    public static CANSparkMax createPermanentSlaveSparkMax(int pId, int pFollowerId, MotorType pMotorType, ExternalFollower pExternalFollower) {
         CANSparkMax spark = createSparkMax(pId, pMotorType, kSlaveConfiguration);
         spark.follow(ExternalFollower.kFollowerSparkMax, pFollowerId);
         return spark;
     }
 
-    public CANSparkMax createSparkMax(int pId, MotorType pMotorType, Configuration pConfiguration) {
+    public static CANSparkMax createSparkMax(int pId, MotorType pMotorType, Configuration pConfiguration) {
         CANSparkMax spark = new CANSparkMax(pId, pMotorType);
 
         spark.setCANTimeout(pConfiguration.CAN_TIMEOUT);

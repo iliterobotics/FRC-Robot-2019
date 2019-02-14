@@ -2,6 +2,9 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'application'
 apply plugin: 'org.openjfx.javafxplugin'
+//mainClassName = 'eu.hansolo.tilesfxdemo.Main'
+//mainClassName = 'eu.hansolo.tilesfxdemo.MiscDemo'
+// mainClassName = 'us.ilite.display.DriverStation'
 // mainClassName = 'us.ilite.display.Main'
 //mainClassName = 'us.ilite.display.testing.AutonConfigDisplay'
 mainClassName = 'us.ilite.display.testing.TestingDisplay'
@@ -16,9 +19,20 @@ javafx {
 dependencies {
     compile project(':common')
     compile project(':robot')
-	implementation 'com.github.flybotix:highfrequencyrobots:2019.1.13a'
+	implementation 'com.github.flybotix:highfrequencyrobots:2019.1.26'
+    implementation 'com.github.HanSolo:tilesfx:1.6.5'
+    implementation 'com.github.flybotix:charts:1.0.6.alpha'
 
     compile name: 'jfxrt'
+
+    compile "eu.hansolo:Medusa:+"
+    compile "eu.hansolo:regulators:+"
+    compile "org.kordamp.ikonli:ikonli-javafx:2.4.0"
+    compile "org.kordamp.ikonli:ikonli-material-pack:2.4.0"
+    compile "org.kordamp.ikonli:ikonli-materialdesign-pack:2.4.0"
+    compile "org.kordamp.ikonli:ikonli-weathericons-pack:2.4.0"
+    compile 'com.googlecode.json-simple:json-simple:1.1'
+
 
     runtime group: "edu.wpi.first.ntcore", name: "ntcore-jni", version: "2019.+", classifier: "all"
     compile group: "edu.wpi.first.ntcore", name: "ntcore-java", version: "2019.+"

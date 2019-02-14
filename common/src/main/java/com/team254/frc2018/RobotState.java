@@ -86,13 +86,15 @@ public class RobotState {
         field_to_vehicle_.put(new InterpolatingDouble(timestamp), observation);
     }
 
-    public synchronized void
+    public synchronized Pose2d
     addObservations(double timestamp, Twist2d measured_displacement,
                                              Twist2d measured_velocity) {
-        addFieldToVehicleObservation(timestamp,
-                mKinematicModel.integrateForwardKinematics(getLatestFieldToVehicle().getValue(), measured_displacement));
+        Pose2d new_pose = mKinematicModel.integrateForwardKinematics(getLatestFieldToVehicle().getValue(), measured_displacement);
+        addFieldToVehicleObservation(timestamp, new_pose);
         vehicle_displacement_measured_ = measured_displacement;
         vehicle_velocity_measured_ = measured_velocity;
+
+        return new_pose;
     }
 
     public synchronized Twist2d generateOdometryFromSensors(double left_encoder_delta_distance, double

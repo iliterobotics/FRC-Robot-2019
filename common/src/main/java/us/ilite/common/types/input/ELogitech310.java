@@ -4,6 +4,7 @@ import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
 import edu.wpi.first.wpilibj.Joystick;
 
+
 public enum ELogitech310 implements CodexOf<Double>{
     // Do not change the order of these buttons
     A_BTN,
@@ -53,7 +54,7 @@ public enum ELogitech310 implements CodexOf<Double>{
             pCodex.set(LEFT_Y_AXIS, pJoystick.getRawAxis(1));
             pCodex.set(LEFT_TRIGGER_AXIS, pJoystick.getRawAxis(2));
             pCodex.set(RIGHT_TRIGGER_AXIS, pJoystick.getRawAxis(3));
-            pCodex.set(COMBINED_TRIGGER_AXIS, pJoystick.getRawAxis(2) - pJoystick.getRawAxis(3));
+            pCodex.set(COMBINED_TRIGGER_AXIS, pJoystick.getRawAxis(3) - pJoystick.getRawAxis(2));
             pCodex.set(RIGHT_X_AXIS, pJoystick.getRawAxis(4));
             pCodex.set(RIGHT_Y_AXIS, pJoystick.getRawAxis(5));
         }

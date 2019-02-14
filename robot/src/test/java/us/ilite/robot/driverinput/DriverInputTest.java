@@ -7,14 +7,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
+import us.ilite.TestingUtils;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.commands.Delay;
 import us.ilite.robot.modules.Drive;
+import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
+import us.ilite.robot.modules.Elevator;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -24,8 +27,10 @@ public class DriverInputTest {
 
     // We're only testing integration between Superstructure and DriverInput, so we can mock this
     @Mock private Drive mDrive;
+    @Mock private HatchFlower mHatchFlower;
     // We want to see Superstructure's actual behavior, so we make it a spy
     private Superstructure mSuperstructure;
+    @Mock private Elevator mElevator;
 
 
     private DriverInput mDriverInput;
@@ -43,10 +48,13 @@ public class DriverInputTest {
         mClock = new Clock().simulated();
         mModuleList = new ModuleList();
         mSuperstructure = spy(new Superstructure());
-        mDriverInput = spy(new DriverInput(mDrive, mSuperstructure, mData, true));
+        mDriverInput = spy(new DriverInput(mDrive, mElevator, mHatchFlower, mSuperstructure, mData));
 
         mModuleList.setModules(mDriverInput, mSuperstructure, mDrive);
         mModuleList.modeInit(mClock.getCurrentTime());
+
+        TestingUtils.fillNonButtons(mData.driverinput, 0.0);
+        TestingUtils.fillNonButtons(mData.operatorinput, 0.0);
     }
 
     /**

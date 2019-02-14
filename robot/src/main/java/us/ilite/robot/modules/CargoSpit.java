@@ -10,7 +10,7 @@ public class CargoSpit extends Module {
 
     private ILog mLog = Logger.createLog(CargoSpit.class);
 
-    private VictorSPX spx;
+    private VictorSPX leftMotor, rightMotor;
 
     // TODO Read the PDP for current limiting check
 
@@ -18,7 +18,8 @@ public class CargoSpit extends Module {
     public CargoSpit() {
         // TODO Construction
 
-        spx = new VictorSPX(SystemSettings.kCargoSpitSPXAddress);
+        leftMotor = new VictorSPX(SystemSettings.kCargoSpitLeftSPXAddress);
+        rightMotor = new VictorSPX(SystemSettings.kCargoSpitRightSPXAddress);
 
     }
 
