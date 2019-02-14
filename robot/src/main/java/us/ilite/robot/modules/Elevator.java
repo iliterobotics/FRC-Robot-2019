@@ -1,6 +1,7 @@
 
 package us.ilite.robot.modules;
 
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -35,6 +36,7 @@ public class Elevator extends Module {
     private PIDController mPidController;
     private double mCurrentTime;
     private double mNeoEncoderPosition;
+    private CANPIDController mCanController;
 //    public Codex<Double, EElevator> elevatorCodex = Codex.of.thisEnum(EElevator.class);
 
     // TODO need to figure out these encoder thresholds
@@ -59,6 +61,7 @@ public class Elevator extends Module {
         this.mF = SystemSettings.kELevatorControlLoopPeriod;
         PIDGains pidGains = new PIDGains(mP, mI, mD);
         this.mPidController = new PIDController(pidGains, mP);
+        this.mCanController = mMasterElevator.getPIDController();
         this.mEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
 
         // Create default NEO and set the ramp rate
@@ -312,7 +315,7 @@ public class Elevator extends Module {
     /**
      * Calculates the desired power based on
      * the current state of the elevator.
-     * @param pCurrentSatate the current state of the elevator
+     * @param pCurrentState the current state of the elevator
      * @return the calculated power output as a double
      */
     private double calculateDesiredPower(EElevatorState pCurrentState) {
@@ -349,6 +352,8 @@ public class Elevator extends Module {
         return Util.limit(power, mMinPower, mMaxPower);
 
     }
+
+
 
     // This method is made to be called from outside the class
     // the state should only reach set point when driver input call it
