@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.LogOutput;
 import com.flybotix.hfr.util.log.Logger;
+import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
@@ -43,6 +44,7 @@ public class Drive extends Loop {
 	private Data mData;
 
 	private IDriveHardware mDriveHardware;
+	private Rotation2d mGyroOffset = new Rotation2d();
 
 	private EDriveState mDriveState;
 	private DriveMessage mDriveMessage;
@@ -130,7 +132,7 @@ public class Drive extends Loop {
 //		mData.drive.set(EDriveData.LEFT_MESSAGE_DEMAND, mDriveMessage.leftDemand);
 //		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND, mDriveMessage.rightDemand);
 //
-		mData.imu.set(EGyro.YAW_DEGREES, mDriveHardware.getHeading().getDegrees());
+		mData.imu.set(EGyro.YAW_DEGREES, getHeading().getDegrees());
 
 //		SimpleNetworkTable.writeCodexToSmartDashboard(EDriveData.class, mData.drive, mClock.getCurrentTime());
 	}
@@ -193,7 +195,7 @@ public class Drive extends Loop {
 //				mCalculateTimer.stop();
 
 				if(mDebugLogger != null) {
-					debugOutput.update(pNow, output);
+					debugOutput.update(pNow, mDriveMessage);
 					mDebugLogger.add(debugOutput);
 				}
 
@@ -260,6 +262,14 @@ public class Drive extends Loop {
 		return mDriveMessage;
 	}
 
+	public synchronized Rotation2d getHeading() {
+		return mDriveHardware.getHeading().rotateBy(mGyroOffset);
+	}
+
+	public synchronized void setHeading(Rotation2d pHeading) {
+		mGyroOffset = pHeading.rotateBy(mDriveHardware.getHeading().inverse());
+	}
+
     public Drive simulated() {
 //		this.mDriveHardware = new SimDriveHardware(mDriveController, mClock);
 		return this;
@@ -275,7 +285,7 @@ public class Drive extends Loop {
 		public double t = 0.0;
 
 		public double targetLeftVel = 0.0, targetRightVel = 0.0, leftVel = 0.0, rightVel = 0.0;
-//		public double targetX = 0.0, targetY = 0.0, x = 0.0, y = 0.0;
+		public double targetX = 0.0, targetY = 0.0, x = 0.0, y = 0.0;
 
 //		public double leftAppliedVolts = 0.0, rightAppliedVolts = 0.0;
 
@@ -285,22 +295,25 @@ public class Drive extends Loop {
 
 		public List<LogOutput> status = new ArrayList<>();
 
-		public void update(double time, DriveOutput output) {
+		public void update(double time, DriveMessage output) {
 			t = time;
 
 //			targetLeftVel = Conversions.rotationsToInches(output.left_velocity / (Math.PI * 2.0));
 //			targetRightVel = Conversions.rotationsToInches(output.right_velocity / (Math.PI * 2.0));
-			targetLeftVel = mDriveHardware.getLeftTarget();
-			targetRightVel = mDriveHardware.getRightTarget();
+//			targetLeftVel = mDriveHardware.getLeftTarget();
+//			targetRightVel = mDriveHardware.getRightTarget();
+			targetLeftVel = output.leftOutput;
+			targetRightVel = output.rightOutput;
+
 
 			leftVel = mData.drive.get(EDriveData.LEFT_VEL_IPS);
 			rightVel = mData.drive.get(EDriveData.RIGHT_VEL_IPS);
 
 //			status = Logger.getRecentLogs().stream().filter(logOutput -> logOutput.thread.equals(this.getClass().getName())).collect(Collectors.toList());
-//			targetX = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().x();
-//			targetY = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().y();
-//			x = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().getTranslation().x();
-//			y = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose().getTranslation().y();
+			targetX = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().x();
+			targetY = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().y();
+			x = mDriveController.getCurrentPose().getTranslation().x();
+			y = mDriveController.getCurrentPose().getTranslation().y();
 
 //			leftAppliedVolts = mData.drive.get(EDriveData.LEFT_VOLTAGE);
 //			rightAppliedVolts = mData.drive.get(EDriveData.RIGHT_VOLTAGE);

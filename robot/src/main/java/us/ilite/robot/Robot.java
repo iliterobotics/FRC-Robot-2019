@@ -15,9 +15,13 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.timing.TimedState;
-import com.team254.lib.trajectory.timing.TimingConstraint;
+import com.team254.lib.trajectory.TrajectoryUtil;
+import com.team254.lib.trajectory.timing.*;
 
+import com.team254.lib.util.Util;
+import us.ilite.common.Data;
+import us.ilite.common.lib.control.DriveController;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -115,8 +119,10 @@ public class Robot extends TimedRobot {
         mRunningModules.setModules();
 
         TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
-        List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(/*new CentripetalAccelerationConstraint(60.0)*/);
-        trajectory = mTrajectoryGenerator.generateTrajectory(false, TestAuto.kPath, kTrajectoryConstraints, 60.0, 40.0, 6.0);
+        List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(40.0));
+        trajectory = mTrajectoryGenerator.generateTrajectory(false, TestAuto.kPath, kTrajectoryConstraints, 100.0, 40.0, 12.0);
+        trajectory = TrajectoryUtil.mirrorTimed(trajectory);
+
 
         mSettings.writeToNetworkTables();
 
