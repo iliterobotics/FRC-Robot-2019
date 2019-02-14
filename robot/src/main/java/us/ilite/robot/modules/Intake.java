@@ -18,8 +18,9 @@ public class Intake extends Module {
 
     private VictorSPX mIntakeRoller;
 
+    // TODO change TalonSRX to BasicArm class
     // Wrist control
-    private TalonSRX mWrist;
+    private BasicArm mWrist;
 
     // Pneumatic for hatch/cargo mode toggle
     private Solenoid mSolenoid;
@@ -33,9 +34,6 @@ public class Intake extends Module {
     // Current wrist state
     private EWristPosition mWristPosition;
 
-    // Current solenoid state
-    private ESolenoidState mSolenoidState;
-
     public enum EWristPosition {
         GROUND(0.0), HANDOFF(0.0), STOWED(0.0);
 
@@ -47,7 +45,7 @@ public class Intake extends Module {
 
     }
     public enum ESolenoidState {
-        HATCH(true), CARGO(false);
+        HATCH(false), CARGO(true);
 
         public final boolean active;
 
@@ -62,10 +60,10 @@ public class Intake extends Module {
         mIntakeRoller = new VictorSPX(SystemSettings.kHatchIntakeSPXAddress);
     
         // Wrist control
-        mWrist = TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress);
+        mWrist = new BasicArm(TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress));
 
         // Solenoid for changing between cargo and hatch mode
-        mSolenoid = new Solenoid(-1);
+        mSolenoid = new Solenoid(SystemSettings.kIntakeSolenoidAddress);
 
         // Sensor checking if hatch is in intake
         mHatchBeam = new DigitalInput(SystemSettings.kIntakeBeamBreakAddress);
@@ -83,7 +81,10 @@ public class Intake extends Module {
 
     @Override
     public void update(double pNow) {
-        // mWrist.getSensorCollection().
+        // TODO Check this
+        if (mIntakeRoller.getMotorOutputPercent() > SystemSettings.kIntakeRollerCurrentLimit) stopRoller();
+
+        mWristAngle = mWrist.getAngle();
     }
 
     @Override
@@ -103,13 +104,13 @@ public class Intake extends Module {
     public void setWrist(EWristPosition pWristPosition) {
         switch(pWristPosition) {
             case GROUND:
-                setWristGround();
+                mWrist.setArmAngle(EWristPosition.GROUND);
                 mWristPosition = EWristPosition.GROUND;
             case HANDOFF:
-                setWristHandoff();
+                mWrist.setArmAngle(EWristPosition.HANDOFF);
                 mWristPosition = EWristPosition.HANDOFF;
             case STOWED:
-                setWristStowed();
+                mWrist.setArmAngle(EWristPosition.STOWED);
                 mWristPosition = EWristPosition.STOWED;
             default:
                 mLog.error("This message should not be displayed");
@@ -127,7 +128,7 @@ public class Intake extends Module {
 
     // TODO Speed depends on gamepiece? On robot speed? On both?
     public void setRollerPower(double pPower) {
-        // TODO set roller power
+        mIntakeRoller.set(ControlMode.Current, pPower);
     }
 
     /**
@@ -172,9 +173,6 @@ public class Intake extends Module {
         setRollerExtended(ESolenoidState.HATCH);
         // TODO step 3 flag
         setRollerPower(SystemSettings.kIntakeRollerHatchPower);
-        if () {
-            stopRoller();
-        }
     }
 
     /**
@@ -206,25 +204,6 @@ public class Intake extends Module {
      */
     public void setSolenoidState(ESolenoidState pSolenoidState) {
         mSolenoid.set(pSolenoidState.active);
-        mSolenoidState = pSolenoidState;
-    }
-    /**
-     * Stop rollers and set intake to "ground" position.
-     */
-    public void setWristGround() {
-
-    }
-    /**
-     * Stop rollers and set intake to "handoff" position.
-     */
-    public void setWristHandoff() {
-
-    }
-    /**
-     * Stop rollers and set intake to "stowed" position.
-     */
-    public void setWristStowed() {
-
     }
 
     /**
