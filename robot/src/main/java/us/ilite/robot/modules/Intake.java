@@ -9,7 +9,11 @@ import com.team254.lib.drivers.talon.TalonSRXFactory;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
+import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.types.drive.EDriveData;
+import us.ilite.common.types.manipulator.EIntake;
+import us.ilite.common.types.sensor.EPowerDistPanel;
 
 
 public class Intake extends Module {
@@ -27,13 +31,19 @@ public class Intake extends Module {
     private Solenoid mSolenoid;
 
     // Hatch beam break sensor
-    private DigitalInput mHatchBeam;
+    // private DigitalInput mHatchBeam;
 
     // Monitor the wrist SRX current angle
     private Double mWristAngle;
+    // Monitor the roller current and voltage
+    private double mIntakeRollerCurrent;
+    private double mIntakeRollerVoltage;
 
     // Current wrist state
     private EWristPosition mWristPosition;
+
+    // Data class for codex stuff
+    private Data mData;
 
     public enum EWristPosition {
         GROUND(0.0), HANDOFF(0.0), STOWED(0.0);
@@ -56,18 +66,21 @@ public class Intake extends Module {
 
     }
 
-    public Intake() {
+    public Intake(Data pData) {
         // Construction
         mIntakeRoller = new VictorSPX(SystemSettings.kHatchIntakeSPXAddress);
     
         // Wrist control
-        mWrist = new BasicArm(TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress));
+        TalonSRX tempTalonSRX = TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress);
+        mWrist = new BasicArm(tempTalonSRX);
 
         // Solenoid for changing between cargo and hatch mode
         mSolenoid = new Solenoid(SystemSettings.kIntakeSolenoidAddress);
 
         // Sensor checking if hatch is in intake
-        mHatchBeam = new DigitalInput(SystemSettings.kIntakeBeamBreakAddress);
+        // mHatchBeam = new DigitalInput(SystemSettings.kIntakeBeamBreakAddress);
+
+        this.mData = pData;
     }
 
     @Override
@@ -77,13 +90,18 @@ public class Intake extends Module {
 
     @Override
     public void periodicInput(double pNow) {
-        
+        mData.intake.set(EIntake.ARM_ANGLE, mWristAngle);
+        mData.intake.set(EIntake.ROLLER_CURRENT, mIntakeRollerCurrent);
+        mData.intake.set(EIntake.ROLLER_VOLTAGE, mIntakeRollerVoltage);
+        mData.intake.set(EIntake.SOLENOID_ACTIVE, mSolenoid.get() ? 1.0 : 0.0);
     }
 
     @Override
     public void update(double pNow) {
-        // TODO Check this
-        if (mIntakeRoller.getMotorOutputPercent() > SystemSettings.kIntakeRollerCurrentLimit) {
+        // EPowerDistPanel ID 12 (CURRENT12) corresponds to Intake Rollers
+        mIntakeRollerCurrent = mData.pdp.get(EPowerDistPanel.CURRENT12);
+        mIntakeRollerVoltage = mIntakeRoller.getMotorOutputVoltage();
+        if (mIntakeRollerCurrent > SystemSettings.kIntakeRollerCurrentLimit) {
             stopRoller();
         }
 
@@ -121,7 +139,7 @@ public class Intake extends Module {
     }
 
     /**
-     * Sets whether the roller arm is extended. In other words, sets whether the intake is in
+     * Sets whether the roller wrist is extended. In other words, sets whether the intake is in
      * "cargo mode" or "hatch mode".
      * @param pExtended
      */
@@ -131,6 +149,9 @@ public class Intake extends Module {
 
     // TODO Speed depends on gamepiece? On robot speed? On both?
     public void setRollerPower(double pPower) {
+        // Gets average speed: (left velocity + right velocity) / 2
+        Double speed = ( mData.drive.get(EDriveData.LEFT_VEL_IPS) + mData.drive.get(EDriveData.RIGHT_VEL_IPS) ) / 2;
+
         mIntakeRoller.set(ControlMode.PercentOutput, pPower);
     }
 
@@ -202,13 +223,13 @@ public class Intake extends Module {
         setWrist(EWristPosition.HANDOFF);
     }
 
-    /**
-     *
-     * @return The sensor value indicating whether we have acquired a hatch.
-     */
-    public boolean hasHatch() {
-        return mHatchBeam.get();
-    }
+    // /**
+    //  *
+    //  * @return The sensor value indicating whether we have acquired a hatch.
+    //  */
+    // public boolean hasHatch() {
+    //     return mHatchBeam.get();
+    // }
 
     /**
      *
