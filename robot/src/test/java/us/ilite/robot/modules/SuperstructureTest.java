@@ -79,6 +79,7 @@ public class SuperstructureTest {
         assertEquals(Superstructure.EAcquisitionState.HANDOFF, mSuperstructure.getAcquisitionState());
 
         when(mHatchFlower.hasHatch()).thenReturn(true);
+        when(mElevator.isAbovePosition(EElevatorPosition.HANDOFF_HEIGHT)).thenReturn(true);
         updateRobot(3);
 
         assertEquals(Superstructure.EAcquisitionState.STOWED, mSuperstructure.getAcquisitionState());
