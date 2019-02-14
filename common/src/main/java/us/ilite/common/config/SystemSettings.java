@@ -264,6 +264,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kIntakeWristEncoderA_Address = -1;
     public static int kIntakeWristEncoderB_Address = -1;
     public static double kIntakeWristCurrentLimit = -1.0;
+    public static double kIntakeRollerHatchPower = -1;
+    public static double kIntakeRollerCargoPower = -1;
 
     public static int kDriveTrainRightSRX1Address = 2;
     public static int kDriveTrainRightSPX2Address = 4;
