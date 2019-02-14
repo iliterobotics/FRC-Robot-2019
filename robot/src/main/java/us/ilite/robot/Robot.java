@@ -47,6 +47,9 @@ import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
+import us.ilite.robot.modules.Arm;
+import us.ilite.robot.modules.BasicArm;
+import us.ilite.robot.modules.MotionMagicArm;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.Limelight;
@@ -80,6 +83,10 @@ public class Robot extends TimedRobot {
     private HatchFlower mHatchFlower = new HatchFlower();
 
     private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mSuperstructure, mData);
+    
+    private Arm mArm = new BasicArm();
+    // private Arm mArm = new MotionMagicArm();
+    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData, mArm);
     private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
@@ -105,7 +112,11 @@ public class Robot extends TimedRobot {
         // Init the actual robot
         initTimer.reset();
         initTimer.start();
-        Logger.setLevel(ELevel.INFO);
+
+        mSettings.writeToNetworkTables();
+
+        // Logger.setLevel(ELevel.INFO);
+        Logger.setLevel(ELevel.ERROR);
         mLogger.info("Starting Robot Initialization...");
 
         mSettings.writeToNetworkTables();
@@ -165,10 +176,13 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         initMatchMetadata();
         mRunningModules.setModules(mDriverInput, mLimelight, mHatchFlower, mElevator);
+
+        mSettings.loadFromNetworkTables();
+        mRunningModules.setModules(mDriverInput, mLimelight);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
-        mLoopManager.setRunningLoops(mDrive);
+        mLoopManager.setRunningLoops(mDrive, mArm);
         mLoopManager.start();
     }
 

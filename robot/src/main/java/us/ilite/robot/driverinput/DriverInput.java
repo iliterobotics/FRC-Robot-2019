@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import us.ilite.common.Data;
 import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.lib.util.RangeScale;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
@@ -99,6 +100,7 @@ public class DriverInput extends Module {
             updateElevator();
         } 
 
+
     }
 
     private void updateHatchFlower() {
@@ -184,6 +186,53 @@ public class DriverInput extends Module {
 
         driveTrain.setDriveMessage(driveMessage);
 
+    }
+
+    /**
+     * Commands the superstructure to update where the arm should move 
+     * depending on joystick movements. (in progress)
+     */
+    protected void updateArm()
+    {
+        double mult = 1.0;
+        //temporarily assuming this setpoint will be set by the operator Y button
+        if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_UP ) )
+        {
+            mArm.setArmAngle(SystemSettings.ArmPosition.FULLY_UP.getAngle());
+        }
+        //temporarily assuming this setpoint will be set by the operator A button
+        else if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_DOWN ) )
+        {
+            mArm.setArmAngle(SystemSettings.ArmPosition.FULLY_DOWN.getAngle());
+        }
+        //temporarily assuming this setpoint will be set by the operator B button
+        else if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_OUT ) )
+        {
+            mArm.setArmAngle(SystemSettings.ArmPosition.FULLY_OUT.getAngle());
+        }
+        //temporarily assuming the arm will be controlled by the operator joystick
+        else if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_MOTION ) )
+        {
+            //mArm.setArmAngle( mArm.getCurrentArmAngle() + mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) );
+            // System.out.println(mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
+
+            // // Drive the arm directly with the joystick.  Joystick output is -1 to 1
+            // // Talon desired output range is -1 to 1
+            // // Scale the output by the button pressed
+            // // which of these is correct???  both?
+            // mArm.setDesiredOutput( mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * mult );
+            // mArm.setDesiredOutput( mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * mult );
+
+            // System.out.println( "+++++++++++++++DriverInput operator joystick: " + mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
+
+            // Drive the arm to track the joystick
+            // Assuming a mapping of 0 to 135 deg for the joysticks -1 to 1
+            // angle = ((joystick + 1)/2) * 135
+            // double angle = (mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) + 1 ) / 2 * 135;
+            double angle = this.armJoyStickToAngleScaler.scaleAtoB(mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
+            mArm.setArmAngle(angle);
+
+        }
     }
 
     /**
