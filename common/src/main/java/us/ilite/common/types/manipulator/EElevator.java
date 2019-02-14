@@ -7,6 +7,7 @@ public enum EElevator implements CodexOf<Double> {
 
     DESIRED_POWER,
     OUTPUT_POWER,
+    DESIRED_ENCODER_TICKS,
     CURRENT_ENCODER_TICKS,
     CURRENT_NEO_TICKS,
     CURRENT,
