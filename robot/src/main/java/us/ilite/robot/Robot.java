@@ -86,7 +86,7 @@ public class Robot extends TimedRobot {
     
     private Arm mArm = new BasicArm();
     // private Arm mArm = new MotionMagicArm();
-    private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData, mArm);
+    //private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData, mArm);
     private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;

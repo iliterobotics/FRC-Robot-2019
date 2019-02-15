@@ -34,6 +34,9 @@ public class DriverInput extends Module {
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
 
+    private Arm mArm;
+    private RangeScale armJoyStickToAngleScaler;
+
     protected Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
 
     private Data mData;
@@ -229,6 +232,7 @@ public class DriverInput extends Module {
             // Assuming a mapping of 0 to 135 deg for the joysticks -1 to 1
             // angle = ((joystick + 1)/2) * 135
             // double angle = (mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) + 1 ) / 2 * 135;
+            
             double angle = this.armJoyStickToAngleScaler.scaleAtoB(mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
             mArm.setArmAngle(angle);
 
