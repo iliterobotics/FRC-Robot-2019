@@ -231,6 +231,9 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // grab solenoid and engaging the push solenoid.
     public static double kHatchFlowerGrabToPushTransitionTimeSec = 0.250;
 
+    public static double kHatchFlowerExtendStatusTimerDuration = 1.0;
+    public static double kHatchFlowerPushStatusTimerDuration = 1.0;
+
 
     // =============================================================================
     // 2019 Module Addresses
@@ -253,6 +256,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static int kHatchFlowerOpenCloseSolenoidAddress = 5;
     public static int kHatchFlowerExtensionSolenoidAddress = 6;
+    public static int kHatchFlowerPushSolenoidAddress = 7;
 
     public static int kHatchIntakeSPXAddress = 11;
     public static int kCargoIntakeSPXLowerAddress = 12;
