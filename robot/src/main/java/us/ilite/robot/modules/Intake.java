@@ -18,9 +18,14 @@ import us.ilite.common.types.sensor.EPowerDistPanel;
 
 public class Intake extends Module {
 
-    // TODO General: add pneumatic/wrist constraint; add flag for intake process; check code
+    // TODO General: add flag for intake process; check code
 
+    private final double kSafeAngle = SystemSettings.kIntakeWristAngleSafeSolenoidThreshold;
     private final boolean kHandoffSafe;
+    private final double kZero = 0.0;
+    private final String kDefaultError = "This message should not be displayed";
+    private final double kTrueBoolean = 1.0;
+    private final double kFalseBoolean = 0.0;
 
     private ILog mLog = Logger.createLog(Intake.class);
 
@@ -68,10 +73,10 @@ public class Intake extends Module {
     public enum ESolenoidState {
         HATCH(false), CARGO(true);
 
-        public final boolean kActive;
+        public final boolean kExtended;
 
         private ESolenoidState(boolean pSolenoid) {
-            this.kActive = pSolenoid;
+            this.kExtended = pSolenoid;
         }
 
     }
@@ -99,8 +104,9 @@ public class Intake extends Module {
         // mHatchBeam = new DigitalInput(SystemSettings.kIntakeBeamBreakAddress);
 
         // If the handoff angle is larger than the safe angle constraint
-        kHandoffSafe = EWristPosition.HANDOFF.kWristAngleDegrees > SystemSettings.kIntakeWristAngleSafeSolenoidThreshold;
+        kHandoffSafe = EWristPosition.HANDOFF.kWristAngleDegrees > kSafeAngle;
     }
+
 
     @Override
     public void modeInit(double pNow) {
@@ -112,7 +118,7 @@ public class Intake extends Module {
         mData.intake.set(EIntake.ARM_ANGLE, mWristAngle);
         mData.intake.set(EIntake.ROLLER_CURRENT, mIntakeRollerCurrent);
         mData.intake.set(EIntake.ROLLER_VOLTAGE, mIntakeRollerVoltage);
-        mData.intake.set(EIntake.SOLENOID_ACTIVE, mSolenoid.get() ? 1.0 : 0.0); // 1.0 = true; 0.0 = false
+        mData.intake.set(EIntake.SOLENOID_EXTENDED, mSolenoid.get() ? kTrueBoolean : kFalseBoolean);
     }
 
     @Override
@@ -137,6 +143,7 @@ public class Intake extends Module {
         return false;
     }
 
+    
     /**
      * Sets the wrist position to a preset position.
      * @param pWristPosition
@@ -153,7 +160,7 @@ public class Intake extends Module {
                 mWrist.setArmAngle(EWristPosition.STOWED.kWristAngleDegrees);
                 mWristPosition = EWristPosition.STOWED;
             default:
-                mLog.error("This message should not be displayed");
+                mLog.error(kDefaultError);
         }
     }
 
@@ -174,11 +181,11 @@ public class Intake extends Module {
                 mIntakeState = pIntakeState;
 
             case HANDOFF:
-                // If handoff angle is not in safe angle constraint
+                // If handoff angle is not in the safe angle constraint
                 if (!kHandoffSafe) {
-                    // if arm at ground and solenoid is active, dont raise
-                    if (mWristPosition.equals(EWristPosition.GROUND) && mSolenoidState.kActive) {
-                        return;
+                    // if arm at ground and solenoid is extended, retract the solenoid
+                    if (mWristPosition.equals(EWristPosition.GROUND) && mSolenoidState.kExtended) {
+                        setSolenoid(ESolenoidState.HATCH);
                     }
                 }
 
@@ -186,8 +193,8 @@ public class Intake extends Module {
                 mIntakeState = pIntakeState;
 
             case STOWED:
-                // if the arm isn't already in stowed position and solenoid is active, release the solenoid
-                if (!mWristPosition.equals(EWristPosition.STOWED) && mSolenoidState.kActive) {
+                // If the arm isn't already in stowed position and solenoid is extended, retract the solenoid
+                if (!mWristPosition.equals(EWristPosition.STOWED) && mSolenoidState.kExtended) {
                     setSolenoid(ESolenoidState.HATCH);
                 }
 
@@ -195,7 +202,7 @@ public class Intake extends Module {
                 mIntakeState = pIntakeState;
 
             default:
-                mLog.error("This message should not be displayed");
+                mLog.error(kDefaultError);
         }
     }
 
@@ -205,14 +212,14 @@ public class Intake extends Module {
      * @param pExtended
      */
     public void setSolenoid(ESolenoidState pSolenoidState) {
-        // If solenoid wants to deploy and wrist is at unsafe angle, don't deploy pneumatic
-        if (pSolenoidState.kActive && mWristAngle > SystemSettings.kIntakeWristAngleSafeSolenoidThreshold) return;
+        // If solenoid wants to deploy and wrist is at unsafe angle, don't deploy pneumatic; fail-safe check
+        if (pSolenoidState.kExtended && mWristAngle > kSafeAngle) return;
 
-        mSolenoid.set(pSolenoidState.kActive);
+        mSolenoid.set(pSolenoidState.kExtended);
         mSolenoidState = pSolenoidState;
     }
 
-    // TODO Speed depends on gamepiece? On robot speed? On both?
+    // TODO Power depends on gamepiece? On robot speed? On both?
     /**
      * Changes the solenoid state.
      */
@@ -227,15 +234,15 @@ public class Intake extends Module {
      * Sets roller current to zero.
      */
     public void stopRoller() {
-        double curr = 0.0;
-        mIntakeRoller.set(ControlMode.PercentOutput, curr);
+        double current = kZero;
+        mIntakeRoller.set(ControlMode.PercentOutput, current);
     }
     /**
      * Stops the wrist.
      */
     public void stopWrist() {
-        double curr = 0.0;
-        mWrist.setDesiredOutput(curr);
+        double current = kZero;
+        mWrist.setDesiredOutput(current);
     }
 
     /**
@@ -270,6 +277,13 @@ public class Intake extends Module {
     // public boolean hasHatch() {
     //     return mHatchBeam.get();
     // }
+
+    /**
+     * Intake state getter method.
+     */
+    public EIntakeState getIntakeState() {
+        return mIntakeState;
+    }
 
     /**
      * Checks if the wrist is at a given position.
