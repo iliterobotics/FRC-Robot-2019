@@ -351,7 +351,7 @@ public class Elevator extends Module {
 
     // This method is made to be called from outside the class
     // the state should only reach set point when driver input call it
-    public void setDesirecPosition(EElevatorPosition pDesiredPosition) {
+    public void setDesiredPosition(EElevatorPosition pDesiredPosition) {
         mCurrentState = EElevatorState.SET_POSITION;
         mDesiredPosition = pDesiredPosition;
         mPidController.setSetpoint(pDesiredPosition.mEncoderThreshold()); // Our set point is the threshold of the
