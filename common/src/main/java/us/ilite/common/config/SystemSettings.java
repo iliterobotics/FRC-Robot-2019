@@ -338,6 +338,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kIntakeRollerCurrentLimit = -1;
     public static double kIntakeRollerHatchPower = -1;
     public static double kIntakeRollerCargoPower = -1;
+    public static double kIntakeWristAngleSafeSolenoidThreshold = -1;
 
     public static int kDriveTrainRightSRX1Address = 2;
     public static int kDriveTrainRightSPX2Address = 4;
