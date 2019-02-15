@@ -64,8 +64,9 @@ public class Elevator extends Module {
         // Create default NEO and set the ramp rate
         mMasterElevator = SparkMaxFactory.createDefaultSparkMax(kCansparkId, MotorType.kBrushless);
         mMasterElevator.setIdleMode(IdleMode.kBrake);
-        mMasterElevator.setRampRate(SystemSettings.kELevatorControlLoopPeriod);
-        mMasterElevator.setSmartCurrentLimit(SystemSettings.kElevatorCurrentLimit);
+        mMasterElevator.setRampRate(0.01);
+        mMasterElevator.setSmartCurrentLimit(80);
+    
 
         // We start at the bottom
         mAtBottom = true;
@@ -100,7 +101,7 @@ public class Elevator extends Module {
     }
 
     public void update(double pNow) {
-        System.out.println(mData.elevator);
+        // System.out.println(mData.elevator);
 
         mCurrentTime = pNow;
 
@@ -111,9 +112,16 @@ public class Elevator extends Module {
 
 //        updateElevatorState(pNow);
         double output  = calculateDesiredPower(mCurrentState);
-        output = Util.limit(output, -0.10d, 0.10d); // 10% of the desired power; Used for testing purposes.
+        output = Util.limit(output, -1, 1); // 10% of the desired power; Used for testing purposes.
 
         mMasterElevator.set(output);
+        // System.out.println("Power " + output);
+        // System.out.println("Current "+ getCurrent());
+        // System.out.println("Voltage " + mMasterElevator);
+
+        mData.kSmartDashboard.putDouble("Power", output);
+        mData.kSmartDashboard.putDouble("Current", mMasterElevator.getOutputCurrent());
+        mData.kSmartDashboard.putDouble("Desired Output", output);
 
         mData.kLoggingTable.putDouble("Current Ticks", (double) getCurrentEncoderTicks());
 
@@ -299,7 +307,7 @@ public class Elevator extends Module {
     }
     /**
      * Returns true if the encoder has reached the upper
-     * limit of the elevator, which is based on if it is moving up
+     * at of the elevator, which is based on if it is moving up
      * and if it is drawing more current than is acceptable.
      * @return true if the elevator has reached the upper limit, false
      * if not.

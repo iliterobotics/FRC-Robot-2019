@@ -134,7 +134,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // public static int kLowerElevatorEncoderThreshold = 0;
     public static double kElevatorMinPower = -1.0;
     public static double kElevatorMaxPower = 1.0;
-    public static int kElevatorCurrentLimit = 10;
+    public static int kElevatorCurrentLimit = 30;
 
     // public static int kCansparkMasterId = 0;
     // public static int kTalonId = 0;
