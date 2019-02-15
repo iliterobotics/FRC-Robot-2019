@@ -59,8 +59,9 @@ public class Elevator extends Module {
         // Create default NEO and set the ramp rate
         mMasterElevator = SparkMaxFactory.createDefaultSparkMax(kCansparkId, MotorType.kBrushless);
         mMasterElevator.setIdleMode(IdleMode.kBrake);
-        mMasterElevator.setRampRate(0.01);
-        mMasterElevator.setSmartCurrentLimit(80);
+        mMasterElevator.setRampRate(SystemSettings.kElevatorRampRate);
+        mMasterElevator.setSmartCurrentLimit(SystemSettings.kElevatorSmartCurrentLimit);
+        mMasterElevator.setSecondaryCurrentLimit(SystemSettings.kElevatorSecondaryCurrentLimit);
     
 
         // We start at the bottom
@@ -304,7 +305,7 @@ public class Elevator extends Module {
      * if not.
      */
     private boolean reachedUpperLimit() {
-        return (mEncoder.getDirection() && getCurrent() >= SystemSettings.kElevatorCurrentLimit);
+        return (mEncoder.getDirection() && getCurrent() >= SystemSettings.kElevatorSmartCurrentLimit);
     }
 
     /**

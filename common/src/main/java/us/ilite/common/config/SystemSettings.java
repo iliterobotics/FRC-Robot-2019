@@ -128,12 +128,14 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static PIDGains kElevatorPositionGains = new PIDGains(0.1, 0.0, 0.0, 0.0);
     public static double kElevatorF = 0;
 
-    public static double kELevatorControlLoopPeriod = 0.01;
     // public static int kUpperElevatorEncoderThreshold = 0; //Will be calculated on the regular
     // public static int kLowerElevatorEncoderThreshold = 0;
     public static double kElevatorMinPower = -1.0;
     public static double kElevatorMaxPower = 1.0;
-    public static int kElevatorCurrentLimit = 30;
+
+    public static double kElevatorRampRate = 0.01;
+    public static int kElevatorSmartCurrentLimit = 80;
+    public static int kElevatorSecondaryCurrentLimit = 100;
 
     // public static int kCansparkMasterId = 0;
     // public static int kTalonId = 0;
