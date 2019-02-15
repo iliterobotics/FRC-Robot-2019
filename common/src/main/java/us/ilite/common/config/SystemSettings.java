@@ -327,19 +327,19 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kHatchIntakeSPXAddress = 11;
     public static int kCargoIntakeSPXLowerAddress = 12;
     // TO-DO DIO spreadsheet empty
-    public static int kIntakeBeamBreakAddress = -1;
+    // public static int kIntakeBeamBreakAddress = -1;
 
     public static int kIntakeWristSRXAddress = 16;
     // TO-DO Writs encoder addresses?
     public static int kIntakeWristEncoderA_Address = -1;
     public static int kIntakeWristEncoderB_Address = -1;
-    public static int kIntakeSolenoidAddress = -1;
+    public static int kIntakeSolenoidAddress = 2;
     public static double kIntakeWristCurrentLimit = -1.0;
-    public static double kIntakeRollerCurrentLimit = -1;
-    public static double kIntakeRollerHatchPower = -1;
-    public static double kIntakeRollerCargoPower = -1;
-    public static double kIntakeRollerResistancePower = -1;
-    public static double kIntakeWristAngleSafeSolenoidThreshold = -1;
+    public static double kIntakeRollerCurrentLimit = -1.0;
+    public static double kIntakeRollerHatchPower = -1.0;
+    public static double kIntakeRollerCargoPower = -1.0;
+    public static double kIntakeRollerResistancePower = -1.0;
+    public static double kIntakeWristAngleSafeSolenoidThreshold = -1.0;
 
     public static int kDriveTrainRightSRX1Address = 2;
     public static int kDriveTrainRightSPX2Address = 4;
