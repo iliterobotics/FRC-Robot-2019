@@ -192,6 +192,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
 
     //////// BasicArm Constants /////////
+    // TODO We may need to increase kD for stability
     // PID Gains                                        kP,    kI,    kD
     public static PIDGains kArmPIDGains = new PIDGains( 0.01, 0.000, 0.0008 );
     // Dampen as we get close to our target
@@ -200,8 +201,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Range +/- of target angle where we apply the landing PID Gains
     public static double kArmLandingRangeAngle = 10.0;
 
-    // For gravity compensation Kg = % power to hold arm horizontal
-    public static double kArmKg = 0.7;
+    // We measured .7 volts on the motor to hold the arm horizontal
+    // For gravity compensation Kg = % power to hold arm horizontal, which is
+    // the measured voltage / 12 volts
+    public static double kArmKg = 0.7/12.0;
 
     // Control power clamping limits
     public static double kArmPIDOutputMaxLimit = 1.0; // max 1.0

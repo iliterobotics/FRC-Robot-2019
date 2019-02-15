@@ -35,7 +35,7 @@ public class DriverInput extends Module {
     private Joystick mOperatorJoystick;
 
     private Arm mArm;
-    private RangeScale armJoyStickToAngleScaler;
+    private RangeScale armJoyStickToAngleScaler = new RangeScale(-1.0, 1.0, SystemSettings.kArmMinAngle, SystemSettings.kArmMaxAngle);
 
     protected Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
 
@@ -58,8 +58,9 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Superstructure pSuperstructure, Data pData) {
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Superstructure pSuperstructure, Data pData, Arm pArm) {
         this(pDrivetrain, pElevator, pHatchFlower, pSuperstructure, pData, false);
+        this.mArm = pArm;
     }
 
     @Override
@@ -101,6 +102,7 @@ public class DriverInput extends Module {
         if (!mSuperstructure.isRunningCommands()) {
             updateDriveTrain();
             updateElevator();
+            updateArm();
         } 
 
 
