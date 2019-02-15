@@ -18,8 +18,6 @@ import us.ilite.common.types.sensor.EPowerDistPanel;
 
 public class Intake extends Module {
 
-    // TODO General: add flag for intake process; check code
-
     private final double kSafeAngle = SystemSettings.kIntakeWristAngleSafeSolenoidThreshold;
     private final boolean kHandoffSafe;
     private final double kZero = 0.0;
@@ -27,37 +25,36 @@ public class Intake extends Module {
     private final double kTrueBoolean = 1.0;
     private final double kFalseBoolean = 0.0;
 
+    // Logging fields
     private ILog mLog = Logger.createLog(Intake.class);
+    private Data mData;
 
+    // Roller fields
     private VictorSPX mIntakeRoller;
+    private boolean mHasHatch;
+    private double mIntakeRollerCurrent;
+    private double mIntakeRollerVoltage;
 
-    // Wrist control
+    // Wrist/Arm fields
     private BasicArm mWrist;
+    private Double mWristAngle;
 
-    // Pneumatic for hatch/cargo roller mode toggle
+    // Pneumatic/Solenoid for hatch/cargo roller mode toggle
     private Solenoid mSolenoid;
 
     // Hatch beam break sensor
     // private DigitalInput mHatchBeam;
 
-    // Monitor the wrist SRX current angle
-    private Double mWristAngle;
-    // Monitor the roller current and voltage
-    private double mIntakeRollerCurrent;
-    private double mIntakeRollerVoltage;
-
-    // Current intake states
+    // Present intake states
     private EIntakeState mIntakeState;
     private EWristPosition mWristPosition;
     private ESolenoidState mSolenoidState;
 
-    // Data class for codex stuff
-    private Data mData;
-
     /**
-     * Enumeration for the wrist position based on it's angle
+     * Wrist position based on angle
      */
     public enum EWristPosition {
+        // TODO update wrist position angles
         GROUND(0.0), HANDOFF(0.0), STOWED(0.0);
 
         public final double kWristAngleDegrees;
@@ -85,7 +82,7 @@ public class Intake extends Module {
      * The general intake state
      */
     public enum EIntakeState {
-        GROUND_HATCH, GROUND_CARGO, HANDOFF, STOWED;
+        GROUND_HATCH, GROUND_CARGO, HANDOFF, STOWED, STOPPED;
     }
 
     public Intake(Data pData) {
@@ -128,6 +125,7 @@ public class Intake extends Module {
         mIntakeRollerVoltage = mIntakeRoller.getMotorOutputVoltage();
         if (mIntakeRollerCurrent > SystemSettings.kIntakeRollerCurrentLimit) {
             stopRoller();
+            mHasHatch = true;
         }
 
         mWristAngle = mWrist.getCurrentArmAngle();
@@ -143,10 +141,10 @@ public class Intake extends Module {
         return false;
     }
 
-    
+
     /**
      * Sets the wrist position to a preset position.
-     * @param pWristPosition
+     * @param pWristPosition desired wrist position
      */
     public void setWrist(EWristPosition pWristPosition) {
         switch(pWristPosition) {
@@ -166,21 +164,30 @@ public class Intake extends Module {
 
     /**
      * The big boi method for controlling the intake.
-     * @param pIntakeState 
+     * @param pIntakeState desired intake state
      */
     public void setIntakeState(EIntakeState pIntakeState) {
+        // stopIntake();
         switch(pIntakeState) {
             case GROUND_HATCH:
+                mHasHatch = false;
                 setWrist(EWristPosition.GROUND);
                 setSolenoid(ESolenoidState.HATCH);
+                setRoller();
                 mIntakeState = pIntakeState;
 
             case GROUND_CARGO:
+                mHasHatch = false;
                 setWrist(EWristPosition.GROUND);
                 setSolenoid(ESolenoidState.CARGO);
+                setRoller();
                 mIntakeState = pIntakeState;
 
             case HANDOFF:
+                // TODO may or may not need: adds resistance to roller to prevent hatch slippage
+                if (mHasHatch) {
+                    setRollerResistance();
+                }
                 // If handoff angle is not in the safe angle constraint
                 if (!kHandoffSafe) {
                     // if arm at ground and solenoid is extended, retract the solenoid
@@ -193,6 +200,8 @@ public class Intake extends Module {
                 mIntakeState = pIntakeState;
 
             case STOWED:
+                mHasHatch = false;
+                stopRoller();
                 // If the arm isn't already in stowed position and solenoid is extended, retract the solenoid
                 if (!mWristPosition.equals(EWristPosition.STOWED) && mSolenoidState.kExtended) {
                     setSolenoid(ESolenoidState.HATCH);
@@ -201,15 +210,50 @@ public class Intake extends Module {
                 setWrist(EWristPosition.STOWED);
                 mIntakeState = pIntakeState;
 
+            case STOPPED:
+                stopIntake();
+                
             default:
                 mLog.error(kDefaultError);
         }
     }
 
     /**
+     * Main method for controlling the rollers.
+     * Roller power is based on current solenoid state (HATCH/CARGO).
+     */
+    public void setRoller() {
+        switch(mSolenoidState) {
+            case HATCH:
+                setRollerPower(SystemSettings.kIntakeRollerHatchPower);
+            case CARGO:
+                setRollerPower(SystemSettings.kIntakeRollerCargoPower);
+            default:
+                mLog.error(kDefaultError);
+        }
+    }
+    /**
+     * Gives rollers a small amount of resistance so hatch doesn't fall out
+     */
+    public void setRollerResistance() {
+        setRollerPower(SystemSettings.kIntakeRollerResistancePower);
+    }
+    // TODO Power depends on gamepiece? On robot speed? On both?
+    /**
+     * Starts the intake roller.
+     * @param pPower percent of power to use
+     */
+    public void setRollerPower(double pPower) {
+        // Gets average speed: (left velocity + right velocity) / 2
+        // Double speed = ( mData.drive.get(EDriveData.LEFT_VEL_IPS) + mData.drive.get(EDriveData.RIGHT_VEL_IPS) ) / 2;
+
+        mIntakeRoller.set(ControlMode.PercentOutput, pPower);
+    }
+
+    /**
      * Sets the solenoid state.
      * i.e. sets whether the intake is in "cargo mode" or "hatch mode".
-     * @param pExtended
+     * @param pSolenoidState desired solenoid state
      */
     public void setSolenoid(ESolenoidState pSolenoidState) {
         // If solenoid wants to deploy and wrist is at unsafe angle, don't deploy pneumatic; fail-safe check
@@ -217,17 +261,6 @@ public class Intake extends Module {
 
         mSolenoid.set(pSolenoidState.kExtended);
         mSolenoidState = pSolenoidState;
-    }
-
-    // TODO Power depends on gamepiece? On robot speed? On both?
-    /**
-     * Changes the solenoid state.
-     */
-    public void setRollerPower(double pPower) {
-        // Gets average speed: (left velocity + right velocity) / 2
-        // Double speed = ( mData.drive.get(EDriveData.LEFT_VEL_IPS) + mData.drive.get(EDriveData.RIGHT_VEL_IPS) ) / 2;
-
-        mIntakeRoller.set(ControlMode.PercentOutput, pPower);
     }
 
     /**
@@ -248,7 +281,7 @@ public class Intake extends Module {
     /**
      * Stop the roller and wrist.
      */
-    public void stop() {
+    public void stopIntake() {
         stopRoller();
         stopWrist();
     }
@@ -279,15 +312,22 @@ public class Intake extends Module {
     // }
 
     /**
-     * Intake state getter method.
+     * @return returns intake state
      */
     public EIntakeState getIntakeState() {
         return mIntakeState;
     }
 
     /**
-     * Checks if the wrist is at a given position.
-     * @param pWristPosition
+     * @return is hatch in intake
+     */
+    public boolean getHasHatch() {
+        return mHasHatch;
+    }
+
+    /**
+     * Asks if the a given wrist position matches the current wrist position.
+     * @param pWristPosition position in question
      * @return Whether the wrist had been at the specified setpoint for a certain amount of time within a certain deadband.
      */
     public boolean isAtPosition(EWristPosition pWristPosition) {
