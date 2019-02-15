@@ -82,11 +82,11 @@ public class Robot extends TimedRobot {
     private Elevator mElevator = new Elevator(mData);
     private HatchFlower mHatchFlower = new HatchFlower();
 
-    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mSuperstructure, mData);
-    
     private Arm mArm = new BasicArm();
     // private Arm mArm = new MotionMagicArm();
-    //private DriverInput mDriverInput = new DriverInput(mDrive, mSuperstructure, mData, mArm);
+
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mSuperstructure, mData, mArm);
+    
     private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
