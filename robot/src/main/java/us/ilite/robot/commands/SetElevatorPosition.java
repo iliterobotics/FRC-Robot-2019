@@ -3,13 +3,13 @@ package us.ilite.robot.commands;
 import us.ilite.robot.modules.EElevatorPosition;
 import us.ilite.robot.modules.Elevator;
 
-public class ElevatorToPosition extends ACommand {
+public class SetElevatorPosition extends ACommand {
 
     private final Elevator mElevator;
 
     private final EElevatorPosition mDesiredPosition;
 
-    public ElevatorToPosition(Elevator pElevator, EElevatorPosition pDesiredPosition) {
+    public SetElevatorPosition(Elevator pElevator, EElevatorPosition pDesiredPosition) {
         mElevator = pElevator;
         mDesiredPosition = pDesiredPosition;
     }
