@@ -143,7 +143,7 @@ public class BasicArm extends Arm {
          double output = this.calculateOutput();
 
          // Add the gravity compensation
-        //  output += SystemSettings.kArmKg * Math.cos( this.ticksToAngle(this.currentNumTicks) - 90.0 );
+         output += SystemSettings.kArmKg * Math.cos( this.ticksToAngle(this.currentNumTicks) - 90.0 );
         
         // Calculate the current/voltage ratio to detect a motor stall
         double current = talon.getOutputCurrent();
@@ -247,6 +247,7 @@ public class BasicArm extends Arm {
 
         // System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ min = " + minOutputSeen + " max= " + maxOutputSeen);
 
+        SmartDashboard.putNumber("BasicArmSetOutput", output);
         talon.set(ControlMode.PercentOutput, output);
         
     }
