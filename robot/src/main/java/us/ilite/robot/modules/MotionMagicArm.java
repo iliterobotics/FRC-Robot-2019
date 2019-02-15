@@ -111,6 +111,46 @@ public class MotionMagicArm extends Arm
         talon.configAllowableClosedloopError(0, 2, SystemSettings.CTRE_TIMEOUT_INIT);
     }
 
+    public MotionMagicArm( TalonSRX talon )
+    {
+        this.talon = talon;
+
+        int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
+        int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
+
+        this.currentNumTicks = 0;
+        // pid = new PIDController( SystemSettings.kArmPIDGains /*new PIDGains(kP, kI, kD)*/, SystemSettings.kControlLoopPeriod );
+        // pid.setInputRange( minTickPosition, maxTickPosition ); //min and max ticks of arm
+        if ( talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.kLongCANTimeoutMs) != ErrorCode.OK ) {
+            mLogger.error("ArmMotionMagic talon.configSelectedFeedbackSensor error");
+        }
+        talon.setSelectedSensorPosition(0);
+        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5);
+
+        // init the timer
+        this.mTimer = new Timer();
+        this.mTimer.reset();
+
+        // Protect the motors and protect from brown out
+        talon.configContinuousCurrentLimit(40, 0);
+        talon.configPeakCurrentLimit(60, 0);
+        talon.configPeakCurrentDuration(100, 0);
+        talon.enableCurrentLimit(true);
+
+        talon.setNeutralMode(NeutralMode.Brake);
+
+        talon.selectProfileSlot(0, 0);
+        talon.config_kP(0, SystemSettings.kArmPidP, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kI(0, SystemSettings.kArmPidI, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kD(0, SystemSettings.kArmPidD, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kF(0, SystemSettings.kArmPidF, SystemSettings.CTRE_TIMEOUT_INIT);
+        
+        setArmSoftLimits(minTickPosition, maxTickPosition);
+        setArmMotionProfile(SystemSettings.K_ARM_ACCELERATION, SystemSettings.K_ARM_CRUISE);
+
+        talon.configAllowableClosedloopError(0, 2, SystemSettings.CTRE_TIMEOUT_INIT);
+    }
+
     @Override
     public void modeInit(double pNow)
     {

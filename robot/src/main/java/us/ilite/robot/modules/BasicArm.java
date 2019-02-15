@@ -43,15 +43,32 @@ public class BasicArm extends Arm {
     // Constants used for translating ticks to angle, values based on ticks per full rotation
     private double tickPerDegree = SystemSettings.kArmPositionEncoderTicksPerRotation / 360.0;
     private double degreePerTick = 360.0 / SystemSettings.kArmPositionEncoderTicksPerRotation;
-    
+
     public BasicArm()
     {
         int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
         int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
 
         this.currentNumTicks = 0;
-        pid = new PIDController( SystemSettings.kArmPIDGains /*new PIDGains(kP, kI, kD)*/, SystemSettings.kControlLoopPeriod );
-        pid.setInputRange( minTickPosition, maxTickPosition ); //min and max ticks of arm
+        pid = new PIDController( SystemSettings.kArmPIDGains /*new PIDGains(kP, kI, kD)*/, minTickPosition, maxTickPosition, SystemSettings.kControlLoopPeriod );
+        talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.kLongCANTimeoutMs);
+        talon.setSelectedSensorPosition(0);
+        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5);
+
+        // init the timer
+        this.mTimer = new Timer();
+        this.mTimer.reset();
+    }
+
+    public BasicArm(TalonSRX talon)
+    {
+        this.talon = talon;
+        
+        int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
+        int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
+
+        this.currentNumTicks = 0;
+        pid = new PIDController( SystemSettings.kArmPIDGains /*new PIDGains(kP, kI, kD)*/, minTickPosition, maxTickPosition, SystemSettings.kControlLoopPeriod );
         talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.kLongCANTimeoutMs);
         talon.setSelectedSensorPosition(0);
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5);
