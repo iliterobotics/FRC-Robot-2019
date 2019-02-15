@@ -102,6 +102,7 @@ public class DriverInput extends Module {
         if (!mSuperstructure.isRunningCommands()) {
             updateDriveTrain();
             updateElevator();
+            updateArm();
         } 
 
 

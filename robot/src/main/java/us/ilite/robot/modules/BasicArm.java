@@ -324,6 +324,8 @@ public class BasicArm extends Arm {
         // TODO Parameterize the angle limits
         // Constrain the angle to the allowed values
         // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ angle = " + angle);
+        SmartDashboard.putNumber("ArmCommandedAngle", angle);
+
         angle = Util.limit(angle, SystemSettings.kArmMinAngle, SystemSettings.kArmMaxAngle);
         // this.desiredNumTicks = angleToTicks( angle );
         this.desiredNumTicks = angleToTicks( angle );

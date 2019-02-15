@@ -33,10 +33,10 @@ public class DriverInputTest {
     // We want to see Superstructure's actual behavior, so we make it a spy
     private Superstructure mSuperstructure;
     @Mock private Elevator mElevator;
+    @Mock private Arm mArm;
 
 
     private DriverInput mDriverInput;
-    private Arm mArm;
 
     private Data mData;
     private Clock mClock;
