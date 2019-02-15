@@ -133,11 +133,11 @@ public class DriverInput extends Module {
 
 
          if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_BOTTOM_POSITION_ELEVATOR)) {
-            mElevator.setDesirecPosition(EElevatorPosition.BOTTOM);
+            mElevator.setDesiredPosition(EElevatorPosition.BOTTOM);
         } else if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_MIDDLE_POSITION_ELEVATOR)) {
-            mElevator.setDesirecPosition(EElevatorPosition.MIDDLE);
+            mElevator.setDesiredPosition(EElevatorPosition.MIDDLE);
         } else if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_TOP_POSITION_ELEVATOR)) {
-            mElevator.setDesirecPosition(EElevatorPosition.TOP);
+            mElevator.setDesiredPosition(EElevatorPosition.TOP);
         } else if (mData.driverinput.isSet(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR)) {
              double power = mData.operatorinput.get(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR);
              mElevator.setDesiredPower(throttle);

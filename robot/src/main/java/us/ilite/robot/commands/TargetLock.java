@@ -1,7 +1,5 @@
 package us.ilite.robot.commands;
 
-import java.util.Optional;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.codex.Codex;
@@ -13,9 +11,8 @@ import us.ilite.common.types.ETargetingData;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
-import us.ilite.common.lib.control.PIDGains;
 
-public class TargetLock implements ICommand {
+public class TargetLock extends ACommand {
     private Drive mDrive;
     private ITargetDataProvider mCamera;
     private PIDController mPID;

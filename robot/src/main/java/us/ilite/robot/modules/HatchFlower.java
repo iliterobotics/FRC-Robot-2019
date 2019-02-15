@@ -3,17 +3,14 @@ package us.ilite.robot.modules;
 import java.util.Arrays;
 import java.util.List;
 
-import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.first.wpilibj.Solenoid;
-import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.types.input.ELogitech310;
 import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.Delay;
-import us.ilite.robot.commands.ICommand;
+import us.ilite.robot.commands.ACommand;
 import us.ilite.robot.commands.ParallelCommand;
 
 /**
@@ -83,7 +80,7 @@ public class HatchFlower extends Module {
      * The GrabSolenoidCommand will set the grab solenoid to the commanded state,
      * which is provided in the constructor
      */
-    public class GrabSolenoidCommand implements ICommand {
+    public class GrabSolenoidCommand extends ACommand {
 
         GrabberState state;
 
@@ -114,7 +111,7 @@ public class HatchFlower extends Module {
      * The PushSolenoidCommand will set the push solenoid to the commanded state,
      * which is provided in the constructor
      */
-    public class PushSolenoidCommand implements ICommand {
+    public class PushSolenoidCommand extends ACommand {
 
         PusherState state;
 
@@ -146,7 +143,7 @@ public class HatchFlower extends Module {
      * SetStateCommand will set the HatchFlower state.  This is needed because the Push
      * command is transitional.
      */
-    public class SetStateCommand implements ICommand {
+    public class SetStateCommand extends ACommand {
 
         HatchFlowerStates mState;
 
@@ -265,7 +262,7 @@ public class HatchFlower extends Module {
                     SetStateCommand endState = new SetStateCommand(HatchFlowerStates.CAPTURE);
 
                     // Step2: Start the solenoids moving to the capture configuration
-                    List<ICommand> toCaptureState = Arrays.asList(
+                    List<ACommand> toCaptureState = Arrays.asList(
                         new GrabSolenoidCommand(GrabberState.GRAB), 
                         new PushSolenoidCommand(PusherState.RESET), 
                         new Delay(SystemSettings.kHatchFlowerSolenoidReleaseTimeSec)

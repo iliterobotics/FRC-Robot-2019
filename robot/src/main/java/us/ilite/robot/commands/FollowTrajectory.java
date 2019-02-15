@@ -3,10 +3,9 @@ package us.ilite.robot.commands;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
-import edu.wpi.first.wpilibj.Timer;
 import us.ilite.robot.modules.Drive;
 
-public class FollowTrajectory implements ICommand {
+public class FollowTrajectory extends ACommand {
 
     private Trajectory<TimedState<Pose2dWithCurvature>> mTrajectory;
     private Drive mDrive;

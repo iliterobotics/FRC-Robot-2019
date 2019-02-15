@@ -3,7 +3,7 @@ package us.ilite.robot.modules;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import us.ilite.robot.commands.CommandQueue;
-import us.ilite.robot.commands.ICommand;
+import us.ilite.robot.commands.ACommand;
 
 public class Superstructure extends Module {
 
@@ -333,7 +333,7 @@ public class Superstructure extends Module {
         return mDesiredCommandQueue;
     }
 
-    public void startCommands(ICommand ... pCommands) {
+    public void startCommands(ACommand... pCommands) {
         // Only update the command queue if commands aren't already running
         if(!isRunningCommands()) {
             mLog.warn("Starting superstructure command queue with a size of ", pCommands.length);

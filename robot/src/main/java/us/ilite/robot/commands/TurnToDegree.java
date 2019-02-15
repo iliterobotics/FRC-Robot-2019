@@ -14,7 +14,7 @@ import com.team254.lib.geometry.Rotation2d;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
-public class TurnToDegree implements ICommand {
+public class TurnToDegree extends ACommand {
 
   private ILog mLogger = Logger.createLog( this.getClass() );
 

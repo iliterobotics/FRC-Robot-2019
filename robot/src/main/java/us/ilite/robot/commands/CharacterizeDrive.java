@@ -8,7 +8,7 @@ import us.ilite.robot.modules.Drive;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CharacterizeDrive implements ICommand {
+public class CharacterizeDrive extends ACommand {
 
     private ILog mLog = Logger.createLog(CharacterizeDrive.class);
 
