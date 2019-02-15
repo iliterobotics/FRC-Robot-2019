@@ -125,10 +125,9 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     //elevator's properties will be like
     public static int kTopEncoderTicks = 0;
 
-    public static double kElevatorP = 0.1;
-    public static double kElevatorI = 0; 
-    public static double kElevatorD = 0;
+    public static PIDGains kElevatorPositionGains = new PIDGains(0.1, 0.0, 0.0, 0.0);
     public static double kElevatorF = 0;
+
     public static double kELevatorControlLoopPeriod = 0.01;
     // public static int kUpperElevatorEncoderThreshold = 0; //Will be calculated on the regular
     // public static int kLowerElevatorEncoderThreshold = 0;

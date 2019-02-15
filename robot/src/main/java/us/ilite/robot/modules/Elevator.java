@@ -31,7 +31,6 @@ public class Elevator extends Module {
     private boolean mSettingPosition = false;
     private int kCansparkId = 15; // TODO change ID
     private int kTalonId = 15; // TODO change ID
-    private double mP, mI, mD, mF;
     private PIDController mPidController;
     private double mCurrentTime;
     private double mNeoEncoderPosition;
@@ -53,12 +52,8 @@ public class Elevator extends Module {
     public Elevator(Data pData) {
 
         this.mData = pData;
-        this.mP = SystemSettings.kElevatorP;
-        this.mI = SystemSettings.kElevatorI;
-        this.mD = SystemSettings.kElevatorD;
-        this.mF = SystemSettings.kELevatorControlLoopPeriod;
-        PIDGains pidGains = new PIDGains(mP, mI, mD);
-        this.mPidController = new PIDController(pidGains, 100, 1500, mP);
+
+        this.mPidController = new PIDController(SystemSettings.kElevatorPositionGains, 100, 1500, SystemSettings.kControlLoopPeriod);
         this.mEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
 
         // Create default NEO and set the ramp rate
@@ -85,10 +80,6 @@ public class Elevator extends Module {
     }
 
     public void modeInit(double pNow) {
-        mP = SystemSettings.kElevatorP;
-        mI = SystemSettings.kElevatorI;
-        mD = SystemSettings.kElevatorD;
-        mF = SystemSettings.kElevatorF;
         mMinPower = SystemSettings.kElevatorMinPower;
         mMaxPower = SystemSettings.kElevatorMaxPower;
         mCurrentEncoderTicks = 0;
@@ -319,7 +310,7 @@ public class Elevator extends Module {
     /**
      * Calculates the desired power based on
      * the current state of the elevator.
-     * @param pCurrentSatate the current state of the elevator
+     * @param pCurrentState the current state of the elevator
      * @return the calculated power output as a double
      */
     private double calculateDesiredPower(EElevatorState pCurrentState) {
