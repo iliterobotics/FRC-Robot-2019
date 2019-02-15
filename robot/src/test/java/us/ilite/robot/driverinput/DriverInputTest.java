@@ -17,6 +17,7 @@ import us.ilite.robot.modules.Arm;
 import us.ilite.robot.modules.BasicArm;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.HatchFlower;
+import us.ilite.robot.modules.Intake;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
 import us.ilite.robot.modules.Elevator;
@@ -33,6 +34,7 @@ public class DriverInputTest {
     // We want to see Superstructure's actual behavior, so we make it a spy
     private Superstructure mSuperstructure;
     @Mock private Elevator mElevator;
+    @Mock private Intake mIntake;
     @Mock private Arm mArm;
 
 
@@ -52,7 +54,7 @@ public class DriverInputTest {
         mModuleList = new ModuleList();
         mSuperstructure = spy(new Superstructure());
         mArm = new BasicArm();
-        mDriverInput = spy(new DriverInput(mDrive, mElevator, mHatchFlower, mSuperstructure, mData, mArm));
+        mDriverInput = spy(new DriverInput(mDrive, mElevator, mHatchFlower, mIntake, mSuperstructure, mData, mArm));
 
         mModuleList.setModules(mDriverInput, mSuperstructure, mDrive);
         mModuleList.modeInit(mClock.getCurrentTime());

@@ -337,12 +337,12 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kIntakeWristEncoderA_Address = -1;
     public static int kIntakeWristEncoderB_Address = -1;
     public static int kIntakeSolenoidAddress = 2;
-    public static double kIntakeWristCurrentLimit = -1.0;
-    public static double kIntakeRollerCurrentLimit = -1.0;
-    public static double kIntakeRollerHatchPower = -1.0;
-    public static double kIntakeRollerCargoPower = -1.0;
-    public static double kIntakeRollerResistancePower = -1.0;
-    public static double kIntakeWristAngleSafeSolenoidThreshold = -1.0;
+    public static double kIntakeWristCurrentLimit = 0.1;
+    public static double kIntakeRollerCurrentLimit = 0.1;
+    public static double kIntakeRollerHatchPower = 0.1;
+    public static double kIntakeRollerCargoPower = 0.1;
+    public static double kIntakeRollerResistancePower = 0.1;
+    public static double kIntakeWristAngleSafeSolenoidThreshold = 90;
 
     public static int kDriveTrainRightSRX1Address = 2;
     public static int kDriveTrainRightSPX2Address = 4;

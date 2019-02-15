@@ -27,6 +27,7 @@ public class DriverInput extends Module {
     protected final Drive driveTrain;
     protected final Elevator mElevator;
     protected final HatchFlower hatchFlower;
+    protected final Intake mIntake;
     protected final Superstructure mSuperstructure;
 
     private boolean mDriverStartedCommands;
@@ -41,9 +42,10 @@ public class DriverInput extends Module {
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
         this.hatchFlower = pHatchFlower;
+        this.mIntake = pIntake;
         this.mSuperstructure = pSuperstructure;
         this.mData = pData;
         this.mDriverInputCodex = mData.driverinput;
@@ -58,8 +60,8 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Superstructure pSuperstructure, Data pData, Arm pArm) {
-        this(pDrivetrain, pElevator, pHatchFlower, pSuperstructure, pData, false);
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, Superstructure pSuperstructure, Data pData, Arm pArm) {
+        this(pDrivetrain, pElevator, pHatchFlower, pIntake, pSuperstructure, pData, false);
         this.mArm = pArm;
     }
 
@@ -102,12 +104,27 @@ public class DriverInput extends Module {
         if (!mSuperstructure.isRunningCommands()) {
             updateDriveTrain();
             updateElevator();
-            updateArm();
+            // updateArm();
+            updateIntake();
         } 
 
 
     }
 
+    private void updateIntake() {
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_HANDOFF)) {
+            mIntake.commandHandoff();
+        }
+        else if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_GROUND)) {
+            mIntake.commandGround();
+        }
+        else if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_SOLENOID)) {
+            mIntake.commandSolenoid();
+        }
+        else if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_STOP)) {
+            mIntake.commandStop();
+        }
+    }
     private void updateHatchFlower() {
         if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_CAPTURE_BTN)) {
             hatchFlower.captureHatch();
