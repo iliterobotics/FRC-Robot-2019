@@ -73,7 +73,12 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = kDriveEffectiveWheelbase * Math.PI;
     public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360.0;
     public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / kDriveWheelDiameterInches;
-    public static double kDriveCollisionThreshold = 0.0;
+
+    // =============================================================================
+    // IMU Constants
+    // =============================================================================
+    public static double kGyroCollisionThreshold = 0.0;
+    public static int kGyroUpdateRate = 200;
 
     // =============================================================================
     // Input Constants
@@ -120,16 +125,17 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     //elevator's properties will be like
     public static int kTopEncoderTicks = 0;
 
-    public static double kElevatorP = 0.1;
-    public static double kElevatorI = 0; 
-    public static double kElevatorD = 0;
+    public static PIDGains kElevatorPositionGains = new PIDGains(0.1, 0.0, 0.0, 0.0);
     public static double kElevatorF = 0;
-    public static double kELevatorControlLoopPeriod = 0.01;
+
     // public static int kUpperElevatorEncoderThreshold = 0; //Will be calculated on the regular
     // public static int kLowerElevatorEncoderThreshold = 0;
     public static double kElevatorMinPower = -1.0;
     public static double kElevatorMaxPower = 1.0;
-    public static int kElevatorCurrentLimit = 10;
+
+    public static double kElevatorRampRate = 0.01;
+    public static int kElevatorSmartCurrentLimit = 80;
+    public static int kElevatorSecondaryCurrentLimit = 100;
 
     //----Motion Magic Constants------
 
@@ -160,7 +166,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static int kDriveVelocityTolerance = 0;
     public static int kDriveVelocityLoopSlot = 0;
-    public static double kDriveVelocity_kP = 0.5;
+    public static double kDriveVelocity_kP = 1.0;
     public static double kDriveVelocity_kI = 0.0;
     public static double kDriveVelocity_kD = 0.0;
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward

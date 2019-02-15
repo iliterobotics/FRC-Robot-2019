@@ -49,10 +49,9 @@ public class TurnToDegree implements ICommand {
     mTargetYaw = mInitialYaw.rotateBy( mTurnAngle );
 
     // PIDController configuration
-    pid = new PIDController( SystemSettings.kPIDGains, SystemSettings.kControlLoopPeriod );
+    pid = new PIDController( SystemSettings.kPIDGains, -180, 180, SystemSettings.kControlLoopPeriod );
     pid.setContinuous( true );
     pid.setOutputRange( kMIN_POWER, kMAX_POWER );
-    pid.setInputRange( -180, 180 );
     pid.setSetpoint( mTargetYaw.getDegrees() );
 
     mAlignedCount = 0;

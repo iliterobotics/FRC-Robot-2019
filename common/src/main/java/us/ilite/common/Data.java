@@ -56,16 +56,25 @@ public class Data {
 
     private List<CodexNetworkTablesParser> mParsers;
 
+    public Data(boolean pInitParsers) {
+        if(pInitParsers) {
+            initParsers();
+        }
+    }
+
     public Data() {
+        this(true);
+    }
+
+    private void initParsers() {
         //Add new codexes as we support more into this list
         mParsers = Arrays.asList(
             new CodexNetworkTablesParser<EGyro>(imu),
             new CodexNetworkTablesParser<EDriveData>(drive),
             new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
             new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR"),
-                new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" )
+            new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" )
         );
-
     }
 
     /**

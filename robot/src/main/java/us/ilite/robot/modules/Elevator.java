@@ -32,7 +32,6 @@ public class Elevator extends Module {
     private boolean mSettingPosition = false;
     private int kCansparkId = 15; // TODO change ID
     private int kTalonId = 15; // TODO change ID
-    private double mP, mI, mD, mF;
     private PIDController mPidController;
     private double mCurrentTime;
     private double mNeoEncoderPosition;
@@ -55,20 +54,17 @@ public class Elevator extends Module {
     public Elevator(Data pData) {
 
         this.mData = pData;
-        this.mP = SystemSettings.kElevatorP;
-        this.mI = SystemSettings.kElevatorI;
-        this.mD = SystemSettings.kElevatorD;
-        this.mF = SystemSettings.kELevatorControlLoopPeriod;
-        PIDGains pidGains = new PIDGains(mP, mI, mD);
-        this.mPidController = new PIDController(pidGains, mP);
-        this.mCanController = mMasterElevator.getPIDController();
+
+        this.mPidController = new PIDController(SystemSettings.kElevatorPositionGains, 100, 1500, SystemSettings.kControlLoopPeriod);
         this.mEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
 
         // Create default NEO and set the ramp rate
         mMasterElevator = SparkMaxFactory.createDefaultSparkMax(kCansparkId, MotorType.kBrushless);
         mMasterElevator.setIdleMode(IdleMode.kBrake);
-        mMasterElevator.setRampRate(SystemSettings.kELevatorControlLoopPeriod);
-        mMasterElevator.setSmartCurrentLimit(SystemSettings.kElevatorCurrentLimit);
+        mMasterElevator.setRampRate(SystemSettings.kElevatorRampRate);
+        mMasterElevator.setSmartCurrentLimit(SystemSettings.kElevatorSmartCurrentLimit);
+        mMasterElevator.setSecondaryCurrentLimit(SystemSettings.kElevatorSecondaryCurrentLimit);
+    
 
         // We start at the bottom
         mAtBottom = true;
@@ -87,24 +83,19 @@ public class Elevator extends Module {
     }
 
     public void modeInit(double pNow) {
-        mP = SystemSettings.kElevatorP;
-        mI = SystemSettings.kElevatorI;
-        mD = SystemSettings.kElevatorD;
-        mF = SystemSettings.kElevatorF;
         mMinPower = SystemSettings.kElevatorMinPower;
         mMaxPower = SystemSettings.kElevatorMaxPower;
         mCurrentEncoderTicks = 0;
         zeroEncoder();
         mCurrentTime = pNow;
         mPidController.reset();
-        mPidController.setInputRange(100, 1500);
     }
 
     public void periodicInput(double pNow) {
     }
 
     public void update(double pNow) {
-        System.out.println(mData.elevator);
+        // System.out.println(mData.elevator);
 
         mCurrentTime = pNow;
 
@@ -115,9 +106,16 @@ public class Elevator extends Module {
 
 //        updateElevatorState(pNow);
         double output  = calculateDesiredPower(mCurrentState);
-        output = Util.limit(output, -0.10d, 0.10d); // 10% of the desired power; Used for testing purposes.
+        output = Util.limit(output, -1, 1); // 10% of the desired power; Used for testing purposes.
 
         mMasterElevator.set(output);
+        // System.out.println("Power " + output);
+        // System.out.println("Current "+ getCurrent());
+        // System.out.println("Voltage " + mMasterElevator);
+
+        mData.kSmartDashboard.putDouble("Power", output);
+        mData.kSmartDashboard.putDouble("Current", mMasterElevator.getOutputCurrent());
+        mData.kSmartDashboard.putDouble("Desired Output", output);
 
         mData.kLoggingTable.putDouble("Current Ticks", (double) getCurrentEncoderTicks());
 
@@ -303,13 +301,13 @@ public class Elevator extends Module {
     }
     /**
      * Returns true if the encoder has reached the upper
-     * limit of the elevator, which is based on if it is moving up
+     * at of the elevator, which is based on if it is moving up
      * and if it is drawing more current than is acceptable.
      * @return true if the elevator has reached the upper limit, false
      * if not.
      */
     private boolean reachedUpperLimit() {
-        return (mEncoder.getDirection() && getCurrent() >= SystemSettings.kElevatorCurrentLimit);
+        return (mEncoder.getDirection() && getCurrent() >= SystemSettings.kElevatorSmartCurrentLimit);
     }
 
     /**

@@ -49,9 +49,8 @@ public class TargetLock implements ICommand {
 
     @Override
     public void init(double pNow) {
-        mPID = new PIDController( new PIDGains( kP, kI, kD ), SystemSettings.kControlLoopPeriod );
+        mPID = new PIDController( new PIDGains( kP, kI, kD ),kMIN_INPUT, kMAX_INPUT, SystemSettings.kControlLoopPeriod );
         mPID.setOutputRange(kMIN_POWER, kMAX_POWER);
-        mPID.setInputRange(kMIN_INPUT, kMAX_INPUT);
         mPID.setSetpoint(0);
 
         this.mPreviousTime = pNow;
