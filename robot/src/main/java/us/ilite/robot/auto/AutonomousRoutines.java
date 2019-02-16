@@ -31,13 +31,15 @@ public class AutonomousRoutines {
     private Data mData;
     private Drive mDrive;
 
-    private MiddleToMiddleCargoToSideRocket mMiddleToMiddleCargoToSideRocket = new MiddleToMiddleCargoToSideRocket(mTrajectoryGenerator);
+    private MiddleToMiddleCargoToSideRocket mMiddleToMiddleCargoToSideRocket;
     private ICommand[] mMiddleToMiddleCargoToSideRocketSequence;
 
     public AutonomousRoutines(TrajectoryGenerator pTrajectoryGenerator, Data pData, Drive pDrive) {
         mTrajectoryGenerator = pTrajectoryGenerator;
         mData = pData;
         mDrive = pDrive;
+
+        mMiddleToMiddleCargoToSideRocket = new MiddleToMiddleCargoToSideRocket(mTrajectoryGenerator);
     }
 
     public void generateTrajectories() {
