@@ -162,9 +162,9 @@ public class Intake extends Module {
 
         mWristAngle = mWrist.getCurrentArmAngle();
         
-        // SmartDashboard.putString("Desired State", mDesiredIntakeState.name());        
-        // SmartDashboard.putNumber("pNow var", pNow);
-        // SmartDashboard.putNumber("Intake Wrist Angle", mWristAngle);
+        SmartDashboard.putString("Desired State", mDesiredIntakeState.name());        
+        SmartDashboard.putNumber("pNow var", pNow);
+        SmartDashboard.putNumber("Intake Wrist Angle", mWristAngle);
 
         switch (mDesiredIntakeState) {
             case GROUND_HATCH:

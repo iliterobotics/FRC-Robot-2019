@@ -114,7 +114,7 @@ public class MotionMagicArm extends Arm
     public MotionMagicArm( TalonSRX talon )
     {
         this.talon = talon;
-
+        
         int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
         int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
 
@@ -288,6 +288,7 @@ public class MotionMagicArm extends Arm
         }
         else
         {
+            // talon.set(ControlMode.PercentOutput, 0);
             talon.set(ControlMode.MotionMagic, this.desiredNumTicks);
         }
         

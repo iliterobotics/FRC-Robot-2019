@@ -214,14 +214,14 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     ///// MotionMagicArm Constants //////
     // PID Gains
-    public static double kArmPidP = 20.0;
+    public static double kArmPidP = 0.1;
     public static double kArmPidI = 0.020;
     public static double kArmPidD = 0.0;
     public static double kArmPidF = 0.1;
     // public static int K_ARM_ACCELERATION = 512;
     // public static int K_ARM_CRUISE = 4096;
-    public static int K_ARM_ACCELERATION = 100;
-    public static int K_ARM_CRUISE = 300;
+    public static int K_ARM_ACCELERATION = 5;
+    public static int K_ARM_CRUISE = 30;
     /////////////////////////////////////
 
     public static int CTRE_TIMEOUT_INIT = 10;
