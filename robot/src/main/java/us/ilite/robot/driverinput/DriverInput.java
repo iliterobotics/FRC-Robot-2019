@@ -112,17 +112,17 @@ public class DriverInput extends Module {
     }
 
     private void updateIntake() {
-        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_A)) {
-            mIntake.commandStowed();
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_GROUND_CARGO)) {
+            mIntake.commandGroundCargo();
         }
-        else if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_B)) {
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_GROUND_HATCH)) {
+            mIntake.commandGroundHatch();
+        }
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_HANDOFF)) {
             mIntake.commandHandoff();
         }
-        else if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_Y)) {
-            mIntake.commandGround();
-        }
-        else if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_S)) {
-            mIntake.commandStop();
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_STOWED)) {
+            mIntake.commandStowed();
         }
     }
     private void updateHatchFlower() {

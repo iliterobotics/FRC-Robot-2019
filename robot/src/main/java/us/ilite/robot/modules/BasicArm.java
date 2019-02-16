@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
+import com.team254.lib.drivers.TalonSRXFactory;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,7 +28,7 @@ public class BasicArm extends Arm {
     // private double kD = 0.0;
     // private static final int maxNumTicks = 383; //number of ticks at max arm angle
     // private static final int minNumTicks = 0; //number of ticks at min arm angle
-    private TalonSRX talon = new TalonSRX(SystemSettings.kArmTalonSRXAddress); //TalonSRXFactory.createDefaultTalon(SystemSettings.kArmTalonSRXAddress);
+    private TalonSRX talon;
     private PIDController pid;
     // private boolean settingPosition;
     private int currentNumTicks = 0; // Our current angle in ticks
@@ -46,18 +47,8 @@ public class BasicArm extends Arm {
 
     public BasicArm()
     {
-        int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
-        int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
-
-        this.currentNumTicks = 0;
-        pid = new PIDController( SystemSettings.kArmPIDGains /*new PIDGains(kP, kI, kD)*/, minTickPosition, maxTickPosition, SystemSettings.kControlLoopPeriod );
-        talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.kLongCANTimeoutMs);
-        talon.setSelectedSensorPosition(0);
-        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5);
-
-        // init the timer
-        this.mTimer = new Timer();
-        this.mTimer.reset();
+        this(TalonSRXFactory.createDefaultTalon(SystemSettings.kArmTalonSRXAddress));
+        // this(new TalonSRX(SystemSettings.kArmTalonSRXAddress));
     }
 
     public BasicArm(TalonSRX talon)
@@ -158,6 +149,8 @@ public class BasicArm extends Arm {
         if ( voltage > SystemSettings.kArmMinMotorStallVoltage ) {
             ratio = current / voltage;
         }
+
+        SmartDashboard.putNumber("CurrentTicks", currentNumTicks);
 
         SmartDashboard.putNumber("BasicArmVoltage", voltage);
         SmartDashboard.putNumber("BasicArmCurrent", current);

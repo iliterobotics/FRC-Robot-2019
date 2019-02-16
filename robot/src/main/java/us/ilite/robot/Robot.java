@@ -183,7 +183,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         initMatchMetadata();
-        mRunningModules.setModules(mDriverInput, mArm, mIntake);
+        mRunningModules.setModules(mDriverInput, mIntake);
 
         mSettings.loadFromNetworkTables();
         // mRunningModules.setModules(mDriverInput);

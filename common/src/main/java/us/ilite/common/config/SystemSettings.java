@@ -182,7 +182,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
         }
     }
 
-    public static int kArmPositionEncoderTicksPerRotation = 512;
+    public static int kArmPositionEncoderTicksPerRotation = 3552;
     public static double kArmMinAngle = 0.0;
     public static double kArmMaxAngle = 135.0;
     public static double kArmMaxCurrentVoltRatio = 2; //tune - overcurrent ratio for arm motor
@@ -218,8 +218,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kArmPidI = 0.020;
     public static double kArmPidD = 0.0;
     public static double kArmPidF = 0.1;
-    public static int K_ARM_ACCELERATION = 512;
-    public static int K_ARM_CRUISE = 4096;
+    // public static int K_ARM_ACCELERATION = 512;
+    // public static int K_ARM_CRUISE = 4096;
+    public static int K_ARM_ACCELERATION = 100;
+    public static int K_ARM_CRUISE = 300;
     /////////////////////////////////////
 
     public static int CTRE_TIMEOUT_INIT = 10;
@@ -338,11 +340,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kIntakeWristEncoderB_Address = -1;
     public static int kIntakeSolenoidAddress = 2;
     public static double kIntakeWristCurrentLimit = 0.1;
+    public static double kIntakeWristBound = 40.0; //The minimum angle: safe to engage solenoid/roller
     public static double kIntakeRollerCurrentLimit = 0.1;
-    public static double kIntakeRollerHatchPower = 0.1;
-    public static double kIntakeRollerCargoPower = 0.1;
-    public static double kIntakeRollerResistancePower = 0.1;
-    public static double kIntakeWristAngleSafeSolenoidThreshold = 90;
+    public static double kIntakeRollerHatchPower = 0.35;
+    public static double kIntakeRollerCargoPower = 0.5;
+    public static double kIntakeRollerHoldPower = 0.2;
 
     public static int kDriveTrainRightSRX1Address = 2;
     public static int kDriveTrainRightSPX2Address = 4;
