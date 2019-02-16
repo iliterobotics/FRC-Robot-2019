@@ -15,8 +15,9 @@ import us.ilite.common.types.EFourBarData;
 
 public class FourBar extends Module {
 
-    private final double kMinOutput = -1;
-    private final double kMaxOutput = 1;
+    private final double kMinOutput = -1.0;
+    private final double kMaxOutput = 1.0;
+    private final double kHoldThreshold = 10.0;
 
     private ILog mLog = Logger.createLog(FourBar.class);
     private Data mData;
@@ -128,14 +129,16 @@ public class FourBar extends Module {
      * @param output the output to be clamped and applied
      */
     public double clampOutput( double output ) {
-        return Util.limit( output, kMaxOutput );
+        return Util.limit( output, kMinOutput, kMaxOutput );
     }
 
     /**
-     * Holds in place
+     * Holds in current position
+     * Holds in air with gravity comp if four bar is being used
+     * If it is not being used -> don't apply any output
      */
     public void handleStopType() {
-        if ( mAngularPosition != 0 ) {
+        if ( Math.abs( mAngularPosition ) >= kHoldThreshold ) {
             setDesiredState( EFourBarState.HOLD );
         } else {
             setDesiredState( EFourBarState.NORMAL );
@@ -147,7 +150,7 @@ public class FourBar extends Module {
      * @return the percent output to compensate for gravity
      */
     public double gravityCompAtPosition() {
-        return SystemSettings.kMass * 10 * Math.cos( mAngularPosition ) * SystemSettings.kFourBarCenterOfGravity * SystemSettings.kT;
+        return SystemSettings.kTFourBar * Math.cos( mAngularPosition );
     }
 
     /**

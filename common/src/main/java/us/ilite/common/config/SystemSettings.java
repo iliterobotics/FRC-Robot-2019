@@ -161,10 +161,9 @@ public class SystemSettings extends NetworkTablesConstantsBase {
    
     // =============================================================================
     // Robot constants (configure later)
+    // Find fourbar kt constant
     // =============================================================================
-    public static double kMass = 0;
-    public static double kFourBarCenterOfGravity = 0;
-    public static double kT = 0;
+    public static double kTFourBar = 0;
 
 
 
