@@ -110,13 +110,13 @@ public class Robot extends TimedRobot {
 
         mSettings.loadFromNetworkTables();
 
+        mLoopManager.setRunningLoops(mDrive);
+        mLoopManager.start();
+
         // Init modules after commands are set
         mRunningModules.setModules(mSuperstructure);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
-
-        mLoopManager.setRunningLoops(mDrive);
-        mLoopManager.start();
 
 //        mSuperstructure.startCommands(new CharacterizeDrive(mDrive, false, false));
         mSuperstructure.startCommands(mAutonomousRoutines.getDefault());
