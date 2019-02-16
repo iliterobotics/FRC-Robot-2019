@@ -5,6 +5,7 @@ import com.flybotix.hfr.util.log.Logger;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.team254.lib.util.Util;
 
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
@@ -21,9 +22,11 @@ public class FourBar extends Module {
     private CANEncoder mNeo1Encoder;
     private CANEncoder mNeo2Encoder;
 
-    public double mAngularPosition;
+    private double mAngularPosition;
     private double mPreviousNeo1Rotations;
     private double mPreviousNeo2Rotations;
+    private final double kMinOutput = -1;
+    private final double kMaxOutput = 1;
 
     private double mOutput;
 
@@ -82,7 +85,7 @@ public class FourBar extends Module {
         if ( isIdle ) {
             mOutput = 0;
         } else {
-            mOutput = desiredOutput + gravityCompAtPosition();
+            mOutput = Util.limit(desiredOutput + gravityCompAtPosition(), kMinOutput, kMaxOutput);
         }
     }
 
