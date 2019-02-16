@@ -92,7 +92,7 @@ public class FourBar extends Module {
      * @return the percent output to counter gravity
      */
     public double gravityCompAtPosition() {
-        return SystemSettings.kMass * 10 * Math.cos( mAngularPosition ) * SystemSettings.kFourBarCenterOfGravity * SystemSettings.kT;
+        return SystemSettings.kTFourBar * Math.cos( mAngularPosition );
     }
 
     /**
