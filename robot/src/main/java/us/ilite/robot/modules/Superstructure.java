@@ -12,7 +12,7 @@ public class Superstructure extends Module {
     private CommandQueue mDesiredCommandQueue = new CommandQueue();;
     private boolean lastRunCommandQueue;
     private boolean runCommandQueue;
-    
+
     @Override
     public void modeInit(double pNow) {
         runCommandQueue = lastRunCommandQueue = false;

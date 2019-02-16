@@ -74,10 +74,10 @@ public class Robot extends TimedRobot {
     private Intake mIntake = new Intake();
     private HatchFlower mHatchFlower = new HatchFlower();
     private CargoSpit mCargoSpit = new CargoSpit();
-    private Superstructure mSuperstructure = new Superstructure(mElevator, mIntake, mHatchFlower, mCargoSpit);
+    private Superstructure mSuperstructure = new Superstructure();
 
 
-    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mSuperstructure, mData);
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mIntake, mHatchFlower, mCargoSpit, mSuperstructure, mData);
     private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
