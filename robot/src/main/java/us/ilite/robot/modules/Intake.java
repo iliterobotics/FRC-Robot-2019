@@ -120,6 +120,10 @@ public class Intake extends Module {
 //        setRollerPower();
     }
 
+    public void setOuttaking() {
+        // Outtake
+    }
+
     /**
      * Stop the roller and wrist
      */
