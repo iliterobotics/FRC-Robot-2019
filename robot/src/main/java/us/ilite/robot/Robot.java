@@ -21,6 +21,7 @@ import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.lib.util.PerfTimer;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.GetLocalIP;
+import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.MatchMetadata;
@@ -58,12 +59,11 @@ public class Robot extends TimedRobot {
     private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mSuperstructure, mData);
     private Limelight mLimelight = new Limelight();
 
-    private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
-
+    private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
+    private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mData, mDrive);
     private MatchMetadata mMatchMeta = null;
 
     private PerfTimer mClockUpdateTimer = new PerfTimer();
-
 
     @Override
     public void robotInit() {
@@ -86,11 +86,7 @@ public class Robot extends TimedRobot {
 
         mRunningModules.setModules();
 
-        TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
-        List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(40.0));
-        trajectory = mTrajectoryGenerator.generateTrajectory(false, TestAuto.kPath, kTrajectoryConstraints, 100.0, 40.0, 12.0);
-        trajectory = TrajectoryUtil.mirrorTimed(trajectory);
-
+        mAutonomousRoutines.generateTrajectories();
 
         initTimer.stop();
         mLogger.info("Robot initialization finished. Took: ", initTimer.get(), " seconds");
@@ -123,7 +119,7 @@ public class Robot extends TimedRobot {
         mLoopManager.start();
 
 //        mSuperstructure.startCommands(new CharacterizeDrive(mDrive, false, false));
-        mSuperstructure.startCommands(new FollowTrajectory(trajectory, mDrive, true));
+        mSuperstructure.startCommands(mAutonomousRoutines.getDefault());
 
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");
