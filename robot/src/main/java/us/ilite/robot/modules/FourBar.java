@@ -14,6 +14,10 @@ import us.ilite.common.types.EFourBarData;
 
 public class FourBar extends Module {
 
+    private final double kMinOutput = -1.0;
+    private final double kMaxOutput = 1.0;
+    private final double kHoldThreshold = 10.0;
+
     private ILog mLog = Logger.createLog( FourBar.class );
     private Data mData;
 
@@ -25,8 +29,6 @@ public class FourBar extends Module {
     private double mAngularPosition;
     private double mPreviousNeo1Rotations;
     private double mPreviousNeo2Rotations;
-    private final double kMinOutput = -1;
-    private final double kMaxOutput = 1;
 
     private double mOutput;
 
@@ -107,7 +109,7 @@ public class FourBar extends Module {
      * Hold if not at 0
      */
     public void handleStopType() {
-        if ( mAngularPosition != 0 ) {
+        if ( Math.abs( mAngularPosition ) > kHoldThreshold ) {
             hold();
         } else {
             stop();
