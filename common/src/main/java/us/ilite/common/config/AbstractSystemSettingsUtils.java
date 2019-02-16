@@ -62,6 +62,24 @@ public abstract class AbstractSystemSettingsUtils {
             }
         });
     }
+
+    public static Map<String,String> getAllCurrentPropsAndValues(Object obj) { 
+        return Arrays.stream(obj.getClass().getFields()).filter(aField->Modifier.isStatic(
+            aField.getModifiers())).collect(
+            Collectors.toMap((aField)->aField.getName(),(aField)->{
+                Object returnObj = "";
+                try {
+                 returnObj = aField.get(obj);
+                if(returnObj == null) {
+                    returnObj = "null";
+                }
+            } catch(Exception e) {
+                returnObj = "unk";
+            }
+                return returnObj.toString();
+            }));
+    }
+
     /**
      * Private constructor to prevent instantiation
      */

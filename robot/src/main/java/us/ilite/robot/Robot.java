@@ -12,52 +12,35 @@ import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryUtil;
-import com.team254.lib.trajectory.timing.*;
+import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
+import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.trajectory.timing.TimingConstraint;
 
-import edu.wpi.first.wpilibj.*;
-import us.ilite.common.Data;
-import us.ilite.common.lib.control.DriveController;
-<<<<<<< HEAD
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.Data;
 import us.ilite.common.config.AbstractSystemSettingsUtils;
-import us.ilite.common.config.PracticeBotSystemSettings;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.io.Network;
 import us.ilite.common.lib.control.DriveController;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.lib.util.PerfTimer;
 import us.ilite.common.types.MatchMetadata;
-import us.ilite.lib.drivers.Clock;
-import us.ilite.lib.drivers.GetLocalIP;
-import us.ilite.robot.auto.paths.TestAuto;
-=======
-import us.ilite.common.lib.trajectory.TrajectoryGenerator;
-import us.ilite.common.lib.util.PerfTimer;
 import us.ilite.common.types.sensor.EPowerDistPanel;
+import us.ilite.lib.drivers.Clock;
 import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.paths.TestAuto;
-import us.ilite.common.config.SystemSettings;
-import us.ilite.common.types.MatchMetadata;
-import us.ilite.lib.drivers.Clock;
->>>>>>> origin/master
 import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
-<<<<<<< HEAD
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.Elevator;
 import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
-=======
-import us.ilite.robot.modules.*;
->>>>>>> origin/master
 
 public class Robot extends TimedRobot {
 
