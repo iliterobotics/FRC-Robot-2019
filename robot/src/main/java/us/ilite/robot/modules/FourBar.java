@@ -134,9 +134,9 @@ public class FourBar extends Module {
      */
     public void updateCodex() {
         updateAngularPosition();
-        mData.fourbar.set( EFourBarData.A_OUTPUT, mNeo1.get() );
-        mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeo1.getBusVoltage() );
-        mData.fourbar.set( EFourBarData.A_CURRENT, mNeo1.getOutputCurrent() );
+        mData.fourbar.set( EFourBarData.A_OUTPUT, mNeos.get() );
+        mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeos.getBusVoltage() );
+        mData.fourbar.set( EFourBarData.A_CURRENT, mNeos.getOutputCurrent() );
 
         mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
         mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getBusVoltage() );
