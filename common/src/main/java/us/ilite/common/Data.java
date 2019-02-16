@@ -1,19 +1,14 @@
 package us.ilite.common;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.flybotix.hfr.codex.Codex;
-
+import com.flybotix.hfr.codex.CodexSender;
+import com.flybotix.hfr.io.MessageProtocols;
+import com.flybotix.hfr.io.sender.ISendProtocol;
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import us.ilite.common.config.SystemSettings;
 import us.ilite.common.io.CodexNetworkTables;
 import us.ilite.common.io.CodexNetworkTablesParser;
 import us.ilite.common.lib.util.SimpleNetworkTable;
@@ -22,10 +17,15 @@ import us.ilite.common.types.input.EDriverInputMode;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.common.types.manipulator.EElevator;
 import us.ilite.common.types.sensor.EGyro;
+import us.ilite.common.types.sensor.EPowerDistPanel;
+
+import java.io.*;
+import java.util.*;
 
 public class Data {
 
     public CodexNetworkTables mCodexNT = CodexNetworkTables.getInstance();
+    private final ILog mLogger = Logger.createLog(Data.class);
     
     //Add new codexes here as we need more
 
@@ -34,9 +34,21 @@ public class Data {
     public final Codex<Double, ELogitech310> driverinput = Codex.of.thisEnum(ELogitech310.class);
     public final Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
     public final Codex<Double, EElevator> elevator = Codex.of.thisEnum(EElevator.class);
-  
+    public final Codex<Double, EPowerDistPanel> pdp = Codex.of.thisEnum(EPowerDistPanel.class);
+
+
+    private final List<CodexSender> mSenders = new ArrayList<>();
+
+    public final Codex[] mAllCodexes = new Codex[] {
+            imu, drive, driverinput, operatorinput, elevator,pdp
+    };
+
     public final Codex[] mLoggedCodexes = new Codex[] {
-        imu, drive, driverinput, operatorinput, elevator
+        imu, drive, driverinput, operatorinput, elevator,pdp
+    };
+
+    public final Codex[] mDisplayedCodexes = new Codex[] {
+            imu, drive, driverinput, operatorinput, elevator,pdp
     };
 
     public static NetworkTableInstance kInst = NetworkTableInstance.getDefault();
@@ -165,17 +177,18 @@ public class Data {
     }
 
     /**
-     * Sends Codex entries into its corresponding NetworkTable
+     * Sends the codexes across the network to the IP's found when the DS connected.
      */
     public void sendCodices() {
-        mCodexNT.send(imu);
-        mCodexNT.send(elevator);
-        mCodexNT.send(drive);
-        mCodexNT.send("DRIVER", driverinput);
-        mCodexNT.send("OPERATOR", operatorinput);
+        for(CodexSender cs : mSenders) {
+            for(Codex c : mDisplayedCodexes) {
+                cs.sendIfChanged(c);
+            }
+        }
     }
 
     /**
+     * @deprecated
      * Do this before sending codices to NetworkTables
      */
     public void registerCodices() {
@@ -184,5 +197,20 @@ public class Data {
         mCodexNT.registerCodex(EElevator.class);
         mCodexNT.registerCodex("DRIVER", ELogitech310.class);
         mCodexNT.registerCodex("OPERATOR", ELogitech310.class);
+    }
+
+    /**
+     * Initializes the codex sender to the IP's registered with the robot connected to the DS.  If
+     * an IP is expected but not found, reboot the RIO or restart the DS software.  This will transmit
+     * via UDP to the IP's on a port set by <code>SystemSettings.sCODEX_COMMS_PORT</code>
+     * @param pIpAddresses List of all IP's to send Codexes to.
+     */
+    public void initCodexSender(List<String> pIpAddresses) {
+        for(String ip : pIpAddresses) {
+            mLogger.warn("======> Initializing sender to " + ip + ":" + SystemSettings.sCODEX_COMMS_PORT);
+            ISendProtocol protocol = MessageProtocols.createSender(MessageProtocols.EProtocol.UDP, SystemSettings.sCODEX_COMMS_PORT, SystemSettings.sCODEX_COMMS_PORT, ip);
+            CodexSender sender = new CodexSender(protocol);
+            mSenders.add(sender);
+        }
     }
 }
