@@ -24,6 +24,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
 
+    public static final int sCODEX_COMMS_PORT = 5805;
+
     //==============================================================================
     // Comms
     // =============================================================================
