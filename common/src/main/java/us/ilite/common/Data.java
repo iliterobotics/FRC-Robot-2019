@@ -2,8 +2,13 @@ package us.ilite.common;
 
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexSender;
+import com.flybotix.hfr.io.MessageProtocols;
+import com.flybotix.hfr.io.sender.ISendProtocol;
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import us.ilite.common.config.SystemSettings;
 import us.ilite.common.io.CodexNetworkTables;
 import us.ilite.common.io.CodexNetworkTablesParser;
 import us.ilite.common.lib.util.SimpleNetworkTable;
@@ -20,6 +25,7 @@ import java.util.*;
 public class Data {
 
     public CodexNetworkTables mCodexNT = CodexNetworkTables.getInstance();
+    private final ILog mLogger = Logger.createLog(Data.class);
     
     //Add new codexes here as we need more
 
@@ -34,10 +40,12 @@ public class Data {
     private final List<CodexSender> mSenders = new ArrayList<>();
 
     public final Codex[] mLoggedCodexes = new Codex[] {
-//        imu, drive, driverinput, operatorinput, elevator,pdp
-            pdp
+        imu, drive, driverinput, operatorinput, elevator,pdp
     };
 
+    public final Codex[] mDisplaedCodexes = new Codex[] {
+            imu, drive, driverinput, operatorinput, elevator,pdp
+    };
 
     public static NetworkTableInstance kInst = NetworkTableInstance.getDefault();
     public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
@@ -165,23 +173,18 @@ public class Data {
     }
 
     /**
-     * Sends Codex entries into its corresponding NetworkTable
+     * Sends the codexes across the network to the IP's found when the DS connected.
      */
     public void sendCodices() {
-//        mCodexNT.send(imu);
-//        mCodexNT.send(elevator);
-//        mCodexNT.send(drive);
-//        mCodexNT.send("DRIVER", driverinput);
-//        mCodexNT.send("OPERATOR", operatorinput);
-
         for(CodexSender cs : mSenders) {
-            for(Codex c : mLoggedCodexes) {
+            for(Codex c : mDisplaedCodexes) {
                 cs.sendIfChanged(c);
             }
         }
     }
 
     /**
+     * @deprecated
      * Do this before sending codices to NetworkTables
      */
     public void registerCodices() {
@@ -192,12 +195,18 @@ public class Data {
         mCodexNT.registerCodex("OPERATOR", ELogitech310.class);
     }
 
+    /**
+     * Initializes the codex sender to the IP's registered with the robot connected to the DS.  If
+     * an IP is expected but not found, reboot the RIO or restart the DS software.  This will transmit
+     * via UDP to the IP's on a port set by <code>SystemSettings.sCODEX_COMMS_PORT</code>
+     * @param pIpAddresses List of all IP's to send Codexes to.
+     */
     public void initCodexSender(List<String> pIpAddresses) {
-//        for(String ip : pIpAddresses) {
-//            System.out.println("======> Initializing sender to " + ip + ":" + SystemSettings.sCODEX_COMMS_PORT);
-//            ISendProtocol protocol = MessageProtocols.createSender(MessageProtocols.EProtocol.UDP, SystemSettings.sCODEX_COMMS_PORT, SystemSettings.sCODEX_COMMS_PORT, ip);
-//            CodexSender sender = new CodexSender(protocol);
-//            mSenders.add(sender);
-//        }
+        for(String ip : pIpAddresses) {
+            mLogger.warn("======> Initializing sender to " + ip + ":" + SystemSettings.sCODEX_COMMS_PORT);
+            ISendProtocol protocol = MessageProtocols.createSender(MessageProtocols.EProtocol.UDP, SystemSettings.sCODEX_COMMS_PORT, SystemSettings.sCODEX_COMMS_PORT, ip);
+            CodexSender sender = new CodexSender(protocol);
+            mSenders.add(sender);
+        }
     }
 }
