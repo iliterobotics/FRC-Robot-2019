@@ -112,16 +112,16 @@ public class DriverInput extends Module {
     }
 
     private void updateIntake() {
-        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_HANDOFF)) {
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_A)) {
+            mIntake.commandStowed();
+        }
+        else if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_B)) {
             mIntake.commandHandoff();
         }
-        else if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_GROUND)) {
+        else if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_Y)) {
             mIntake.commandGround();
         }
-        else if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_SOLENOID)) {
-            mIntake.commandSolenoid();
-        }
-        else if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_STOP)) {
+        else if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_S)) {
             mIntake.commandStop();
         }
     }
