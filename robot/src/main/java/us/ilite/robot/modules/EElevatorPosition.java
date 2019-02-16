@@ -2,10 +2,16 @@ package us.ilite.robot.modules;
 
 public enum EElevatorPosition {
 
+    GROUND(0.1d,500),
     //TODO find encoder threshold
-    BOTTOM(0.1d,500),
-    MIDDLE(0.1d,1000),
-    TOP(0.1d,1500),
+    HATCH_BOTTOM(0.1d,500),
+    HATCH_MIDDLE(0.1d,1000),
+    HATCH_TOP(0.1d,1500),
+
+    CARGO_BOTTOM(0.1d,500),
+    CARGO_MIDDLE(0.1d,1000),
+    CARGO_TOP(0.1d,1500),
+
     HANDOFF_HEIGHT(0d, 0);
 
     private final double kEncoderThreshold;

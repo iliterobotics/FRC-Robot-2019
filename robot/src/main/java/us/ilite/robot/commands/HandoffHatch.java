@@ -4,11 +4,11 @@ import us.ilite.robot.modules.*;
 
 public class HandoffHatch extends CommandQueue {
 
-    public HandoffHatch(Elevator pElevator, Intake pIntake, HatchFlower pHatchFlower, CommandQueue pCommandQueue) {
+    public HandoffHatch(Elevator pElevator, Intake pIntake, HatchFlower pHatchFlower) {
         setCommands(
                 new ParallelCommand(
-                        new SetElevatorPosition(pElevator, EElevatorPosition.BOTTOM),
-                        new SetHatchGrabberExtension(pHatchFlower, true)
+                        new SetElevatorPosition(pElevator, EElevatorPosition.HATCH_BOTTOM),
+                        new SetHatchGrabberExtension(pHatchFlower, HatchFlower.ExtensionState.DOWN)
                 ),
                 new SetIntakeState(pIntake, Intake.EWristPosition.HANDOFF),
                 new GrabHatch(pHatchFlower),

@@ -9,7 +9,7 @@ public class LoadingStationIntakeHatch extends CommandQueue {
     public LoadingStationIntakeHatch(Elevator pElevator, HatchFlower pHatchFlower) {
         setCommands(
                 new ParallelCommand(
-                        new SetElevatorPosition(pElevator, EElevatorPosition.BOTTOM),
+                        new SetElevatorPosition(pElevator, EElevatorPosition.HATCH_BOTTOM),
                         new ReleaseHatch(pHatchFlower),
                         new SetHatchGrabberExtension(pHatchFlower, HatchFlower.ExtensionState.DOWN)
                 ),

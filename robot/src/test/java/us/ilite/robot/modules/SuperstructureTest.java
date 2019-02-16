@@ -40,7 +40,7 @@ public class SuperstructureTest {
     public void testHatchHandoff() {
 
         when(mIntake.hasHatch()).thenReturn(false);
-        when(mElevator.isAtPosition(EElevatorPosition.BOTTOM)).thenReturn(false);
+        when(mElevator.isAtPosition(EElevatorPosition.HATCH_BOTTOM)).thenReturn(false);
         updateRobot(3);
 
         mData.operatorinput.set(DriveTeamInputMap.OPERATOR_INTAKE_GROUND_HATCH_AXIS, -1.0);
@@ -48,14 +48,14 @@ public class SuperstructureTest {
 
         assertEquals(Superstructure.EAcquisitionState.GROUND_HATCH, mSuperstructure.getAcquisitionState());
 
-        when(mElevator.isAtPosition(EElevatorPosition.BOTTOM)).thenReturn(false);
+        when(mElevator.isAtPosition(EElevatorPosition.HATCH_BOTTOM)).thenReturn(false);
         when(mHatchFlower.isExtended()).thenReturn(true);
         updateRobot(3);
 
         assertEquals(Superstructure.EAcquisitionState.GROUND_HATCH, mSuperstructure.getAcquisitionState());
 
         when(mIntake.hasHatch()).thenReturn(true);
-        when(mElevator.isAtPosition(EElevatorPosition.BOTTOM)).thenReturn(true);
+        when(mElevator.isAtPosition(EElevatorPosition.HATCH_BOTTOM)).thenReturn(true);
         updateRobot(3);
 
         assertEquals(Superstructure.EAcquisitionState.HANDOFF, mSuperstructure.getAcquisitionState());

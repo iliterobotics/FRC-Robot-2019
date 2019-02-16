@@ -10,7 +10,7 @@ public class GroundIntakeHatch extends CommandQueue {
     public GroundIntakeHatch(Elevator pElevator, Intake pIntake, HatchFlower pHatchFlower) {
         setCommands(
                 new ParallelCommand(
-                        new SetElevatorPosition(pElevator, EElevatorPosition.BOTTOM),
+                        new SetElevatorPosition(pElevator, EElevatorPosition.HATCH_BOTTOM),
                         new ReleaseHatch(pHatchFlower),
                         new SetHatchGrabberExtension(pHatchFlower, HatchFlower.ExtensionState.DOWN)
                 ),
