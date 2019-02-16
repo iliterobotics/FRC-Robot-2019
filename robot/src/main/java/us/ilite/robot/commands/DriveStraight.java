@@ -39,7 +39,7 @@ public class DriveStraight implements ICommand {
     private double mAllowableDistanceError = 3.0;
     private double mRampDistance = 120.0;
     private double mLastTime = 0.0;
-    private PIDController mHeadingController = new PIDController(SystemSettings.kDriveHeadingGains, -180.0, 180.0, SystemSettings.kControlLoopPeriod);
+    private PIDController mHeadingController = new PIDController(SystemSettings.kDriveHeadingGains, 0.0, 360.0, SystemSettings.kControlLoopPeriod);
 
     public DriveStraight(Drive pDrive, Data pData, EDriveControlMode pDriveControlMode, double pDistanceToDrive) {
         mDrive = pDrive;
