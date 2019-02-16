@@ -180,7 +180,7 @@ public class Robot extends TimedRobot {
     }
 
     private void commonPeriodic() {
-        for(Codex c : mData.mLoggedCodexes) {
+        for(Codex c : mData.mAllCodexes) {
             c.reset();
         }
         mRunningModules.periodicInput(mClock.getCurrentTime());
@@ -191,7 +191,7 @@ public class Robot extends TimedRobot {
         if (mMatchMeta == null) {
             mMatchMeta = new MatchMetadata();
             int gid = mMatchMeta.hash;
-            for (Codex c : mData.mLoggedCodexes) {
+            for (Codex c : mData.mAllCodexes) {
                 c.meta().setGlobalId(gid);
             }
         }

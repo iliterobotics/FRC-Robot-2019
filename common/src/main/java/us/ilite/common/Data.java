@@ -39,11 +39,15 @@ public class Data {
 
     private final List<CodexSender> mSenders = new ArrayList<>();
 
+    public final Codex[] mAllCodexes = new Codex[] {
+            imu, drive, driverinput, operatorinput, elevator,pdp
+    };
+
     public final Codex[] mLoggedCodexes = new Codex[] {
         imu, drive, driverinput, operatorinput, elevator,pdp
     };
 
-    public final Codex[] mDisplaedCodexes = new Codex[] {
+    public final Codex[] mDisplayedCodexes = new Codex[] {
             imu, drive, driverinput, operatorinput, elevator,pdp
     };
 
@@ -177,7 +181,7 @@ public class Data {
      */
     public void sendCodices() {
         for(CodexSender cs : mSenders) {
-            for(Codex c : mDisplaedCodexes) {
+            for(Codex c : mDisplayedCodexes) {
                 cs.sendIfChanged(c);
             }
         }
