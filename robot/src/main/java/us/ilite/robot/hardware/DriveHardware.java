@@ -1,7 +1,5 @@
 package us.ilite.robot.hardware;
 
-import java.util.Arrays;
-
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -12,22 +10,15 @@ import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.PigeonIMU;
-import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import com.team254.lib.drivers.talon.TalonSRXChecker;
-import com.team254.lib.drivers.talon.TalonSRXChecker.CheckerConfigBuilder;
 import com.team254.lib.drivers.talon.TalonSRXFactory;
 import com.team254.lib.geometry.Rotation2d;
 
-import edu.wpi.first.wpilibj.SerialPort;
-import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.util.Conversions;
 import us.ilite.lib.drivers.IMU;
-import us.ilite.lib.drivers.NavX;
 import us.ilite.lib.drivers.Pigeon;
-import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
 /**
@@ -48,7 +39,7 @@ public class DriveHardware implements IDriveHardware {
     private NeutralMode mLeftNeutralMode, mRightNeutralMode;
 
     public DriveHardware() {
-        mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kDriveCollisionThreshold);
+        mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kGyroCollisionThreshold);
         // mGyro = new NavX(SerialPort.Port.kMXP);
 
         mLeftMaster = TalonSRXFactory.createDefaultTalon(SystemSettings.kDriveLeftMasterTalonId);

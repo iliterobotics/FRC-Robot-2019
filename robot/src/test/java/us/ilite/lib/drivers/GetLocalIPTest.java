@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -28,7 +29,7 @@ public class GetLocalIPTest {
      */
     @Test
     public void testNullReader() {
-        Optional<String> returnVal = GetLocalIP.getIPFromInputStream(null);
+        List<String> returnVal = GetLocalIP.getIPFromInputStream(null);
         assertNotNull(returnVal);
         assertTrue(returnVal.isEmpty());
     }
@@ -45,7 +46,7 @@ public class GetLocalIPTest {
     public void testReaderIOException() throws IOException{
         BufferedReader br = mock(BufferedReader.class);
         when(br.readLine()).thenThrow(IOException.class);
-        Optional<String> returnVal = GetLocalIP.getIPFromInputStream(br);
+        List<String> returnVal = GetLocalIP.getIPFromInputStream(br);
         assertNotNull(returnVal);
         assertTrue(returnVal.isEmpty());
     }
@@ -63,7 +64,7 @@ public class GetLocalIPTest {
         BufferedReader br = mock(BufferedReader.class);
         //We want to return a bogus string first and then null so there is not an infinite loop
         when(br.readLine()).thenReturn("Test String",(String)null);
-        Optional<String> returnVal = GetLocalIP.getIPFromInputStream(br);
+        List<String> returnVal = GetLocalIP.getIPFromInputStream(br);
         assertNotNull(returnVal);
         assertTrue(returnVal.isEmpty());
     }
@@ -81,10 +82,10 @@ public class GetLocalIPTest {
         BufferedReader br = mock(BufferedReader.class);
         //We want to return a bogus string first and then null so there is not an infinite loop
         when(br.readLine()).thenReturn("10.18.85.186","10.18.85.186",(String)null);
-        Optional<String> returnVal = GetLocalIP.getIPFromInputStream(br);
+        List<String> returnVal = GetLocalIP.getIPFromInputStream(br);
         assertNotNull(returnVal);
         assertFalse(returnVal.isEmpty());
-        assertEquals("10.18.85.186", returnVal.get());
+        assertEquals("10.18.85.186", returnVal.get(0));
     }
 
     /**
@@ -100,9 +101,9 @@ public class GetLocalIPTest {
         BufferedReader br = mock(BufferedReader.class);
         //We want to return a bogus string first and then null so there is not an infinite loop
         when(br.readLine()).thenReturn("10.18.85.186","10.18.85.187",(String)null);
-        Optional<String> returnVal = GetLocalIP.getIPFromInputStream(br);
+        List<String> returnVal = GetLocalIP.getIPFromInputStream(br);
         assertNotNull(returnVal);
         assertFalse(returnVal.isEmpty());
-        assertEquals("10.18.85.186", returnVal.get());
+        assertEquals("10.18.85.186", returnVal.get(0));
     }
 }
