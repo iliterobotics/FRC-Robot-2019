@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.team254.lib.util.Util;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.PIDController;
@@ -23,7 +24,7 @@ public class FourBar extends Module {
     private Data mData;
     private PIDController mPIDController;
 
-    private CANSparkMax mNeo1;
+    private CANSparkMax mNeos;
     private CANSparkMax mNeo2;
     private CANEncoder mNeo1Encoder;
     private CANEncoder mNeo2Encoder;
@@ -41,12 +42,12 @@ public class FourBar extends Module {
      */
     public FourBar( Data pData ) {
         // Later: SystemSettings address
-        mNeo1 = new CANSparkMax(9, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mNeos = new CANSparkMax(9, CANSparkMaxLowLevel.MotorType.kBrushless);
         mNeo2 = new CANSparkMax(10, CANSparkMaxLowLevel.MotorType.kBrushless);
-        mNeo2.follow( mNeo1, true );
+        mNeo2.follow( mNeos, true );
     
         // Connect the NEO's to the encoders
-        mNeo1Encoder = mNeo1.getEncoder();
+        mNeo1Encoder = mNeos.getEncoder();
         mNeo2Encoder = mNeo2.getEncoder();
 
         mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
@@ -62,8 +63,7 @@ public class FourBar extends Module {
         mPreviousNeo1Rotations = mNeo1Encoder.getPosition();
         mPreviousNeo2Rotations = mNeo2Encoder.getPosition();
 
-        mNeo1.setSmartCurrentLimit( 20 );
-        mNeo2.setSmartCurrentLimit( 20 );
+        mNeos.setSmartCurrentLimit( 20 );
         mPIDController.setOutputRange( -1, 1 );
     }
 
@@ -75,7 +75,7 @@ public class FourBar extends Module {
     @Override
     public void update(double pNow) {
         mCurrentTime = pNow;
-        mNeo1.set( mCurrentOutput );
+        mNeos.set( mCurrentOutput );
         if ( mAngularPosition >= 135 ) {
             setDesiredState( EFourBarState.STOP );
         }
@@ -103,7 +103,7 @@ public class FourBar extends Module {
             case STOP:
                 // stop climber, cut off power
                 mOutputToApply = 0;
-                mNeo1.stopMotor();
+                mNeos.stopMotor();
             case HOLD:
                 // hold in place
                 mOutputToApply = gravityCompAtPosition();
@@ -158,9 +158,9 @@ public class FourBar extends Module {
      */
     public void updateCodex() {
         updateAngularPosition();
-        mData.fourbar.set( EFourBarData.A_OUTPUT, mNeo1.get() );
-        mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeo1.getBusVoltage() );
-        mData.fourbar.set( EFourBarData.A_CURRENT, mNeo1.getOutputCurrent() );
+        mData.fourbar.set( EFourBarData.A_OUTPUT, mNeos.get() );
+        mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeos.getBusVoltage() );
+        mData.fourbar.set( EFourBarData.A_CURRENT, mNeos.getOutputCurrent() );
 
         mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
         mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getBusVoltage() );
@@ -171,6 +171,6 @@ public class FourBar extends Module {
 
     @Override
     public void shutdown(double pNow) {
-        mNeo1.disable();
+        mNeos.disable();
     }
 }
