@@ -17,7 +17,7 @@ public class FourBar extends Module {
     private ILog mLog = Logger.createLog( FourBar.class );
     private Data mData;
 
-    private CANSparkMax mNeo1;
+    private CANSparkMax mNeos;
     private CANSparkMax mNeo2;
     private CANEncoder mNeo1Encoder;
     private CANEncoder mNeo2Encoder;
@@ -36,11 +36,12 @@ public class FourBar extends Module {
      */
     public FourBar( Data pData ) {
         // Later: SystemSettings address
-        mNeo1 = new CANSparkMax( 9, CANSparkMaxLowLevel.MotorType.kBrushless );
+        mNeos = new CANSparkMax( 9, CANSparkMaxLowLevel.MotorType.kBrushless );
         mNeo2 = new CANSparkMax( 10, CANSparkMaxLowLevel.MotorType.kBrushless );
+        mNeo2.follow( mNeos, true );
     
         // Connect the NEO's to the encoders
-        mNeo1Encoder = mNeo1.getEncoder();
+        mNeo1Encoder = mNeos.getEncoder();
         mNeo2Encoder = mNeo2.getEncoder();
 
         mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
@@ -55,8 +56,7 @@ public class FourBar extends Module {
         mPreviousNeo1Rotations = mNeo1Encoder.getPosition();
         mPreviousNeo2Rotations = mNeo2Encoder.getPosition();
 
-        mNeo1.setSmartCurrentLimit( 20 );
-        mNeo2.setSmartCurrentLimit( 20 );
+        mNeos.setSmartCurrentLimit( 20 );
     }
 
     @Override
@@ -66,14 +66,12 @@ public class FourBar extends Module {
 
     @Override
     public void update( double pNow ) {
-        mNeo1.set( -mOutput );
-        mNeo2.set( mOutput );
+        mNeos.set( mOutput );
     }
 
     @Override
     public void shutdown( double pNow ) {
-        mNeo1.disable();
-        mNeo2.disable();
+        mNeos.disable();
     }
 
     /**
@@ -128,8 +126,7 @@ public class FourBar extends Module {
      */
     public void stop() {
         setDesiredOutput( 0, true );
-        mNeo1.stopMotor();
-        mNeo2.stopMotor();
+        mNeos.stopMotor();
     }
 
     /**
@@ -137,7 +134,7 @@ public class FourBar extends Module {
      */
     public void updateCodex() {
         updateAngularPosition();
-        mData.fourbar.set( EFourBarData.A_OUTPUT, -mNeo1.get() );
+        mData.fourbar.set( EFourBarData.A_OUTPUT, mNeo1.get() );
         mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeo1.getBusVoltage() );
         mData.fourbar.set( EFourBarData.A_CURRENT, mNeo1.getOutputCurrent() );
 
