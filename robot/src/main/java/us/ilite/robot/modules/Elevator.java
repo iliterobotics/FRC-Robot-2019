@@ -17,6 +17,8 @@ import us.ilite.common.lib.control.PIDGains;
 import com.team254.lib.util.Util;
 import us.ilite.common.Data;
 
+import java.security.spec.EllipticCurve;
+
 public class Elevator extends Module {
 
     private Data mData;
@@ -150,6 +152,7 @@ public class Elevator extends Module {
         mData.elevator.set( EElevator.DESIRED_POWER, getDesiredPower());
         mData.elevator.set(EElevator.OUTPUT_POWER, output);
         mData.elevator.set( EElevator.SETTING_POSITION, settingPositionVal());
+        mData.elevator.set( EElevator.CURRENT_CONTROL_MODE, (double) getCurrentControlMode().ordinal());
 
     }
 
@@ -276,6 +279,10 @@ public class Elevator extends Module {
 
     public EElevatorPosition getCurrentPosition() {
         return mCurrentPosition;
+    }
+
+    public EControlMode getCurrentControlMode() {
+        return mCurrentControlMode;
     }
 
     public double isAtTopVal() {
