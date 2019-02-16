@@ -43,6 +43,7 @@ public class FourBar extends Module {
         // Later: SystemSettings address
         mNeo1 = new CANSparkMax(9, CANSparkMaxLowLevel.MotorType.kBrushless);
         mNeo2 = new CANSparkMax(10, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mNeo2.follow( mNeo1, true );
     
         // Connect the NEO's to the encoders
         mNeo1Encoder = mNeo1.getEncoder();
@@ -63,8 +64,6 @@ public class FourBar extends Module {
 
         mNeo1.setSmartCurrentLimit( 20 );
         mNeo2.setSmartCurrentLimit( 20 );
-
-        mPIDController.setInputRange( 0, 135 );
         mPIDController.setOutputRange( -1, 1 );
     }
 
@@ -76,8 +75,7 @@ public class FourBar extends Module {
     @Override
     public void update(double pNow) {
         mCurrentTime = pNow;
-        mNeo1.set( -mCurrentOutput );
-        mNeo2.set( mCurrentOutput );
+        mNeo1.set( mCurrentOutput );
         if ( mAngularPosition >= 135 ) {
             setDesiredState( EFourBarState.STOP );
         }
@@ -106,7 +104,6 @@ public class FourBar extends Module {
                 // stop climber, cut off power
                 mOutputToApply = 0;
                 mNeo1.stopMotor();
-                mNeo2.stopMotor();
             case HOLD:
                 // hold in place
                 mOutputToApply = gravityCompAtPosition();
@@ -160,10 +157,8 @@ public class FourBar extends Module {
         mAngularPosition = ( ( mNeo1Encoder.getPosition() - mPreviousNeo1Rotations / 300 ) + ( mNeo2Encoder.getPosition() - mPreviousNeo2Rotations / 300 ) ) / 2;
     }
 
-    @Override
-    public void shutdown(double pNow) {
-        mNeo1.disable();
-        mNeo2.disable();
+    public void toNeos(  ) {
+
     }
 
     /**
@@ -171,7 +166,7 @@ public class FourBar extends Module {
      */
     public void updateCodex() {
         updateAngularPosition();
-        mData.fourbar.set( EFourBarData.A_OUTPUT, -mNeo1.get() );
+        mData.fourbar.set( EFourBarData.A_OUTPUT, mNeo1.get() );
         mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeo1.getBusVoltage() );
         mData.fourbar.set( EFourBarData.A_CURRENT, mNeo1.getOutputCurrent() );
 
@@ -180,5 +175,10 @@ public class FourBar extends Module {
         mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
 
         mData.fourbar.set( EFourBarData.ANGLE, mAngularPosition );
+    }
+
+    @Override
+    public void shutdown(double pNow) {
+        mNeo1.disable();
     }
 }
