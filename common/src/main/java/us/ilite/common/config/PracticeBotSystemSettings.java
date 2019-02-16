@@ -1,11 +1,6 @@
 package us.ilite.common.config;
 
-import java.util.Arrays;
-import java.util.List;
-
 import us.ilite.common.lib.control.PIDGains;
-import us.ilite.common.types.ETrackingType;
-import us.ilite.common.types.input.ELogitech310;
 
 public class PracticeBotSystemSettings {
 

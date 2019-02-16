@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * Class that contains utility methods for all things System Settings
  */
 public abstract class AbstractSystemSettingsUtils {
-        /**
+    /**
      * Touch-file to indicate whether the practice bot constants should be loaded.
      */
     private static final File PRACTICE_BOT_FILE = new File(
@@ -20,7 +20,10 @@ public abstract class AbstractSystemSettingsUtils {
 
     public static void loadPracticeSettings(SystemSettings sysSettings) {
         if(PRACTICE_BOT_FILE.exists()) {
+            System.out.println("Practice file: " + PRACTICE_BOT_FILE +" exists! Copying values");
             copyOverValues(PracticeBotSystemSettings.getInstance(), sysSettings);
+        } else {
+            System.out.println("Practice file: " + PRACTICE_BOT_FILE +" does not exist!");
         }
     }
     /**
