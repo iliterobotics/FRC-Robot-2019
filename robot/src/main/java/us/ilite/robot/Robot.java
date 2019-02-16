@@ -14,9 +14,10 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryUtil;
 import com.team254.lib.trajectory.timing.*;
 
-import com.team254.lib.util.Util;
+import edu.wpi.first.wpilibj.*;
 import us.ilite.common.Data;
 import us.ilite.common.lib.control.DriveController;
+<<<<<<< HEAD
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -33,16 +34,30 @@ import us.ilite.common.types.MatchMetadata;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.paths.TestAuto;
+=======
+import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+import us.ilite.common.lib.util.PerfTimer;
+import us.ilite.common.types.sensor.EPowerDistPanel;
+import us.ilite.lib.drivers.GetLocalIP;
+import us.ilite.robot.auto.paths.TestAuto;
+import us.ilite.common.config.SystemSettings;
+import us.ilite.common.types.MatchMetadata;
+import us.ilite.lib.drivers.Clock;
+>>>>>>> origin/master
 import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
+<<<<<<< HEAD
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.Elevator;
 import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.ModuleList;
 import us.ilite.robot.modules.Superstructure;
+=======
+import us.ilite.robot.modules.*;
+>>>>>>> origin/master
 
 public class Robot extends TimedRobot {
 
@@ -57,6 +72,8 @@ public class Robot extends TimedRobot {
     private Data mData = new Data();
     private Timer initTimer = new Timer();
     private final SystemSettings mSettings = new SystemSettings();
+
+    private PowerDistributionPanel pdp = new PowerDistributionPanel();
 
 
     // Module declarations here
@@ -79,9 +96,15 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         //look for practice robot config:
         AbstractSystemSettingsUtils.loadPracticeSettings(mSettings);
+
+        // Init the actual robot
+        initTimer.reset();
+        initTimer.start();
+        Logger.setLevel(ELevel.INFO);
+        mLogger.info("Starting Robot Initialization...");
+
+        new Thread(new DSConnectInitThread()).start();
         // Init static variables and get singleton instances first
-        Network.getInstance();
-        mLogger.info("Netstat determined a driver station IP of ", GetLocalIP.getIp());
 
         ICodexTimeProvider provider = new ICodexTimeProvider() {
             public long getTimestamp() {
@@ -90,14 +113,6 @@ public class Robot extends TimedRobot {
         };
         CodexMetadata.overrideTimeProvider(provider);
 
-        // Init the actual robot
-        initTimer.reset();
-        initTimer.start();
-        Logger.setLevel(ELevel.INFO);
-        mLogger.info("Starting Robot Initialization...");
-
-        mSettings.writeToNetworkTables();
-
         mRunningModules.setModules();
 
         TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
@@ -105,8 +120,6 @@ public class Robot extends TimedRobot {
         trajectory = mTrajectoryGenerator.generateTrajectory(false, TestAuto.kPath, kTrajectoryConstraints, 100.0, 40.0, 12.0);
         trajectory = TrajectoryUtil.mirrorTimed(trajectory);
 
-
-        mSettings.writeToNetworkTables();
 
         initTimer.stop();
         mLogger.info("Robot initialization finished. Took: ", initTimer.get(), " seconds");
@@ -147,8 +160,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        mRunningModules.periodicInput(mClock.getCurrentTime());
-        mRunningModules.update(mClock.getCurrentTime());
+        commonPeriodic();
     }
 
     @Override
@@ -164,9 +176,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        mRunningModules.periodicInput(mClock.getCurrentTime());
-        mRunningModules.update(mClock.getCurrentTime());
-        // mData.sendCodices();
+        commonPeriodic();
+        EPowerDistPanel.map(mData.pdp, pdp);
+        mData.sendCodices();
     }
 
     @Override
@@ -196,11 +208,19 @@ public class Robot extends TimedRobot {
 
     }
 
+    private void commonPeriodic() {
+        for(Codex c : mData.mAllCodexes) {
+            c.reset();
+        }
+        mRunningModules.periodicInput(mClock.getCurrentTime());
+        mRunningModules.update(mClock.getCurrentTime());
+    }
+
     private void initMatchMetadata() {
         if (mMatchMeta == null) {
             mMatchMeta = new MatchMetadata();
             int gid = mMatchMeta.hash;
-            for (Codex c : mData.mLoggedCodexes) {
+            for (Codex c : mData.mAllCodexes) {
                 c.meta().setGlobalId(gid);
             }
         }
@@ -233,4 +253,22 @@ public class Robot extends TimedRobot {
 
     }
 
+    private class DSConnectInitThread implements Runnable {
+
+        @Override
+        public void run() {
+
+            while(!DriverStation.getInstance().isDSAttached()) {
+                try {
+                    mLogger.error("Waiting on Robot <--> DS Connection...");
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            List<String> ips = GetLocalIP.getAllIps();
+            mData.initCodexSender(ips);
+        }
+    }
 }
