@@ -38,7 +38,7 @@ public class Data {
     public Codex<Double, EFourBarData> fourbar = Codex.of.thisEnum(EFourBarData.class);
 
     public final Codex[] mLoggedCodexes = new Codex[] {
-        imu, drive, driverinput, operatorinput, elevator
+        imu, drive, driverinput, operatorinput, elevator, fourbar
     };
 
     public static NetworkTableInstance kInst = NetworkTableInstance.getDefault();
@@ -65,8 +65,8 @@ public class Data {
             new CodexNetworkTablesParser<EDriveData>(drive),
             new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
             new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR"),
-            new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" )
-            new CodexNetworkTablesParser<EFourBarData>(fourbar, "FOURBAR");
+            new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" ),
+            new CodexNetworkTablesParser<EFourBarData>(fourbar, "FOURBAR")
         );
 
     }
