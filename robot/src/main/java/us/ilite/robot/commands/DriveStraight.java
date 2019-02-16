@@ -35,7 +35,7 @@ public class DriveStraight implements ICommand {
     private double mInitialDistance;
     private Rotation2d mTargetHeading;
 
-    private double mDrivePercentOutput = 0.7;
+    private double mDrivePercentOutput = 0.3;
     private double mAllowableDistanceError = 3.0;
     private double mRampDistance = 120.0;
     private double mLastTime = 0.0;
@@ -146,6 +146,7 @@ public class DriveStraight implements ICommand {
     }
 
     private double getAverageDriveDistance() {
+        System.out.println("BABA");
         return (mData.drive.get(EDriveData.LEFT_POS_INCHES) + mData.drive.get(EDriveData.RIGHT_POS_INCHES)) / 2.0;
     }
 
