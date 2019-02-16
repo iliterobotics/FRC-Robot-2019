@@ -142,15 +142,15 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     //----Motion Magic Constants------
 
     //TODO Change values to correct values
-    public static double kElevatorMotionP = 0;
-    public static double kElevatorMotionI = 0;
-    public static double kElevatorMotionD = 0;
+    public static double kElevatorMotionP = 0.0001;
+    public static double kElevatorMotionI = 0.001;
+    public static double kElevatorMotionD = 0.01;
     public static double kElevatorMotionF = 0;
 
-    public static double kMaxElevatorVelocity = 2000;
-    public static double kMinElevatorVelocity = 1500;
-    public static double kMaxElevatorAcceleration = 1500;
-    public static double kMinElevatorAcceleration = 100;
+    public static double kMaxElevatorVelocity = 2000 * 0.1;
+    public static double kMinElevatorVelocity = 1500 * 0.1;
+    public static double kMaxElevatorAcceleration = 1500 * 0.1;
+    public static double kMinElevatorAcceleration = 100 * 0.1;
     public static double kElevatorRPM = 5700;
     public static double kElevatorIZone = 0;
     public static double kElevatorFeedForward = 0;
