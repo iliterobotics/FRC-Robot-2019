@@ -118,15 +118,7 @@ public class FourBar extends Module {
                 mPIDController.setSetpoint( EFourBarState.DECELERATE.getUpperAngularBound() );
                 mOutputToApply = mPIDController.calculate( mAngularPosition, mCurrentTime ) + gravityCompAtPosition();
         }
-        mCurrentOutput = clampOutput( mOutputToApply );
-    }
-
-    /**
-     * Limit the output to between min and max
-     * @param output the output to be clamped and applied
-     */
-    public double clampOutput( double output ) {
-        return Util.limit( output, kMinOutput, kMaxOutput );
+        mCurrentOutput = Util.limit( mOutputToApply, kMinOutput, kMaxOutput );
     }
 
     /**
