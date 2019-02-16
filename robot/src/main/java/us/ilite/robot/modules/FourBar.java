@@ -5,6 +5,7 @@ import com.flybotix.hfr.util.log.Logger;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.team254.lib.util.Util;
 
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
@@ -13,6 +14,9 @@ import us.ilite.common.types.EFourBarData;
 
 
 public class FourBar extends Module {
+
+    private final double kMinOutput = -1;
+    private final double kMaxOutput = 1;
 
     private ILog mLog = Logger.createLog(FourBar.class);
     private Data mData;
@@ -90,31 +94,41 @@ public class FourBar extends Module {
      * @param desiredState the state used to apply output
      */
     public void setDesiredState( EFourBarState desiredState ) {
+
+        double mOutputToApply = 0.0;
+
         switch ( desiredState ) {
             case NORMAL:
                 // do nothing
-                mCurrentOutput = 0;
+                mOutputToApply = 0;
             case STOP:
                 // stop climber, cut off power
-                mCurrentOutput = 0;
+                mOutputToApply = 0;
                 mNeo1.stopMotor();
                 mNeo2.stopMotor();
             case HOLD:
                 // hold in place
-                mCurrentOutput = gravityCompAtPosition();
+                mOutputToApply = gravityCompAtPosition();
             case ACCELERATE:
                 // apply pid to output on accelerate controller settings
                 mPIDController.setPIDGains( SystemSettings.kFourBarAccelerateGains );
                 mPIDController.setSetpoint( EFourBarState.ACCELERATE.getUpperAngularBound() );
-                mCurrentOutput = mPIDController.calculate( mAngularPosition, mCurrentTime ) + gravityCompAtPosition();
+                mOutputToApply = mPIDController.calculate( mAngularPosition, mCurrentTime ) + gravityCompAtPosition();
             case DECELERATE:
                 // apply pid to output on decelerate controller settings
                 mPIDController.setPIDGains( SystemSettings.kFourBarDecelerateGains );
                 mPIDController.setSetpoint( EFourBarState.DECELERATE.getUpperAngularBound() );
-                mCurrentOutput = mPIDController.calculate( mAngularPosition, mCurrentTime ) + gravityCompAtPosition();
-
+                mOutputToApply = mPIDController.calculate( mAngularPosition, mCurrentTime ) + gravityCompAtPosition();
         }
-        updateCodex();
+        mCurrentOutput = clampOutput( mOutputToApply );
+    }
+
+    /**
+     * Limit the output to between min and max
+     * @param output the output to be clamped and applied
+     */
+    public double clampOutput( double output ) {
+        return Util.limit( output, kMaxOutput );
     }
 
     /**
