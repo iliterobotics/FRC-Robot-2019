@@ -3,12 +3,10 @@ package us.ilite.lib.drivers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -65,34 +63,51 @@ public final class GetLocalIP {
      * empty. It will never be null.
      */
     public static Optional<String> getIp() {
-        Optional<String> returnVal = Optional.empty();
+        //TODO - clean this up
+        Optional<String> returnVal = Optional.of(getAllIps().get(0));
+
+        return returnVal;
+    }
+
+    /**
+     * @return a list of all non-localhost IP's attached to the robot at this time
+     */
+    public static List<String> getAllIps() {
+        List<String> results = new ArrayList<>();
         ProcessBuilder procBuild = new ProcessBuilder(Arrays.asList(kShell, "-c", kScript));
         procBuild.redirectErrorStream(true);
 
+        BufferedReader reader = null;
         try {
             Process proc = procBuild.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-            returnVal = getIPFromInputStream(reader);
+            reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+            results.addAll(getIPFromInputStream(reader));
 
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if(reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-
-        return returnVal;
+        return results;
     }
 
     /**
      * Method to extract the IP from a process's InputStreamReader. This method will
      * keep reading from the passed in reader until all IPs are found. Then the method 
      * will return the first match. If there are no IPs or any other errors, this method 
-     * will return an empty Optional
+     * will return an empty list
      * 
      * @param reader the reader from the process's inputstream. If this is null, 
      * the method will return an empty optional
      */
-    protected static Optional<String> getIPFromInputStream(BufferedReader reader) {
+    protected static List<String> getIPFromInputStream(BufferedReader reader) {
 
-        Optional<String> returnVal = Optional.empty();
         if (reader != null) {
             Set<String> allLines = new LinkedHashSet<>();
             String line = null;
@@ -107,9 +122,9 @@ public final class GetLocalIP {
                 e.printStackTrace();
             }
 
-            returnVal = allLines.stream().findFirst();
+            return allLines.stream().collect(Collectors.toList());
         }
-        return returnVal;
+        return Collections.emptyList();
     }
 
     /**

@@ -1,17 +1,7 @@
 package us.ilite.common;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.flybotix.hfr.codex.Codex;
-
+import com.flybotix.hfr.codex.CodexSender;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.io.CodexNetworkTables;
@@ -22,6 +12,10 @@ import us.ilite.common.types.input.EDriverInputMode;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.common.types.manipulator.EElevator;
 import us.ilite.common.types.sensor.EGyro;
+import us.ilite.common.types.sensor.EPowerDistPanel;
+
+import java.io.*;
+import java.util.*;
 
 public class Data {
 
@@ -34,10 +28,16 @@ public class Data {
     public final Codex<Double, ELogitech310> driverinput = Codex.of.thisEnum(ELogitech310.class);
     public final Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
     public final Codex<Double, EElevator> elevator = Codex.of.thisEnum(EElevator.class);
-  
+    public final Codex<Double, EPowerDistPanel> pdp = Codex.of.thisEnum(EPowerDistPanel.class);
+
+
+    private final List<CodexSender> mSenders = new ArrayList<>();
+
     public final Codex[] mLoggedCodexes = new Codex[] {
-        imu, drive, driverinput, operatorinput, elevator
+//        imu, drive, driverinput, operatorinput, elevator,pdp
+            pdp
     };
+
 
     public static NetworkTableInstance kInst = NetworkTableInstance.getDefault();
     public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
@@ -168,11 +168,17 @@ public class Data {
      * Sends Codex entries into its corresponding NetworkTable
      */
     public void sendCodices() {
-        mCodexNT.send(imu);
-        mCodexNT.send(elevator);
-        mCodexNT.send(drive);
-        mCodexNT.send("DRIVER", driverinput);
-        mCodexNT.send("OPERATOR", operatorinput);
+//        mCodexNT.send(imu);
+//        mCodexNT.send(elevator);
+//        mCodexNT.send(drive);
+//        mCodexNT.send("DRIVER", driverinput);
+//        mCodexNT.send("OPERATOR", operatorinput);
+
+        for(CodexSender cs : mSenders) {
+            for(Codex c : mLoggedCodexes) {
+                cs.sendIfChanged(c);
+            }
+        }
     }
 
     /**
@@ -184,5 +190,14 @@ public class Data {
         mCodexNT.registerCodex(EElevator.class);
         mCodexNT.registerCodex("DRIVER", ELogitech310.class);
         mCodexNT.registerCodex("OPERATOR", ELogitech310.class);
+    }
+
+    public void initCodexSender(List<String> pIpAddresses) {
+//        for(String ip : pIpAddresses) {
+//            System.out.println("======> Initializing sender to " + ip + ":" + SystemSettings.sCODEX_COMMS_PORT);
+//            ISendProtocol protocol = MessageProtocols.createSender(MessageProtocols.EProtocol.UDP, SystemSettings.sCODEX_COMMS_PORT, SystemSettings.sCODEX_COMMS_PORT, ip);
+//            CodexSender sender = new CodexSender(protocol);
+//            mSenders.add(sender);
+//        }
     }
 }

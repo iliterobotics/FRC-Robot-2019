@@ -29,6 +29,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.EnumUtils;
 import org.kordamp.ikonli.fontawesome.FontAwesome;
+import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.manipulator.EElevator;
 import us.ilite.common.types.sensor.EPowerDistPanel;
@@ -350,6 +351,8 @@ public class DriverStation extends Application {
     public static void main(String[] pArgs) {
         // Start the receivers before we start the display
         IliteCodexReceiver.getInstance();
+
+        System.out.println("Listening for Codex on " + SystemSettings.sCODEX_COMMS_PORT);
 
         // Start the display
         launch(pArgs);
