@@ -39,7 +39,6 @@ public class Robot extends TimedRobot {
     // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
     private LoopManager mLoopManager = new LoopManager(SystemSettings.kControlLoopPeriod);
     private ModuleList mRunningModules = new ModuleList();
-    private CommandQueue mCommandQueue = new CommandQueue();
 
     private Clock mClock = new Clock();
     private Data mData = new Data();
