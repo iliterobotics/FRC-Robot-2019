@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import com.revrobotics.ControlType;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.manipulator.EElevator;
 import us.ilite.lib.drivers.SparkMaxFactory;
@@ -30,12 +31,12 @@ public class Elevator extends Module {
     private double mMinPower = -1.0d;
     private double mHoldVoltage = 0.5; // NOT final
     private boolean mSettingPosition = false;
-    private int kCansparkId = 15; // TODO change ID
-    private int kTalonId = 15; // TODO change ID
+    private int kCansparkId = 9; // TODO change ID
     private PIDController mPidController;
     private double mCurrentTime;
     private double mNeoEncoderPosition;
     private CANPIDController mCanController;
+    private int mSmartMotionSlot = 0; //TODO highly subject to change.
 //    public Codex<Double, EElevator> elevatorCodex = Codex.of.thisEnum(EElevator.class);
 
     // TODO need to figure out these encoder thresholds
@@ -43,9 +44,9 @@ public class Elevator extends Module {
     private int mTopEncoderTicks = 0;
 
     EElevatorPosition mCurrentPosition = EElevatorPosition.BOTTOM;
-
     EElevatorState mCurrentState = EElevatorState.NORMAL;
     EElevatorPosition mDesiredPosition;
+    EControlMode mCurrentControlMode = EControlMode.MOTION_MAGIC; //TODO for testing motion magic stuff
 
     CANSparkMax mMasterElevator;
     Encoder mEncoder;
@@ -57,14 +58,26 @@ public class Elevator extends Module {
 
         this.mPidController = new PIDController(SystemSettings.kElevatorPositionGains, 100, 1500, SystemSettings.kControlLoopPeriod);
         this.mEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
+        this.mCanController = mMasterElevator.getPIDController();
 
-        // Create default NEO and set the ramp rate
+        // Create default NEO
         mMasterElevator = SparkMaxFactory.createDefaultSparkMax(kCansparkId, MotorType.kBrushless);
         mMasterElevator.setIdleMode(IdleMode.kBrake);
-        mMasterElevator.setRampRate(SystemSettings.kElevatorRampRate);
+
+        // mMasterElevator.setRampRate(SystemSettings.kElevatorRampRate);
         mMasterElevator.setSmartCurrentLimit(SystemSettings.kElevatorSmartCurrentLimit);
         mMasterElevator.setSecondaryCurrentLimit(SystemSettings.kElevatorSecondaryCurrentLimit);
-    
+
+        //Setting PID Coefficients for Motion Magic
+        mCanController.setP( SystemSettings.kElevatorMotionP );
+        mCanController.setI( SystemSettings.kElevatorMotionI );
+        mCanController.setD( SystemSettings.kElevatorMotionD );
+        mCanController.setFF( SystemSettings.kElevatorMotionF );
+
+        mCanController.setOutputRange( mMinPower, mMaxPower ); //TODO Subject to change
+        mCanController.setSmartMotionMaxAccel( SystemSettings.kMaxElevatorAcceleration, mSmartMotionSlot ); //TODO may change slot value
+        mCanController.setSmartMotionMaxVelocity( SystemSettings.kMaxElevatorVelocity, mSmartMotionSlot );
+        mCanController.setSmartMotionAllowedClosedLoopError( SystemSettings.kElevatorAllowedError, mSmartMotionSlot );
 
         // We start at the bottom
         mAtBottom = true;
@@ -74,7 +87,6 @@ public class Elevator extends Module {
         // Make sure the elevator is stopped upon initialization
         mDesiredPosition = EElevatorPosition.BOTTOM;
         mCurrentState = EElevatorState.STOP;
-
         mCurrentEncoderTicks = 0;
     }
 
@@ -105,13 +117,18 @@ public class Elevator extends Module {
         mDesiredDirectionUp = (mDesiredPower > 0);
 
 //        updateElevatorState(pNow);
-        double output  = calculateDesiredPower(mCurrentState);
+        double output  = calculateDesiredPower(mCurrentState, mCurrentControlMode);
         output = Util.limit(output, -1, 1); // 10% of the desired power; Used for testing purposes.
 
-        mMasterElevator.set(output);
-        // System.out.println("Power " + output);
-        // System.out.println("Current "+ getCurrent());
-        // System.out.println("Voltage " + mMasterElevator);
+        mData.kLoggingTable.putDouble( "Desired Output", output );
+        mData.kLoggingTable.putDouble( "Current Drawn", getCurrent() );
+        mData.kLoggingTable.putDouble( "Motor Output", mMasterElevator.getAppliedOutput() );
+
+        System.out.printf("Current: %s\tDesired Power: %s\tActual Output: %s\t\n", getCurrent(), output, mMasterElevator.getAppliedOutput());
+
+        if(mCurrentControlMode != EControlMode.MOTION_MAGIC) {
+            mMasterElevator.set(output);
+        }
 
         mData.kSmartDashboard.putDouble("Power", output);
         mData.kSmartDashboard.putDouble("Current", mMasterElevator.getOutputCurrent());
@@ -178,6 +195,7 @@ public class Elevator extends Module {
      */
     public void zeroEncoder() {
         mEncoder.reset();
+        mCurrentEncoderTicks = 0;
     }
 
     /**
@@ -213,7 +231,6 @@ public class Elevator extends Module {
         }
 
         return power;
-
     }
     
     public int getCurrentEncoderTicks() {
@@ -316,7 +333,7 @@ public class Elevator extends Module {
      * @param pCurrentState the current state of the elevator
      * @return the calculated power output as a double
      */
-    private double calculateDesiredPower(EElevatorState pCurrentState) {
+    private double calculateDesiredPower(EElevatorState pCurrentState, EControlMode pCurrentControlMode) {
         
         double power = 0d;
 
@@ -336,10 +353,19 @@ public class Elevator extends Module {
 //            power = mHoldVoltage / getBusVoltage(); // Need to test
 //            break;
         case STOP:
-            power = 0; // Essentially zero, but we don't like magic numbers
+            power = 0;
             break;
         case SET_POSITION:
-            power = calculateSetpointPower(); // Start setting position with the current time
+            switch ( pCurrentControlMode ) {
+                case PID:
+                    power = calculateSetpointPower(); // Start setting position with the current time
+                    break;
+                case MOTION_MAGIC:
+                    calculateMotionMagic();
+                    break;
+                    default:
+                        break;
+            }
             break;
         default:
             System.out.println("Somehow reached an unaccounted state with " + pCurrentState.toString()); // In case,
@@ -366,6 +392,18 @@ public class Elevator extends Module {
 
 
     public void logInfo() {
+    }
+
+    private void calculateMotionMagic() {
+        double setPoint = mDesiredPosition.mEncoderThreshold();
+        mCanController.setReference( setPoint, ControlType.kSmartMotion ); //Maybe should be a velocity control type..?
+
+
+    }
+
+    public enum EControlMode {
+        MOTION_MAGIC,
+        PID
     }
 
 }

@@ -152,6 +152,9 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kElevatorRPM = 5700;
     public static double kElevatorIZone = 0;
     public static double kElevatorFeedForward = 0;
+    public static double kElevatorAllowedError = 100; //The allowed deficit in rotations
+
+
 
     //--------------------------------
 
