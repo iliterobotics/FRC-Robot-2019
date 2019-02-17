@@ -31,6 +31,8 @@ public class DriverInputTest {
     @Mock private CargoSpit mCargoSpit;
     @Mock private Intake mIntake;
     @Mock private Elevator mElevator;
+    @Mock private Intake mIntake;
+    @Mock private Arm mArm;
 
 
     private DriverInput mDriverInput;
@@ -48,6 +50,7 @@ public class DriverInputTest {
         mClock = new Clock().simulated();
         mModuleList = new ModuleList();
         mTeleopCommandManager = spy(new CommandManager());
+        mArm = new BasicArm();
         mDriverInput = spy(new DriverInput(mDrive, mElevator, mIntake, mHatchFlower, mCargoSpit, mTeleopCommandManager, mAutonomousCommandManager, mData));
 
         mModuleList.setModules(mDriverInput, mTeleopCommandManager, mDrive);
