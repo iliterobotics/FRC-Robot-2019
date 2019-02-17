@@ -72,7 +72,7 @@ public class Elevator extends Module {
         mCanController.setP( SystemSettings.kElevatorMotionP );
         mCanController.setI( SystemSettings.kElevatorMotionI );
         mCanController.setD( SystemSettings.kElevatorMotionD );
-        mCanController.setFF( SystemSettings.kElevatorF );
+        mCanController.setFF( SystemSettings.kElevatorMotionF );
 
         mCanController.setOutputRange( mMinPower, mMaxPower );
         mCanController.setSmartMotionMaxAccel( SystemSettings.kMaxElevatorAcceleration, mSmartMotionSlot );
