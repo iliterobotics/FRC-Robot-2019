@@ -50,7 +50,7 @@ public class SparkMaxFactory {
 
     public static CANSparkMax createSparkMax(int pId, MotorType pMotorType, Configuration pConfiguration) {
         CANSparkMax spark = new CANSparkMax(pId, pMotorType);
-
+        spark.restoreFactoryDefaults();
         spark.setCANTimeout(pConfiguration.CAN_TIMEOUT);
 //        spark.setControlFramePeriod(pConfiguration.CONTROL_FRAME_PERIOD);
         spark.setIdleMode(pConfiguration.IDLE_MODE);
