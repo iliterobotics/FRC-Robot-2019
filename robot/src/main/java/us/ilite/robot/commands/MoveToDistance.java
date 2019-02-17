@@ -4,7 +4,7 @@ import com.team254.lib.util.Util;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
-public class MoveToDistance extends ACommand {
+public class MoveToDistance implements ICommand {
     private double mEpsilonInches = 1.0;
     private double mPower = 0.5;
     private final Drive drive;

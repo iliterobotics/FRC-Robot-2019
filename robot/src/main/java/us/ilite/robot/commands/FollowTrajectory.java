@@ -4,12 +4,11 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import us.ilite.robot.modules.Drive;
 
-public class FollowTrajectory extends ACommand {
+public class FollowTrajectory implements ICommand {
 
     private final ILog mLog = Logger.createLog(FollowTrajectory.class);
 

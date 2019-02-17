@@ -1,6 +1,6 @@
 package us.ilite.robot.commands;
 
-public class EmptyCommand extends ACommand {
+public class EmptyCommand implements ICommand {
 
     @Override
     public void init(double pNow) {

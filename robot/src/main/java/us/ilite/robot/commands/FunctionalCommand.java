@@ -5,7 +5,7 @@ import java.util.function.BooleanSupplier;
 /**
  * Runs
  */
-public class FunctionalCommand extends ACommand {
+public class FunctionalCommand implements ICommand {
 
     private final Runnable mFunctionToInvoke;
     private final BooleanSupplier mEndCondition;

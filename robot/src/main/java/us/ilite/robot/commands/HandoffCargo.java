@@ -1,6 +1,6 @@
 package us.ilite.robot.commands;
 
-public class HandoffCargo extends ACommand {
+public class HandoffCargo implements ICommand {
 
     @Override
     public void init(double pNow) {

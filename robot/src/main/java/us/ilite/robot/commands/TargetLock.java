@@ -12,7 +12,7 @@ import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
 
-public class TargetLock extends ACommand {
+public class TargetLock implements ICommand {
     private Drive mDrive;
     private ITargetDataProvider mCamera;
     private PIDController mPID;

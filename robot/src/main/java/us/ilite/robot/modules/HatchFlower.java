@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.Delay;
-import us.ilite.robot.commands.ACommand;
+import us.ilite.robot.commands.ICommand;
 import us.ilite.robot.commands.ParallelCommand;
 
 /**
@@ -94,7 +94,7 @@ public class HatchFlower extends Module {
      * The GrabSolenoidCommand will set the grab solenoid to the commanded state,
      * which is provided in the constructor
      */
-    public class GrabSolenoidCommand extends ACommand {
+    public class GrabSolenoidCommand implements ICommand {
 
         GrabberState state;
 
@@ -125,7 +125,7 @@ public class HatchFlower extends Module {
      * The PushSolenoidCommand will set the push solenoid to the commanded state,
      * which is provided in the constructor
      */
-    public class PushSolenoidCommand extends ACommand {
+    public class PushSolenoidCommand implements ICommand {
 
         PusherState state;
 
@@ -152,7 +152,7 @@ public class HatchFlower extends Module {
 
     }
 
-    public class ExtendSolenoidCommand extends ACommand {
+    public class ExtendSolenoidCommand implements ICommand {
 
         private ExtensionState state;
         private Timer timer = new Timer();
@@ -189,7 +189,7 @@ public class HatchFlower extends Module {
      * SetStateCommand will set the HatchFlower state.  This is needed because the Push
      * command is transitional.
      */
-    public class SetStateCommand extends ACommand {
+    public class SetStateCommand implements ICommand {
 
         HatchFlowerState mState;
 
@@ -311,7 +311,7 @@ public class HatchFlower extends Module {
                     SetStateCommand endState = new SetStateCommand(HatchFlowerState.CAPTURE);
 
                     // Step2: Start the solenoids moving to the capture configuration
-                    List<ACommand> toCaptureState = Arrays.asList(
+                    List<ICommand> toCaptureState = Arrays.asList(
                         new GrabSolenoidCommand(GrabberState.GRAB), 
                         new PushSolenoidCommand(PusherState.RESET), 
                         new Delay(SystemSettings.kHatchFlowerSolenoidReleaseTimeSec)

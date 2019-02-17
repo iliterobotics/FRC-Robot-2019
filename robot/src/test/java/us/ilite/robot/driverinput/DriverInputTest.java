@@ -117,7 +117,7 @@ public class DriverInputTest {
             // If we press and release a button the command queue should get stopped
             mData.driverinput.set(commandTrigger, 1.0);
             // Update twice to verify that commands aren't reset twice
-            updateRobot(2);
+            updateRobot();
             verify(mSuperstructure).stopRunningCommands();
             assertTrue(mSuperstructure.isRunningCommands());
 

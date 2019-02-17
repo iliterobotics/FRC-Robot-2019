@@ -7,10 +7,10 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class CommandQueue extends ACommand {
+public class CommandQueue implements ICommand {
 
     private ILog mLogger = Logger.createLog(CommandQueue.class);
-    private Queue<ACommand> mCommandQueue = new LinkedList<>();
+    private Queue<ICommand> mCommandQueue = new LinkedList<>();
 
 
     @Override
@@ -23,7 +23,7 @@ public class CommandQueue extends ACommand {
     @Override
     public boolean update(double pNow) {
         // Grab the current command
-        ACommand mCurrentCommand = mCommandQueue.peek();
+        ICommand mCurrentCommand = mCommandQueue.peek();
 
         // Check that we aren't at the end of the queue or that a null pointer won't occur
         if(mCurrentCommand != null) {
@@ -58,7 +58,7 @@ public class CommandQueue extends ACommand {
 
     }
 
-    public void setCommands(ACommand... pCommands) {
+    public void setCommands(ICommand... pCommands) {
         mCommandQueue.clear();
         mCommandQueue.addAll(Arrays.asList(pCommands));
     }
