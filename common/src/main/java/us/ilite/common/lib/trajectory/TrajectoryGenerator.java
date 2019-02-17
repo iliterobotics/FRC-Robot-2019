@@ -59,17 +59,18 @@ public class TrajectoryGenerator {
             double max_accel,  // inches/s^2
             double max_voltage) {
 
-//        List<Pose2d> waypoints_maybe_flipped = (reversed) ? WaypointUtil.flipWaypoints(waypoints) : waypoints;
         // We'll assume that any paths passed to us are pointing in the correct direction (the direction the robot is actually moving) already.
         // In other words, we will consider the heading passed to us to be the heading w.r.t the BACK of the robot, NOT the front.
         List<Pose2d> waypoints_maybe_flipped = waypoints;
-
 
         // Create a trajectory from splines.
         Trajectory<Pose2dWithCurvature> trajectory = TrajectoryUtil.trajectoryFromSplineWaypoints(
                 waypoints_maybe_flipped, kMaxDx, kMaxDy, kMaxDTheta);
 
-        trajectory = (reversed) ? flip(trajectory) : trajectory;
+        // Flip to be in same frame of reference as field
+        trajectory = TrajectoryUtil.mirror(trajectory);
+
+        trajectory = (reversed) ? flip(trajectory, xAxisFlip) : trajectory;
 
         // Create the constraint that the robot must be able to traverse the trajectory without ever applying more
         // than the specified voltage.
