@@ -21,6 +21,8 @@ public class CargoSpitTest {
     private Elevator mElevator;
     private Drive mDrive;
     private CargoSpit mCargoSpit;
+    private Intake mIntake;
+    private Arm mArm;
 
 
     @Before
@@ -31,8 +33,10 @@ public class CargoSpitTest {
         mModuleList = new ModuleList();
         mSuperStructure = spy( new Superstructure() );
         mCargoSpit = new CargoSpit( mData );
+        mIntake = new Intake( mData );
+        mArm = new MotionMagicArm();
 
-        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mCargoSpit, mSuperStructure, mData ));
+        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mCargoSpit, mIntake, mArm, mSuperStructure, mData ));
         mModuleList.setModules( mDriverInput, mSuperStructure, mDrive );
         mModuleList.modeInit( mClock.getCurrentTime() );
     }
@@ -44,8 +48,10 @@ public class CargoSpitTest {
         mModuleList = new ModuleList();
         mSuperStructure = spy( new Superstructure() );
         mCargoSpit = new CargoSpit( mData );
+        mIntake = new Intake( mData );
+        mArm = new MotionMagicArm();
 
-        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mCargoSpit, mSuperStructure, mData ));
+        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mCargoSpit, mIntake, mArm, mSuperStructure, mData ));
         mModuleList.setModules( mDriverInput, mSuperStructure, mDrive );
         mModuleList.modeInit( mClock.getCurrentTime() );
     }

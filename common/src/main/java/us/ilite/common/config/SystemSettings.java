@@ -335,11 +335,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static int kHatchIntakeSPXAddress = 11;
     public static int kCargoIntakeSPXLowerAddress = 12;
-    // TO-DO DIO spreadsheet empty
-    // public static int kIntakeBeamBreakAddress = -1;
+    // TO-DO DO spreadsheet empty
+    public static int kIntakeBeamBreakAddress = -1;
 
     public static int kIntakeWristSRXAddress = 16;
-    // TO-DO Writs encoder addresses?
+    // TO-DO Write encoder addresses?
     public static int kIntakeWristEncoderA_Address = -1;
     public static int kIntakeWristEncoderB_Address = -1;
     public static int kIntakeSolenoidAddress = 2; // and/or 3 according to integration sheet

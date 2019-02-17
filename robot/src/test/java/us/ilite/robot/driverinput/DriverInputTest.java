@@ -48,9 +48,10 @@ public class DriverInputTest {
         mModuleList = new ModuleList();
         mSuperstructure = spy(new Superstructure());
         //mArm = new BasicArm();
-        mArm = new MotionMagicArm;
+        mArm = new MotionMagicArm();
         mCargoSpit = new CargoSpit( mData );
-        mDriverInput = spy(new DriverInput(mDrive, mElevator, mHatchFlower, mCargoSpit, mArm, mSuperstructure, mData));
+        mIntake = new Intake( mData );
+        mDriverInput = spy(new DriverInput(mDrive, mElevator, mHatchFlower, mCargoSpit, mIntake, mArm, mSuperstructure, mData));
 
         mModuleList.setModules(mDriverInput, mSuperstructure, mDrive);
         mModuleList.modeInit(mClock.getCurrentTime());

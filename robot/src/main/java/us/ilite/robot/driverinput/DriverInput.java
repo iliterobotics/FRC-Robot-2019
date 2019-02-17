@@ -44,12 +44,13 @@ public class DriverInput extends Module {
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CargoSpit pCargoSpit, Intake pIntake, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CargoSpit pCargoSpit, Intake pIntake, Arm pArm, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
         this.hatchFlower = pHatchFlower;
         this.mIntake = pIntake;
         this.mSuperstructure = pSuperstructure;
         this.mData = pData;
+        this.mArm = pArm;
         this.mDriverInputCodex = mData.driverinput;
         this.mOperatorInputCodex = mData.operatorinput;
         this.mElevator = pElevator;
@@ -63,8 +64,8 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CargoSpit pCargoSpit, Intake pIntake, Superstructure pSuperstructure, Data pData) {
-        this(pDrivetrain, pElevator, pHatchFlower, pCargoSpit, pIntake, pSuperstructure, pData, false);
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CargoSpit pCargoSpit, Intake pIntake, Arm pArm, Superstructure pSuperstructure, Data pData) {
+        this(pDrivetrain, pElevator, pHatchFlower, pCargoSpit, pIntake, pArm, pSuperstructure, pData, false);
     }
 
     @Override

@@ -20,7 +20,7 @@ public class CargoSpit extends Module {
 
     private TalonSRX mLeftMotor, mRightMotor;
     // private Solenoid mSolenoid;
-    private DigitalInput mSensor = new DigitalInput( SystemSettings.kIntakeBeamBreakAddress );
+    private DigitalInput mSensor = new DigitalInput( 0 );
     private Data mData;
     private boolean mIntaking;
     private boolean mStopped;

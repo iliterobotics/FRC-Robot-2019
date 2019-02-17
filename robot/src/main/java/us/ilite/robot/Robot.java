@@ -66,7 +66,7 @@ public class Robot extends TimedRobot {
     //private Arm mArm = new BasicArm();
     private Arm mArm = new MotionMagicArm();
 
-    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mCargoSpit, mIntake, mSuperstructure, mData, mArm);
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mCargoSpit, mIntake, mArm, mSuperstructure, mData);
     
     private Limelight mLimelight = new Limelight();
 

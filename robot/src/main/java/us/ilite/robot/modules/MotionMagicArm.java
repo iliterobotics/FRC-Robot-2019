@@ -16,8 +16,7 @@ import com.team254.lib.drivers.talon.TalonSRXFactory;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import us.ilite.
-common.config.SystemSettings;
+import us.ilite.common.config.SystemSettings;
 import us.ilite.common.config.SystemSettings.ArmPosition;
 import us.ilite.common.lib.control.PIDController;
 import us.ilite.common.lib.control.PIDGains;
