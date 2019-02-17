@@ -79,6 +79,7 @@ public class FourBar extends Module {
     @Override
     public void update(double pNow) {
         mCurrentTime = pNow;
+        SmartDashboard.putNumber( "Output to apply", mCurrentOutput );
         mNeos.set( mCurrentOutput );
         if ( mAngularPosition >= 135 ) {
             setDesiredState( EFourBarState.STOP );
@@ -107,7 +108,6 @@ public class FourBar extends Module {
      * @param desiredState the state used to apply output
      */
     public void setDesiredState( EFourBarState desiredState ) {
-
         mCurrentState = desiredState;
         double mOutputToApply = 0.0;
 
@@ -130,6 +130,7 @@ public class FourBar extends Module {
                 mPIDController.setSetpoint( EFourBarState.DECELERATE.getUpperAngularBound() );
                 mOutputToApply = mPIDController.calculate( mAngularPosition, mCurrentTime ) + gravityCompAtPosition();
         }
+        SmartDashboard.putNumber( "Limited output", mCurrentOutput );
         mCurrentOutput = Util.limit( mOutputToApply, kMinOutput, kMaxOutput );
     }
 
