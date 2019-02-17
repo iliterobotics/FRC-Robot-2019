@@ -50,9 +50,8 @@ public class Robot extends TimedRobot {
     private Limelight mLimelight = new Limelight(mData);
     private Elevator mElevator = new Elevator(mData);
     private HatchFlower mHatchFlower = new HatchFlower();
-    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mSuperstructure, mLimelight, mData);
 
-    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mAutonomousCommandManager, mTeleopCommandManager, mData);
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mAutonomousCommandManager, mTeleopCommandManager, mLimelight, mData);
 
     private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
     private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mData, mDrive);

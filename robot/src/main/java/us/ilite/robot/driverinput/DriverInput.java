@@ -27,12 +27,12 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private ILog mLog = Logger.createLog(DriverInput.class);
 
 
-    protected final Drive driveTrain;
+    protected final Drive mDrive;
     protected final Elevator mElevator;
-    protected final HatchFlower hatchFlower;
+    protected final HatchFlower mHatchFlower;
     private final CommandManager mTeleopCommandManager;
     private final CommandManager mAutonomousCommandManager;
-    protected final Limelight mLimelight;
+    private final Limelight mLimelight;
 
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
@@ -42,10 +42,11 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private Data mData;
 
     public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, Limelight pLimelight, Data pData, boolean pSimulated) {
-        this.driveTrain = pDrivetrain;
-        this.hatchFlower = pHatchFlower;
+        this.mDrive = pDrivetrain;
+        this.mHatchFlower = pHatchFlower;
         this.mTeleopCommandManager = pTeleopCommandManager;
         this.mAutonomousCommandManager = pAutonomousCommandManager;
+        this.mLimelight = pLimelight;
         this.mData = pData;
         this.mDriverInputCodex = mData.driverinput;
         this.mOperatorInputCodex = mData.operatorinput;
@@ -59,7 +60,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, Limelight pLimeight, Data pData) {
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, Limelight pLimelight, Data pData) {
         this(pDrivetrain, pElevator, pHatchFlower, pTeleopCommandManager, pAutonomousCommandManager, pLimelight, pData, false);
     }
 
@@ -218,10 +219,10 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 trackingType = ETrackingType.values()[trackingTypeOrdinal + 1];
             }
             
-            mSuperstructure.stopRunningCommands();
+            mTeleopCommandManager.stopRunningCommands();
             mLimelight.setVisionTarget(visionTarget);
             mLimelight.setPipeline(trackingType.getPipeline());
-            mSuperstructure.startCommands(new TargetLock(mDrive, 3, trackingType, mLimelight, this, false));
+            mTeleopCommandManager.startCommands(new TargetLock(mDrive, 3, trackingType, mLimelight, this, false));
             
         }
     }
