@@ -127,7 +127,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         initMatchMetadata();
-        mRunningModules.setModules(mDriverInput, mLimelight, mHatchFlower, mElevator);
+        mRunningModules.setModules(mDriverInput, mTeleopCommandManager, mAutonomousCommandManager, mLimelight, mHatchFlower, mElevator);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
