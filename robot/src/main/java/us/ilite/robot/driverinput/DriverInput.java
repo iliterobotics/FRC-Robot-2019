@@ -140,24 +140,16 @@ public class DriverInput extends Module {
         double throttle2 = mData.operatorinput.get(ELogitech310.RIGHT_TRIGGER_AXIS);
         double throttle = throttle1 + throttle2;
 
-
-        if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_BOTTOM_POSITION_ELEVATOR)) {
-            mElevator.setControlMode( Elevator.EControlMode.MOTION_MAGIC );
-            mElevator.setDesirecPosition(EElevatorPosition.BOTTOM);
-        } else if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_MIDDLE_POSITION_ELEVATOR)) {
-            mElevator.setControlMode( Elevator.EControlMode.MOTION_MAGIC );
-            mElevator.setDesirecPosition(EElevatorPosition.MIDDLE);
-        } else if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_TOP_POSITION_ELEVATOR)) {
-            mElevator.setControlMode( Elevator.EControlMode.MOTION_MAGIC );
-            mElevator.setDesirecPosition(EElevatorPosition.TOP);
-        } else if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR)) {
-            mElevator.setControlMode( Elevator.EControlMode.PID );
-            double power = mData.operatorinput.get(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR);
+        if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR )) {
+            mElevator.setDesiredPosition(EElevatorPosition.BOTTOM);
+        } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR )) {
+            mElevator.setDesiredPosition(EElevatorPosition.MIDDLE);
+        } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR )) {
+            mElevator.setDesiredPosition(EElevatorPosition.TOP);
+        } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR )) {
+            double power = mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR );
              mElevator.setDesiredPower(throttle);
          } else {
-            mElevator.setControlMode( Elevator.EControlMode.PID );
-            mElevator.setMagicSetpoint( mElevator.getCurrentEncoderTicks() );
-            mElevator.stop();
             mElevator.setDesiredPower(0d);
         }
     }

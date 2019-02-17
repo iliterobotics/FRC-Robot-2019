@@ -2,12 +2,12 @@ package us.ilite.robot.modules;
 
 public enum EElevatorPosition {
 
-    //TODO find encoder threshold
+    //TODO finalize
     BOTTOM(0.1d,500),
     MIDDLE(0.1d,1000),
     TOP(0.1d,1500);
 
-    private final double kEncoderThreshold;
+    private double kEncoderThreshold;
     private final double kSetPointPower;
 
     EElevatorPosition( double pPower, int pEncoderThreshold ) {
@@ -23,5 +23,6 @@ public enum EElevatorPosition {
     public double mEncoderThreshold() {
         return kEncoderThreshold;
     }
-    
+
+
 }

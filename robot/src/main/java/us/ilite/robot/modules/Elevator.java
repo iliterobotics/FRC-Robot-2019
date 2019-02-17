@@ -47,7 +47,7 @@ public class Elevator extends Module {
     EElevatorPosition mCurrentPosition = EElevatorPosition.BOTTOM;
     EElevatorState mCurrentState = EElevatorState.NORMAL;
     EElevatorPosition mDesiredPosition;
-    EControlMode mCurrentControlMode = EControlMode.MOTION_MAGIC; //TODO test.
+    EControlMode mCurrentControlMode = EControlMode.PID; //TODO test.
 
     CANSparkMax mMasterElevator;
     Encoder mEncoder;
@@ -127,8 +127,10 @@ public class Elevator extends Module {
 
         System.out.printf("Current: %s\tDesired Power: %s\tActual Output: %s\t\n", getCurrent(), output, mMasterElevator.getAppliedOutput());
 
-        if(mCurrentControlMode != EControlMode.MOTION_MAGIC) {
+        if(mCurrentControlMode == EControlMode.MOTION_MAGIC && mCurrentState != EElevatorState.SET_POSITION) { //If we are motion magic and not set position
             mMasterElevator.set(output);
+        } else if ( mCurrentControlMode == EControlMode.PID ) {
+            mMasterElevator.set( output );
         }
 
         //Logging to smart dashboard for Motion Magic Test
@@ -139,6 +141,7 @@ public class Elevator extends Module {
         mData.kSmartDashboard.putString( "Current State", mCurrentState.toString() );
         mData.kSmartDashboard.putString( "Current Control Mode", mCurrentControlMode.toString() );
         mData.kSmartDashboard.putDouble( "Set Point ", mSetPoint);
+        mData.kSmartDashboard.putString( "Desired Position", mDesiredPosition.toString() );
 
 
         mData.elevator.set( EElevator.AT_BOTTOM, isAtBottomVal() );
@@ -391,7 +394,7 @@ public class Elevator extends Module {
 
     // This method is made to be called from outside the class
     // the state should only reach set point when driver input call it
-    public void setDesirecPosition(EElevatorPosition pDesiredPosition) {
+    public void setDesiredPosition( EElevatorPosition pDesiredPosition) {
         mCurrentState = EElevatorState.SET_POSITION;
         mDesiredPosition = pDesiredPosition;
         if(mCurrentControlMode == EControlMode.PID) {
