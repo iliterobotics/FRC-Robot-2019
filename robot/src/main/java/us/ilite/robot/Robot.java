@@ -1,6 +1,5 @@
 package us.ilite.robot;
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.flybotix.hfr.codex.Codex;
@@ -9,10 +8,6 @@ import com.flybotix.hfr.codex.ICodexTimeProvider;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.TrajectoryUtil;
-import com.team254.lib.trajectory.timing.*;
 
 import edu.wpi.first.wpilibj.*;
 import us.ilite.common.Data;
@@ -22,12 +17,9 @@ import us.ilite.common.lib.util.PerfTimer;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.AutonomousRoutines;
-import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.MatchMetadata;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.commands.CommandQueue;
-import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.*;
@@ -49,13 +41,14 @@ public class Robot extends TimedRobot {
 
 
     // Module declarations here
-    private Superstructure mSuperstructure = new Superstructure();
+    private CommandManager mAutonomousCommandManager = new CommandManager();
+    private CommandManager mTeleopCommandManager = new CommandManager();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
     private Elevator mElevator = new Elevator(mData);
     private HatchFlower mHatchFlower = new HatchFlower();
 
-    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mSuperstructure, mData);
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mAutonomousCommandManager, mTeleopCommandManager, mData);
     private Limelight mLimelight = new Limelight();
 
     private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
@@ -113,12 +106,12 @@ public class Robot extends TimedRobot {
         mLoopManager.start();
 
         // Init modules after commands are set
-        mRunningModules.setModules(mSuperstructure);
+        mRunningModules.setModules(mAutonomousCommandManager, mTeleopCommandManager);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
-//        mSuperstructure.startCommands(new CharacterizeDrive(mDrive, false, false));
-        mSuperstructure.startCommands(mAutonomousRoutines.getDefault());
+//        mAutonomousCommandManager.startCommands(new CharacterizeDrive(mDrive, false, false));
+        mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
 
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");
@@ -175,9 +168,9 @@ public class Robot extends TimedRobot {
     }
 
     private void commonPeriodic() {
-        for(Codex c : mData.mAllCodexes) {
-            c.reset();
-        }
+//        for(Codex c : mData.mAllCodexes) {
+//            c.reset();
+//        }
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
     }

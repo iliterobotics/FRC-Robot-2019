@@ -23,12 +23,12 @@ public class DriverInput extends Module {
     DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
     private ILog mLog = Logger.createLog(DriverInput.class);
 
+
     protected final Drive driveTrain;
     protected final Elevator mElevator;
     protected final HatchFlower hatchFlower;
-    protected final Superstructure mSuperstructure;
-
-    private boolean mDriverStartedCommands;
+    private final CommandManager mTeleopCommandManager;
+    private final CommandManager mAutonomousCommandManager;
 
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
@@ -37,10 +37,11 @@ public class DriverInput extends Module {
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, Data pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
         this.hatchFlower = pHatchFlower;
-        this.mSuperstructure = pSuperstructure;
+        this.mTeleopCommandManager = pTeleopCommandManager;
+        this.mAutonomousCommandManager = pAutonomousCommandManager;
         this.mData = pData;
         this.mDriverInputCodex = mData.driverinput;
         this.mOperatorInputCodex = mData.operatorinput;
@@ -54,14 +55,13 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Superstructure pSuperstructure, Data pData) {
-        this(pDrivetrain, pElevator, pHatchFlower, pSuperstructure, pData, false);
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, Data pData) {
+        this(pDrivetrain, pElevator, pHatchFlower, pTeleopCommandManager, pAutonomousCommandManager, pData, false);
     }
 
     @Override
     public void modeInit(double pNow) {
-    // TODO Auto-generated method stub
-        mDriverStartedCommands = false;
+
     }
 
     @Override
@@ -76,25 +76,25 @@ public class DriverInput extends Module {
         If we aren't already running commands and the driver is pressing a button that triggers a command,
         set the superstructure command queue based off of buttons
         */
-        if(!mDriverStartedCommands && isDriverAllowingTeleopCommands()) {
+        if(isDriverAllowingTeleopCommands()) {
             mLog.warn("Requesting command start");
-            mDriverStartedCommands = true;
             updateVisionCommands();
         /*
         If the driver started the commands that the superstructure is running and then released the button,
         stop running commands.
         */
-        } else if(mSuperstructure.isRunningCommands() && mDriverStartedCommands && !isDriverAllowingTeleopCommands()) {
+        } else if(mTeleopCommandManager.isRunningCommands() && !isDriverAllowingTeleopCommands()) {
             mLog.warn("Requesting command stop: driver no longer allowing commands");
-            mDriverStartedCommands = false;
-            mSuperstructure.stopRunningCommands();
-        } else if(mSuperstructure.isRunningCommands() && isAutoOverridePressed()) {
+            mTeleopCommandManager.stopRunningCommands();
+        }
+
+        if(mAutonomousCommandManager.isRunningCommands() && isAutoOverridePressed()) {
             mLog.warn("Requesting command stop: override pressed");
-            mSuperstructure.stopRunningCommands();
+            mAutonomousCommandManager.stopRunningCommands();
         }
 
         // Teleop control
-        if (!mSuperstructure.isRunningCommands()) {
+        if (!mAutonomousCommandManager.isRunningCommands()) {
             updateDriveTrain();
             updateElevator();
         } 
@@ -212,8 +212,8 @@ public class DriverInput extends Module {
                 // If driver wants to seek right, switch from "_LEFT" enum to "_RIGHT" enum
                 trackingType = ETrackingType.values()[trackingTypeOrdinal + 1];
             }
-            mSuperstructure.stopRunningCommands();
-            mSuperstructure.startCommands(new Delay(30)); // Placeholder
+            mTeleopCommandManager.stopRunningCommands();
+            mTeleopCommandManager.startCommands(new Delay(30)); // Placeholder
         }
 
     }
