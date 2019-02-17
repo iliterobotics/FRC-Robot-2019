@@ -21,6 +21,7 @@ import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.lib.util.PerfTimer;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.GetLocalIP;
+import us.ilite.lib.drivers.UltraSonicSensor;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.MatchMetadata;
@@ -38,8 +39,9 @@ public class Robot extends TimedRobot {
 
     private ILog mLogger = Logger.createLog(this.getClass());
 
-    // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
     private LoopManager mLoopManager = new LoopManager(SystemSettings.kControlLoopPeriod);
+    // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
+    private LoopManager mLoopManagerx = new LoopManager(SystemSettings.kControlLoopPeriod);
     private ModuleList mRunningModules = new ModuleList();
     private CommandQueue mCommandQueue = new CommandQueue();
 
@@ -47,6 +49,7 @@ public class Robot extends TimedRobot {
     private Data mData = new Data();
     private Timer initTimer = new Timer();
     private SystemSettings mSettings = new SystemSettings();
+    private UltraSonicSensor ultraSonicSensor = new UltraSonicSensor( 0, 1 );
 
     private PowerDistributionPanel pdp = new PowerDistributionPanel();
 
@@ -57,12 +60,13 @@ public class Robot extends TimedRobot {
     private Drive mDrive = new Drive(mData, mDriveController);
     private Elevator mElevator = new Elevator(mData);
     private HatchFlower mHatchFlower = new HatchFlower();
+    private CargoSpit mCargoSpit = new CargoSpit(mData);
     private Intake mIntake = new Intake(mData);
 
-    private Arm mArm = new BasicArm();
-    // private Arm mArm = new MotionMagicArm();
+    //private Arm mArm = new BasicArm();
+    private Arm mArm = new MotionMagicArm();
 
-    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mIntake, mSuperstructure, mData, mArm);
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mCargoSpit, mIntake, mSuperstructure, mData, mArm);
     
     private Limelight mLimelight = new Limelight();
 
@@ -157,9 +161,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         initMatchMetadata();
-        mRunningModules.setModules(mDriverInput, mLimelight, mIntake, mHatchFlower, mElevator);
-
-        mSettings.loadFromNetworkTables();
+        mRunningModules.setModules(mDriverInput, mLimelight, mHatchFlower, mElevator, mCargoSpit, mIntake);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 

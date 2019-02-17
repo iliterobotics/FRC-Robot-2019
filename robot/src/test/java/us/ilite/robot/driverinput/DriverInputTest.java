@@ -13,14 +13,7 @@ import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.commands.Delay;
-import us.ilite.robot.modules.Arm;
-import us.ilite.robot.modules.BasicArm;
-import us.ilite.robot.modules.Drive;
-import us.ilite.robot.modules.HatchFlower;
-import us.ilite.robot.modules.Intake;
-import us.ilite.robot.modules.ModuleList;
-import us.ilite.robot.modules.Superstructure;
-import us.ilite.robot.modules.Elevator;
+import us.ilite.robot.modules.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -42,6 +35,7 @@ public class DriverInputTest {
 
     private Data mData;
     private Clock mClock;
+    private CargoSpit mCargoSpit;
     private ModuleList mModuleList;
 
     @Before
@@ -53,8 +47,10 @@ public class DriverInputTest {
         mClock = new Clock().simulated();
         mModuleList = new ModuleList();
         mSuperstructure = spy(new Superstructure());
-        mArm = new BasicArm();
-        mDriverInput = spy(new DriverInput(mDrive, mElevator, mHatchFlower, mIntake, mSuperstructure, mData, mArm));
+        //mArm = new BasicArm();
+        mArm = new MotionMagicArm;
+        mCargoSpit = new CargoSpit( mData );
+        mDriverInput = spy(new DriverInput(mDrive, mElevator, mHatchFlower, mCargoSpit, mArm, mSuperstructure, mData));
 
         mModuleList.setModules(mDriverInput, mSuperstructure, mDrive);
         mModuleList.modeInit(mClock.getCurrentTime());

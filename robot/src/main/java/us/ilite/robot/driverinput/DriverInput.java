@@ -29,6 +29,7 @@ public class DriverInput extends Module {
     protected final Elevator mElevator;
     protected final HatchFlower hatchFlower;
     protected final Intake mIntake;
+    protected final CargoSpit mCargoSpit;
     protected final Superstructure mSuperstructure;
 
     private boolean mDriverStartedCommands;
@@ -43,7 +44,7 @@ public class DriverInput extends Module {
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CargoSpit pCargoSpit, Intake pIntake, Superstructure pSuperstructure, Data pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
         this.hatchFlower = pHatchFlower;
         this.mIntake = pIntake;
@@ -52,6 +53,7 @@ public class DriverInput extends Module {
         this.mDriverInputCodex = mData.driverinput;
         this.mOperatorInputCodex = mData.operatorinput;
         this.mElevator = pElevator;
+        this.mCargoSpit = pCargoSpit;
         if(pSimulated) {
             // Use a different joystick library?
             
@@ -61,9 +63,8 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, Superstructure pSuperstructure, Data pData, Arm pArm) {
-        this(pDrivetrain, pElevator, pHatchFlower, pIntake, pSuperstructure, pData, false);
-        this.mArm = pArm;
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CargoSpit pCargoSpit, Intake pIntake, Superstructure pSuperstructure, Data pData) {
+        this(pDrivetrain, pElevator, pHatchFlower, pCargoSpit, pIntake, pSuperstructure, pData, false);
     }
 
     @Override
@@ -157,6 +158,20 @@ public class DriverInput extends Module {
             driveMessage.setControlMode(ControlMode.PercentOutput);
 
             driveTrain.setDriveMessage(driveMessage);
+        }
+    }
+
+    private void updateCargoSpitter() {
+        if ( mData.operatorinput.isSet( DriveTeamInputMap.MANIPULATOR_INTAKE_CARGO ) ) {
+            mCargoSpit.setIntake( true );
+        } else {
+            mCargoSpit.setIntake( false );
+        }
+
+        if ( mData.operatorinput.isSet( DriveTeamInputMap.MANIPULATOR_OUTTAKE_CARGO ) ) {
+            mCargoSpit.setOuttake( true );
+        } else {
+            mCargoSpit.setOuttake( false );
         }
     }
 

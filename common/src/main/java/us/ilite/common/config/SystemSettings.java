@@ -154,7 +154,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveVelocity_kD = 0.0;
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
-    public static int ULTRASONIC_PORT = 2;
+    public static int ULTRASONIC_PORT = 1;
 
     // =============================================================================
     // Turn-To PID constants
@@ -314,6 +314,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
+    public static int kCargoSpitBeamBreakAddress = 2;
+    public static double kCargoSpitRollerPower = -1.0;
     public static double kCargoSpitSPXCurrentLimit = -1.0;
 
     public static int kElevatorNEOAddress = -15;
