@@ -24,7 +24,8 @@ import java.util.List;
 
 public class TrajectoryGenerator {
 
-    private static final Pose2d flip = Pose2d.fromRotation(new Rotation2d(-1, 0, false));
+    private static final Pose2d xAxisFlip = Pose2d.fromRotation(new Rotation2d(-1, 0, false));
+    private static final Pose2d yAxisFlip = Pose2d.fromRotation(new Rotation2d(0, -1, false));
 
     // Maximum delta between each trajectory point
     private static final double kMaxDx = 2.0;
@@ -152,10 +153,10 @@ public class TrajectoryGenerator {
                 pTrajectoryConstraints, pEndVel, pMaxVel, pMaxAccel, pMaxVoltage);
     }
 
-    public static Trajectory<Pose2dWithCurvature> flip(final Trajectory<Pose2dWithCurvature> trajectory) {
+    public static Trajectory<Pose2dWithCurvature> flip(final Trajectory<Pose2dWithCurvature> trajectory, final Pose2d pAxisFlip) {
         List<Pose2dWithCurvature> flipped = new ArrayList<>(trajectory.length());
         for (int i = 0; i < trajectory.length(); ++i) {
-            flipped.add(new Pose2dWithCurvature(trajectory.getState(i).getPose().transformBy(flip), -trajectory
+            flipped.add(new Pose2dWithCurvature(trajectory.getState(i).getPose().transformBy(pAxisFlip), -trajectory
                     .getState(i).getCurvature(), trajectory.getState(i).getDCurvatureDs()));
         }
         return new Trajectory<>(flipped);
