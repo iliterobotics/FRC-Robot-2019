@@ -112,18 +112,13 @@ public class Elevator extends Module {
 
         mCurrentTime = pNow;
 
-        // Get encoder value from secondary Talon
         mCurrentEncoderTicks = getEncoderPosition();
         mNeoEncoderPosition = mMasterElevator.getEncoder().getPosition();
         mDesiredDirectionUp = (mDesiredPower > 0);
 
 //        updateElevatorState(pNow);
         double output  = calculateDesiredPower(mCurrentState, mCurrentControlMode);
-        output = Util.limit(output, -1, 1); // 10% of the desired power; Used for testing purposes.
-
-        mData.kLoggingTable.putDouble( "Desired Output", output );
-        mData.kLoggingTable.putDouble( "Current Drawn", getCurrent() );
-        mData.kLoggingTable.putDouble( "Motor Output", mMasterElevator.getAppliedOutput() );
+        output = Util.limit(output, -1, 1);
 
         System.out.printf("Current: %s\tDesired Power: %s\tActual Output: %s\t\n", getCurrent(), output, mMasterElevator.getAppliedOutput());
 

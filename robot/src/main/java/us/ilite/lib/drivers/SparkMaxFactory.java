@@ -51,6 +51,7 @@ public class SparkMaxFactory {
 
     public static CANSparkMax createSparkMax(int pId, MotorType pMotorType, Configuration pConfiguration) {
         CANSparkMax spark = new CANSparkMax(pId, pMotorType);
+        spark.restoreFactoryDefaults();
         CANPIDController canpidController = spark.getPIDController();
 
         spark.setCANTimeout(pConfiguration.CAN_TIMEOUT);
