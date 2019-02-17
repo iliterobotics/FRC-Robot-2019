@@ -20,7 +20,7 @@ public class CargoSpit extends Module {
 
     private TalonSRX mLeftMotor, mRightMotor;
     // private Solenoid mSolenoid;
-    private DigitalInput mSensor = new DigitalInput( 0 );
+    private DigitalInput mSensor;
     private Data mData;
     private boolean mIntaking;
     private boolean mStopped;
@@ -49,6 +49,8 @@ public class CargoSpit extends Module {
 
         mIntaking = false;
         mStopped = false;
+
+        mSensor = new DigitalInput( 0 );
 
     }
 

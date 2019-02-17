@@ -49,7 +49,9 @@ public class Robot extends TimedRobot {
     private Data mData = new Data();
     private Timer initTimer = new Timer();
     private SystemSettings mSettings = new SystemSettings();
-    private UltraSonicSensor ultraSonicSensor = new UltraSonicSensor( 0, 1 );
+
+    // To do, change back to 0 and 1
+    private UltraSonicSensor ultraSonicSensor = new UltraSonicSensor( 30, 29 );
 
     private PowerDistributionPanel pdp = new PowerDistributionPanel();
 
@@ -161,7 +163,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         initMatchMetadata();
-        mRunningModules.setModules(mDriverInput, mLimelight, mHatchFlower, mElevator, mCargoSpit, mIntake);
+        mRunningModules.setModules(mDriverInput, mLimelight, mHatchFlower, mElevator, mIntake);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
