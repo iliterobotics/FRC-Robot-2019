@@ -9,44 +9,22 @@ import com.flybotix.hfr.codex.ICodexTimeProvider;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryUtil;
 import com.team254.lib.trajectory.timing.*;
 
-import com.team254.lib.util.Util;
+import edu.wpi.first.wpilibj.*;
 import us.ilite.common.Data;
 import us.ilite.common.lib.control.DriveController;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
-import us.ilite.common.Data;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.lib.util.PerfTimer;
-import us.ilite.common.types.drive.EDriveData;
+import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.paths.TestAuto;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.io.Network;
-import us.ilite.common.lib.control.DriveController;
-import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.types.MatchMetadata;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.commands.CharacterizeDrive;
-import us.ilite.robot.commands.CommandQueue;
-import us.ilite.robot.auto.paths.TestAuto;
-import us.ilite.robot.commands.CommandQueue;
-import us.ilite.robot.commands.TurnToDegree;
-import us.ilite.lib.drivers.GetLocalIP;
-import us.ilite.robot.auto.paths.TestAuto;
-import us.ilite.robot.commands.CommandQueue;
-import us.ilite.robot.commands.TurnToDegree;
-import us.ilite.robot.commands.CharacterizeDrive;
 import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
@@ -76,6 +54,8 @@ public class Robot extends TimedRobot {
     private Timer initTimer = new Timer();
     private SystemSettings mSettings = new SystemSettings();
 
+    private PowerDistributionPanel pdp = new PowerDistributionPanel();
+
 
     // Module declarations here
     private Superstructure mSuperstructure = new Superstructure();
@@ -97,9 +77,15 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
+
+        // Init the actual robot
+        initTimer.reset();
+        initTimer.start();
+        Logger.setLevel(ELevel.INFO);
+        mLogger.info("Starting Robot Initialization...");
+
+        new Thread(new DSConnectInitThread()).start();
         // Init static variables and get singleton instances first
-        Network.getInstance();
-        mLogger.info("Netstat determined a driver station IP of ", GetLocalIP.getIp());
 
         ICodexTimeProvider provider = new ICodexTimeProvider() {
             public long getTimestamp() {
@@ -108,14 +94,6 @@ public class Robot extends TimedRobot {
         };
         CodexMetadata.overrideTimeProvider(provider);
 
-        // Init the actual robot
-        initTimer.reset();
-        initTimer.start();
-        Logger.setLevel(ELevel.INFO);
-        mLogger.info("Starting Robot Initialization...");
-
-        mSettings.writeToNetworkTables();
-
         mRunningModules.setModules();
 
         TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
@@ -123,8 +101,6 @@ public class Robot extends TimedRobot {
         trajectory = mTrajectoryGenerator.generateTrajectory(false, TestAuto.kPath, kTrajectoryConstraints, 100.0, 40.0, 12.0);
         trajectory = TrajectoryUtil.mirrorTimed(trajectory);
 
-
-        mSettings.writeToNetworkTables();
 
         initTimer.stop();
         mLogger.info("Robot initialization finished. Took: ", initTimer.get(), " seconds");
@@ -165,8 +141,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousPeriodic() {
-        mRunningModules.periodicInput(mClock.getCurrentTime());
-        mRunningModules.update(mClock.getCurrentTime());
+        commonPeriodic();
     }
 
     @Override
@@ -182,9 +157,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-        mRunningModules.periodicInput(mClock.getCurrentTime());
-        mRunningModules.update(mClock.getCurrentTime());
-        // mData.sendCodices();
+        commonPeriodic();
+        EPowerDistPanel.map(mData.pdp, pdp);
+        mData.sendCodices();
     }
 
     @Override
@@ -214,11 +189,19 @@ public class Robot extends TimedRobot {
 
     }
 
+    private void commonPeriodic() {
+        for(Codex c : mData.mAllCodexes) {
+            c.reset();
+        }
+        mRunningModules.periodicInput(mClock.getCurrentTime());
+        mRunningModules.update(mClock.getCurrentTime());
+    }
+
     private void initMatchMetadata() {
         if (mMatchMeta == null) {
             mMatchMeta = new MatchMetadata();
             int gid = mMatchMeta.hash;
-            for (Codex c : mData.mLoggedCodexes) {
+            for (Codex c : mData.mAllCodexes) {
                 c.meta().setGlobalId(gid);
             }
         }
@@ -251,4 +234,22 @@ public class Robot extends TimedRobot {
 
     }
 
+    private class DSConnectInitThread implements Runnable {
+
+        @Override
+        public void run() {
+
+            while(!DriverStation.getInstance().isDSAttached()) {
+                try {
+                    mLogger.error("Waiting on Robot <--> DS Connection...");
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            List<String> ips = GetLocalIP.getAllIps();
+            mData.initCodexSender(ips);
+        }
+    }
 }

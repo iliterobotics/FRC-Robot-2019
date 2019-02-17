@@ -33,11 +33,6 @@ public class NTSender extends ADataSender {
        // Not used
      }
     
-     @Override
-     protected void establishConnection(InetAddress... addr) {
-       // Not used
-     }
-    
      private void startSendThread() {
        mThreads.execute(() -> {
          while(mStatus.isConnected()) {
