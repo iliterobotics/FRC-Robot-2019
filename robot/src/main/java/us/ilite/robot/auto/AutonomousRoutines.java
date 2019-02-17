@@ -1,14 +1,10 @@
 package us.ilite.robot.auto;
 
 import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
-import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import us.ilite.common.Data;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
-import us.ilite.robot.auto.paths.StartingPoses;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideRocket;
 import us.ilite.robot.commands.*;
 import us.ilite.robot.modules.Drive;
@@ -36,18 +32,11 @@ public class AutonomousRoutines {
         mData = pData;
         mDrive = pDrive;
 
-        mMiddleToMiddleCargoToSideRocket = new MiddleToMiddleCargoToSideRocket(mTrajectoryGenerator);
+        mMiddleToMiddleCargoToSideRocket = new MiddleToMiddleCargoToSideRocket(mTrajectoryGenerator, mDrive);
     }
 
     public void generateTrajectories() {
-        mMiddleToMiddleCargoToSideRocketSequence = new ICommand[] {
-                new DriveStraight(mDrive, mData, DriveStraight.EDriveControlMode.PERCENT_OUTPUT,
-                        MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchFromStart.getTranslation().translateBy(StartingPoses.kMiddleStart.getTranslation().inverse()).norm()),
-                new Delay(5),
-                new FollowTrajectory(mMiddleToMiddleCargoToSideRocket.getMiddleLeftHatchToLoadingStationPath(), mDrive, true),
-                new Delay(5),
-                new TurnToDegree(mDrive, Rotation2d.fromDegrees(180.0), 10.0, mData)
-        };
+        mMiddleToMiddleCargoToSideRocketSequence = mMiddleToMiddleCargoToSideRocket.generateSequence();
     }
 
     public ICommand[] getDefault() {
