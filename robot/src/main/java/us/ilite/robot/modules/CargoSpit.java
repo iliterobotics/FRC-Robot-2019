@@ -20,21 +20,20 @@ public class CargoSpit extends Module {
 
     private TalonSRX mLeftMotor, mRightMotor;
     // private Solenoid mSolenoid;
-    private DigitalInput mSensor = new DigitalInput( SystemSettings.kIntakeBeamBreakAddress ); //Todo figure out channel
+    private DigitalInput mSensor = new DigitalInput( SystemSettings.kIntakeBeamBreakAddress );
     private Data mData;
     private boolean mIntaking;
     private boolean mStopped;
-    private double mPower = 0.5d;
+    private double mPower = SystemSettings.kCargoSpitRollerPower; //TODO find actual value
     private boolean shouldIntake = false;
     private boolean shouldOuttake = false;
-
-    // TODO Read the PDP for current limiting check
 
 
     public CargoSpit(Data pData) {
 
         this.mData = pData;
 
+        // TODO Change to VictorSPX (or keep as TalonSRX)
         mLeftMotor = TalonSRXFactory.createDefaultTalon( SystemSettings.kCargoSpitLeftSPXAddress );//new VictorSPX(SystemSettings.kCargoSpitLeftSPXAddress);
         mRightMotor = TalonSRXFactory.createDefaultTalon( SystemSettings.kCargoSpitRightSPXAddress );//new VictorSPX(SystemSettings.kCargoSpitRightSPXAddress);
 
@@ -61,8 +60,7 @@ public class CargoSpit extends Module {
 
     @Override
     public void periodicInput(double pNow) {
-        // TODO Read the spx current and compare to SystemSettings.kCargoSpitSPXCurrentLimit
-        
+        // TODO Read the PDP for current limiting check and compare to SystemSettings cargo spit current limit
     }
 
     @Override
