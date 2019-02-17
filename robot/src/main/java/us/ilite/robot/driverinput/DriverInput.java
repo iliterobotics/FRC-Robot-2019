@@ -17,6 +17,7 @@ import us.ilite.common.types.input.ELogitech310;
 import us.ilite.robot.commands.Delay;
 import us.ilite.robot.modules.*;
 import us.ilite.robot.modules.Module;
+import us.ilite.robot.modules.Intake.EIntakeState;
 
 public class DriverInput extends Module {
 
@@ -113,16 +114,16 @@ public class DriverInput extends Module {
 
     private void updateIntake() {
         if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_GROUND_CARGO)) {
-            mIntake.commandGroundCargo();
+            mIntake.setIntakeState(EIntakeState.GROUND_CARGO);
         }
         if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_GROUND_HATCH)) {
-            mIntake.commandGroundHatch();
+            mIntake.setIntakeState(EIntakeState.GROUND_HATCH);
         }
         if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_HANDOFF)) {
-            mIntake.commandHandoff();
+            mIntake.setIntakeState(EIntakeState.HANDOFF);
         }
         if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_STOWED)) {
-            mIntake.commandStowed();
+            mIntake.setIntakeState(EIntakeState.STOWED);
         }
     }
     private void updateHatchFlower() {

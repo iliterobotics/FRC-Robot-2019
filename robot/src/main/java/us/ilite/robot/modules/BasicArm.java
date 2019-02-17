@@ -241,7 +241,7 @@ public class BasicArm extends Arm {
         // System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ min = " + minOutputSeen + " max= " + maxOutputSeen);
 
         SmartDashboard.putNumber("BasicArmSetOutput", output);
-        talon.set(ControlMode.PercentOutput, output);
+        // talon.set(ControlMode.PercentOutput, output);
         
     }
 

@@ -58,12 +58,12 @@ public class MotionMagicArm extends Arm
     // private double kD = 0.0;
     // private static final int maxNumTicks = 383; //number of ticks at max arm angle
     // private static final int minNumTicks = 0; //number of ticks at min arm angle
-    private TalonSRX talon = new TalonSRX(SystemSettings.kArmTalonSRXAddress); //TalonSRXFactory.createDefaultTalon(SystemSettings.kArmTalonSRXAddress);
+    private TalonSRX talon; //TalonSRXFactory.createDefaultTalon(SystemSettings.kArmTalonSRXAddress);
     // private PIDController pid;
     // private boolean settingPosition;
     private int currentNumTicks = 0; //revisit this and check if correct for encoder type
     private int desiredNumTicks = 0;
-    private double mDesiredOutput;
+    private double mDesiredOutput = 0;
     private boolean stalled = false;
     private boolean motorOff = false; // Motor turned off for a time because of current limiting
     private Timer mTimer;
@@ -75,6 +75,8 @@ public class MotionMagicArm extends Arm
     
     public MotionMagicArm()
     {
+        this.talon = new TalonSRX(SystemSettings.kArmTalonSRXAddress);
+
         int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
         int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
 
@@ -114,6 +116,7 @@ public class MotionMagicArm extends Arm
     public MotionMagicArm( TalonSRX talon )
     {
         this.talon = talon;
+        talon.setInverted(true);
         
         int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
         int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
@@ -288,7 +291,6 @@ public class MotionMagicArm extends Arm
         }
         else
         {
-            // talon.set(ControlMode.PercentOutput, 0);
             talon.set(ControlMode.MotionMagic, this.desiredNumTicks);
         }
         
