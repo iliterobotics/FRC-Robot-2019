@@ -16,6 +16,7 @@ import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.input.EDriverInputMode;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.common.types.manipulator.EElevator;
+import us.ilite.common.types.manipulator.EIntake;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 
@@ -43,6 +44,7 @@ public class Data {
             imu, drive, driverinput, operatorinput, elevator,pdp
     };
 
+    public final Codex<Double, EIntake> intake = Codex.of.thisEnum(EIntake.class);
     public final Codex[] mLoggedCodexes = new Codex[] {
         imu, drive, driverinput, operatorinput, elevator,pdp
     };

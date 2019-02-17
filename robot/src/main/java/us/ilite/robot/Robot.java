@@ -30,6 +30,9 @@ import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.*;
+import us.ilite.common.lib.control.DriveController;
+import us.ilite.common.lib.control.PIDGains;
+import us.ilite.common.lib.control.PIDController;
 
 public class Robot extends TimedRobot {
 
@@ -54,8 +57,13 @@ public class Robot extends TimedRobot {
     private Drive mDrive = new Drive(mData, mDriveController);
     private Elevator mElevator = new Elevator(mData);
     private HatchFlower mHatchFlower = new HatchFlower();
+    private Intake mIntake = new Intake(mData);
 
-    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mSuperstructure, mData);
+    private Arm mArm = new BasicArm();
+    // private Arm mArm = new MotionMagicArm();
+
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mIntake, mSuperstructure, mData, mArm);
+    
     private Limelight mLimelight = new Limelight();
 
     private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
@@ -83,6 +91,18 @@ public class Robot extends TimedRobot {
             }
         };
         CodexMetadata.overrideTimeProvider(provider);
+
+        // // Init the actual robot
+        // initTimer.reset();
+        // initTimer.start();
+
+        // mSettings.writeToNetworkTables();
+
+        // // Logger.setLevel(ELevel.INFO);
+        // Logger.setLevel(ELevel.ERROR);
+        // mLogger.info("Starting Robot Initialization...");
+
+        // mSettings.writeToNetworkTables();
 
         mRunningModules.setModules();
 
@@ -137,12 +157,15 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         initMatchMetadata();
-        mRunningModules.setModules(mDriverInput, mLimelight, mHatchFlower, mElevator);
+        mRunningModules.setModules(mDriverInput, mLimelight, mIntake, mHatchFlower, mElevator);
+
+        mSettings.loadFromNetworkTables();
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
+        mData.registerCodices();
     }
 
     @Override
