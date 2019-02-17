@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
 
     private Drive mDrive = new Drive(mData, mDriveController);
     private Elevator mElevator = new Elevator(mData);
-    private Intake mIntake = new Intake();
+    private Intake mIntake = new Intake(mData);
     private CargoSpit mCargoSpit = new CargoSpit();
     private HatchFlower mHatchFlower = new HatchFlower();
     private Limelight mLimelight = new Limelight(mData);
