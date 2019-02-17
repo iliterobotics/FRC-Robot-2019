@@ -15,6 +15,7 @@ import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.IThrottleProvider;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
+import us.ilite.common.lib.control.PIDGains;
 
 public class TargetLock implements ICommand {
 
@@ -31,7 +32,7 @@ public class TargetLock implements ICommand {
     private Drive mDrive;
     private ITargetDataProvider mCamera;
     private IThrottleProvider mThrottleProvider;
-    private PIDController mPID = new PIDController(SystemSettings.kTargetLockPIDGains, SystemSettings.kControlLoopPeriod);
+    private PIDController mPID = new PIDController(SystemSettings.kTargetLockPIDGains, kMIN_INPUT, kMAX_INPUT, SystemSettings.kControlLoopPeriod);
     private ETrackingType mTrackingType;
 
     private double mAllowableError, mPreviousTime, mOutput = 0.0;
@@ -55,7 +56,6 @@ public class TargetLock implements ICommand {
     public void init(double pNow) {
         System.out.println("++++++++++++++++++++++++++TARGET LOCKING++++++++++++++++++++++++++++++++++++");
         mPID.setOutputRange(kMIN_POWER, kMAX_POWER);
-        mPID.setInputRange(kMIN_INPUT, kMAX_INPUT);
         mPID.setSetpoint(0);
         mPID.reset();
 
