@@ -39,7 +39,7 @@ public class DriveStraight implements ICommand {
     private double mAllowableDistanceError = 3.0;
     private double mRampDistance = 120.0;
     private double mLastTime = 0.0;
-    private PIDController mHeadingController = new PIDController(SystemSettings.kDriveHeadingGains, 0.0, 360.0, SystemSettings.kControlLoopPeriod);
+    private PIDController mHeadingController = new PIDController(SystemSettings.kDriveHeadingGains, -180.0, 180.0, SystemSettings.kControlLoopPeriod);
 
     public DriveStraight(Drive pDrive, Data pData, EDriveControlMode pDriveControlMode, double pDistanceToDrive) {
         mDrive = pDrive;
@@ -70,7 +70,6 @@ public class DriveStraight implements ICommand {
 
         mHeadingController.setContinuous(true);
         mHeadingController.setOutputRange(-1.0, 1.0);
-        mHeadingController.setInputRange(0.0, 360.0);
         mHeadingController.reset();
     }
 
@@ -102,7 +101,8 @@ public class DriveStraight implements ICommand {
                 will never saturate our motor output.
                  */
                 // TODO Calculate this off of actual angular output?
-                linearOutput = Util.limit(linearOutput, 1.0 - angularOutput);
+                linearOutput = Util.limit(linearOutput, 1.0 - (2.0 * SystemSettings.kDriveHeadingGains.kP));
+                linearOutput = Util.limit(linearOutput, SystemSettings.kDriveLinearPercentOutputLimit);
 
                 break;
             case MOTION_MAGIC:
@@ -136,8 +136,18 @@ public class DriveStraight implements ICommand {
             mDrive.setDriveMessage(driveMessage);
 
             mLastTime = pNow;
+
+//            Data.kSmartDashboard.putDouble("Angle Error", mHeadingController.getError());
+//            Data.kSmartDashboard.putDouble("PID Output", mHeadingController.getOutput());
+//            Data.kSmartDashboard.putDouble("Angle", mData.imu.get(EGyro.YAW_DEGREES));
+//            Data.kSmartDashboard.putDouble("Target Angle", mTargetHeading.getDegrees());
+//            Data.kSmartDashboard.putDouble("Linear Output", linearOutput);
+//            Data.kSmartDashboard.putDouble("Distance Target", mDistanceToDrive);
+//            Data.kSmartDashboard.putDouble("Distance Error", distanceError);
+
             return false;
         }
+
     }
 
     @Override

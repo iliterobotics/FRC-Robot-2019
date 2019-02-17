@@ -85,7 +85,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Heading Gains
     // =============================================================================
-    public static PIDGains kDriveHeadingGains = new PIDGains(0.3, 0.0, 0.0);
+    public static PIDGains kDriveHeadingGains = new PIDGains(0.03, 0.0, 0.0);
+    public static double kDriveLinearPercentOutputLimit = 0.5;
 
     // =============================================================================
     // Input Constants
