@@ -158,7 +158,21 @@ public class FourBar extends Module {
      * Updates the angular position based on rotations
      */
     public void updateAngularPosition() {
-        mAngularPosition = ( ( ( mNeo1Encoder.getPosition() - mPreviousNeo1Rotations ) / 300 ) + ( ( mNeo2Encoder.getPosition() - mPreviousNeo2Rotations ) / 300 ) ) / 2;
+        mAngularPosition = ( ( ( getNeo1Position() ) / 300 ) + ( ( getNeo2AngularPosition() ) / 300 ) ) / 2;
+    }
+
+    /**
+     * Get zeroed tick position for Neo1
+     */
+    public double getNeo1Position() {
+        return mNeo1Encoder.getPosition() - mPreviousNeo1Rotations;
+    }
+
+    /**
+     * Get zeroed tick position for Neo2
+     */
+    public double getNeo2Position() {
+        return mNeo2Encoder.getPosition() - mPreviousNeo2Rotations;
     }
 
     /**
