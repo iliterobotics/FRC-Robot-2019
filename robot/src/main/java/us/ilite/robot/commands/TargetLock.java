@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.codex.Codex;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.PIDController;
 import us.ilite.common.lib.control.PIDGains;
@@ -23,10 +24,7 @@ public class TargetLock implements ICommand {
     private static final double kMAX_POWER = 0.5;
     private static final double kMIN_INPUT = -27;
     private static final double kMAX_INPUT = 27;
-    private static final double kP = 0.02;
-    private static final double kI = 0.0;
-    private static final double kD = 0.0;
-    private static final double kTURN_POWER = 0.6;
+    private static final double kTURN_POWER = 0.4;
     private static final double kFrictionFeedforward = 0.9 / 12;
 
     private Drive mDrive;
@@ -38,6 +36,7 @@ public class TargetLock implements ICommand {
     private double mAllowableError, mPreviousTime, mOutput = 0.0;
 
     private boolean mIsAllowedToFinish = true;
+    private boolean mHasAcquiredTarget = false;
 
     public TargetLock(Drive pDrive, double pAllowableError, ETrackingType pTrackingType, ITargetDataProvider pCamera, IThrottleProvider pThrottleProvider) {
         this(pDrive, pAllowableError, pTrackingType, pCamera, pThrottleProvider, true);
@@ -54,32 +53,41 @@ public class TargetLock implements ICommand {
 
     @Override
     public void init(double pNow) {
-        System.out.println("++++++++++++++++++++++++++TARGET LOCKING++++++++++++++++++++++++++++++++++++");
+        System.out.println("++++++++++++++++++++++++++TARGET LOCKING++++++++++++++++++++++++++++++++++++\n\n\n\n");
+        mHasAcquiredTarget = false;
         mPID.setOutputRange(kMIN_POWER, kMAX_POWER);
         mPID.setSetpoint(0);
         mPID.reset();
+        SmartDashboard.putBoolean("Initializing Command", true);
 
         this.mPreviousTime = pNow;
     }
 
     @Override
     public boolean update(double pNow) {
+        SmartDashboard.putBoolean("Initializing Command", false);
+
         Codex<Double, ETargetingData> currentData = mCamera.getTargetingData();
-        System.out.println("LOCKING " + currentData.get(ETargetingData.tx));
+//        System.out.println("LOCKING " + currentData.get(ETargetingData.tx));
 
         if(currentData.isSet(ETargetingData.tv)) {
-            System.out.println("USING PID");
+            mHasAcquiredTarget = true;
+//            System.out.println("USING PID");
             //if there is a target in the limelight's pov, lock onto target using feedback loop
             mOutput = -1 * mPID.calculate(currentData.get(ETargetingData.tx), pNow - mPreviousTime) + kFrictionFeedforward;
-            System.out.println(mOutput);
             mDrive.setDriveMessage(new DriveMessage(mThrottleProvider.getThrottle() + mOutput, mThrottleProvider.getThrottle() - mOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
+            SmartDashboard.putNumber("PID Turn Output", mOutput);
 
             if(mIsAllowedToFinish && Math.abs(currentData.get(ETargetingData.tx)) < mAllowableError) {
                 //if x offset from crosshair is within acceptable error, command TargetLock is completed
                 System.out.println("FINISHED");
                 return true;
             }
-        } else {
+            // If we've already seen the target and lose tracking, exit.
+        } else if(mHasAcquiredTarget && !currentData.isSet(ETargetingData.tv)) {
+            mDrive.setDriveMessage(DriveMessage.kNeutral);
+            return true;
+        } if(!mHasAcquiredTarget){
             System.out.println("OPEN LOOP");
             //if there is no target in the limelight's pov, continue turning in direction specified by SearchDirection
             mDrive.setDriveMessage(
