@@ -237,6 +237,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
+    public static int kCargoSpitBeamBreakAddress = 2;
     public static double kCargoSpitSPXCurrentLimit = -1.0;
 
     public static int kElevatorNEOAddress = -15;

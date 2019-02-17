@@ -19,8 +19,8 @@ public class CargoSpit extends Module {
     private ILog mLog = Logger.createLog(CargoSpit.class);
 
     private TalonSRX mLeftMotor, mRightMotor;
-    private Solenoid mSolenoid;
-    private DigitalInput mSensor = new DigitalInput( 0 ); //Todo figure out channel
+    // private Solenoid mSolenoid;
+    private DigitalInput mSensor = new DigitalInput( SystemSettings.kIntakeBeamBreakAddress ); //Todo figure out channel
     private Data mData;
     private boolean mIntaking;
     private boolean mStopped;
@@ -45,7 +45,7 @@ public class CargoSpit extends Module {
         mLeftMotor.follow( mRightMotor );
         mLeftMotor.setInverted( true ); //Set one motor inverted
 
-        mSolenoid.close();
+        // mSolenoid.close();
         mSensor.close();
 
         mIntaking = false;
@@ -98,13 +98,13 @@ public class CargoSpit extends Module {
         if ( !mStopped || !hasCargo() ) {
             if ( !mIntaking ) {
                 mIntaking = true;
-                mSolenoid.set( ECradleState.OPEN.getValue() ); //Values may be swapped?
+                // mSolenoid.set( ECradleState.OPEN.getValue() ); //Values may be swapped?
             }
 
             mRightMotor.set( ControlMode.PercentOutput, mPower ); //TODO find actual value
 
             if ( hasCargo() ) {
-                mSolenoid.set( ECradleState.CLOSED.getValue() ); //Values may be swapped?
+                // mSolenoid.set( ECradleState.CLOSED.getValue() ); //Values may be swapped?
                 mRightMotor.set( ControlMode.PercentOutput, 0 ); //Stop motor
             }
         }
@@ -114,7 +114,7 @@ public class CargoSpit extends Module {
     private void setOuttaking() {
         if ( !mStopped ) {
             mRightMotor.set( ControlMode.PercentOutput, -mPower );
-            mSolenoid.set( ECradleState.OPEN.getValue() );
+            // mSolenoid.set( ECradleState.OPEN.getValue() );
         }
         mStopped = false;
     }
