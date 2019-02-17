@@ -52,13 +52,13 @@ public class SparkMaxFactory {
         CANSparkMax spark = new CANSparkMax(pId, pMotorType);
 
         spark.setCANTimeout(pConfiguration.CAN_TIMEOUT);
-        spark.setControlFramePeriod(pConfiguration.CONTROL_FRAME_PERIOD);
+//        spark.setControlFramePeriod(pConfiguration.CONTROL_FRAME_PERIOD);
         spark.setIdleMode(pConfiguration.IDLE_MODE);
         spark.setInverted(pConfiguration.IS_INVERTED);
         spark.setPeriodicFramePeriod(PeriodicFrame.kStatus0, pConfiguration.STATUS_0_PERIOD_MS);
         spark.setPeriodicFramePeriod(PeriodicFrame.kStatus1, pConfiguration.STATUS_1_PERIOD_MS);
         spark.setPeriodicFramePeriod(PeriodicFrame.kStatus2, pConfiguration.STATUS_2_PERIOD_MS);
-        spark.setRampRate(pConfiguration.RAMP_RATE);
+//        spark.setRampRate(pConfiguration.RAMP_RATE);
         spark.setSecondaryCurrentLimit(pConfiguration.SECONDARY_CURRENT_LIMIT);
         spark.setSmartCurrentLimit(pConfiguration.SMART_CURRENT_LIMIT);
 
