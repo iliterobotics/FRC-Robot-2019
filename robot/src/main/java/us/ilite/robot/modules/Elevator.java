@@ -38,6 +38,7 @@ public class Elevator extends Module {
     private CANPIDController mCanController;
     private int mSmartMotionSlot = 0; //TODO test
     private double mSetPoint = 0;
+    private boolean mRequestedStop = false;
 //    public Codex<Double, EElevator> elevatorCodex = Codex.of.thisEnum(EElevator.class);
 
     private double mBottomEncoderTicks = 0;
@@ -53,7 +54,6 @@ public class Elevator extends Module {
 
 
     public Elevator(Data pData) {
-
         this.mData = pData;
 
         this.mPidController = new PIDController(SystemSettings.kElevatorPositionGains, 100, 1500, SystemSettings.kControlLoopPeriod);
@@ -153,10 +153,12 @@ public class Elevator extends Module {
         mData.elevator.set( EElevator.DESIRED_POSITION, (double) getDesiredPosition().ordinal() );
         mData.elevator.set( EElevator.DESIRED_POSITION_ABOVE_INITIAL, desiredPositionAboveInitialVal());
         mData.elevator.set( EElevator.DESIRED_POWER, getDesiredPower());
-        mData.elevator.set(EElevator.OUTPUT_POWER, output);
+        mData.elevator.set( EElevator.OUTPUT_POWER, output );
         mData.elevator.set( EElevator.SETTING_POSITION, settingPositionVal());
         mData.elevator.set( EElevator.CURRENT_CONTROL_MODE, (double) getCurrentControlMode().ordinal());
 
+
+        mRequestedStop = false;
     }
 
     private void updateElevatorState(double pNow) {
@@ -233,7 +235,7 @@ public class Elevator extends Module {
         if(mPidController.isOnTarget(100)) {
             power = 0;
         } else {
-            power = -mPidController.calculate(mEncoder.get(), mCurrentTime); //TODO test
+            power = mPidController.calculate(mCurrentEncoderTicks, mCurrentTime); //TODO test
         }
 
         return power;
@@ -407,12 +409,20 @@ public class Elevator extends Module {
     public void logInfo() {
     }
 
+    public void stop() {
+        mRequestedStop  = true;
+    }
+
     private void calculateMotionMagic() {
-        mSetPoint = mDesiredPosition.mEncoderThreshold();
+        mSetPoint = mRequestedStop ? mCurrentEncoderTicks : mDesiredPosition.mEncoderThreshold();
     }
 
     public void setControlMode(EControlMode pControlMode) {
         this.mCurrentControlMode = pControlMode;
+    }
+
+    public void setMagicSetpoint(double pSetPoint) {
+        mSetPoint = pSetPoint;
     }
 
     public enum EControlMode {

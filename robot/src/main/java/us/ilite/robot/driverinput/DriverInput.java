@@ -156,6 +156,8 @@ public class DriverInput extends Module {
              mElevator.setDesiredPower(throttle);
          } else {
             mElevator.setControlMode( Elevator.EControlMode.PID );
+            mElevator.setMagicSetpoint( mElevator.getCurrentEncoderTicks() );
+            mElevator.stop();
             mElevator.setDesiredPower(0d);
         }
     }
