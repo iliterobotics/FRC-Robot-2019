@@ -100,7 +100,6 @@ public class Elevator extends Module {
     }
 
     public void update(double pNow) {
-        System.out.println(mData.elevator);
 
         mCurrentTime = pNow;
 
