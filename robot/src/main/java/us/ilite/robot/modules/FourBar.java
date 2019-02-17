@@ -12,13 +12,14 @@ import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.PIDController;
 import us.ilite.common.types.EFourBarData;
+import us.ilite.lib.drivers.SparkMaxFactory;
 
 
 public class FourBar extends Module {
 
     private final double kMinOutput = -1.0;
     private final double kMaxOutput = 1.0;
-    private final double kHoldThreshold = 10.0;
+    private final double kStoppingThreshold = 10.0;
 
     private ILog mLog = Logger.createLog(FourBar.class);
     private Data mData;
@@ -36,6 +37,7 @@ public class FourBar extends Module {
     private double mCurrentOutput;
 
     private EFourBarState mCurrentState;
+    private boolean mCanRun;
 
     /**
      * Builds a four bar with a Data object for logging
@@ -43,8 +45,8 @@ public class FourBar extends Module {
      */
     public FourBar( Data pData ) {
         // Later: SystemSettings address
-        mNeos = new CANSparkMax(9, CANSparkMaxLowLevel.MotorType.kBrushless);
-        mNeo2 = new CANSparkMax(10, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mNeos = SparkMaxFactory.createDefaultSparkMax( SystemSettings.kFourBarNEO1Address, CANSparkMaxLowLevel.MotorType.kBrushless );
+        mNeo2 = SparkMaxFactory.createDefaultSparkMax( SystemSettings.kFourBarNEO2Address, CANSparkMaxLowLevel.MotorType.kBrushless );
         mNeo2.follow( mNeos, true );
     
         // Connect the NEO's to the encoders
@@ -54,6 +56,7 @@ public class FourBar extends Module {
         mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
         mPIDController = new PIDController( SystemSettings.kFourBarAccelerateGains, 0, 135, SystemSettings.kControlLoopPeriod );
         mData = pData;
+        mCanRun = false;
     }
 
 
@@ -116,9 +119,6 @@ public class FourBar extends Module {
                 // stop climber, cut off power
                 mOutputToApply = 0;
                 mNeos.stopMotor();
-            case HOLD:
-                // hold in place
-                mOutputToApply = gravityCompAtPosition();
             case ACCELERATE:
                 // apply pid to output on accelerate controller settings
                 mPIDController.setPIDGains( SystemSettings.kFourBarAccelerateGains );
@@ -134,13 +134,11 @@ public class FourBar extends Module {
     }
 
     /**
-     * Holds in current position
-     * Holds in air with gravity comp if four bar is being used
-     * If it is not being used -> don't apply any output
+     * Stops if in the air, if not just apply 0 output
      */
     public void handleStopType() {
-        if ( Math.abs( mAngularPosition ) >= kHoldThreshold ) {
-            setDesiredState( EFourBarState.HOLD );
+        if ( Math.abs( mAngularPosition ) >= kStoppingThreshold ) {
+            setDesiredState( EFourBarState.STOP );
         } else {
             setDesiredState( EFourBarState.NORMAL );
         }

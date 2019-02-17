@@ -4,8 +4,7 @@ public enum EFourBarState {
 
     // TO-DO: get angles for accelerate and decelerate
     NORMAL( 0.0, 0.0 ),
-    STOP( 135.0, 150.0 ),
-    HOLD( 0.0, 0.0 ),
+    STOP( 0.0, 0.0 ),
     ACCELERATE( 0.0, 90.0 ),
     DECELERATE( 90.0, 135.0 );
 

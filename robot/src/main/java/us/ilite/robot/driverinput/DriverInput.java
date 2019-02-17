@@ -110,12 +110,12 @@ public class DriverInput extends Module {
     private void updateFourBar() {
         if ( mData.driverinput.isSet( ELogitech310.B_BTN ) ) {
             System.out.println( "Button is pressed ");
-                 driveTrain.setDriveMessage( DriveMessage.fromThrottleAndTurn( 0.0, 0.0 ) );
-                 if ( mData.driverinput.get( ELogitech310.LEFT_Y_AXIS ) > 0 ) {
-                     mFourBar.handleUpState();
-                 } else {
-                     mFourBar.handleStopType();
-                 }
+            driveTrain.setDriveMessage( DriveMessage.fromThrottleAndTurn( 0.0, 0.0 ) );
+            if ( mData.driverinput.get( ELogitech310.LEFT_Y_AXIS ) > 0 ) {
+                mFourBar.handleUpState();
+            } else {
+                mFourBar.handleStopType();
+            }
         } else {
             mFourBar.handleStopType();
         }
