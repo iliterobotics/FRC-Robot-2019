@@ -13,6 +13,7 @@ import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.robot.auto.paths.AutoPath;
 import us.ilite.robot.auto.paths.FieldElementLocations;
+import us.ilite.robot.auto.paths.RobotDimensions;
 import us.ilite.robot.auto.paths.StartingPoses;
 
 /**
@@ -25,7 +26,7 @@ public class MiddleToMiddleCargoToSideRocket extends AutoPath {
     }
 
     // End pose of robot @ middle left hatch
-    public static final Pose2d kMiddleLeftHatchFromStart = new Pose2d(FieldElementLocations.kCargoShipMiddleLeftHatch, Rotation2d.fromDegrees(0.0));
+    public static final Pose2d kMiddleLeftHatchFromStart = new Pose2d(FieldElementLocations.kCargoShipMiddleLeftHatch.translateBy(new Translation2d(-RobotDimensions.kFrontToCenter, 0.0)), Rotation2d.fromDegrees(0.0));
     // Turn towards loading station
     public static final Rotation2d kTurnToLoadingStationFromMiddleLeftHatch = Rotation2d.fromDegrees(180.0);
     // End pose of robot @ loading station from middle left hatch
