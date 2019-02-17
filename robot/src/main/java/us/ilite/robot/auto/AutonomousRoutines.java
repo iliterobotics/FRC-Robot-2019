@@ -8,6 +8,7 @@ import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideRocket;
 import us.ilite.robot.commands.*;
 import us.ilite.robot.modules.Drive;
+import us.ilite.robot.modules.Limelight;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,16 +24,18 @@ public class AutonomousRoutines {
 
     private Data mData;
     private Drive mDrive;
+    private Limelight mLimelight;
 
     private MiddleToMiddleCargoToSideRocket mMiddleToMiddleCargoToSideRocket;
     private ICommand[] mMiddleToMiddleCargoToSideRocketSequence;
 
-    public AutonomousRoutines(TrajectoryGenerator pTrajectoryGenerator, Data pData, Drive pDrive) {
+    public AutonomousRoutines(TrajectoryGenerator pTrajectoryGenerator, Limelight pLimelight, Data pData, Drive pDrive) {
         mTrajectoryGenerator = pTrajectoryGenerator;
         mData = pData;
         mDrive = pDrive;
+        mLimelight = pLimelight;
 
-        mMiddleToMiddleCargoToSideRocket = new MiddleToMiddleCargoToSideRocket(mTrajectoryGenerator, mDrive);
+        mMiddleToMiddleCargoToSideRocket = new MiddleToMiddleCargoToSideRocket(pTrajectoryGenerator, pDrive, mLimelight);
     }
 
     public void generateTrajectories() {

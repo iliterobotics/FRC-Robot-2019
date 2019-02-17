@@ -29,6 +29,8 @@ public class DriverInputTest {
     // We want to see CommandManager's actual behavior, so we make it a spy
     private CommandManager mTeleopCommandManager;
     @Mock private Elevator mElevator;
+    @Mock private Intake mIntake;
+    @Mock private Arm mArm;
 
 
     private DriverInput mDriverInput;

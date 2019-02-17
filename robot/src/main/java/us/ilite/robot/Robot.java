@@ -25,6 +25,9 @@ import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.*;
+import us.ilite.common.lib.control.DriveController;
+import us.ilite.common.lib.control.PIDGains;
+import us.ilite.common.lib.control.PIDController;
 
 public class Robot extends TimedRobot {
 
@@ -47,14 +50,20 @@ public class Robot extends TimedRobot {
     private CommandManager mTeleopCommandManager = new CommandManager();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
-    private Limelight mLimelight = new Limelight(mData);
     private Elevator mElevator = new Elevator(mData);
+    private CargoSpit mCargoSpit = new CargoSpit();
     private HatchFlower mHatchFlower = new HatchFlower();
+    private Intake mIntake = new Intake(mData);
+    private Limelight mLimelight = new Limelight(mData);
 
-    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mAutonomousCommandManager, mTeleopCommandManager, mLimelight, mData);
+
+    private Arm mArm = new BasicArm();
+    // private Arm mArm = new MotionMagicArm();
+
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager);
 
     private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
-    private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mData, mDrive);
+    private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mLimelight, mData, mDrive);
     private MatchMetadata mMatchMeta = null;
 
     private PerfTimer mClockUpdateTimer = new PerfTimer();
@@ -77,6 +86,18 @@ public class Robot extends TimedRobot {
             }
         };
         CodexMetadata.overrideTimeProvider(provider);
+
+        // // Init the actual robot
+        // initTimer.reset();
+        // initTimer.start();
+
+        // mSettings.writeToNetworkTables();
+
+        // // Logger.setLevel(ELevel.INFO);
+        // Logger.setLevel(ELevel.ERROR);
+        // mLogger.info("Starting Robot Initialization...");
+
+        // mSettings.writeToNetworkTables();
 
         mRunningModules.setModules();
 
@@ -133,6 +154,7 @@ public class Robot extends TimedRobot {
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
+        mData.registerCodices();
     }
 
     @Override

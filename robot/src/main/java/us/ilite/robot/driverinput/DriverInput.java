@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import us.ilite.common.Data;
 import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.lib.util.RangeScale;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
@@ -19,6 +20,7 @@ import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.commands.TargetLock;
 import us.ilite.robot.modules.*;
 import us.ilite.robot.modules.Module;
+import us.ilite.robot.modules.Intake.EIntakeState;
 
 public class DriverInput extends Module implements IThrottleProvider, ITurnProvider {
 
@@ -29,6 +31,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     protected final Drive mDrive;
     protected final Elevator mElevator;
+    protected final Intake mIntake;
+    protected final CargoSpit mCargoSpit;
     protected final HatchFlower mHatchFlower;
     private final CommandManager mTeleopCommandManager;
     private final CommandManager mAutonomousCommandManager;
@@ -41,16 +45,19 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, Limelight pLimelight, Data pData, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, boolean pSimulated) {
         this.mDrive = pDrivetrain;
+        this.mElevator = pElevator;
+        this.mIntake = pIntake;
+        this.mCargoSpit = pCargoSpit;
         this.mHatchFlower = pHatchFlower;
-        this.mTeleopCommandManager = pTeleopCommandManager;
-        this.mAutonomousCommandManager = pAutonomousCommandManager;
         this.mLimelight = pLimelight;
         this.mData = pData;
+        this.mTeleopCommandManager = pTeleopCommandManager;
+        this.mAutonomousCommandManager = pAutonomousCommandManager;
+
         this.mDriverInputCodex = mData.driverinput;
         this.mOperatorInputCodex = mData.operatorinput;
-        this.mElevator = pElevator;
         if(pSimulated) {
             // Use a different joystick library?
             
@@ -60,8 +67,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, Limelight pLimelight, Data pData) {
-        this(pDrivetrain, pElevator, pHatchFlower, pTeleopCommandManager, pAutonomousCommandManager, pLimelight, pData, false);
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager) {
+        this(pDrivetrain, pElevator, pHatchFlower, pIntake, pCargoSpit, pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, false);
     }
 
     @Override
@@ -102,10 +109,26 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         if (!mAutonomousCommandManager.isRunningCommands()) {
             updateDriveTrain();
             updateElevator();
+            updateIntake();
         } 
+
 
     }
 
+    private void updateIntake() {
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_GROUND_CARGO)) {
+            mIntake.setIntakeState(EIntakeState.GROUND_CARGO);
+        }
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_GROUND_HATCH)) {
+            mIntake.setIntakeState(EIntakeState.GROUND_HATCH);
+        }
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_HANDOFF)) {
+            mIntake.setIntakeState(EIntakeState.HANDOFF);
+        }
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_INTAKE_STOWED)) {
+            mIntake.setIntakeState(EIntakeState.STOWED);
+        }
+    }
     private void updateHatchFlower() {
         if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_CAPTURE_BTN)) {
             mHatchFlower.captureHatch();
@@ -160,17 +183,17 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         double rotate = mDriverInputCodex.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
         double throttle = -mDriverInputCodex.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
 
-        if(mDriverInputCodex.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.3) {
+        if (mDriverInputCodex.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.3) {
             rotate = rotate;
             throttle = throttle;
-        } else if(mDriverInputCodex.get(ELogitech310.LEFT_TRIGGER_AXIS) > 0.3) {
+        } else if (mDriverInputCodex.get(ELogitech310.LEFT_TRIGGER_AXIS) > 0.3) {
             throttle = -throttle;
             rotate = rotate;
         }
 
         rotate = Util.limit(rotate, SystemSettings.kDriverInputTurnMaxMagnitude);
 
-		// throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
+        // throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
         // rotate = Util.limit(rotate, 0.7);
 
         // if (mDriverInputCodex.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {

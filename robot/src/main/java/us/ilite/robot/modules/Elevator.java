@@ -359,6 +359,9 @@ public class Elevator extends Module {
     }
 
 
+    public boolean isAtPosition(EElevatorPosition pPosition) {
+        return true;
+    }
 
     public void logInfo() {
     }
