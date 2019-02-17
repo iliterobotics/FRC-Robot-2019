@@ -77,7 +77,7 @@ public class CommandManager extends Module {
     public void startCommands(ICommand ... pCommands) {
         // Only update the command queue if commands aren't already running
         if(!isRunningCommands()) {
-            mLog.warn("Starting superstructure command queue with a size of ", pCommands.length);
+            mLog.warn("Starting command queue with a size of ", pCommands.length);
             runCommandQueue = true;
             desiredCommandQueue.setCommands(pCommands);
         } else {
