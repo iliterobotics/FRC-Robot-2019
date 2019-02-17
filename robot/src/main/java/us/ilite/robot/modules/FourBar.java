@@ -33,8 +33,9 @@ public class FourBar extends Module {
     private double mPreviousNeo1Rotations;
     private double mPreviousNeo2Rotations;
     private double mCurrentTime;
-
     private double mCurrentOutput;
+
+    private EFourBarState mCurrentState;
 
     /**
      * Builds a four bar with a Data object for logging
@@ -79,6 +80,16 @@ public class FourBar extends Module {
         if ( mAngularPosition >= 135 ) {
             setDesiredState( EFourBarState.STOP );
         }
+                // logging for testing
+                double[] currents = { mNeos.getOutputCurrent(), mNeo2.getOutputCurrent() };
+                double[] percentOutputs = { mNeos.getAppliedOutput(), mNeo2.getAppliedOutput() };
+                double[] angles = { getNeo1AngularPosition(), getNeo2AngularPosition() };
+        
+                SmartDashboard.putString( "Fourbar State", mCurrentState.toString() );
+                SmartDashboard.putNumber( "Average angle", mAngularPosition );
+                SmartDashboard.putNumberArray( "Neo currents", currents );
+                SmartDashboard.putNumberArray( "Neo percent outputs", percentOutputs );
+                SmartDashboard.putNumberArray( "Neo angles", angles );
     }
 
     /**
@@ -94,6 +105,7 @@ public class FourBar extends Module {
      */
     public void setDesiredState( EFourBarState desiredState ) {
 
+        mCurrentState = desiredState;
         double mOutputToApply = 0.0;
 
         switch ( desiredState ) {
@@ -146,11 +158,23 @@ public class FourBar extends Module {
      * Updates the angular position based on rotations
      */
     public void updateAngularPosition() {
-        mAngularPosition = ( ( mNeo1Encoder.getPosition() - mPreviousNeo1Rotations / 300 ) + ( mNeo2Encoder.getPosition() - mPreviousNeo2Rotations / 300 ) ) / 2;
+        mAngularPosition = ( ( ( mNeo1Encoder.getPosition() - mPreviousNeo1Rotations ) / 300 ) + ( ( mNeo2Encoder.getPosition() - mPreviousNeo2Rotations ) / 300 ) ) / 2;
     }
 
-    public void toNeos(  ) {
+    /**
+     * Get the current angular position of Neo1
+     * @return the current Neo1 angular position
+     */
+    public double getNeo1AngularPosition() {
+        return ( mNeo1Encoder.getPosition() - mPreviousNeo1Rotations ) / 300;
+    }
 
+    /**
+     * Get the current angular position of Neo2
+     * @return the current Neo2 angular position
+     */
+    public double getNeo2AngularPosition() {
+        return ( mNeo2Encoder.getPosition() - mPreviousNeo2Rotations ) / 300;
     }
 
     /**
