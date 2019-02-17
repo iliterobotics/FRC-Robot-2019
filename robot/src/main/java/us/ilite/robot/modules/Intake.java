@@ -30,7 +30,7 @@ public class Intake extends Module {
     private Data mData;
 
     // Roller fields
-    private TalonSRX mIntakeRoller;
+    private VictorSPX mIntakeRoller;
     private double mIntakeRollerCurrent;
     private double mIntakeRollerVoltage;
 
@@ -100,20 +100,15 @@ public class Intake extends Module {
 
     public Intake(Data pData) {
         // Basic Construction
-        // mIntakeRoller = new VictorSPX(SystemSettings.kHatchIntakeSPXAddress);
-        // TODO change back to victorspx
-        mIntakeRoller = new TalonSRX(7);
+        mIntakeRoller = new VictorSPX(SystemSettings.kHatchIntakeSPXAddress);
         this.mData = pData;
     
         // Wrist control
-        // TalonSRX tempTalonSRX = TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress);
-        TalonSRX tempTalonSRX = TalonSRXFactory.createDefaultTalon(6);
+        TalonSRX tempTalonSRX = TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress);
         mWrist = new MotionMagicArm(tempTalonSRX);
-        // mWrist = new BasicArm(tempTalonSRX);
 
         // Solenoid for changing between cargo and hatch mode
-        // mSolenoid = new Solenoid(SystemSettings.kIntakeSolenoidAddress);
-        mSolenoid = new Solenoid(3);
+        mSolenoid = new Solenoid(SystemSettings.kIntakeSolenoidAddress);
 
         mSolenoidState = ESolenoidState.HATCH;
         mRollerState = ERollerState.STOPPED;
@@ -150,7 +145,7 @@ public class Intake extends Module {
     @Override
     public void update(double pNow) {
         // EPowerDistPanel ID 12 (CURRENT12) corresponds to Intake Rollers
-        // mIntakeRollerCurrent = mData.pdp.get(EPowerDistPanel.CURRENT12);
+        mIntakeRollerCurrent = mData.pdp.get(EPowerDistPanel.CURRENT12);
         mIntakeRollerVoltage = mIntakeRoller.getMotorOutputVoltage();
 
         mWristAngle = mWrist.getCurrentArmAngle();

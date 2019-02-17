@@ -339,14 +339,14 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kIntakeWristEncoderA_Address = -1;
     public static int kIntakeWristEncoderB_Address = -1;
     public static int kIntakeSolenoidAddress = 2; // and/or 3 according to integration sheet
-    public static double kIntakeRollerHatchPower = 0.35;
-    public static double kIntakeRollerCargoPower = 0.5;
-    public static double kIntakeRollerHoldPower = 0.2;
-    public static double kIntakeWristStowedAngle = 0.0;
-    public static double kIntakeWristHandoffAngle = 65.0;
-    public static double kIntakeWristGroundAngle = 130.0;
+    public static double kIntakeRollerHatchPower = -1;
+    public static double kIntakeRollerCargoPower = -1;
+    public static double kIntakeRollerHoldPower = -1;
+    public static double kIntakeWristStowedAngle = -1;
+    public static double kIntakeWristHandoffAngle = -1;
+    public static double kIntakeWristGroundAngle = -1;
     //The minimum angle where it is safe to continue intake process (engage solenoid/roller)
-    public static double kIntakeWristGroundMinBound = 75.0;
+    public static double kIntakeWristGroundMinBound = -1;
 
     public static int kDriveTrainRightSRX1Address = 2;
     public static int kDriveTrainRightSPX2Address = 4;
