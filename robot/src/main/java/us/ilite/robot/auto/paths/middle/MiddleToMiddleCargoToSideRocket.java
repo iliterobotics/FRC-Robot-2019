@@ -7,6 +7,7 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 
+import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
@@ -59,7 +60,7 @@ public class MiddleToMiddleCargoToSideRocket extends AutoPath {
     }
 
     public Trajectory<TimedState<Pose2dWithCurvature>> getMiddleLeftHatchToLoadingStationPath() {
-        return mTrajectoryGenerator.generateTrajectory(false, kMiddleLeftHatchToLoadingStationPath, AutonomousRoutines.kTrajectoryConstraints,  100.0, 40.0, 12.0);
+        return mTrajectoryGenerator.generateTrajectory(true, kMiddleLeftHatchToLoadingStationPath, AutonomousRoutines.kTrajectoryConstraints,  100.0, 40.0, 12.0);
     }
 
     public Trajectory<TimedState<Pose2dWithCurvature>> getLoadingStationToSideRocketPath() {
