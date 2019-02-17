@@ -10,10 +10,7 @@ import us.ilite.common.Data;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.robot.auto.paths.StartingPoses;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideRocket;
-import us.ilite.robot.commands.DriveStraight;
-import us.ilite.robot.commands.FollowTrajectory;
-import us.ilite.robot.commands.ICommand;
-import us.ilite.robot.commands.TurnToDegree;
+import us.ilite.robot.commands.*;
 import us.ilite.robot.modules.Drive;
 
 import java.util.Arrays;
@@ -45,8 +42,10 @@ public class AutonomousRoutines {
     public void generateTrajectories() {
         mMiddleToMiddleCargoToSideRocketSequence = new ICommand[] {
                 new DriveStraight(mDrive, mData, DriveStraight.EDriveControlMode.PERCENT_OUTPUT,
-                        MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchFromStart.distance(StartingPoses.kMiddleStart)),
-                new FollowTrajectory(mMiddleToMiddleCargoToSideRocket.getLoadingStationToSideRocketPath(), mDrive, true),
+                        MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchFromStart.getTranslation().translateBy(StartingPoses.kMiddleStart.getTranslation().inverse()).norm()),
+                new Delay(5),
+                new FollowTrajectory(mMiddleToMiddleCargoToSideRocket.getMiddleLeftHatchToLoadingStationPath(), mDrive, true),
+                new Delay(5),
                 new TurnToDegree(mDrive, Rotation2d.fromDegrees(180.0), 10.0, mData)
         };
     }
