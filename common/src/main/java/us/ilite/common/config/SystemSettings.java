@@ -103,7 +103,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kLimelightDefaultPipeline = ETrackingType.TARGET_LEFT.getPipeline();
     public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN, 
                                                                             DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN,
-                                                                            DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN);
+                                                                            DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN,
+                                                                            DriveTeamInputMap.DRIVER_NUDGE_SEEK_LEFT,
+                                                                            DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT);
+
     public static List<ELogitech310> kAutonOverrideTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_THROTTLE_AXIS,
                                                                             DriveTeamInputMap.DRIVER_TURN_AXIS);
     public static double kAutonOverrideAxisThreshold = 0.3;
@@ -193,7 +196,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double llRightBCoeff = -4.53956454545558;
     public static double llRightCCoeff = -0.0437470770400814;
 
-
+    // =============================================================================
+    // PID TargetLock constants
+    // =============================================================================
+    public static PIDGains kTargetLockPIDGains= new PIDGains(0.02, 0.0, 0.0);
 
     // =============================================================================
     // Target Constants

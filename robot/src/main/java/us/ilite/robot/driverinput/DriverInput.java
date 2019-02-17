@@ -13,11 +13,14 @@ import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
-import us.ilite.robot.commands.Delay;
+import us.ilite.robot.modules.Drive;
+import us.ilite.robot.modules.DriveMessage;
+import us.ilite.robot.modules.HatchFlower;
+import us.ilite.robot.commands.TargetLock;
 import us.ilite.robot.modules.*;
 import us.ilite.robot.modules.Module;
 
-public class DriverInput extends Module {
+public class DriverInput extends Module implements IThrottleProvider, ITurnProvider {
 
     protected static final double 
     DRIVER_SUB_WARP_AXIS_THRESHOLD = 0.5;
@@ -29,6 +32,7 @@ public class DriverInput extends Module {
     protected final HatchFlower hatchFlower;
     private final CommandManager mTeleopCommandManager;
     private final CommandManager mAutonomousCommandManager;
+    protected final Limelight mLimelight;
 
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
@@ -37,7 +41,7 @@ public class DriverInput extends Module {
 
     private Data mData;
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, Data pData, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, Limelight pLimelight, Data pData, boolean pSimulated) {
         this.driveTrain = pDrivetrain;
         this.hatchFlower = pHatchFlower;
         this.mTeleopCommandManager = pTeleopCommandManager;
@@ -55,8 +59,8 @@ public class DriverInput extends Module {
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, Data pData) {
-        this(pDrivetrain, pElevator, pHatchFlower, pTeleopCommandManager, pAutonomousCommandManager, pData, false);
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, Limelight pLimeight, Data pData) {
+        this(pDrivetrain, pElevator, pHatchFlower, pTeleopCommandManager, pAutonomousCommandManager, pLimelight, pData, false);
     }
 
     @Override
@@ -103,36 +107,31 @@ public class DriverInput extends Module {
 
     private void updateHatchFlower() {
         if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_CAPTURE_BTN)) {
-            hatchFlower.captureHatch();
+            mHatchFlower.captureHatch();
         }
         else if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_HATCH_FLOWER_PUSH_BTN)) {
-            hatchFlower.pushHatch();
+            mHatchFlower.pushHatch();
         }
     }
 
     private void updateDriveTrain() {
-        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_THROTTLE_AXIS)
-                && mData.driverinput.isSet(DriveTeamInputMap.DRIVER_TURN_AXIS)
-                && mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS)) {
-            double rotate = mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
-            double throttle = -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
+        double rotate = getTurn();
+        double throttle = getThrottle();
 
-            //		    throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
-            rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
-            rotate = Util.limit(rotate, 0.7);
+        //		    throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
+        rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
+        rotate = Util.limit(rotate, 0.7);
 
-
-            if (mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
-                throttle *= SystemSettings.kSnailModePercentThrottleReduction;
-                rotate *= SystemSettings.kSnailModePercentRotateReduction;
-            }
-
-            DriveMessage driveMessage = DriveMessage.fromThrottleAndTurn(throttle, rotate);
-            driveMessage.setNeutralMode(NeutralMode.Brake);
-            driveMessage.setControlMode(ControlMode.PercentOutput);
-
-            driveTrain.setDriveMessage(driveMessage);
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) && mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
+            throttle *= SystemSettings.kSnailModePercentThrottleReduction;
+            rotate *= SystemSettings.kSnailModePercentRotateReduction;
         }
+
+        DriveMessage driveMessage = DriveMessage.fromThrottleAndTurn(throttle, rotate);
+        driveMessage.setNeutralMode(NeutralMode.Brake);
+        driveMessage.setControlMode(ControlMode.PercentOutput);
+
+        mDrive.setDriveMessage(driveMessage);
     }
 
     private void updateElevator() {
@@ -182,7 +181,7 @@ public class DriverInput extends Module {
         driveMessage.setNeutralMode(NeutralMode.Brake);
         driveMessage.setControlMode(ControlMode.PercentOutput);
 
-        driveTrain.setDriveMessage(driveMessage);
+        mDrive.setDriveMessage(driveMessage);
 
     }
 
@@ -193,13 +192,19 @@ public class DriverInput extends Module {
     protected void updateVisionCommands() {
 
         ETrackingType trackingType = null;
+        SystemSettings.VisionTarget visionTarget = null;
+
         // Switch the limelight to a pipeline and track
         if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN)) {
             trackingType = ETrackingType.TARGET_LEFT;
+            // TODO Determine which target height we're using
+            visionTarget = SystemSettings.VisionTarget.HatchPort;
         } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN)) {
             trackingType = ETrackingType.CARGO_LEFT;
+            visionTarget = SystemSettings.VisionTarget.CargoHeight;
         } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN)) {
-            trackingType = ETrackingType.HATCH_LEFT;
+            trackingType = ETrackingType.LINE_LEFT;
+            visionTarget = SystemSettings.VisionTarget.Ground;
         }
 
         // If the driver selected a tracking enum and we won't go out of bounds
@@ -212,10 +217,13 @@ public class DriverInput extends Module {
                 // If driver wants to seek right, switch from "_LEFT" enum to "_RIGHT" enum
                 trackingType = ETrackingType.values()[trackingTypeOrdinal + 1];
             }
-            mTeleopCommandManager.stopRunningCommands();
-            mTeleopCommandManager.startCommands(new Delay(30)); // Placeholder
+            
+            mSuperstructure.stopRunningCommands();
+            mLimelight.setVisionTarget(visionTarget);
+            mLimelight.setPipeline(trackingType.getPipeline());
+            mSuperstructure.startCommands(new TargetLock(mDrive, 3, trackingType, mLimelight, this, false));
+            
         }
-
     }
 
     public boolean isDriverAllowingTeleopCommands() {
@@ -240,8 +248,24 @@ public class DriverInput extends Module {
 
     @Override
     public void shutdown(double pNow) {
-// TODO Auto-generated method stub
 
     }
 
+    @Override
+    public double getThrottle() {
+        if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_THROTTLE_AXIS)) {
+            return -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
+        } else {
+            return 0.0;
+        }
+    }
+
+    @Override
+    public double getTurn() {
+        if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_TURN_AXIS)) {
+            return mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
+        } else {
+            return 0.0;
+        }
+    }
 }

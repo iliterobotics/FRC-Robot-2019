@@ -14,6 +14,8 @@ import us.ilite.common.Data;
 import us.ilite.common.lib.control.DriveController;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.lib.util.PerfTimer;
+import us.ilite.common.types.drive.EDriveData;
+import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.robot.auto.AutonomousRoutines;
@@ -45,11 +47,12 @@ public class Robot extends TimedRobot {
     private CommandManager mTeleopCommandManager = new CommandManager();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
     private Drive mDrive = new Drive(mData, mDriveController);
+    private Limelight mLimelight = new Limelight(mData);
     private Elevator mElevator = new Elevator(mData);
     private HatchFlower mHatchFlower = new HatchFlower();
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mSuperstructure, mLimelight, mData);
 
     private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mAutonomousCommandManager, mTeleopCommandManager, mData);
-    private Limelight mLimelight = new Limelight();
 
     private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
     private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mData, mDrive);

@@ -12,6 +12,7 @@ import us.ilite.common.config.SystemSettings;
 import us.ilite.common.io.CodexNetworkTables;
 import us.ilite.common.io.CodexNetworkTablesParser;
 import us.ilite.common.lib.util.SimpleNetworkTable;
+import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.input.EDriverInputMode;
 import us.ilite.common.types.input.ELogitech310;
@@ -35,6 +36,7 @@ public class Data {
     public final Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
     public final Codex<Double, EElevator> elevator = Codex.of.thisEnum(EElevator.class);
     public final Codex<Double, EPowerDistPanel> pdp = Codex.of.thisEnum(EPowerDistPanel.class);
+    public Codex<Double, ETargetingData> limelight = Codex.of.thisEnum(ETargetingData.class);
 
 
     private final List<CodexSender> mSenders = new ArrayList<>();
