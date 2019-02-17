@@ -1,6 +1,7 @@
 package us.ilite.lib.drivers;
 
 import com.revrobotics.CANEncoder;
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ExternalFollower;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -50,6 +51,7 @@ public class SparkMaxFactory {
 
     public static CANSparkMax createSparkMax(int pId, MotorType pMotorType, Configuration pConfiguration) {
         CANSparkMax spark = new CANSparkMax(pId, pMotorType);
+        CANPIDController canpidController = spark.getPIDController();
 
         spark.setCANTimeout(pConfiguration.CAN_TIMEOUT);
         // spark.setControlFramePeriod(pConfiguration.CONTROL_FRAME_PERIOD);
@@ -58,6 +60,17 @@ public class SparkMaxFactory {
         spark.setPeriodicFramePeriod(PeriodicFrame.kStatus0, pConfiguration.STATUS_0_PERIOD_MS);
         spark.setPeriodicFramePeriod(PeriodicFrame.kStatus1, pConfiguration.STATUS_1_PERIOD_MS);
         spark.setPeriodicFramePeriod(PeriodicFrame.kStatus2, pConfiguration.STATUS_2_PERIOD_MS);
+
+        canpidController.setP( SystemSettings.kElevatorMotionP );
+        canpidController.setI( SystemSettings.kElevatorMotionI );
+        canpidController.setD( SystemSettings.kElevatorMotionD );
+        canpidController.setFF( SystemSettings.kElevatorF );
+
+        canpidController.setOutputRange( 0, 0 );
+        canpidController.setSmartMotionMaxAccel( 0, 0 );
+        canpidController.setSmartMotionMaxVelocity( 0, 0 );
+        canpidController.setSmartMotionMinOutputVelocity( 0, 0 );
+        canpidController.setSmartMotionAllowedClosedLoopError( 0, 0 );
         // spark.setRampRate(pConfiguration.RAMP_RATE);
         spark.setSecondaryCurrentLimit(pConfiguration.SECONDARY_CURRENT_LIMIT);
         spark.setSmartCurrentLimit(pConfiguration.SMART_CURRENT_LIMIT);

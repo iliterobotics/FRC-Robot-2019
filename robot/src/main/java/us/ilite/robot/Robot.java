@@ -149,7 +149,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         commonPeriodic();
         EPowerDistPanel.map(mData.pdp, pdp);
-        mData.sendCodices();
+//        mData.sendCodices();
     }
 
     @Override

@@ -37,6 +37,7 @@ public class Elevator extends Module {
     private double mNeoEncoderPosition;
     private CANPIDController mCanController;
     private int mSmartMotionSlot = 0; //TODO test
+    private double mSetPoint = 0;
 //    public Codex<Double, EElevator> elevatorCodex = Codex.of.thisEnum(EElevator.class);
 
     private double mBottomEncoderTicks = 0;
@@ -71,11 +72,12 @@ public class Elevator extends Module {
         mCanController.setP( SystemSettings.kElevatorMotionP );
         mCanController.setI( SystemSettings.kElevatorMotionI );
         mCanController.setD( SystemSettings.kElevatorMotionD );
-        mCanController.setFF( SystemSettings.kElevatorMotionF );
+        mCanController.setFF( SystemSettings.kElevatorF );
 
         mCanController.setOutputRange( mMinPower, mMaxPower );
         mCanController.setSmartMotionMaxAccel( SystemSettings.kMaxElevatorAcceleration, mSmartMotionSlot );
         mCanController.setSmartMotionMaxVelocity( SystemSettings.kMaxElevatorVelocity, mSmartMotionSlot );
+        mCanController.setSmartMotionMinOutputVelocity( 0, mSmartMotionSlot );
         mCanController.setSmartMotionAllowedClosedLoopError( SystemSettings.kElevatorAllowedError, mSmartMotionSlot );
 
         // We start at the bottom
@@ -133,9 +135,10 @@ public class Elevator extends Module {
         mData.kSmartDashboard.putDouble("Power", output);
         mData.kSmartDashboard.putDouble("Current", mMasterElevator.getOutputCurrent());
         mData.kSmartDashboard.putDouble("Desired Output", output);
-        mData.kSmartDashboard.putDouble("Current Ticks", (double) getCurrentEncoderTicks());
+        mData.kSmartDashboard.putDouble("Current Ticks", getCurrentEncoderTicks());
         mData.kSmartDashboard.putString( "Current State", mCurrentState.toString() );
         mData.kSmartDashboard.putString( "Current Control Mode", mCurrentControlMode.toString() );
+        mData.kSmartDashboard.putDouble( "Set Point ", mSetPoint);
 
 
         mData.elevator.set( EElevator.AT_BOTTOM, isAtBottomVal() );
@@ -197,6 +200,7 @@ public class Elevator extends Module {
      */
     public void zeroEncoder() {
         mEncoder.reset();
+        mMasterElevator.getEncoder().setPosition( 0 );
         mCurrentEncoderTicks = 0;
     }
 
@@ -375,8 +379,6 @@ public class Elevator extends Module {
             break;
         default:
             System.out.println("Somehow reached an unaccounted state with " + pCurrentState.toString()); // In case,
-                                                                                                         // somehow, we
-                                                                                                         // reach this
         }
 
         return Util.limit(power, mMinPower, mMaxPower);
@@ -390,7 +392,12 @@ public class Elevator extends Module {
     public void setDesirecPosition(EElevatorPosition pDesiredPosition) {
         mCurrentState = EElevatorState.SET_POSITION;
         mDesiredPosition = pDesiredPosition;
-        mPidController.setSetpoint(pDesiredPosition.mEncoderThreshold()); // Our set point is the threshold of the
+        if(mCurrentControlMode == EControlMode.PID) {
+            mPidController.setSetpoint(pDesiredPosition.mEncoderThreshold()); // Our set point is the threshold of the
+        } else {
+            mCanController.setReference( mSetPoint, ControlType.kSmartMotion ); //Maybe should be a velocity control type..?
+        }
+
         // destination state
         mSettingPosition = true; // Keeps track that we are in the process of setting the position
     }
@@ -401,8 +408,7 @@ public class Elevator extends Module {
     }
 
     private void calculateMotionMagic() {
-        double setPoint = mDesiredPosition.mEncoderThreshold();
-        mCanController.setReference( setPoint, ControlType.kSmartMotion ); //Maybe should be a velocity control type..?
+        mSetPoint = mDesiredPosition.mEncoderThreshold();
     }
 
     public void setControlMode(EControlMode pControlMode) {
