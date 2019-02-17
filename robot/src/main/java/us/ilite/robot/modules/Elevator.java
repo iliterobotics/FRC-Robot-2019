@@ -64,7 +64,7 @@ public class Elevator extends Module {
         // Create default NEO and set the ramp rate
         mMasterElevator = SparkMaxFactory.createDefaultSparkMax(kCansparkId, MotorType.kBrushless);
         mMasterElevator.setIdleMode(IdleMode.kBrake);
-        mMasterElevator.setRampRate(SystemSettings.kELevatorControlLoopPeriod);
+//        mMasterElevator.setRampRate(SystemSettings.kELevatorControlLoopPeriod);
         mMasterElevator.setSmartCurrentLimit(SystemSettings.kElevatorCurrentLimit);
 
         // We start at the bottom
