@@ -49,11 +49,12 @@ public class Robot extends TimedRobot {
     private CommandManager mAutonomousCommandManager = new CommandManager();
     private CommandManager mTeleopCommandManager = new CommandManager();
     private DriveController mDriveController = new DriveController(new StrongholdProfile());
+
     private Drive mDrive = new Drive(mData, mDriveController);
     private Elevator mElevator = new Elevator(mData);
+    private Intake mIntake = new Intake();
     private CargoSpit mCargoSpit = new CargoSpit();
     private HatchFlower mHatchFlower = new HatchFlower();
-    private Intake mIntake = new Intake(mData);
     private Limelight mLimelight = new Limelight(mData);
 
 
@@ -63,7 +64,7 @@ public class Robot extends TimedRobot {
     private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager);
 
     private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
-    private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mLimelight, mData, mDrive);
+    private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator, mIntake, mCargoSpit, mHatchFlower, mLimelight, mData);
     private MatchMetadata mMatchMeta = null;
 
     private PerfTimer mClockUpdateTimer = new PerfTimer();
@@ -74,7 +75,7 @@ public class Robot extends TimedRobot {
         // Init the actual robot
         initTimer.reset();
         initTimer.start();
-        Logger.setLevel(ELevel.INFO);
+        Logger.setLevel(ELevel.WARN);
         mLogger.info("Starting Robot Initialization...");
 
         new Thread(new DSConnectInitThread()).start();
@@ -160,8 +161,10 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         commonPeriodic();
-        EPowerDistPanel.map(mData.pdp, pdp);
-        mData.sendCodices();
+        Data.kSmartDashboard.putDouble("Angle", mDrive.getHeading().getDegrees());
+
+//        EPowerDistPanel.map(mData.pdp, pdp);
+//        mData.sendCodices();
     }
 
     @Override

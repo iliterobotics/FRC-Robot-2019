@@ -7,6 +7,7 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.Data;
 import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.common.config.SystemSettings;
@@ -37,13 +38,15 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private final CommandManager mTeleopCommandManager;
     private final CommandManager mAutonomousCommandManager;
     private final Limelight mLimelight;
+    private final Data mData;
 
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
 
     protected Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
 
-    private Data mData;
+
+    private ETrackingType mLastTrackingType = null;
 
     public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, boolean pSimulated) {
         this.mDrive = pDrivetrain;
@@ -88,16 +91,15 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         If we aren't already running commands and the driver is pressing a button that triggers a command,
         set the superstructure command queue based off of buttons
         */
-        if(isDriverAllowingTeleopCommands()) {
-            mLog.warn("Requesting command start");
+        if(isDriverAllowingAutonomousControlInTeleop()) {
             updateVisionCommands();
         /*
         If the driver started the commands that the superstructure is running and then released the button,
         stop running commands.
         */
-        } else if(mTeleopCommandManager.isRunningCommands() && !isDriverAllowingTeleopCommands()) {
+        } else if(mAutonomousCommandManager.isRunningCommands() && !isDriverAllowingAutonomousControlInTeleop()) {
             mLog.warn("Requesting command stop: driver no longer allowing commands");
-            mTeleopCommandManager.stopRunningCommands();
+            mAutonomousCommandManager.stopRunningCommands();
         }
 
         if(mAutonomousCommandManager.isRunningCommands() && isAutoOverridePressed()) {
@@ -234,23 +236,31 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         // If the driver selected a tracking enum and we won't go out of bounds
         if(trackingType != null && trackingType.ordinal() < ETrackingType.values().length - 1) {
             int trackingTypeOrdinal = trackingType.ordinal();
-            if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_LEFT)) {
+            if (mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_LEFT)) {
                 // If driver wants to seek left, we don't need to change anything
                 trackingType = ETrackingType.values()[trackingTypeOrdinal];
-            } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT)) {
+            } else if (mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT)) {
                 // If driver wants to seek right, switch from "_LEFT" enum to "_RIGHT" enum
                 trackingType = ETrackingType.values()[trackingTypeOrdinal + 1];
+            } else {
+                trackingType = null;
             }
-            
-            mTeleopCommandManager.stopRunningCommands();
+        }
+
+        if(trackingType != null && trackingType != mLastTrackingType) {
             mLimelight.setVisionTarget(visionTarget);
             mLimelight.setPipeline(trackingType.getPipeline());
-            mTeleopCommandManager.startCommands(new TargetLock(mDrive, 3, trackingType, mLimelight, this, false));
-            
+            mLog.warn("Requesting command start");
+            mAutonomousCommandManager.stopRunningCommands();
+            mAutonomousCommandManager.startCommands(new TargetLock(mDrive, 3, trackingType, mLimelight, this, false));
+            SmartDashboard.putString("Last Tracking Type", mLastTrackingType == null ? "Null" : mLastTrackingType.name());
+            SmartDashboard.putString("Tracking Type", trackingType.name());
         }
+
+        mLastTrackingType = trackingType;
     }
 
-    public boolean isDriverAllowingTeleopCommands() {
+    public boolean isDriverAllowingAutonomousControlInTeleop() {
         boolean runCommands = false;
         for(ELogitech310 l : SystemSettings.kTeleopCommandTriggers) {
             if(mDriverInputCodex.isSet(l)) {
