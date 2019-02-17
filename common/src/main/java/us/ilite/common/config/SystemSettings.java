@@ -83,6 +83,12 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kGyroUpdateRate = 200;
 
     // =============================================================================
+    // Heading Gains
+    // =============================================================================
+    public static PIDGains kDriveHeadingGains = new PIDGains(0.03, 0.0, 0.0);
+    public static double kDriveLinearPercentOutputLimit = 0.5;
+
+    // =============================================================================
     // Input Constants
     // =============================================================================
     public static double kSnailModePercentThrottleReduction = .5;
@@ -107,7 +113,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Motion Magic Constants
     // =============================================================================
     public static int kDriveMotionMagicLoopSlot = 0;
-    public static int kDriveMotionMagicVelocityFeedforward = 0;
+    public static int kDriveMotionMagicCruiseVelocity = 0;
     public static int kDriveMotionMagicAccelFeedforward = 0;
 
     // =============================================================================

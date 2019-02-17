@@ -6,6 +6,8 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
+import edu.wpi.first.wpilibj.Timer;
+import us.ilite.common.Data;
 import us.ilite.robot.modules.Drive;
 
 public class FollowTrajectory implements ICommand {
@@ -34,6 +36,17 @@ public class FollowTrajectory implements ICommand {
 
     @Override
     public boolean update(double pNow) {
+
+        Pose2d current = mDrive.getDriveController().getCurrentPose();
+        Pose2d setpoint = mDrive.getDriveController().getDriveMotionPlanner().mSetpoint.state().getPose();
+
+        Data.kSmartDashboard.putDouble("Heading", current.getRotation().getDegrees());
+        Data.kSmartDashboard.putDouble("X", current.getTranslation().x());
+        Data.kSmartDashboard.putDouble("Y", current.getTranslation().y());
+        Data.kSmartDashboard.putDouble("Target Heading", setpoint.getRotation().getDegrees());
+        Data.kSmartDashboard.putDouble("Target X", setpoint.getTranslation().x());
+        Data.kSmartDashboard.putDouble("Target Y", setpoint.getTranslation().y());
+
         if(mDrive.getDriveController().isDone()) {
             Pose2d error = mDrive.getDriveController().getDriveMotionPlanner().error();
             mLog.warn("Trajectory finished.");
