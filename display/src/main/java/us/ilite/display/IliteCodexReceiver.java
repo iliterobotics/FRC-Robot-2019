@@ -5,6 +5,7 @@ import com.flybotix.hfr.codex.CodexReceiver;
 import com.flybotix.hfr.io.MessageProtocols;
 import com.flybotix.hfr.io.receiver.IReceiveProtocol;
 import org.apache.commons.lang3.EnumUtils;
+import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.input.ELogitech310;
 import us.ilite.common.types.manipulator.EElevator;
@@ -35,11 +36,12 @@ public class IliteCodexReceiver {
     }
 
     private IliteCodexReceiver() {
-        mCommsReceiver = MessageProtocols.createReceiver(MessageProtocols.EProtocol.UDP, 7778, null);
+        mCommsReceiver = MessageProtocols.createReceiver(MessageProtocols.EProtocol.UDP, SystemSettings.sCODEX_COMMS_PORT, null);
         create(EDriveData.class, mCommsReceiver);
         create(EPowerDistPanel.class, mCommsReceiver);
         create(ELogitech310.class, mCommsReceiver);
         create(EElevator.class, mCommsReceiver);
+        create(EPowerDistPanel.class, mCommsReceiver);
 
         // Test data
         for(EPowerDistPanel power : EPowerDistPanel.values()) {
@@ -54,6 +56,7 @@ public class IliteCodexReceiver {
             for(E e : EnumUtils.getEnumList(pEnum)) {
                 mCachedValues.put(e.name(), codex.get(e));
             }
+            System.out.println(codex);
         });
     }
 
