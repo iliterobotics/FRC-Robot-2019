@@ -92,17 +92,17 @@ public class Robot extends TimedRobot {
         };
         CodexMetadata.overrideTimeProvider(provider);
 
-        // Init the actual robot
-        initTimer.reset();
-        initTimer.start();
+        // // Init the actual robot
+        // initTimer.reset();
+        // initTimer.start();
 
-        mSettings.writeToNetworkTables();
+        // mSettings.writeToNetworkTables();
 
-        // Logger.setLevel(ELevel.INFO);
-        Logger.setLevel(ELevel.ERROR);
-        mLogger.info("Starting Robot Initialization...");
+        // // Logger.setLevel(ELevel.INFO);
+        // Logger.setLevel(ELevel.ERROR);
+        // mLogger.info("Starting Robot Initialization...");
 
-        mSettings.writeToNetworkTables();
+        // mSettings.writeToNetworkTables();
 
         mRunningModules.setModules();
 
