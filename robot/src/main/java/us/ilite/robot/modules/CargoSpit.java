@@ -86,7 +86,6 @@ public class CargoSpit extends Module {
     }
 
     private void setIntaking() {
-
         if ( !mStopped || !hasCargo() ) {
             if ( !mIntaking ) {
                 mIntaking = true;
@@ -126,7 +125,7 @@ public class CargoSpit extends Module {
         }
     }
 
-    public void setIntake(boolean pOn) {
+    public boolean isIntaking() {
         shouldIntake = pOn;
     }
 
@@ -141,7 +140,7 @@ public class CargoSpit extends Module {
         return 0d;
     }
 
-    public boolean ismIntaking() {
+    @Override
         return mIntaking;
     }
 }

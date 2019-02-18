@@ -60,11 +60,11 @@ public class CargoSpitTest {
     public void testIntakeOneCycle() {
         mData.operatorinput.set( DriveTeamInputMap.MANIPULATOR_INTAKE_CARGO, 1.0 );
         updateRobot();
-        assertTrue( mCargoSpit.ismIntaking() );
+        assertTrue( mCargoSpit.isIntaking() );
 
         mData.operatorinput.set( DriveTeamInputMap.MANIPULATOR_INTAKE_CARGO, null );
         updateRobot();
-        assertFalse( mCargoSpit.ismIntaking() );
+        assertFalse( mCargoSpit.isIntaking() );
     }
 
     private void updateRobot() {
