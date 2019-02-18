@@ -47,7 +47,7 @@ public class BasicArm extends Arm {
 
     public BasicArm()
     {
-        this(TalonSRXFactory.createDefaultTalon(SystemSettings.kArmTalonSRXAddress));
+        this(TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress));
         // this(new TalonSRX(SystemSettings.kArmTalonSRXAddress));
     }
 

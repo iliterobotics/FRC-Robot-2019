@@ -74,7 +74,7 @@ public class MotionMagicArm extends Arm
     
     public MotionMagicArm()
     {
-        this.talon = new TalonSRX(SystemSettings.kArmTalonSRXAddress);
+        this.talon = new TalonSRX(SystemSettings.kIntakeWristSRXAddress);
 
         int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
         int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());

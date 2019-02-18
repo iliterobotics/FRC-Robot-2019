@@ -51,7 +51,7 @@ public class Intake extends Module {
         mWrist = new MotionMagicArm(mWristTalon);
 
         // Solenoid for changing between cargo and hatch mode
-        mSolenoid = new Solenoid(SystemSettings.kIntakeSolenoidAddress);
+        mSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kIntakeSolenoidAddress);
         mWristPosition = EWristState.STOWED;
         mDesiredIntakeState = EIntakeState.STOWED;
     }
@@ -238,6 +238,9 @@ public class Intake extends Module {
         private ERollerState(double pPower) {
             this.kPower = pPower;
         }
+    }
+    public boolean hasReachedState(EIntakeState pIntakeState) {
+        return mDesiredIntakeState.equals( pIntakeState );
     }
 
     public enum EIntakeState {

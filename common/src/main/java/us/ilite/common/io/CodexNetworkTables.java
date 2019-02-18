@@ -26,10 +26,11 @@ public class CodexNetworkTables {
   /**
    * Initializes a few items related to writing elements of a codex to a network table.
    * Do this ahead of time to prevent issues with timing on the first cycle.
-   * @param pEnum
+   * @param pCodex
    */
-  public <V, E extends Enum<E> & CodexOf<V>> void registerCodex(Class<E> pEnum) {
-    String tablename = CodexNetworkTablesParser.constructNetworkTableName(pEnum);
+  public <V, E extends Enum<E> & CodexOf<V>> void registerCodex(Codex pCodex) {
+    Class<E> enumClass = pCodex.meta().getEnum();
+    String tablename = CodexNetworkTablesParser.constructNetworkTableName(enumClass);
     Integer hash = tablename.hashCode();
     mLog.debug("Registering codex " + tablename + " with hash " + hash);
     mTables.put(hash, sNETWORK_TABLES.getTable(tablename));
@@ -41,10 +42,11 @@ public class CodexNetworkTables {
    * Initializes a few items related to writing elements of a codex to a network table.
    * Do this ahead of time to prevent issues with timing on the first cycle.
    * @param pName
-   * @param pEnum
+   * @param pCodex
    */
-  public <V, E extends Enum<E> & CodexOf<V>> void registerCodex(String pName, Class<E> pEnum) {    
-    String tablename = CodexNetworkTablesParser.constructNetworkTableName(pEnum, pName);
+  public <V, E extends Enum<E> & CodexOf<V>> void registerCodex(String pName, Codex pCodex) {
+    Class<E> enumClass = pCodex.meta().getEnum();
+    String tablename = CodexNetworkTablesParser.constructNetworkTableName(enumClass, pName);
     Integer hash = tablename.hashCode();
     mLog.debug("Registering codex " + tablename + " with hash " + hash);
     mTables.put(hash, sNETWORK_TABLES.getTable(tablename));

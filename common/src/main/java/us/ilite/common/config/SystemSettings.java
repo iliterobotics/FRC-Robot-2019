@@ -42,19 +42,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static String kLoggingTimestampKey = "TIME";
 
-    // =============================================================================
-    // Talon Addresses
-    // =============================================================================
-    // Encoders are on the rear Talons, so ID's are temporarily flipped around
-    public static  int kDriveLeftMasterTalonId = 1;
-    public static int kDriveLeftMiddleTalonId = 3;
-    public static  int kDriveLeftRearTalonId = 5;
-    public static  int kDriveRightMasterTalonId = 2;
-    public static int kDriveRightMiddleTalonId = 4;
-    public static  int kDriveRightRearTalonId = 6;
-
-    public static int kPigeonId = 3;
-
     public static int kCANTimeoutMs = 10; //use for on the fly updates
     public static int kLongCANTimeoutMs = 100; //use for constructors
 
@@ -83,6 +70,12 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kGyroUpdateRate = 200;
 
     // =============================================================================
+    // Heading Gains
+    // =============================================================================
+    public static PIDGains kDriveHeadingGains = new PIDGains(0.03, 0.0, 0.0);
+    public static double kDriveLinearPercentOutputLimit = 0.5;
+
+    // =============================================================================
     // Input Constants
     // =============================================================================
     public static double kSnailModePercentThrottleReduction = .5;
@@ -97,7 +90,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kLimelightDefaultPipeline = ETrackingType.TARGET_LEFT.getPipeline();
     public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN, 
                                                                             DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN,
-                                                                            DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN);
+                                                                            DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN,
+                                                                            DriveTeamInputMap.DRIVER_NUDGE_SEEK_LEFT,
+                                                                            DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT);
+
     public static List<ELogitech310> kAutonOverrideTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_THROTTLE_AXIS,
                                                                             DriveTeamInputMap.DRIVER_TURN_AXIS);
     public static double kAutonOverrideAxisThreshold = 0.3;
@@ -106,7 +102,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Motion Magic Constants
     // =============================================================================
     public static int kDriveMotionMagicLoopSlot = 0;
-    public static int kDriveMotionMagicVelocityFeedforward = 0;
+    public static int kDriveMotionMagicCruiseVelocity = 0;
     public static int kDriveMotionMagicAccelFeedforward = 0;
 
     // =============================================================================
@@ -257,7 +253,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double llRightBCoeff = -4.53956454545558;
     public static double llRightCCoeff = -0.0437470770400814;
 
-
+    // =============================================================================
+    // PID TargetLock constants
+    // =============================================================================
+    public static PIDGains kTargetLockPIDGains = new PIDGains(0.02, 0.002, 0.0);
 
     // =============================================================================
     // Target Constants
@@ -307,11 +306,22 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // kHatchFlowerGrabToPushTransitionTimeSec is the time between releasing the 
     // grab solenoid and engaging the push solenoid.
     public static double kHatchFlowerGrabToPushTransitionTimeSec = 0.250;
+    public static double kHatchFlowerExtendStatusTimerDuration = 0.5;
 
 
     // =============================================================================
     // 2019 Module Addresses
     // =============================================================================
+    public static int kPigeonId = 30;
+
+    public static  int kDriveLeftMasterTalonId = 1;
+    public static int kDriveLeftMiddleTalonId = 3;
+    public static  int kDriveLeftRearTalonId = 5;
+    public static  int kDriveRightMasterTalonId = 2;
+    public static int kDriveRightMiddleTalonId = 4;
+    public static  int kDriveRightRearTalonId = 6;
+
+    public static int kPowerDistPanelAddress = 21;
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
     public static double kCargoSpitRollerPower = -1.0;
@@ -349,18 +359,5 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kIntakeWristGroundAngle = -1;
     //The minimum angle where it is safe to continue intake process (engage solenoid/roller)
     public static double kIntakeWristGroundMinBound = -1;
-
-    public static int kDriveTrainRightSRX1Address = 2;
-    public static int kDriveTrainRightSPX2Address = 4;
-    public static int kDriveTrainRightSPX3Address = 6;
-    public static int kDriveTrainLeftSRX1Address = 1;
-    public static int kDriveTrainLeftSPX2Address = 3;
-    public static int kDriveTrainLeftSPX3Address = 5;
-
-    public static int kArmTalonSRXAddress = 6;
-
-
-
-
 
 }

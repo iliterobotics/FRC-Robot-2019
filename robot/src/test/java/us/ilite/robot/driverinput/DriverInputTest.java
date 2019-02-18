@@ -1,7 +1,9 @@
 package us.ilite.robot.driverinput;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.Logger;
+import com.team254.lib.drivers.talon.TalonSRXFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,17 +23,21 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class DriverInputTest {
 
-    // We're only testing integration between Superstructure and DriverInput, so we can mock this
+    // We're only testing integration between CommandManager and DriverInput, so we can mock this
     @Mock private Drive mDrive;
     @Mock private HatchFlower mHatchFlower;
-    // We want to see Superstructure's actual behavior, so we make it a spy
-    private Superstructure mSuperstructure;
+    @Mock private CommandManager mAutonomousCommandManager;
+    // We want to see CommandManager's actual behavior, so we make it a spy
+    private CommandManager mTeleopCommandManager;
     @Mock private Elevator mElevator;
     @Mock private Intake mIntake;
+    @Mock private CargoSpit mCargospit;
     @Mock private Arm mArm;
+    @Mock private TalonSRX mTalon;
 
 
     private DriverInput mDriverInput;
+    private Limelight mLimelight;
 
     private Data mData;
     private Clock mClock;
@@ -46,14 +52,11 @@ public class DriverInputTest {
         mData = new Data();
         mClock = new Clock().simulated();
         mModuleList = new ModuleList();
-        mSuperstructure = spy(new Superstructure());
-        //mArm = new BasicArm();
-        mArm = new MotionMagicArm();
-        mCargoSpit = new CargoSpit( mData );
-        mIntake = new Intake( mData );
-        mDriverInput = spy(new DriverInput(mDrive, mElevator, mHatchFlower, mCargoSpit, mIntake, mArm, mSuperstructure, mData));
-
-        mModuleList.setModules(mDriverInput, mSuperstructure, mDrive);
+        mTeleopCommandManager = spy(new CommandManager());
+        mLimelight = new Limelight(mData);
+        mDriverInput = spy(new DriverInput(mDrive, mElevator, mHatchFlower,mIntake, mCargospit, mArm, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager));
+        
+        mModuleList.setModules(mDriverInput, mTeleopCommandManager, mDrive);
         mModuleList.modeInit(mClock.getCurrentTime());
 
         TestingUtils.fillNonButtons(mData.driverinput, 0.0);
@@ -67,17 +70,17 @@ public class DriverInputTest {
     public void testAutonomousOverride() {
         for(ELogitech310 overrideButton : SystemSettings.kAutonOverrideTriggers) {
             // Reset superstructure with new command
-            mSuperstructure.startCommands(new Delay(30.0));
-            assertTrue(mSuperstructure.isRunningCommands());
+            mTeleopCommandManager.startCommands(new Delay(30.0));
+            assertTrue(mTeleopCommandManager.isRunningCommands());
 
             // Verify that we asked the superstructure to stop running commands when override is triggered
             mData.driverinput.set(overrideButton, 1.0);
             // Update twice to verify that commands aren't reset twice
             updateRobot(2);
-            verify(mSuperstructure).stopRunningCommands();
+            verify(mTeleopCommandManager).stopRunningCommands();
 
             // Verify that superstructure is actually stopped
-            assertFalse(mSuperstructure.isRunningCommands());
+            assertFalse(mTeleopCommandManager.isRunningCommands());
 
             resetSpies();
         }
@@ -94,12 +97,12 @@ public class DriverInputTest {
             // Update twice to verify that commands aren't reset twice
             updateRobot(2);
 
-            verify(mDriverInput).updateVisionCommands();
-            assertTrue(mSuperstructure.isRunningCommands());
+            verify(mDriverInput, times(2)).updateVisionCommands();
+            assertTrue(mTeleopCommandManager.isRunningCommands());
 
             mData.driverinput.set(commandTrigger, null);
             updateRobot();
-            assertFalse(mSuperstructure.isRunningCommands());
+            assertFalse(mTeleopCommandManager.isRunningCommands());
 
             resetSpies();
         }
@@ -114,22 +117,17 @@ public class DriverInputTest {
 
         for(ELogitech310 commandTrigger : SystemSettings.kTeleopCommandTriggers) {
 
-            // Start commands externally
-            mSuperstructure.startCommands(new Delay(30.0));
-            updateRobot();
-            assertTrue(mSuperstructure.isRunningCommands());
-
             // If we press and release a button the command queue should get stopped
             mData.driverinput.set(commandTrigger, 1.0);
             // Update twice to verify that commands aren't reset twice
-            updateRobot(2);
-            verify(mSuperstructure).stopRunningCommands();
-            assertTrue(mSuperstructure.isRunningCommands());
+            updateRobot();
+            verify(mTeleopCommandManager).stopRunningCommands();
+            assertTrue(mTeleopCommandManager.isRunningCommands());
 
             mData.driverinput.set(commandTrigger, null);
             updateRobot();
-            verify(mSuperstructure, times(2)).stopRunningCommands();
-            assertFalse(mSuperstructure.isRunningCommands());
+            verify(mTeleopCommandManager, times(2)).stopRunningCommands();
+            assertFalse(mTeleopCommandManager.isRunningCommands());
 
             resetSpies();
         }
@@ -146,7 +144,7 @@ public class DriverInputTest {
     }
 
     private void resetSpies() {
-        Mockito.reset(mSuperstructure, mDriverInput);
+        Mockito.reset(mTeleopCommandManager, mDriverInput);
     }
 
 }
