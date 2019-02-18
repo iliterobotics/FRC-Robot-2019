@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.manipulator.EIntake;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 
@@ -21,8 +20,6 @@ public class Intake extends Module {
     // TODO update allowed error angle
     private final double kZero = 0.0;
     private final String kDefaultError = "This message should not be displayed";
-    private final double kTrueBoolean = 1.0;
-    private final double kFalseBoolean = 0.0;
 
     // Logging fields
     private ILog mLog = Logger.createLog(Intake.class);
@@ -41,9 +38,7 @@ public class Intake extends Module {
     private Solenoid mSolenoid;
 
     // Present intake states
-    private ERollerState mRollerState;
     private EWristState mWristPosition;
-    private ESolenoidState mSolenoidState;
     private EIntakeState mDesiredIntakeState;
 
     public Intake(Data pData) {
@@ -52,26 +47,19 @@ public class Intake extends Module {
         this.mData = pData;
     
         // Wrist control
-        TalonSRX tempTalonSRX = TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress);
-        mWrist = new MotionMagicArm(tempTalonSRX);
+        TalonSRX mWristTalon = TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress);
+        mWrist = new MotionMagicArm(mWristTalon);
 
         // Solenoid for changing between cargo and hatch mode
         mSolenoid = new Solenoid(SystemSettings.kIntakeSolenoidAddress);
-
-        mSolenoidState = ESolenoidState.HATCH;
-        mRollerState = ERollerState.STOPPED;
         mWristPosition = EWristState.STOWED;
-
         mDesiredIntakeState = EIntakeState.STOWED;
-
     }
 
 
     @Override
     public void modeInit(double pNow) {
         mLog.error("MODE INIT");
-        mSolenoidState = ESolenoidState.HATCH;
-        mRollerState = ERollerState.STOPPED;
         mWristPosition = EWristState.STOWED;
         mDesiredIntakeState = EIntakeState.STOWED;
 
@@ -83,7 +71,7 @@ public class Intake extends Module {
         mData.intake.set(EIntake.ARM_ANGLE, mWristAngle);
         mData.intake.set(EIntake.ROLLER_CURRENT, mIntakeRollerCurrent);
         mData.intake.set(EIntake.ROLLER_VOLTAGE, mIntakeRollerVoltage);
-        mData.intake.set(EIntake.SOLENOID_EXTENDED, mSolenoid.get() ? kTrueBoolean : kFalseBoolean);
+        mData.intake.set(EIntake.SOLENOID_EXTENDED, mSolenoid.get() ? 1.0 : 0.0);
         
         mWrist.periodicInput(pNow);
     }
@@ -131,19 +119,22 @@ public class Intake extends Module {
         mWrist.update(pNow);
     }
 
-    @Override
-    public void shutdown(double pNow) {
-        mWrist.shutdown(pNow);
+    /**
+     * Main commands that can be used in DriverInput
+     */
+    public void setIntakeState(EIntakeState pIntakeState) {
+        mDesiredIntakeState = pIntakeState;
     }
-
-    @Override
-    public boolean checkModule(double pNow) {
-        mWrist.checkModule(pNow);
-        return false;
+    public void stopRoller() {
+        mIntakeRoller.set(ControlMode.PercentOutput, kZero);
     }
-
-
-
+    public void stopWrist() {
+        mWrist.setDesiredOutput(kZero);
+    }
+    public void stopIntake() {
+        stopRoller();
+        stopWrist();
+    }
 
     /**
      * Sets the wrist position to a preset position.
@@ -160,7 +151,6 @@ public class Intake extends Module {
      */
     private void setRollerState(ERollerState pRollerState) {
         setRollerPower(pRollerState.kPower);
-        mRollerState = pRollerState;
     }
 
     /**
@@ -178,16 +168,36 @@ public class Intake extends Module {
      */
     private void setSolenoidState(ESolenoidState pSolenoidState) {
         mSolenoid.set(pSolenoidState.kExtended);
-        mSolenoidState = pSolenoidState;
+    }
+
+    /**
+     * Asks if the a given wrist position matches the current wrist position.
+     * @param pWristPosition position in question
+     * @return Whether the wrist had been at the specified setpoint for a certain amount of time within a certain deadband.
+     */
+    public boolean isAtPosition(EWristState pWristPosition) {
+        return mWristPosition.equals(pWristPosition);
+    }
+
+    @Override
+    public boolean checkModule(double pNow) {
+        mWrist.checkModule(pNow);
+        return false;
+    }
+
+    @Override
+    public void shutdown(double pNow) {
+        mWrist.shutdown(pNow);
     }
 
 
 
     //*****************************************************//
+    //                     Enumerators                     //
     //*****************************************************//
 
     /**
-     * Main command that can be used in DriverInput
+     * Wrist position based on angle
      */
     public enum EWristState {
         // TODO update wrist position angles
@@ -199,10 +209,6 @@ public class Intake extends Module {
             kWristAngleDegrees = pWristAngle;
         }
 
-        mIntakeRoller.set(ControlMode.PercentOutput, kZero);
-    }
-    public void stopWrist() {
-        mWrist.setDesiredOutput(kZero);
     }
     /**
      * Pneumatic/Solenoid state for hatch or cargo roller mode
@@ -217,17 +223,9 @@ public class Intake extends Module {
         }
 
     }
-    //  *
-    //  * @return The sensor value indicating whether we have acquired a hatch.
-    //  */
-    // public boolean hasHatch() {
-    //     return mHatchBeam.get();
-    // }
 
     /**
      * Roller state
-     * @param pWristPosition position in question
-     * @return Whether the wrist had been at the specified setpoint for a certain amount of time within a certain deadband.
      */
     public enum ERollerState {
         STOPPED(0.0),
