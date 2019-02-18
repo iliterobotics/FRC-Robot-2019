@@ -148,7 +148,6 @@ public class Robot extends TimedRobot {
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
 
-//        mSuperstructure.startCommands(new CharacterizeDrive(mDrive, false, false));
         mSuperstructure.startCommands(new FollowTrajectory(trajectory, mDrive, true));
 
         initTimer.stop();
@@ -163,7 +162,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         initMatchMetadata();
-        mRunningModules.setModules(mDriverInput, mLimelight, mHatchFlower, mElevator, mIntake);
+        mRunningModules.setModules(mDriverInput, mLimelight, mHatchFlower, mElevator, mIntake, mCargoSpit);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
@@ -175,7 +174,6 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         commonPeriodic();
-        EPowerDistPanel.map(mData.pdp, pdp);
         mData.sendCodices();
     }
 
@@ -210,6 +208,7 @@ public class Robot extends TimedRobot {
         for(Codex c : mData.mAllCodexes) {
             c.reset();
         }
+        EPowerDistPanel.map(mData.pdp, pdp);
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
     }
