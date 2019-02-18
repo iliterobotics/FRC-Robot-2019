@@ -48,7 +48,7 @@ public class Robot extends TimedRobot {
     private Timer initTimer = new Timer();
     private SystemSettings mSettings = new SystemSettings();
 
-    private PowerDistributionPanel pdp = new PowerDistributionPanel();
+    private PowerDistributionPanel pdp = new PowerDistributionPanel(SystemSettings.kPowerDistPanelAddress);
 
 
     // Module declarations here
