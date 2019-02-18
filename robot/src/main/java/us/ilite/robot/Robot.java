@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
     private Timer initTimer = new Timer();
     private SystemSettings mSettings = new SystemSettings();
 
-    private PowerDistributionPanel pdp = new PowerDistributionPanel();
+    private PowerDistributionPanel pdp = new PowerDistributionPanel(SystemSettings.kPowerDistPanelAddress);
 
 
     // Module declarations here
@@ -97,6 +97,8 @@ public class Robot extends TimedRobot {
 
         mAutonomousRoutines.generateTrajectories();
 
+        mData.registerCodices();
+
         initTimer.stop();
         mLogger.info("Robot initialization finished. Took: ", initTimer.get(), " seconds");
     }
@@ -142,22 +144,21 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         initMatchMetadata();
-        mRunningModules.setModules(mDriverInput, mLimelight, mIntake, mHatchFlower, mElevator);
+        mRunningModules.setModules(mDriverInput, mDrive, mLimelight, mIntake, mHatchFlower, mElevator);
 
         mSettings.loadFromNetworkTables();
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
-        mLoopManager.setRunningLoops(mDrive);
+        mLoopManager.setRunningLoops();
         mLoopManager.start();
-        mData.registerCodices();
     }
 
     @Override
     public void teleopPeriodic() {
         commonPeriodic();
-        EPowerDistPanel.map(mData.pdp, pdp);
-        mData.sendCodices();
+//        mData.sendCodices();
+        mData.sendCodicesToNetworkTables();
     }
 
     @Override
@@ -188,9 +189,10 @@ public class Robot extends TimedRobot {
     }
 
     private void commonPeriodic() {
-//        for(Codex c : mData.mAllCodexes) {
-//            c.reset();
-//        }
+        for(Codex c : mData.mAllCodexes) {
+            c.reset();
+        }
+        EPowerDistPanel.map(mData.pdp, pdp);
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
     }

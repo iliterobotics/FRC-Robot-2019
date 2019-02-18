@@ -108,7 +108,7 @@ public class Intake extends Module {
         mWrist = new MotionMagicArm(tempTalonSRX);
 
         // Solenoid for changing between cargo and hatch mode
-        mSolenoid = new Solenoid(SystemSettings.kIntakeSolenoidAddress);
+        mSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kIntakeSolenoidAddress);
 
         mSolenoidState = ESolenoidState.HATCH;
         mRollerState = ERollerState.STOPPED;
