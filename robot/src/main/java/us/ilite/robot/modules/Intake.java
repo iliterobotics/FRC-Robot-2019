@@ -46,54 +46,6 @@ public class Intake extends Module {
     private ESolenoidState mSolenoidState;
     private EIntakeState mDesiredIntakeState;
 
-    /**
-     * Wrist position based on angle
-     */
-    public enum EWristState {
-        // TODO update wrist position angles
-        GROUND(SystemSettings.kIntakeWristGroundAngle), HANDOFF(SystemSettings.kIntakeWristHandoffAngle), STOWED(SystemSettings.kIntakeWristStowedAngle);
-
-        public final double kWristAngleDegrees;
-
-        EWristState(double pWristAngle) {
-            kWristAngleDegrees = pWristAngle;
-        }
-
-    }
-    /**
-     * Pneumatic/Solenoid state for hatch or cargo roller mode
-     */
-    public enum ESolenoidState {
-        HATCH(false), CARGO(true);
-
-        public final boolean kExtended;
-
-        private ESolenoidState(boolean pExtended) {
-            this.kExtended = pExtended;
-        }
-
-    }
-
-    /**
-     * Roller state
-     */
-    public enum ERollerState {
-        STOPPED(0.0),
-        HATCH(SystemSettings.kIntakeRollerHatchPower),
-        CARGO(SystemSettings.kIntakeRollerCargoPower),
-        HOLD(SystemSettings.kIntakeRollerHoldPower);
-
-        public final double kPower;
-
-        private ERollerState(double pPower) {
-            this.kPower = pPower;
-        }
-    }
-
-    public enum EIntakeState {
-        GROUND_HATCH, GROUND_CARGO, HANDOFF, STOWED;
-    }
-
     public Intake(Data pData) {
         // Basic Construction
         mIntakeRoller = new VictorSPX(SystemSettings.kHatchIntakeSPXAddress);
@@ -231,25 +183,40 @@ public class Intake extends Module {
 
 
 
+    //*****************************************************//
+    //*****************************************************//
 
     /**
      * Main command that can be used in DriverInput
      */
-    public void setIntakeState(EIntakeState pIntakeState) {
-        mDesiredIntakeState = pIntakeState;
-    }
-    public void stopRoller() {
+    public enum EWristState {
+        // TODO update wrist position angles
+        GROUND(SystemSettings.kIntakeWristGroundAngle), HANDOFF(SystemSettings.kIntakeWristHandoffAngle), STOWED(SystemSettings.kIntakeWristStowedAngle);
+
+        public final double kWristAngleDegrees;
+
+        EWristState(double pWristAngle) {
+            kWristAngleDegrees = pWristAngle;
+        }
+
         mIntakeRoller.set(ControlMode.PercentOutput, kZero);
     }
     public void stopWrist() {
         mWrist.setDesiredOutput(kZero);
     }
-    public void stopIntake() {
-        stopRoller();
-        stopWrist();
-    }
+    /**
+     * Pneumatic/Solenoid state for hatch or cargo roller mode
+     */
+    public enum ESolenoidState {
+        HATCH(false), CARGO(true);
 
-    // /**
+        public final boolean kExtended;
+
+        private ESolenoidState(boolean pExtended) {
+            this.kExtended = pExtended;
+        }
+
+    }
     //  *
     //  * @return The sensor value indicating whether we have acquired a hatch.
     //  */
@@ -258,12 +225,25 @@ public class Intake extends Module {
     // }
 
     /**
-     * Asks if the a given wrist position matches the current wrist position.
+     * Roller state
      * @param pWristPosition position in question
      * @return Whether the wrist had been at the specified setpoint for a certain amount of time within a certain deadband.
      */
-    public boolean isAtPosition(EWristState pWristPosition) {
-        return mWristPosition.equals(pWristPosition);
+    public enum ERollerState {
+        STOPPED(0.0),
+        HATCH(SystemSettings.kIntakeRollerHatchPower),
+        CARGO(SystemSettings.kIntakeRollerCargoPower),
+        HOLD(SystemSettings.kIntakeRollerHoldPower);
+
+        public final double kPower;
+
+        private ERollerState(double pPower) {
+            this.kPower = pPower;
+        }
+    }
+
+    public enum EIntakeState {
+        GROUND_HATCH, GROUND_CARGO, HANDOFF, STOWED;
     }
 
 }
