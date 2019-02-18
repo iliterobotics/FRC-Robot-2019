@@ -31,29 +31,22 @@ public class CargoSpit extends Module {
     public CargoSpit(Data pData) {
 
         this.mData = pData;
-        System.out.println("a**************************");
         // TODO Change to VictorSPX (or keep as TalonSRX)
         mLeftMotor = TalonSRXFactory.createDefaultTalon( SystemSettings.kCargoSpitLeftSPXAddress );//new VictorSPX(SystemSettings.kCargoSpitLeftSPXAddress);
-        System.out.println("b**************************");
+        mRightMotor = TalonSRXFactory.createDefaultTalon( 4/*SystemSettings.kCargoSpitRightSPXAddress*/ );//new VictorSPX(SystemSettings.kCargoSpitRightSPXAddress);
         mRightMotor = TalonSRXFactory.createDefaultTalon( SystemSettings.kCargoSpitRightSPXAddress );//new VictorSPX(SystemSettings.kCargoSpitRightSPXAddress);
-        System.out.println("c**************************");
         //TODO figure out these values and make them constants
         mRightMotor.configOpenloopRamp( mPower, 5 );
-        System.out.println("d**************************");
         mLeftMotor.configOpenloopRamp( mPower, 5 );
-        System.out.println("e**************************");
 
         mLeftMotor.follow( mRightMotor );
-        System.out.println("f**************************");
+        mRightMotor.setInverted( true ); //Set one motor inverted
         mLeftMotor.setInverted( true ); //Set one motor inverted
-        System.out.println("g**************************");
         // mSolenoid.close();
-        System.out.println("h**************************");
 
         mIntaking = false;
-        System.out.println("i**************************");
+        mStopped = true;
         mStopped = false;
-        System.out.println("j**************************");
     }
 
     @Override

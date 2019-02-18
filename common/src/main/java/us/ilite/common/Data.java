@@ -44,16 +44,16 @@ public class Data {
     private final List<CodexSender> mSenders = new ArrayList<>();
 
     public final Codex[] mAllCodexes = new Codex[] {
-            imu, drive, driverinput, operatorinput, elevator,pdp,cargospit
+            imu, drive, driverinput, operatorinput, elevator, pdp, cargospit
     };
 
     public final Codex<Double, EIntake> intake = Codex.of.thisEnum(EIntake.class);
     public final Codex[] mLoggedCodexes = new Codex[] {
-        imu, drive, driverinput, operatorinput, elevator, cargospit
+        imu, drive, driverinput, operatorinput, elevator, cargospit, pdp
     };
 
     public final Codex[] mDisplayedCodexes = new Codex[] {
-            imu, drive, driverinput, operatorinput, elevator,pdp
+            imu, drive, driverinput, operatorinput, elevator, pdp
     };
 
     public static NetworkTableInstance kInst = NetworkTableInstance.getDefault();
@@ -91,7 +91,8 @@ public class Data {
             new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
             new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR"),
                 new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" ),
-                new CodexNetworkTablesParser<ECargoSpit>( cargospit )
+                new CodexNetworkTablesParser<ECargoSpit>( cargospit, "CARGOSPIT" ),
+            new CodexNetworkTablesParser<EPowerDistPanel>( pdp, "PDP" )
         );
     }
 
