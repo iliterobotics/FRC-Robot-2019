@@ -1,7 +1,9 @@
 package us.ilite.robot.driverinput;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.Logger;
+import com.team254.lib.drivers.talon.TalonSRXFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +34,7 @@ public class DriverInputTest {
     @Mock private Intake mIntake;
     @Mock private CargoSpit mCargospit;
     @Mock private Arm mArm;
+    @Mock private TalonSRX mTalon;
 
 
     private DriverInput mDriverInput;

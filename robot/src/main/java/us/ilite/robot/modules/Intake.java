@@ -274,5 +274,8 @@ public class Intake extends Module {
     public boolean isAtPosition(EWristState pWristPosition) {
         return mWristPosition.equals(pWristPosition);
     }
+    public boolean hasReachedState(EIntakeState pIntakeState) {
+        return mDesiredIntakeState.equals( pIntakeState );
+    }
 
 }
