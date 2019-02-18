@@ -16,13 +16,15 @@ public class CargoSpitTest {
     private Clock mClock;
     private ModuleList mModuleList;
     private DriverInput mDriverInput;
-    private Superstructure mSuperStructure;
     private HatchFlower mHatchFlower;
     private Elevator mElevator;
     private Drive mDrive;
     private CargoSpit mCargoSpit;
     private Intake mIntake;
+    private Limelight mLimelight;
     private Arm mArm;
+    private CommandManager mCommandManager;
+    private CommandManager mAutoCommandManager;
 
 
     @Before
@@ -31,13 +33,14 @@ public class CargoSpitTest {
         mData = new Data();
         mClock = new Clock().simulated();
         mModuleList = new ModuleList();
-        mSuperStructure = spy( new Superstructure() );
         mCargoSpit = new CargoSpit( mData );
         mIntake = new Intake( mData );
         mArm = new MotionMagicArm();
+        mLimelight = new Limelight( mData );
+        mAutoCommandManager = new CommandManager();
 
-        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mCargoSpit, mIntake, mArm, mSuperStructure, mData ));
-        mModuleList.setModules( mDriverInput, mSuperStructure, mDrive );
+        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mCargoSpit, mArm, mLimelight, mData, mCommandManager, mAutoCommandManager ));
+        mModuleList.setModules( mDriverInput, mDrive );
         mModuleList.modeInit( mClock.getCurrentTime() );
     }
 
@@ -46,23 +49,22 @@ public class CargoSpitTest {
         mData = new Data();
         mClock = new Clock().simulated();
         mModuleList = new ModuleList();
-        mSuperStructure = spy( new Superstructure() );
         mCargoSpit = new CargoSpit( mData );
         mIntake = new Intake( mData );
         mArm = new MotionMagicArm();
 
-        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mCargoSpit, mIntake, mArm, mSuperStructure, mData ));
-        mModuleList.setModules( mDriverInput, mSuperStructure, mDrive );
+        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mCargoSpit, mArm, mLimelight, mData, mCommandManager, mAutoCommandManager ));
+        mModuleList.setModules( mDriverInput, mDrive );
         mModuleList.modeInit( mClock.getCurrentTime() );
     }
 
     @Test
     public void testIntakeOneCycle() {
-        mData.operatorinput.set( DriveTeamInputMap.MANIPULATOR_INTAKE_CARGO, 1.0 );
+        mData.operatorinput.set( DriveTeamInputMap.OPERATOR_CARGO_SELECT, 1.0 );
         updateRobot();
         assertTrue( mCargoSpit.isIntaking() );
 
-        mData.operatorinput.set( DriveTeamInputMap.MANIPULATOR_INTAKE_CARGO, null );
+        mData.operatorinput.set( DriveTeamInputMap.OPERATOR_CARGO_SELECT, null );
         updateRobot();
         assertFalse( mCargoSpit.isIntaking() );
     }
