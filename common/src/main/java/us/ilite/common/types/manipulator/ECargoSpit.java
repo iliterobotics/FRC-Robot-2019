@@ -7,5 +7,7 @@ public enum ECargoSpit implements CodexOf<Double> {
     INTAKING,
     OUTTAKING,
     STOPPED,
-    HAS_CARGO;
+    HAS_CARGO,
+    LEFT_CURRENT,
+    RIGHT_CURRENT;
 }

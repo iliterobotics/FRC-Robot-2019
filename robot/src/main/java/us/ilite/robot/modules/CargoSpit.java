@@ -6,40 +6,46 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.drivers.TalonSRXFactory;
+
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.manipulator.ECargoSpit;
 import us.ilite.common.types.manipulator.EElevator;
+import us.ilite.common.types.sensor.EPowerDistPanel;
 
 
 public class CargoSpit extends Module {
 
+    private final double kZero = 0.0;
+    private final double kLaunchPower = 1.0;
+
     private ILog mLog = Logger.createLog(CargoSpit.class);
 
-    private TalonSRX mLeftMotor, mRightMotor;
+    private VictorSPX mLeftMotor, mRightMotor;
     private Data mData;
-    private boolean mIntaking;
-    private boolean mStopped;
+    private boolean mEmergencyStopped;
     private double mPower = SystemSettings.kCargoSpitRollerPower; //TODO find actual value
-    private boolean shouldIntake = false;
-    private boolean shouldOuttake = false;
+    private double mLeftCurrent, mRightCurrent;
+    private boolean mIntaking = false;
+    private boolean mOuttaking = false;
 
 
     public CargoSpit(Data pData) {
 
         this.mData = pData;
         // TODO Change to VictorSPX (or keep as TalonSRX)
-        mLeftMotor = TalonSRXFactory.createDefaultTalon( 3/*SystemSettings.kCargoSpitLeftSPXAddress*/ );//new VictorSPX(SystemSettings.kCargoSpitLeftSPXAddress);
-        mRightMotor = TalonSRXFactory.createDefaultTalon( 4/*SystemSettings.kCargoSpitRightSPXAddress*/ );//new VictorSPX(SystemSettings.kCargoSpitRightSPXAddress);
+        mLeftMotor = new VictorSPX(SystemSettings.kCargoSpitLeftSPXAddress);
+        mRightMotor = new VictorSPX(SystemSettings.kCargoSpitRightSPXAddress);
         //TODO figure out these values and make them constants
         mRightMotor.configOpenloopRamp( mPower, 5 );
         mLeftMotor.configOpenloopRamp( mPower, 5 );
 
-        mRightMotor.follow( mLeftMotor );
-        mRightMotor.setInverted( true ); //Set one motor inverted
+        // mRightMotor.follow( mLeftMotor );
+        // mRightMotor.setInverted( true ); //Set one motor inverted
 
         mIntaking = false;
-        mStopped = true;
+        mOuttaking = false;
+        mEmergencyStopped = true;
     }
 
     @Override
@@ -52,51 +58,64 @@ public class CargoSpit extends Module {
     public void periodicInput(double pNow) {
         // TODO Read the PDP for current limiting check and compare to SystemSettings cargo spit current limit
         mData.cargospit.set( ECargoSpit.HAS_CARGO, convertBoolean( hasCargo() ) );
-        mData.cargospit.set( ECargoSpit.INTAKING, convertBoolean( shouldIntake ) );
-        mData.cargospit.set( ECargoSpit.OUTTAKING, convertBoolean( shouldOuttake ) );
-        mData.cargospit.set( ECargoSpit.STOPPED, convertBoolean( mStopped ) );
+        mData.cargospit.set( ECargoSpit.INTAKING, convertBoolean( mIntaking ) );
+        mData.cargospit.set( ECargoSpit.OUTTAKING, convertBoolean( mOuttaking ) );
+        mData.cargospit.set( ECargoSpit.STOPPED, convertBoolean( mEmergencyStopped ) );
+        mData.cargospit.set( ECargoSpit.LEFT_CURRENT, mLeftCurrent );
+        mData.cargospit.set( ECargoSpit.RIGHT_CURRENT, mRightCurrent );
     }
 
     @Override
     public void update(double pNow) {
-        if(shouldIntake) {
-            setIntaking();
-        }
-        if(shouldOuttake) {
-            setOuttaking();
+        mLeftCurrent = mData.pdp.get(EPowerDistPanel.CURRENT10);
+        mRightCurrent = mData.pdp.get(EPowerDistPanel.CURRENT5);
+        if ( hasCargo() ) {
+            stop();
         }
     }
 
     public void setIntaking() {
-        if ( !mStopped || !hasCargo() ) {
-            if ( !mIntaking ) {
-                mIntaking = true;
-            }
+        if ( !mEmergencyStopped || !hasCargo() ) {
+            mIntaking = true;
+            mOuttaking = false;
             mLeftMotor.set( ControlMode.PercentOutput, mPower );
+            mRightMotor.set( ControlMode.PercentOutput, mPower );
             if ( hasCargo() ) {
-                mLeftMotor.set( ControlMode.PercentOutput, mPower );
+                mLeftMotor.set( ControlMode.PercentOutput, kZero );
+                mRightMotor.set( ControlMode.PercentOutput, kZero );
             }
         }
-        mStopped = false;
+        mEmergencyStopped = false;
     }
 
     private void setOuttaking() {
-        if ( !mStopped ) {
-            mLeftMotor.set( ControlMode.PercentOutput, -mPower );
+        if ( !mEmergencyStopped ) {
+            mIntaking = false;
+            mOuttaking = true;
+            mLeftMotor.set( ControlMode.PercentOutput, -kLaunchPower );
+            mRightMotor.set( ControlMode. PercentOutput, -kLaunchPower );
         }
-        mStopped = false;
+        mEmergencyStopped = false;
     }
 
-    public void setIntake(boolean pOn) {
-        shouldIntake = pOn;
+    public void setIntake() {
+        setIntaking();
     }
 
-    public void setOuttake( boolean pShouldOuttake ) {
-        shouldOuttake = pShouldOuttake;
+    public void setOuttake() {
+        setOuttaking();
     }
 
     public boolean hasCargo() {
-        return mLeftMotor.getOutputCurrent() >= SystemSettings.kCargoSpitSPXCurrentLimit;
+        if ( mOuttaking ) {
+            return false;
+        }
+        double currentLimit = SystemSettings.kCargoSpitSPXCurrentRatioLimit;
+        // Ratio being current over voltage
+        double leftRatio = mLeftCurrent / mLeftMotor.getMotorOutputVoltage();
+        double rightRatio = mRightCurrent / mRightMotor.getMotorOutputVoltage();
+        double averageRatio = ( leftRatio + rightRatio ) / 2;
+        return averageRatio >= currentLimit;
     }
 
     public boolean isIntaking() {
@@ -104,7 +123,14 @@ public class CargoSpit extends Module {
     }
     
     public void stop() {
-        mStopped = true;
+        mLeftMotor.set( ControlMode.PercentOutput, kZero );
+        mRightMotor.set( ControlMode.PercentOutput, kZero );
+        mIntaking = false;
+        mOuttaking = false;
+    }
+
+    public void emergencyStop() {
+        mEmergencyStopped = true;
     }
 
     private double convertBoolean(boolean pToConvert) {

@@ -324,8 +324,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kPowerDistPanelAddress = 21;
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
-    public static double kCargoSpitRollerPower = -1.0;
-    public static double kCargoSpitSPXCurrentLimit = -1.0;
+    public static double kCargoSpitRollerPower = 0.15; // 15% seems like adequate power (maybe more?)
+    public static double kCargoSpitSPXCurrentRatioLimit = 1.1; // Voltage ~ 1.8
 
     public static int kElevatorNEOAddress = -15;
     // TO-DO: Elevator encoder address?

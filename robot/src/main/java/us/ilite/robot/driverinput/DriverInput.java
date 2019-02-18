@@ -139,7 +139,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     }
 
     private void updateIntake() {
-
+        System.out.println("Is Cargo:  " + mIsCargo);
+        System.out.println("Is Ground:  " + mIsGround);
         if(mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_ACQUIRE) > 0.5) {
             if(mIsCargo) {
                 /*
@@ -147,8 +148,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 We expect the cargo spit to stop automatically.
                  */
                 if(mIsGround) {
-                    mIntake.setIntakeState( EIntakeState.GROUND_CARGO ); //TODO may be wrong..?
-                    mCargoSpit.setIntake( true );
+                    mIntake.setIntakeState( EIntakeState.GROUND_CARGO );
+                    mCargoSpit.setIntake();
                 }
             } else {
                 /*
@@ -162,18 +163,18 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             }
         } else if(mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
             // If the intake is handing off or stowed, disable these controls
-            if(mIntake.isAtPosition( Intake.EWristState.STOWED) || mIntake.isAtPosition(Intake.EWristState.HANDOFF)) {
+            // if(mIntake.isAtPosition( Intake.EWristState.STOWED) || mIntake.isAtPosition(Intake.EWristState.HANDOFF)) {
                 if(mIsCargo) {
-                    mCargoSpit.setOuttake( true );
+                    mCargoSpit.setOuttake();
 
                 } else {
                     mHatchFlower.pushHatch();
                 }
-            } else {
+            // } else {
                 // If the intake is on the ground, outtake with the intake instead of scoring mechanisms
 //                mIntake.setOuttaking();
-                mIntake.setIntakeState( EIntakeState.HANDOFF ); //TODO this probably isn't right
-            }
+            //     mIntake.setIntakeState( EIntakeState.HANDOFF ); //TODO this probably isn't right
+            // }
         } else {
             // If the intake button is released, stop everything.
             mCargoSpit.stop();

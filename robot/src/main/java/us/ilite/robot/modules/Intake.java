@@ -78,15 +78,15 @@ public class Intake extends Module {
 
     @Override
     public void update(double pNow) {
-        // EPowerDistPanel ID 12 (CURRENT12) corresponds to Intake Rollers
-        mIntakeRollerCurrent = mData.pdp.get(EPowerDistPanel.CURRENT12);
+        // EPowerDistPanel ID 11 (CURRENT11) corresponds to Intake Rollers
+        mIntakeRollerCurrent = mData.pdp.get(EPowerDistPanel.CURRENT11);
         mIntakeRollerVoltage = mIntakeRoller.getMotorOutputVoltage();
 
         mWristAngle = mWrist.getCurrentArmAngle();
         
-        SmartDashboard.putString("Desired State", mDesiredIntakeState.name());        
-        SmartDashboard.putNumber("pNow var", pNow);
-        SmartDashboard.putNumber("Intake Wrist Angle", mWristAngle);
+        // SmartDashboard.putString("Desired State", mDesiredIntakeState.name());        
+        // SmartDashboard.putNumber("pNow var", pNow);
+        // SmartDashboard.putNumber("Intake Wrist Angle", mWristAngle);
 
         switch (mDesiredIntakeState) {
             case GROUND_HATCH:
