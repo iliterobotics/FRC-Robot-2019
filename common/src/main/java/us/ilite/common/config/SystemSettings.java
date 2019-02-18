@@ -352,7 +352,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // TO-DO Writs encoder addresses?
     public static int kIntakeWristEncoderA_Address = -1;
     public static int kIntakeWristEncoderB_Address = -1;
-    public static int kIntakeSolenoidAddress = 2; // and/or 3 according to integration sheet
+    public static int kIntakeSolenoidAddress = 5; // and/or 3 according to integration sheet
     public static double kIntakeRollerHatchPower = -1;
     public static double kIntakeRollerCargoPower = -1;
     public static double kIntakeRollerHoldPower = -1;

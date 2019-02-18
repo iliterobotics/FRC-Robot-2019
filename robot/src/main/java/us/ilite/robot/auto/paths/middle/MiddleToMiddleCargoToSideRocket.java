@@ -17,9 +17,7 @@ import us.ilite.robot.auto.paths.AutoSequence;
 import us.ilite.robot.auto.paths.FieldElementLocations;
 import us.ilite.robot.auto.paths.RobotDimensions;
 import us.ilite.robot.auto.paths.StartingPoses;
-import us.ilite.robot.commands.FollowTrajectory;
-import us.ilite.robot.commands.ICommand;
-import us.ilite.robot.commands.TargetLock;
+import us.ilite.robot.commands.*;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.Limelight;
 
@@ -87,7 +85,7 @@ public class MiddleToMiddleCargoToSideRocket extends AutoSequence {
                 /* new FollowTrajectory(getMiddleLeftHatchToLoadingStationPath(), mDrive, true), */
                 /*new Delay(5),
                 new TurnToDegree(mDrive, Rotation2d.fromDegrees(180.0), 10.0, mData)*/
-                new TargetLock(mDrive, 3, ETrackingType.TARGET_LEFT, mLimelight, () -> 0.5, true)
+                new LimelightTargetLock(mDrive, mLimelight, 3, ETrackingType.TARGET_RIGHT, mLimelight, () -> 0.0, true)
         };
     }
 

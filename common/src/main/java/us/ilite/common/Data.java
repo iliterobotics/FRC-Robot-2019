@@ -43,7 +43,7 @@ public class Data {
     private final List<CodexSender> mSenders = new ArrayList<>();
 
     public final Codex[] mAllCodexes = new Codex[] {
-            imu, /*drive,*/ driverinput, operatorinput, elevator,pdp
+            imu, /*drive,*/ driverinput, operatorinput, elevator,pdp, limelight
     };
 
     public final Codex<Double, EIntake> intake = Codex.of.thisEnum(EIntake.class);
