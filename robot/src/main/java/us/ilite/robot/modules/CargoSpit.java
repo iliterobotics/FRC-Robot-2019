@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.drivers.TalonSRXFactory;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
@@ -127,7 +126,7 @@ public class CargoSpit extends Module {
     }
 
     public boolean hasCargo() {
-        return mSensor.get();
+        return mLeftMotor.getOutputCurrent() >= SystemSettings.kCargoSpitSPXCurrentLimit;
     }
 
     public enum ECradleState {
