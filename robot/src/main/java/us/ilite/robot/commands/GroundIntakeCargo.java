@@ -12,7 +12,7 @@ public class GroundIntakeCargo extends CommandQueue {
                         new ReleaseHatch(pHatchFlower)
                 ),
                 new ParallelCommand(
-                        new SetIntakeState(pIntake, Intake.EWristPosition.GROUND),
+                        new SetIntakeState(pIntake, Intake.EIntakeState.GROUND_CARGO),
                         new IntakeCargo(pCargoSpit)
                 )
         );
