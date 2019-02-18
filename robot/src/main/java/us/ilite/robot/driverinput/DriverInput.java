@@ -23,6 +23,7 @@ import us.ilite.robot.commands.TargetLock;
 import us.ilite.robot.modules.*;
 import us.ilite.robot.modules.Module;
 import us.ilite.robot.modules.Intake.EIntakeState;
+import us.ilite.robot.commands.HandoffHatch;
 
 public class DriverInput extends Module implements IThrottleProvider, ITurnProvider {
 
@@ -210,19 +211,35 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         double throttle2 = mData.operatorinput.get(ELogitech310.RIGHT_TRIGGER_AXIS);
         double throttle = throttle1 + throttle2;
 
-
-         if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_BOTTOM_POSITION_ELEVATOR)) {
-            mElevator.setDesirecPosition(EElevatorPosition.BOTTOM);
-        } else if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_MIDDLE_POSITION_ELEVATOR)) {
-            mElevator.setDesirecPosition(EElevatorPosition.MIDDLE);
-        } else if (mData.operatorinput.isSet(DriveTeamInputMap.MANIPULATOR_TOP_POSITION_ELEVATOR)) {
-            mElevator.setDesirecPosition(EElevatorPosition.TOP);
-        } else if (mData.driverinput.isSet(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR)) {
-             double power = mData.operatorinput.get(DriveTeamInputMap.MANIPULATOR_CONTROL_ELEVATOR);
-             mElevator.setDesiredPower(throttle);
-         } else {
-            mElevator.setDesiredPower(0d);
+        if(mIsCargo) {
+            if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
+                mElevator.setDesirecPosition(EElevatorPosition.CARGO_BOTTOM);
+            } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
+                mElevator.setDesirecPosition(EElevatorPosition.CARGO_MIDDLE);
+            } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
+                mElevator.setDesirecPosition(EElevatorPosition.CARGO_TOP);
+            } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
+                double power = mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
+                mElevator.setDesiredPower(throttle);
+            } else {
+                mElevator.setDesiredPower(0d);
+            }
+        } else {
+            if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
+                mElevator.setDesirecPosition(EElevatorPosition.HATCH_BOTTOM);
+            } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
+                mElevator.setDesirecPosition(EElevatorPosition.HATCH_MIDDLE);
+            } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
+                mElevator.setDesirecPosition(EElevatorPosition.HATCH_TOP);
+            } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
+                double power = mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
+                mElevator.setDesiredPower(throttle);
+            } else {
+                mElevator.setDesiredPower(0d);
+            }
         }
+
+         
     }
 
 //    private void updateElevator() {

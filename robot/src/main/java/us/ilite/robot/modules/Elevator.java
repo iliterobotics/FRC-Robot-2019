@@ -41,7 +41,7 @@ public class Elevator extends Module {
     private int mBottomEncoderTicks = 0;
     private int mTopEncoderTicks = 0;
 
-    EElevatorPosition mCurrentPosition = EElevatorPosition.BOTTOM;
+    EElevatorPosition mCurrentPosition = EElevatorPosition.HATCH_BOTTOM;
 
     EElevatorState mCurrentState = EElevatorState.NORMAL;
     EElevatorPosition mDesiredPosition;
@@ -73,7 +73,7 @@ public class Elevator extends Module {
         mDesiredDirectionUp = true;
 
         // Make sure the elevator is stopped upon initialization
-        mDesiredPosition = EElevatorPosition.BOTTOM;
+        mDesiredPosition = EElevatorPosition.HATCH_BOTTOM;
         mCurrentState = EElevatorState.STOP;
 
         mCurrentEncoderTicks = 0;

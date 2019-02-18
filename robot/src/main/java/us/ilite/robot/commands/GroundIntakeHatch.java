@@ -14,7 +14,7 @@ public class GroundIntakeHatch extends CommandQueue {
                         new ReleaseHatch(pHatchFlower),
                         new SetHatchGrabberExtension(pHatchFlower, HatchFlower.ExtensionState.DOWN)
                 ),
-                new SetIntakeState(pIntake, Intake.EWristPosition.GROUND)
+                new SetIntakeState(pIntake, Intake.EIntakeState.GROUND_HATCH)
         );
     }
 }

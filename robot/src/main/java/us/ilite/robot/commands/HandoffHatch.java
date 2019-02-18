@@ -10,9 +10,9 @@ public class HandoffHatch extends CommandQueue {
                         new SetElevatorPosition(pElevator, EElevatorPosition.HATCH_BOTTOM),
                         new SetHatchGrabberExtension(pHatchFlower, HatchFlower.ExtensionState.DOWN)
                 ),
-                new SetIntakeState(pIntake, Intake.EWristPosition.HANDOFF),
+                new SetIntakeState(pIntake, Intake.EIntakeState.HANDOFF),
                 new GrabHatch(pHatchFlower),
-                new SetElevatorPosition(pElevator, EElevatorPosition.HANDOFF_HEIGHT)
+                new SetHatchGrabberExtension(pHatchFlower, HatchFlower.ExtensionState.DOWN)
         );
     }
 

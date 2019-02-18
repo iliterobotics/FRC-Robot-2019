@@ -306,6 +306,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // kHatchFlowerGrabToPushTransitionTimeSec is the time between releasing the 
     // grab solenoid and engaging the push solenoid.
     public static double kHatchFlowerGrabToPushTransitionTimeSec = 0.250;
+    public static double kHatchFlowerExtendStatusTimerDuration = 0.5;
 
 
     // =============================================================================
