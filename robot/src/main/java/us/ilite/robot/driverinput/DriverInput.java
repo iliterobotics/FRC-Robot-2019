@@ -43,6 +43,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private final Data mData;
 
     private boolean mIsCargo = false;
+    private boolean mIsGround = false;
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
 
@@ -114,7 +115,6 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
         // Teleop control
         if (!mAutonomousCommandManager.isRunningCommands()) {
-            updateDriveTrain();
 
             if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_CARGO_SELECT)) {
                 mIsCargo = true;
@@ -122,6 +122,13 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 mIsCargo = false;
             }
 
+            if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_SELECT)) {
+                mIsGround = true;
+            } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_LOADING_STATION_SELECT)){
+                mIsGround = false;
+            }
+
+            updateDriveTrain();
             updateHatchGrabber();
             updateElevator();
             updateIntake();
@@ -133,21 +140,25 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     private void updateIntake() {
 
-        if(mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_HATCH_FLOWER_CAPTURE_BTN) > 0.5) {
+        if(mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_ACQUIRE) > 0.5) {
             if(mIsCargo) {
                 /*
                 Tell both the intake and the cargo spit to start intaking.
                 We expect the cargo spit to stop automatically.
                  */
-                mIntake.setIntakeState( EIntakeState.GROUND_CARGO ); //TODO may be wrong..?
-                mCargoSpit.setIntaking();
+                if(mIsGround) {
+                    mIntake.setIntakeState( EIntakeState.GROUND_CARGO ); //TODO may be wrong..?
+                    mCargoSpit.setIntaking();
+                }
             } else {
                 /*
                 Reset the hatch grabber so it's ready to receive another hatch and tell the intake to start intaking.
                 We intake to stop automatically, or when we release the intake button.
                  */
                 mHatchFlower.pushHatch();
-                mIntake.setIntakeState( EIntakeState.GROUND_HATCH );
+                if(mIsGround) {
+                    mIntake.setIntakeState( EIntakeState.GROUND_HATCH );
+                }
             }
         } else if(mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
             // If the intake is handing off or stowed, disable these controls
@@ -170,7 +181,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             mIntake.stopIntake();
         }
 
-        if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_ARM_MOTION) /* || mIntake.hasHatch() */) { //TODO Subject to change
+        if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_HANDOFF) /* || mIntake.hasHatch() */) { //TODO Subject to change
             mTeleopCommandManager.startCommands(new HandoffHatch(mElevator, mIntake, mHatchFlower));
         }
 
@@ -237,6 +248,10 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             } else {
                 mElevator.setDesiredPower(0d);
             }
+        }
+
+        if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_POSITION_ELEVATOR)) {
+            mElevator.setDesirecPosition(EElevatorPosition.HATCH_BOTTOM);
         }
 
          

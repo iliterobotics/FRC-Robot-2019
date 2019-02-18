@@ -238,7 +238,7 @@ public class HatchFlower extends Module {
         this.mExtensionState = ExtensionState.DOWN;
 
         this.grabSolenoid.set(GrabberState.GRAB.grabber);
-        this.pushSolenoid.set(PusherState.RESET.pusher);
+//        this.pushSolenoid.set(PusherState.RESET.pusher);
         this.extendSolenoid.set(ExtensionState.DOWN.extension);
 
         // Command queue to hold the solenoid transition commands
@@ -359,7 +359,7 @@ public class HatchFlower extends Module {
                     // Step2: Start pushing the hatch
                     ParallelCommand pushState = new ParallelCommand(
                             new GrabSolenoidCommand(GrabberState.GRAB),
-                            new PushSolenoidCommand(PusherState.PUSH),
+                            /*new PushSolenoidCommand(PusherState.PUSH),*/
                             // The delay between start of push and release of grab
                             new Delay(SystemSettings.kHatchFlowerGrabToPushTransitionTimeSec)
                     );
@@ -368,7 +368,7 @@ public class HatchFlower extends Module {
                     // Step3: Start releasing the grabber
                     ParallelCommand releaseGrabberState = new ParallelCommand(
                             new GrabSolenoidCommand(GrabberState.RELEASE),
-                            new PushSolenoidCommand(PusherState.PUSH),
+                            /*new PushSolenoidCommand(PusherState.PUSH),*/
                             // The time to leave pusher out (Solenoid settle + push time)
                             new Delay(SystemSettings.kHatchFlowerPushDurationSec)
                     );

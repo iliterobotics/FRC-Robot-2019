@@ -139,6 +139,8 @@ public class Robot extends TimedRobot {
 //        mAutonomousCommandManager.startCommands(new CharacterizeDrive(mDrive, false, false));
         mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
 
+        mData.registerCodices();
+
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");
     }
@@ -151,13 +153,12 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         initMatchMetadata();
-        mRunningModules.setModules(mDriverInput, mTeleopCommandManager, mAutonomousCommandManager, mLimelight, mHatchFlower, mElevator);
+        mRunningModules.setModules(mDriverInput, mDrive, mTeleopCommandManager, mAutonomousCommandManager, mLimelight, mHatchFlower, mElevator);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
         mLoopManager.setRunningLoops();
         mLoopManager.start();
-        mData.registerCodices();
     }
 
     @Override
