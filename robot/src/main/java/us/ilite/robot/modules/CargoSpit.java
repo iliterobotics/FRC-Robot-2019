@@ -37,11 +37,9 @@ public class CargoSpit extends Module {
 
         mRightMotor.follow( mLeftMotor );
         mRightMotor.setInverted( true ); //Set one motor inverted
-        // mSolenoid.close();
 
         mIntaking = false;
         mStopped = true;
-        mStopped = false;
     }
 
     @Override
@@ -61,26 +59,12 @@ public class CargoSpit extends Module {
 
     @Override
     public void update(double pNow) {
-
         if(shouldIntake) {
             setIntaking();
         }
         if(shouldOuttake) {
             setOuttaking();
         }
-
-
-
-    }
-
-    @Override
-    public void shutdown(double pNow) {
-
-    }
-
-    @Override
-    public boolean checkModule(double pNow) {
-        return false;
     }
 
     private void setIntaking() {
@@ -103,31 +87,24 @@ public class CargoSpit extends Module {
         mStopped = false;
     }
 
-    public void stop() {
-        mStopped = true;
-    }
-
-    public boolean hasCargo() {
-        return mLeftMotor.getOutputCurrent() >= SystemSettings.kCargoSpitSPXCurrentLimit;
-    }
-
     public void setIntake(boolean pOn) {
-        shouldIntake = pOn;
-    }
-
-        boolean getValue() {
-            return mActivate;
-        }
-    public boolean hasCargo() {
-        return mLeftMotor.getOutputCurrent() >= SystemSettings.kCargoSpitSPXCurrentLimit;
-    }
-
-    public boolean isIntaking() {
         shouldIntake = pOn;
     }
 
     public void setOuttake( boolean pShouldOuttake ) {
         shouldOuttake = pShouldOuttake;
+    }
+
+    public boolean hasCargo() {
+        return mLeftMotor.getOutputCurrent() >= SystemSettings.kCargoSpitSPXCurrentLimit;
+    }
+
+    public boolean isIntaking() {
+        return mIntaking;
+    }
+    
+    public void stop() {
+        mStopped = true;
     }
 
     private double convertBoolean(boolean pToConvert) {
@@ -138,6 +115,11 @@ public class CargoSpit extends Module {
     }
 
     @Override
-        return mIntaking;
+    public boolean checkModule(double pNow) {
+        return false;
+    }
+
+    @Override
+    public void shutdown(double pNow) {
     }
 }
