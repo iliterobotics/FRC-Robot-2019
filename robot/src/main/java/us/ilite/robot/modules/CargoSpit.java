@@ -53,6 +53,10 @@ public class CargoSpit extends Module {
     @Override
     public void periodicInput(double pNow) {
         // TODO Read the PDP for current limiting check and compare to SystemSettings cargo spit current limit
+        mData.cargospit.set( ECargoSpit.HAS_CARGO, convertBoolean( hasCargo() ) );
+        mData.cargospit.set( ECargoSpit.INTAKING, convertBoolean( shouldIntake ) );
+        mData.cargospit.set( ECargoSpit.OUTTAKING, convertBoolean( shouldOuttake ) );
+        mData.cargospit.set( ECargoSpit.STOPPED, convertBoolean( mStopped ) );
     }
 
     @Override
@@ -66,10 +70,6 @@ public class CargoSpit extends Module {
         }
 
 
-        mData.cargospit.set( ECargoSpit.HAS_CARGO, convertBoolean( hasCargo() ) );
-        mData.cargospit.set( ECargoSpit.INTAKING, convertBoolean( shouldIntake ) );
-        mData.cargospit.set( ECargoSpit.OUTTAKING, convertBoolean( shouldOuttake ) );
-        mData.cargospit.set( ECargoSpit.STOPPED, convertBoolean( mStopped ) );
 
     }
 
