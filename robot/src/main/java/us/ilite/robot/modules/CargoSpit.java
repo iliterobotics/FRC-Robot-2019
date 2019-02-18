@@ -29,9 +29,8 @@ public class CargoSpit extends Module {
 
         this.mData = pData;
         // TODO Change to VictorSPX (or keep as TalonSRX)
-        mLeftMotor = TalonSRXFactory.createDefaultTalon( SystemSettings.kCargoSpitLeftSPXAddress );//new VictorSPX(SystemSettings.kCargoSpitLeftSPXAddress);
+        mLeftMotor = TalonSRXFactory.createDefaultTalon( 3/*SystemSettings.kCargoSpitLeftSPXAddress*/ );//new VictorSPX(SystemSettings.kCargoSpitLeftSPXAddress);
         mRightMotor = TalonSRXFactory.createDefaultTalon( 4/*SystemSettings.kCargoSpitRightSPXAddress*/ );//new VictorSPX(SystemSettings.kCargoSpitRightSPXAddress);
-        mRightMotor = TalonSRXFactory.createDefaultTalon( SystemSettings.kCargoSpitRightSPXAddress );//new VictorSPX(SystemSettings.kCargoSpitRightSPXAddress);
         //TODO figure out these values and make them constants
         mRightMotor.configOpenloopRamp( mPower, 5 );
         mLeftMotor.configOpenloopRamp( mPower, 5 );

@@ -210,15 +210,12 @@ public class Intake extends Module {
         setRollerPower(pRollerState.kPower);
         mRollerState = pRollerState;
     }
-    // TODO Power depends on gamepiece? On robot speed? On both?
+
     /**
      * Starts the intake roller.
      * @param pPower percent of power to use
      */
     private void setRollerPower(double pPower) {
-        // Gets average speed: (left velocity + right velocity) / 2
-        // Double speed = ( mData.drive.get(EDriveData.LEFT_VEL_IPS) + mData.drive.get(EDriveData.RIGHT_VEL_IPS) ) / 2;
-
         mIntakeRoller.set(ControlMode.PercentOutput, pPower);
     }
 
