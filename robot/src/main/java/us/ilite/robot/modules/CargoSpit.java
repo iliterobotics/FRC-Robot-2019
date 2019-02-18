@@ -67,7 +67,7 @@ public class CargoSpit extends Module {
         }
     }
 
-    private void setIntaking() {
+    public void setIntaking() {
         if ( !mStopped || !hasCargo() ) {
             if ( !mIntaking ) {
                 mIntaking = true;
