@@ -118,6 +118,8 @@ public class CargoSpit extends Module {
         boolean getValue() {
             return mActivate;
         }
+    public boolean hasCargo() {
+        return mLeftMotor.getOutputCurrent() >= SystemSettings.kCargoSpitSPXCurrentLimit;
     }
 
     public boolean isIntaking() {
