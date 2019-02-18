@@ -64,7 +64,7 @@ public class Elevator extends Module {
         // Create default NEO and set the ramp rate
         mMasterElevator = SparkMaxFactory.createDefaultSparkMax(kCansparkId, MotorType.kBrushless);
         mMasterElevator.setIdleMode(IdleMode.kBrake);
-        mMasterElevator.setRampRate(SystemSettings.kELevatorControlLoopPeriod);
+//        mMasterElevator.setRampRate(SystemSettings.kELevatorControlLoopPeriod);
         mMasterElevator.setSmartCurrentLimit(SystemSettings.kElevatorCurrentLimit);
 
         // We start at the bottom
@@ -100,7 +100,6 @@ public class Elevator extends Module {
     }
 
     public void update(double pNow) {
-        System.out.println(mData.elevator);
 
         mCurrentTime = pNow;
 
@@ -311,7 +310,7 @@ public class Elevator extends Module {
     /**
      * Calculates the desired power based on
      * the current state of the elevator.
-     * @param pCurrentState the current state of the elevator
+     * @param pCurrentSatate the current state of the elevator
      * @return the calculated power output as a double
      */
     private double calculateDesiredPower(EElevatorState pCurrentState) {
@@ -351,7 +350,7 @@ public class Elevator extends Module {
 
     // This method is made to be called from outside the class
     // the state should only reach set point when driver input call it
-    public void setDesiredPosition(EElevatorPosition pDesiredPosition) {
+    public void setDesirecPosition(EElevatorPosition pDesiredPosition) {
         mCurrentState = EElevatorState.SET_POSITION;
         mDesiredPosition = pDesiredPosition;
         mPidController.setSetpoint(pDesiredPosition.mEncoderThreshold()); // Our set point is the threshold of the
@@ -365,14 +364,6 @@ public class Elevator extends Module {
     }
 
     public void logInfo() {
-    }
-
-    public boolean isAbovePosition(EElevatorPosition pPosition) {
-        return true;
-    }
-
-    public boolean isBelowPosition(EElevatorPosition pPosition) {
-        return true;
     }
 
 }

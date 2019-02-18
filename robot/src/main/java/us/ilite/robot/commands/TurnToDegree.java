@@ -14,13 +14,13 @@ import com.team254.lib.geometry.Rotation2d;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
-public class TurnToDegree extends ACommand {
+public class TurnToDegree implements ICommand {
 
   private ILog mLogger = Logger.createLog( this.getClass() );
 
   private static final double kTIMEOUT = 9999.9;
   private static final double kMIN_POWER = 0.0;
-  private static final double kMAX_POWER = 1.0;
+  private static final double kMAX_POWER = 0.5;
   private static final int kMIN_ALIGNED_COUNT = 25;
   private final double mAllowableError;
 

@@ -3,15 +3,17 @@ package us.ilite.robot.modules;
 import java.util.Arrays;
 import java.util.List;
 
+import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Timer;
+import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.types.input.ELogitech310;
 import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.Delay;
-import us.ilite.robot.commands.ACommand;
+import us.ilite.robot.commands.ICommand;
 import us.ilite.robot.commands.ParallelCommand;
 
 /**
@@ -24,7 +26,7 @@ import us.ilite.robot.commands.ParallelCommand;
  */
 public class HatchFlower extends Module {
 
-    public enum HatchFlowerState {
+    public enum HatchFlowerStates {
         CAPTURE, 
         PUSH,
         RELEASE;
@@ -34,15 +36,13 @@ public class HatchFlower extends Module {
 
     private Solenoid grabSolenoid;
     private Solenoid pushSolenoid;
-    private Solenoid extendSolenoid;
 
     // Needed for prototype testing
     // private final Codex<Double, ELogitech310> mController;
 
     private CommandQueue mCurrentCommandQueue;
 
-    private HatchFlowerState mCurrentState;
-    private ExtensionState mExtensionState;
+    private HatchFlowerStates mCurrentState;
 
     
     /////////////////////////////////////////////////////////////////////////
@@ -72,17 +72,6 @@ public class HatchFlower extends Module {
         this.pusher = pusher;
       }
     }
-
-    public enum ExtensionState {
-        UP(true),
-        DOWN(false);
-
-        private boolean extension;
-
-        ExtensionState(boolean pExtension) {
-            extension = pExtension;
-        }
-    }
     /////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////
 
@@ -94,7 +83,7 @@ public class HatchFlower extends Module {
      * The GrabSolenoidCommand will set the grab solenoid to the commanded state,
      * which is provided in the constructor
      */
-    public class GrabSolenoidCommand extends ACommand {
+    public class GrabSolenoidCommand implements ICommand {
 
         GrabberState state;
 
@@ -125,7 +114,7 @@ public class HatchFlower extends Module {
      * The PushSolenoidCommand will set the push solenoid to the commanded state,
      * which is provided in the constructor
      */
-    public class PushSolenoidCommand extends ACommand {
+    public class PushSolenoidCommand implements ICommand {
 
         PusherState state;
 
@@ -152,48 +141,16 @@ public class HatchFlower extends Module {
 
     }
 
-    public class ExtendSolenoidCommand extends ACommand {
-
-        private ExtensionState state;
-        private Timer timer = new Timer();
-
-        public ExtendSolenoidCommand(ExtensionState pState) {
-            state = pState;
-        }
-
-        @Override
-        public void init(double pNow) {
-            timer.reset();
-            timer.start();
-            extendSolenoid.set(state.extension);
-        }
-
-        @Override
-        public boolean update(double pNow) {
-            if(timer.hasPeriodPassed(SystemSettings.kHatchFlowerExtendStatusTimerDuration)) {
-                // Update state to current
-                mExtensionState = state;
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public void shutdown(double pNow) {
-
-        }
-
-    }
 
     /**
      * SetStateCommand will set the HatchFlower state.  This is needed because the Push
      * command is transitional.
      */
-    public class SetStateCommand extends ACommand {
+    public class SetStateCommand implements ICommand {
 
-        HatchFlowerState mState;
+        HatchFlowerStates mState;
 
-        SetStateCommand( HatchFlowerState state) {
+        SetStateCommand( HatchFlowerStates state) {
             this.mState = state;
         }
         @Override
@@ -228,18 +185,15 @@ public class HatchFlower extends Module {
 
         // TODO Do we need to pass the CAN Addresses in via the constructor?
          grabSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
-         pushSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerPushSolenoidAddress);
-         extendSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerPushSolenoidAddress);
+         pushSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerExtensionSolenoidAddress);
 //        grabSolenoid = new Solenoid(4); //Ball Grabber/Holder (2016 robot)
 ////        pushSolenoid = new Solenoid(3); //Ball Kicker (2016 robot)
 
         // Init Hatch Flower to grab state - Per JKnight we will start with a hatch or cargo onboard
-        this.mCurrentState = HatchFlowerState.CAPTURE;
-        this.mExtensionState = ExtensionState.DOWN;
+        this.mCurrentState = HatchFlowerStates.CAPTURE;
 
         this.grabSolenoid.set(GrabberState.GRAB.grabber);
         this.pushSolenoid.set(PusherState.RESET.pusher);
-        this.extendSolenoid.set(ExtensionState.DOWN.extension);
 
         // Command queue to hold the solenoid transition commands
         mCurrentCommandQueue = new CommandQueue();
@@ -308,10 +262,10 @@ public class HatchFlower extends Module {
                     // We must be in the RELEASE state before we can capture:
 
                     // Step1: set the end state
-                    SetStateCommand endState = new SetStateCommand(HatchFlowerState.CAPTURE);
+                    SetStateCommand endState = new SetStateCommand(HatchFlowerStates.CAPTURE);
 
                     // Step2: Start the solenoids moving to the capture configuration
-                    List<ACommand> toCaptureState = Arrays.asList(
+                    List<ICommand> toCaptureState = Arrays.asList(
                         new GrabSolenoidCommand(GrabberState.GRAB), 
                         new PushSolenoidCommand(PusherState.RESET), 
                         new Delay(SystemSettings.kHatchFlowerSolenoidReleaseTimeSec)
@@ -353,7 +307,7 @@ public class HatchFlower extends Module {
 
                     //// STEP 1 /////
                     // Step1: set the start state
-                    SetStateCommand initialState = new SetStateCommand(HatchFlowerState.PUSH);
+                    SetStateCommand initialState = new SetStateCommand(HatchFlowerStates.PUSH);
 
                     //// STEP 2 /////
                     // Step2: Start pushing the hatch
@@ -384,7 +338,7 @@ public class HatchFlower extends Module {
 
                     //// STEP 5 /////
                     // Step5: set the end state
-                    SetStateCommand endState = new SetStateCommand(HatchFlowerState.RELEASE);
+                    SetStateCommand endState = new SetStateCommand(HatchFlowerStates.RELEASE);
 
                     // start the push command running
                     mCurrentCommandQueue.setCommands(initialState, pushState, releaseGrabberState, resetPushState, endState);
@@ -404,23 +358,19 @@ public class HatchFlower extends Module {
     }
 
     /**
-     * Sets whether hatch grabber is up or down
-     * @param pExtensionState
+     * Sets the hatch mechanism to extended (true) or retracted (false)
+     * @param pFlowerExtended
      */
-    public void setFlowerExtended(ExtensionState pExtensionState) {
-        if(mCurrentCommandQueue.isDone()) {
-            mCurrentCommandQueue.setCommands(
-                    new ExtendSolenoidCommand(pExtensionState)
-            );
-        }
+    public void setFlowerExtended(boolean pFlowerExtended) {
+
     }
 
-    public ExtensionState getExtensionState() {
-        return mExtensionState;
-    }
-
-    public HatchFlowerState getHatchFlowerState() {
-        return mCurrentState;
+    /**
+     *
+     * @return Whether the hatch grabber is extended based on actuation time.
+     */
+    public boolean isExtended() {
+        return true;
     }
 
     /**

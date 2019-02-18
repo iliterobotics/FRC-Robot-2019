@@ -5,30 +5,30 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ParallelCommand extends ACommand {
+public class ParallelCommand implements ICommand {
 
-  List<ACommand> mCommandList;
+  List<ICommand> mCommandList;
   
-  public ParallelCommand(List<ACommand> pCommandList) {
+  public ParallelCommand(List<ICommand> pCommandList) {
     this.mCommandList = new LinkedList<>();
     this.mCommandList.addAll(pCommandList);
   }
   
-  public ParallelCommand(ACommand... pCommands ) {
+  public ParallelCommand(ICommand ... pCommands ) {
     this(Arrays.asList(pCommands));
   }
   
   @Override
   public void init(double pNow) {
-    for(ACommand c : mCommandList) {
+    for(ICommand c : mCommandList) {
       c.init(pNow);
     }
   }
 
   @Override
   public boolean update(double pNow) {
-    List<ACommand> toremove = new ArrayList<>();
-    for(ACommand c : mCommandList) {
+    List<ICommand> toremove = new ArrayList<>();
+    for(ICommand c : mCommandList) {
       if(c.update(pNow)) {
         toremove.add(c);
       }
@@ -42,7 +42,7 @@ public class ParallelCommand extends ACommand {
 
   @Override
   public void shutdown(double pNow) {
-    for(ACommand c : mCommandList) {
+    for(ICommand c : mCommandList) {
       c.shutdown(pNow);
     }
   }

@@ -14,7 +14,7 @@ import us.ilite.robot.modules.DriveMessage;
 /**
  * Straight port from Team 254's 2018 robot code: https://github.com/Team254/FRC-2018-Public
  */
-public class CollectAccelerationData extends ACommand {
+public class CollectAccelerationData implements ICommand {
     private static final double ACCELERATION_THRESH_HOLD = 1E-9;
     private static final double kPower = 0.5;
     private static final double kTotalTime = 2.0; //how long to run the test for

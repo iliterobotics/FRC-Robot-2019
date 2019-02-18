@@ -11,6 +11,7 @@ import com.team254.lib.physics.DriveOutput;
 import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
+import com.team254.lib.trajectory.TrajectoryUtil;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.frc2018.Kinematics;
 import us.ilite.common.lib.odometry.RobotStateEstimator;
@@ -30,6 +31,8 @@ public class DriveController {
     private final NonlinearFeedbackController mController;
     private final DriveMotionPlanner mDriveMotionPlanner;
     private final RobotStateEstimator mRobotStateEstimator;
+
+    private Pose2d mCurrentPose = new Pose2d();
 
 //    private PerfTimer mStateEstimatorTimer = new PerfTimer().alwayLog().setLogMessage("State Estimation: %s");
 //    private PerfTimer mMotionPlannerTimer = new PerfTimer().alwayLog().setLogMessage("Motion Plan Update: %s");
@@ -51,20 +54,20 @@ public class DriveController {
 
     public DriveOutput update(double pTimestamp, double pLeftAbsolutePos, double pRightAbsolutePos, Rotation2d pHeading) {
 //        mStateEstimatorTimer.start();
-        Pose2d currentPose = mRobotStateEstimator.update(pTimestamp, pLeftAbsolutePos, pRightAbsolutePos, pHeading);
+        mCurrentPose = mRobotStateEstimator.update(pTimestamp, pLeftAbsolutePos, pRightAbsolutePos, pHeading);
 //        mStateEstimatorTimer.stop();
 
 //        mMotionPlannerTimer.start();
-        DriveOutput output = mDriveMotionPlanner.update(pTimestamp, currentPose);
+        DriveOutput output = mDriveMotionPlanner.update(pTimestamp, mCurrentPose);
 //        mMotionPlannerTimer.stop();
 
         return output;
     }
 
     public DriveOutput update(double pTimestamp, double pLeftAbsolutePos, double pRightAbsolutePos) {
-        Pose2d currentPose = mRobotStateEstimator.update(pTimestamp, pLeftAbsolutePos, pRightAbsolutePos);
+        mCurrentPose = mRobotStateEstimator.update(pTimestamp, pLeftAbsolutePos, pRightAbsolutePos);
 
-        return mDriveMotionPlanner.update(pTimestamp, currentPose);
+        return mDriveMotionPlanner.update(pTimestamp, mCurrentPose);
     }
 
     public DriveController setPlannerMode(DriveMotionPlanner.PlannerMode pPlannerMode) {
@@ -122,5 +125,9 @@ public class DriveController {
 
     public DCMotorTransmission getRightTransmission() {
         return mRightTransmission;
+    }
+
+    public Pose2d getCurrentPose() {
+        return mCurrentPose;
     }
 }

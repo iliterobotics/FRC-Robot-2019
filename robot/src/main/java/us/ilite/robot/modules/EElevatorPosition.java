@@ -5,8 +5,7 @@ public enum EElevatorPosition {
     //TODO find encoder threshold
     BOTTOM(0.1d,500),
     MIDDLE(0.1d,1000),
-    TOP(0.1d,1500),
-    HANDOFF_HEIGHT(0d, 0);
+    TOP(0.1d,1500);
 
     private final double kEncoderThreshold;
     private final double kSetPointPower;
