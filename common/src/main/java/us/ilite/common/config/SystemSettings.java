@@ -314,7 +314,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
-    public static int kCargoSpitBeamBreakAddress = 2;
     public static double kCargoSpitRollerPower = -1.0;
     public static double kCargoSpitSPXCurrentLimit = -1.0;
 
@@ -336,7 +335,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kHatchIntakeSPXAddress = 11;
     public static int kCargoIntakeSPXLowerAddress = 12;
     // TO-DO DO spreadsheet empty
-    public static int kIntakeBeamBreakAddress = -1;
 
     public static int kIntakeWristSRXAddress = 16;
     // TO-DO Write encoder addresses?

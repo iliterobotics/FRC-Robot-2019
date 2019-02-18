@@ -7,7 +7,6 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.drivers.talon.TalonSRXFactory;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.Data;
@@ -40,9 +39,6 @@ public class Intake extends Module {
 
     // Pneumatic/Solenoid for hatch/cargo roller mode toggle
     private Solenoid mSolenoid;
-
-    // Hatch beam break sensor
-    // private DigitalInput mHatchBeam;
 
     // Present intake states
     private ERollerState mRollerState;
@@ -116,8 +112,6 @@ public class Intake extends Module {
 
         mDesiredIntakeState = EIntakeState.STOWED;
 
-        // Sensor checking if hatch is in intake
-        // mHatchBeam = new DigitalInput(SystemSettings.kIntakeBeamBreakAddress);
     }
 
 
