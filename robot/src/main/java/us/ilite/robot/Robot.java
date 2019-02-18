@@ -130,7 +130,7 @@ public class Robot extends TimedRobot {
         mLoopManager.start();
 
         // Init modules after commands are set
-        mRunningModules.setModules(mAutonomousCommandManager, mTeleopCommandManager);
+        mRunningModules.setModules(mAutonomousCommandManager, mTeleopCommandManager, mLimelight);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
@@ -161,8 +161,6 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         commonPeriodic();
-        Data.kSmartDashboard.putDouble("Angle", mDrive.getHeading().getDegrees());
-
 //        EPowerDistPanel.map(mData.pdp, pdp);
 //        mData.sendCodices();
     }
@@ -195,9 +193,9 @@ public class Robot extends TimedRobot {
     }
 
     private void commonPeriodic() {
-//        for(Codex c : mData.mAllCodexes) {
-//            c.reset();
-//        }
+        for(Codex c : mData.mAllCodexes) {
+            c.reset();
+        }
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
     }
