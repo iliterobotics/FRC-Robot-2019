@@ -45,7 +45,6 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private Joystick mOperatorJoystick;
 
     protected Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
-    Solenoid shift = new Solenoid(2);
 
     private ETrackingType mLastTrackingType = null;
 
@@ -152,12 +151,6 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) && mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
             throttle *= SystemSettings.kSnailModePercentThrottleReduction;
             rotate *= SystemSettings.kSnailModePercentRotateReduction;
-        }
-
-        if(mData.driverinput.get(ELogitech310.LEFT_TRIGGER_AXIS) > 0.5) {
-            shift.set(true);
-        } else {
-            shift.set(false);
         }
 
         DriveMessage driveMessage = DriveMessage.fromThrottleAndTurn(throttle, rotate);
