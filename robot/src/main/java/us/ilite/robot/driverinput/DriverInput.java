@@ -109,6 +109,7 @@ public class DriverInput extends Module {
             updateElevator();
             updateArm();
             updateIntake();
+            updateCargoSpitter();
         } 
 
 
