@@ -1,7 +1,5 @@
 package us.ilite.robot.commands;
 
-import java.util.Optional;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.codex.Codex;
@@ -9,14 +7,12 @@ import com.flybotix.hfr.codex.Codex;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.PIDController;
-import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.IThrottleProvider;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
-import us.ilite.common.lib.control.PIDGains;
 
 public class TargetLock implements ICommand {
 
@@ -24,7 +20,7 @@ public class TargetLock implements ICommand {
     private static final double kMAX_POWER = 0.5;
     private static final double kMIN_INPUT = -27;
     private static final double kMAX_INPUT = 27;
-    private static final double kTURN_POWER = 0.4;
+    private static final double kTURN_POWER = 0.3;
     private static final double kFrictionFeedforward = 0.9 / 12;
 
     private Drive mDrive;
@@ -35,20 +31,20 @@ public class TargetLock implements ICommand {
 
     private double mAllowableError, mPreviousTime, mOutput = 0.0;
 
-    private boolean mIsAllowedToFinish = true;
+    private boolean mEndOnAlignment = true;
     private boolean mHasAcquiredTarget = false;
 
     public TargetLock(Drive pDrive, double pAllowableError, ETrackingType pTrackingType, ITargetDataProvider pCamera, IThrottleProvider pThrottleProvider) {
         this(pDrive, pAllowableError, pTrackingType, pCamera, pThrottleProvider, true);
     }
 
-    public TargetLock(Drive pDrive, double pAllowableError, ETrackingType pTrackingType, ITargetDataProvider pCamera, IThrottleProvider pThrottleProvider, boolean pIsAllowedToFinish) {
+    public TargetLock(Drive pDrive, double pAllowableError, ETrackingType pTrackingType, ITargetDataProvider pCamera, IThrottleProvider pThrottleProvider, boolean pEndOnAlignment) {
         this.mDrive = pDrive;
         this.mAllowableError = pAllowableError;
         this.mTrackingType = pTrackingType;
         this.mCamera = pCamera;
         this.mThrottleProvider = pThrottleProvider;
-        this.mIsAllowedToFinish = pIsAllowedToFinish;
+        this.mEndOnAlignment = pEndOnAlignment;
     }
 
     @Override
@@ -66,9 +62,8 @@ public class TargetLock implements ICommand {
     @Override
     public boolean update(double pNow) {
         SmartDashboard.putBoolean("Initializing Command", false);
-
         Codex<Double, ETargetingData> currentData = mCamera.getTargetingData();
-//        System.out.println("LOCKING " + currentData.get(ETargetingData.tx));
+        System.out.println("LOCKING " + currentData.get(ETargetingData.tx));
 
         if(currentData.isSet(ETargetingData.tv)) {
             mHasAcquiredTarget = true;
@@ -78,9 +73,10 @@ public class TargetLock implements ICommand {
             mDrive.setDriveMessage(new DriveMessage(mThrottleProvider.getThrottle() + mOutput, mThrottleProvider.getThrottle() - mOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
             SmartDashboard.putNumber("PID Turn Output", mOutput);
 
-            if(mIsAllowedToFinish && Math.abs(currentData.get(ETargetingData.tx)) < mAllowableError) {
+            if(mEndOnAlignment && Math.abs(currentData.get(ETargetingData.tx)) < mAllowableError) {
                 //if x offset from crosshair is within acceptable error, command TargetLock is completed
                 System.out.println("FINISHED");
+                mDrive.setDriveMessage(DriveMessage.kNeutral);
                 return true;
             }
             // If we've already seen the target and lose tracking, exit.
