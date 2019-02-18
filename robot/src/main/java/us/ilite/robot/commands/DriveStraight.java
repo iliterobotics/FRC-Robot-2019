@@ -156,7 +156,6 @@ public class DriveStraight implements ICommand {
     }
 
     private double getAverageDriveDistance() {
-        System.out.println("BABA");
         return (mData.drive.get(EDriveData.LEFT_POS_INCHES) + mData.drive.get(EDriveData.RIGHT_POS_INCHES)) / 2.0;
     }
 
