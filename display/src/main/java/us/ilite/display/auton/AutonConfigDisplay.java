@@ -152,7 +152,7 @@ public class AutonConfigDisplay extends Application {
   	        	System.out.println("Updating position: " + mStartingPosition);
   	        }
   	        if(enumName.equals(ECargoAction.class.getSimpleName())) {
-  	        mCargoAction = combo.getSelectionModel().getSelectedItem().ordinal();
+  	            mCargoAction = combo.getSelectionModel().getSelectedItem().ordinal();
               System.out.println("Updating cargo action: " + mCargoAction);
   	        }
   	        if(enumName.equals(EHatchAction.class.getSimpleName())){

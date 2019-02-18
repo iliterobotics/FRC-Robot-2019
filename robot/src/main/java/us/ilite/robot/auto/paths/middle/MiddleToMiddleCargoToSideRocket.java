@@ -10,6 +10,7 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
+import us.ilite.common.Data;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.robot.auto.AutonomousRoutines;
@@ -28,11 +29,13 @@ public class MiddleToMiddleCargoToSideRocket extends AutoSequence {
 
     private final Drive mDrive;
     private final Limelight mLimelight;
+    private final Data mData;
 
-    public MiddleToMiddleCargoToSideRocket(TrajectoryGenerator pTrajectoryGenerator, Drive pDrive, Limelight pLimelight) {
+    public MiddleToMiddleCargoToSideRocket(TrajectoryGenerator pTrajectoryGenerator, Drive pDrive, Limelight pLimelight, Data pData ) {
         super(pTrajectoryGenerator);
         mDrive = pDrive;
         mLimelight = pLimelight;
+        this.mData = pData;
     }
 
     // End pose of robot @ middle left hatch
@@ -77,15 +80,22 @@ public class MiddleToMiddleCargoToSideRocket extends AutoSequence {
     }
 
     @Override
-    public ICommand[] generateSequence() {
+    public ICommand[] generateCargoSequence() {
         return new ICommand[] {
-                /*new DriveStraight(mDrive, mData, DriveStraight.EDriveControlMode.PERCENT_OUTPUT,
+                new DriveStraight(mDrive, mData, DriveStraight.EDriveControlMode.PERCENT_OUTPUT,
                         MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchFromStart.getTranslation().translateBy(StartingPoses.kMiddleStart.getTranslation().inverse()).norm()),
-                new Delay(5),*/
-                /* new FollowTrajectory(getMiddleLeftHatchToLoadingStationPath(), mDrive, true), */
-                /*new Delay(5),
-                new TurnToDegree(mDrive, Rotation2d.fromDegrees(180.0), 10.0, mData)*/
+                new Delay(5),
+                 new FollowTrajectory(getMiddleLeftHatchToLoadingStationPath(), mDrive, true),
+                new Delay(5),
+                new TurnToDegree(mDrive, Rotation2d.fromDegrees(180.0), 10.0, mData),
                 new LimelightTargetLock(mDrive, mLimelight, 3, ETrackingType.TARGET_RIGHT, mLimelight, () -> 0.0, true)
+        };
+    }
+
+    @Override
+    public ICommand[] generateHatchSequence() {
+        return new ICommand[] {
+                //TODO Make this
         };
     }
 
