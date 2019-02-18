@@ -42,19 +42,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static String kLoggingTimestampKey = "TIME";
 
-    // =============================================================================
-    // Talon Addresses
-    // =============================================================================
-    // Encoders are on the rear Talons, so ID's are temporarily flipped around
-    public static  int kDriveLeftMasterTalonId = 1;
-    public static int kDriveLeftMiddleTalonId = 3;
-    public static  int kDriveLeftRearTalonId = 5;
-    public static  int kDriveRightMasterTalonId = 2;
-    public static int kDriveRightMiddleTalonId = 4;
-    public static  int kDriveRightRearTalonId = 6;
-
-    public static int kPigeonId = 3;
-
     public static int kCANTimeoutMs = 10; //use for on the fly updates
     public static int kLongCANTimeoutMs = 100; //use for constructors
 
@@ -312,6 +299,16 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // 2019 Module Addresses
     // =============================================================================
+    public static int kPigeonId = 30;
+
+    public static  int kDriveLeftMasterTalonId = 1;
+    public static int kDriveLeftMiddleTalonId = 3;
+    public static  int kDriveLeftRearTalonId = 5;
+    public static  int kDriveRightMasterTalonId = 2;
+    public static int kDriveRightMiddleTalonId = 4;
+    public static  int kDriveRightRearTalonId = 6;
+
+    public static int kPowerDistPanelAddress = 21;
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
     public static double kCargoSpitSPXCurrentLimit = -1.0;
@@ -349,18 +346,5 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kIntakeWristGroundAngle = -1;
     //The minimum angle where it is safe to continue intake process (engage solenoid/roller)
     public static double kIntakeWristGroundMinBound = -1;
-
-    public static int kDriveTrainRightSRX1Address = 2;
-    public static int kDriveTrainRightSPX2Address = 4;
-    public static int kDriveTrainRightSPX3Address = 6;
-    public static int kDriveTrainLeftSRX1Address = 1;
-    public static int kDriveTrainLeftSPX2Address = 3;
-    public static int kDriveTrainLeftSPX3Address = 5;
-
-    public static int kArmTalonSRXAddress = 6;
-
-
-
-
 
 }
