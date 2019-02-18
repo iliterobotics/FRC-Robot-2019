@@ -37,18 +37,17 @@ public class Data {
     public final Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
     public final Codex<Double, EElevator> elevator = Codex.of.thisEnum(EElevator.class);
     public final Codex<Double, EPowerDistPanel> pdp = Codex.of.thisEnum(EPowerDistPanel.class);
+    public final Codex<Double, EIntake> intake = Codex.of.thisEnum(EIntake.class);
     public Codex<Double, ETargetingData> limelight = Codex.of.thisEnum(ETargetingData.class);
-
 
     private final List<CodexSender> mSenders = new ArrayList<>();
 
     public final Codex[] mAllCodexes = new Codex[] {
-            imu, /*drive,*/ driverinput, operatorinput, elevator,pdp, limelight
+            imu, drive, driverinput, operatorinput, elevator, pdp, intake, limelight
     };
 
-    public final Codex<Double, EIntake> intake = Codex.of.thisEnum(EIntake.class);
     public final Codex[] mLoggedCodexes = new Codex[] {
-        imu, /*drive,*/ driverinput, operatorinput, elevator,pdp
+        imu, drive, driverinput, /*operatorinput,*/ elevator, pdp, intake, limelight
     };
 
     public final Codex[] mDisplayedCodexes = new Codex[] {
@@ -191,16 +190,20 @@ public class Data {
         }
     }
 
+    public void sendCodicesToNetworkTables() {
+        for(Codex c : mLoggedCodexes) {
+            mCodexNT.send(c);
+        }
+    }
+
     /**
      * @deprecated
      * Do this before sending codices to NetworkTables
      */
     public void registerCodices() {
-        mCodexNT.registerCodex(EGyro.class);
-        mCodexNT.registerCodex(EDriveData.class);
-        mCodexNT.registerCodex(EElevator.class);
-        mCodexNT.registerCodex("DRIVER", ELogitech310.class);
-        mCodexNT.registerCodex("OPERATOR", ELogitech310.class);
+        for(Codex c : mLoggedCodexes) {
+            mCodexNT.registerCodex(c);
+        }
     }
 
     /**
