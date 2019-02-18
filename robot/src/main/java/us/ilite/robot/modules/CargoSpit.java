@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.drivers.TalonSRXFactory;
-import edu.wpi.first.wpilibj.Solenoid;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.manipulator.ECargoSpit;
@@ -18,8 +17,6 @@ public class CargoSpit extends Module {
     private ILog mLog = Logger.createLog(CargoSpit.class);
 
     private TalonSRX mLeftMotor, mRightMotor;
-    // private Solenoid mSolenoid;
-    private DigitalInput mSensor = new DigitalInput( 1 );
     private Data mData;
     private boolean mIntaking;
     private boolean mStopped;
@@ -93,13 +90,12 @@ public class CargoSpit extends Module {
         if ( !mStopped || !hasCargo() ) {
             if ( !mIntaking ) {
                 mIntaking = true;
-                // mSolenoid.set( ECradleState.OPEN.getValue() ); //Values may be swapped?
             }
 
             mRightMotor.set( ControlMode.PercentOutput, mPower ); //TODO find actual value
 
             if ( hasCargo() ) {
-                // mSolenoid.set( ECradleState.CLOSED.getValue() ); //Values may be swapped?
+                mLeftMotor.set( ControlMode.PercentOutput, 0 ); //Stop motor
                 mRightMotor.set( ControlMode.PercentOutput, 0 ); //Stop motor
             }
         }
@@ -109,7 +105,6 @@ public class CargoSpit extends Module {
     private void setOuttaking() {
         if ( !mStopped ) {
             mRightMotor.set( ControlMode.PercentOutput, -mPower );
-            // mSolenoid.set( ECradleState.OPEN.getValue() );
         }
         mStopped = false;
     }
@@ -122,16 +117,9 @@ public class CargoSpit extends Module {
         return mLeftMotor.getOutputCurrent() >= SystemSettings.kCargoSpitSPXCurrentLimit;
     }
 
-    public enum ECradleState {
-
-        OPEN(false),
-        CLOSED(true);
-
-        boolean mActivate;
-
-        ECradleState(boolean pActivate) {
-            this.mActivate = pActivate;
-        }
+    public void setIntake(boolean pOn) {
+        shouldIntake = pOn;
+    }
 
         boolean getValue() {
             return mActivate;
