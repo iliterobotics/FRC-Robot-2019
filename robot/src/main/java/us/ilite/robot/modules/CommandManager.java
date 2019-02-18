@@ -5,15 +5,18 @@ import com.flybotix.hfr.util.log.Logger;
 import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.ICommand;
 
-public class Superstructure extends Module {
+/**
+ * Provides a wrapper for CommandQueue that allows commands to be stopped and started at will.
+ */
+public class CommandManager extends Module {
 
-    private ILog mLog = Logger.createLog(Superstructure.class);
+    private ILog mLog = Logger.createLog(CommandManager.class);
 
     private CommandQueue desiredCommandQueue;
     private boolean lastRunCommandQueue;
     private boolean runCommandQueue;
 
-    public Superstructure() {
+    public CommandManager() {
         this.desiredCommandQueue = new CommandQueue();
     }
 
@@ -74,7 +77,7 @@ public class Superstructure extends Module {
     public void startCommands(ICommand ... pCommands) {
         // Only update the command queue if commands aren't already running
         if(!isRunningCommands()) {
-            mLog.warn("Starting superstructure command queue with a size of ", pCommands.length);
+            mLog.warn("Starting command queue with a size of ", pCommands.length);
             runCommandQueue = true;
             desiredCommandQueue.setCommands(pCommands);
         } else {
