@@ -35,9 +35,8 @@ public class CargoSpit extends Module {
         mRightMotor.configOpenloopRamp( mPower, 5 );
         mLeftMotor.configOpenloopRamp( mPower, 5 );
 
-        mLeftMotor.follow( mRightMotor );
+        mRightMotor.follow( mLeftMotor );
         mRightMotor.setInverted( true ); //Set one motor inverted
-        mLeftMotor.setInverted( true ); //Set one motor inverted
         // mSolenoid.close();
 
         mIntaking = false;
@@ -89,12 +88,9 @@ public class CargoSpit extends Module {
             if ( !mIntaking ) {
                 mIntaking = true;
             }
-
-            mRightMotor.set( ControlMode.PercentOutput, mPower ); //TODO find actual value
-
+            mLeftMotor.set( ControlMode.PercentOutput, mPower );
             if ( hasCargo() ) {
-                mLeftMotor.set( ControlMode.PercentOutput, 0 ); //Stop motor
-                mRightMotor.set( ControlMode.PercentOutput, 0 ); //Stop motor
+                mLeftMotor.set( ControlMode.PercentOutput, mPower );
             }
         }
         mStopped = false;
@@ -102,7 +98,7 @@ public class CargoSpit extends Module {
 
     private void setOuttaking() {
         if ( !mStopped ) {
-            mRightMotor.set( ControlMode.PercentOutput, -mPower );
+            mLeftMotor.set( ControlMode.PercentOutput, -mPower );
         }
         mStopped = false;
     }
