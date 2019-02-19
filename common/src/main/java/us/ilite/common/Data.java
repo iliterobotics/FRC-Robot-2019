@@ -16,6 +16,7 @@ import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.input.EDriverInputMode;
 import us.ilite.common.types.input.ELogitech310;
+import us.ilite.common.types.manipulator.ECargoSpit;
 import us.ilite.common.types.manipulator.EElevator;
 import us.ilite.common.types.manipulator.EIntake;
 import us.ilite.common.types.sensor.EGyro;
@@ -36,6 +37,8 @@ public class Data {
     public final Codex<Double, ELogitech310> driverinput = Codex.of.thisEnum(ELogitech310.class);
     public final Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
     public final Codex<Double, EElevator> elevator = Codex.of.thisEnum(EElevator.class);
+    public final Codex<Double, ECargoSpit> cargospit = Codex.of.thisEnum( ECargoSpit.class );
+  
     public final Codex<Double, EPowerDistPanel> pdp = Codex.of.thisEnum(EPowerDistPanel.class);
     public final Codex<Double, EIntake> intake = Codex.of.thisEnum(EIntake.class);
     public Codex<Double, ETargetingData> limelight = Codex.of.thisEnum(ETargetingData.class);
@@ -43,15 +46,15 @@ public class Data {
     private final List<CodexSender> mSenders = new ArrayList<>();
 
     public final Codex[] mAllCodexes = new Codex[] {
-            imu, drive, driverinput, operatorinput, elevator, pdp, intake, limelight
+            imu, drive, driverinput, operatorinput, elevator, cargospit, pdp, intake, limelight
     };
 
     public final Codex[] mLoggedCodexes = new Codex[] {
-        imu, drive, driverinput, /*operatorinput,*/ elevator, pdp, intake, limelight
+        imu, drive, driverinput, /*operatorinput,*/ elevator, cargospit,  pdp, intake, limelight
     };
 
     public final Codex[] mDisplayedCodexes = new Codex[] {
-            imu, /*drive,*/ driverinput, operatorinput, elevator,pdp
+            imu, /*drive,*/ driverinput, operatorinput, elevator, cargospit, pdp
     };
 
     public static NetworkTableInstance kInst = NetworkTableInstance.getDefault();
@@ -88,7 +91,9 @@ public class Data {
             new CodexNetworkTablesParser<EDriveData>(drive),
             new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
             new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR"),
-            new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" )
+                new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" ),
+                new CodexNetworkTablesParser<ECargoSpit>( cargospit, "CARGOSPIT" ),
+            new CodexNetworkTablesParser<EPowerDistPanel>( pdp, "PDP" )
         );
     }
 

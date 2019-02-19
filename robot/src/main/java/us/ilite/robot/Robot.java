@@ -33,8 +33,9 @@ public class Robot extends TimedRobot {
 
     private ILog mLogger = Logger.createLog(this.getClass());
 
-    // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
     private LoopManager mLoopManager = new LoopManager(SystemSettings.kControlLoopPeriod);
+    // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
+    private LoopManager mLoopManagerx = new LoopManager(SystemSettings.kControlLoopPeriod);
     private ModuleList mRunningModules = new ModuleList();
 
     private Clock mClock = new Clock();
@@ -53,15 +54,14 @@ public class Robot extends TimedRobot {
     private Drive mDrive = new Drive(mData, mDriveController);
     private Elevator mElevator = new Elevator(mData);
     private Intake mIntake = new Intake(mData);
-    private CargoSpit mCargoSpit = new CargoSpit();
+    private CargoSpit mCargoSpit = new CargoSpit(mData);
     private HatchFlower mHatchFlower = new HatchFlower();
     private Limelight mLimelight = new Limelight(mData);
 
+    //private Arm mArm = new BasicArm();
+    private Arm mArm = new MotionMagicArm();
 
-    private Arm mArm = new BasicArm();
-    // private Arm mArm = new MotionMagicArm();
-
-    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager);
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mIntake, mCargoSpit, mArm, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager);
 
     private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
     private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator, mIntake, mCargoSpit, mHatchFlower, mLimelight, mData);

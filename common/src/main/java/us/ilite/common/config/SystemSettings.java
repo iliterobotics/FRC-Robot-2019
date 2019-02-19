@@ -150,7 +150,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveVelocity_kD = 0.0;
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
-    public static int ULTRASONIC_PORT = 2;
+    public static int ULTRASONIC_PORT = 1;
 
     // =============================================================================
     // Turn-To PID constants
@@ -324,7 +324,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kPowerDistPanelAddress = 21;
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
-    public static double kCargoSpitSPXCurrentLimit = -1.0;
+    public static double kCargoSpitRollerPower = 0.15; // 15% seems like adequate power (maybe more?)
+    public static double kCargoSpitSPXCurrentRatioLimit = 1.1; // Voltage ~ 1.8
 
     public static int kElevatorNEOAddress = -15;
     // TO-DO: Elevator encoder address?
@@ -343,11 +344,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static int kHatchIntakeSPXAddress = 11;
     public static int kCargoIntakeSPXLowerAddress = 12;
-    // TO-DO DIO spreadsheet empty
-    // public static int kIntakeBeamBreakAddress = -1;
+    // TO-DO DO spreadsheet empty
 
     public static int kIntakeWristSRXAddress = 16;
-    // TO-DO Writs encoder addresses?
+    // TO-DO Write encoder addresses?
     public static int kIntakeWristEncoderA_Address = -1;
     public static int kIntakeWristEncoderB_Address = -1;
     public static int kIntakeSolenoidAddress = 2; // and/or 3 according to integration sheet
