@@ -218,9 +218,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     }
 
     private void updateElevator() {
-        double throttle1 = -mData.operatorinput.get(ELogitech310.LEFT_TRIGGER_AXIS);
-        double throttle2 = mData.operatorinput.get(ELogitech310.RIGHT_TRIGGER_AXIS);
-        double throttle = throttle1 + throttle2;
+        double throttle = mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
 
         if(mIsCargo) {
             if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
