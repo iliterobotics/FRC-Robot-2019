@@ -70,6 +70,12 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kGyroUpdateRate = 200;
 
     // =============================================================================
+    // Heading Gains
+    // =============================================================================
+    public static PIDGains kDriveHeadingGains = new PIDGains(0.03, 0.0, 0.0);
+    public static double kDriveLinearPercentOutputLimit = 0.5;
+
+    // =============================================================================
     // Input Constants
     // =============================================================================
     public static double kSnailModePercentThrottleReduction = .5;
@@ -84,7 +90,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kLimelightDefaultPipeline = ETrackingType.TARGET_LEFT.getPipeline();
     public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN, 
                                                                             DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN,
-                                                                            DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN);
+                                                                            DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN,
+                                                                            DriveTeamInputMap.DRIVER_NUDGE_SEEK_LEFT,
+                                                                            DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT);
+
     public static List<ELogitech310> kAutonOverrideTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_THROTTLE_AXIS,
                                                                             DriveTeamInputMap.DRIVER_TURN_AXIS);
     public static double kAutonOverrideAxisThreshold = 0.3;
@@ -93,7 +102,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Motion Magic Constants
     // =============================================================================
     public static int kDriveMotionMagicLoopSlot = 0;
-    public static int kDriveMotionMagicVelocityFeedforward = 0;
+    public static int kDriveMotionMagicCruiseVelocity = 0;
     public static int kDriveMotionMagicAccelFeedforward = 0;
 
     // =============================================================================
@@ -141,7 +150,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveVelocity_kD = 0.0;
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
-    public static int ULTRASONIC_PORT = 2;
+    public static int ULTRASONIC_PORT = 1;
 
     // =============================================================================
     // Turn-To PID constants
@@ -244,7 +253,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double llRightBCoeff = -4.53956454545558;
     public static double llRightCCoeff = -0.0437470770400814;
 
-
+    // =============================================================================
+    // PID TargetLock constants
+    // =============================================================================
+    public static PIDGains kTargetLockPIDGains = new PIDGains(0.02, 0.002, 0.0);
 
     // =============================================================================
     // Target Constants
@@ -294,6 +306,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // kHatchFlowerGrabToPushTransitionTimeSec is the time between releasing the 
     // grab solenoid and engaging the push solenoid.
     public static double kHatchFlowerGrabToPushTransitionTimeSec = 0.250;
+    public static double kHatchFlowerExtendStatusTimerDuration = 0.5;
 
 
     // =============================================================================
@@ -311,7 +324,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kPowerDistPanelAddress = 21;
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
-    public static double kCargoSpitSPXCurrentLimit = -1.0;
+    public static double kCargoSpitRollerPower = 0.15; // 15% seems like adequate power (maybe more?)
+    public static double kCargoSpitSPXCurrentRatioLimit = 1.1; // Voltage ~ 1.8
 
     public static int kElevatorNEOAddress = -15;
     // TO-DO: Elevator encoder address?
@@ -330,11 +344,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static int kHatchIntakeSPXAddress = 11;
     public static int kCargoIntakeSPXLowerAddress = 12;
-    // TO-DO DIO spreadsheet empty
-    // public static int kIntakeBeamBreakAddress = -1;
+    // TO-DO DO spreadsheet empty
 
     public static int kIntakeWristSRXAddress = 16;
-    // TO-DO Writs encoder addresses?
+    // TO-DO Write encoder addresses?
     public static int kIntakeWristEncoderA_Address = -1;
     public static int kIntakeWristEncoderB_Address = -1;
     public static int kIntakeSolenoidAddress = 2; // and/or 3 according to integration sheet

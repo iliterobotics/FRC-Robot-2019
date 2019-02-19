@@ -35,7 +35,7 @@ public class NavX extends IMU {
 
 	 @Override
 	 public Rotation2d getHeading() {
-		 return Rotation2d.fromDegrees(iahrs.getYaw()).inverse();
+		 return Rotation2d.fromDegrees(iahrs.getYaw());
 	 }
 
 	 public double getDisplacementX() {

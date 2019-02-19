@@ -227,7 +227,7 @@ public class DriveHardware implements IDriveHardware {
     private void configTalonForMotionMagic(TalonSRX talon) {
         configTalonForVelocity(talon);
 
-        talon.configMotionCruiseVelocity(SystemSettings.kDriveMotionMagicVelocityFeedforward, SystemSettings.kLongCANTimeoutMs);
+        talon.configMotionCruiseVelocity(SystemSettings.kDriveMotionMagicCruiseVelocity, SystemSettings.kLongCANTimeoutMs);
         talon.configMotionAcceleration(SystemSettings.kDriveMotionMagicAccelFeedforward, SystemSettings.kLongCANTimeoutMs);
     }
 

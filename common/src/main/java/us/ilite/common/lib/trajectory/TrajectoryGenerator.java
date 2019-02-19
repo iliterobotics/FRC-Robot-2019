@@ -24,7 +24,8 @@ import java.util.List;
 
 public class TrajectoryGenerator {
 
-    private static final Pose2d flip = Pose2d.fromRotation(new Rotation2d(-1, 0, false));
+    private static final Pose2d xAxisFlip = Pose2d.fromRotation(new Rotation2d(-1, 0, false));
+    private static final Pose2d yAxisFlip = Pose2d.fromRotation(new Rotation2d(0, -1, false));
 
     // Maximum delta between each trajectory point
     private static final double kMaxDx = 2.0;
@@ -59,17 +60,18 @@ public class TrajectoryGenerator {
             double max_accel,  // inches/s^2
             double max_voltage) {
 
-//        List<Pose2d> waypoints_maybe_flipped = (reversed) ? WaypointUtil.flipWaypoints(waypoints) : waypoints;
         // We'll assume that any paths passed to us are pointing in the correct direction (the direction the robot is actually moving) already.
         // In other words, we will consider the heading passed to us to be the heading w.r.t the BACK of the robot, NOT the front.
         List<Pose2d> waypoints_maybe_flipped = waypoints;
-
 
         // Create a trajectory from splines.
         Trajectory<Pose2dWithCurvature> trajectory = TrajectoryUtil.trajectoryFromSplineWaypoints(
                 waypoints_maybe_flipped, kMaxDx, kMaxDy, kMaxDTheta);
 
-        trajectory = (reversed) ? flip(trajectory) : trajectory;
+        // Flip to be in same frame of reference as field
+        trajectory = TrajectoryUtil.mirror(trajectory);
+
+        trajectory = (reversed) ? flip(trajectory, xAxisFlip) : trajectory;
 
         // Create the constraint that the robot must be able to traverse the trajectory without ever applying more
         // than the specified voltage.
@@ -151,10 +153,10 @@ public class TrajectoryGenerator {
                 pTrajectoryConstraints, pEndVel, pMaxVel, pMaxAccel, pMaxVoltage);
     }
 
-    public static Trajectory<Pose2dWithCurvature> flip(final Trajectory<Pose2dWithCurvature> trajectory) {
+    public static Trajectory<Pose2dWithCurvature> flip(final Trajectory<Pose2dWithCurvature> trajectory, final Pose2d pAxisFlip) {
         List<Pose2dWithCurvature> flipped = new ArrayList<>(trajectory.length());
         for (int i = 0; i < trajectory.length(); ++i) {
-            flipped.add(new Pose2dWithCurvature(trajectory.getState(i).getPose().transformBy(flip), -trajectory
+            flipped.add(new Pose2dWithCurvature(trajectory.getState(i).getPose().transformBy(pAxisFlip), -trajectory
                     .getState(i).getCurvature(), trajectory.getState(i).getDCurvatureDs()));
         }
         return new Trajectory<>(flipped);
