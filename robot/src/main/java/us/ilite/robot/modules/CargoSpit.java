@@ -43,7 +43,8 @@ public class CargoSpit extends Module {
         mLeftMotor.configOpenloopRamp( mPower, 5 );
 
         // mRightMotor.follow( mLeftMotor );
-        // mRightMotor.setInverted( true ); //Set one motor inverted
+        mLeftMotor.setInverted(false);
+        mRightMotor.setInverted( true ); //Set one motor inverted
 
         mIntaking = false;
         mOuttaking = false;
