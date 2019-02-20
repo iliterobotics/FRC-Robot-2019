@@ -156,9 +156,11 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 Reset the hatch grabber so it's ready to receive another hatch and tell the intake to start intaking.
                 We intake to stop automatically, or when we release the intake button.
                  */
-                mHatchFlower.pushHatch();
                 if(mIsGround) {
+                    mHatchFlower.pushHatch();
                     mIntake.setIntakeState( EIntakeState.GROUND_HATCH );
+                } else {
+                    mHatchFlower.captureHatch();
                 }
             }
         } else if(mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
@@ -219,7 +221,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     }
 
     private void updateElevator() {
-        double throttle = mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
+        double throttle = -mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
 
         if(mIsCargo) {
             if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
