@@ -7,6 +7,8 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import com.revrobotics.ControlType;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.manipulator.EElevator;
 import us.ilite.lib.drivers.SparkMaxFactory;
@@ -31,7 +33,7 @@ public class Elevator extends Module {
     private double mMinPower = -1.0d;
     private double mHoldVoltage = 0.5; // NOT final
     private boolean mSettingPosition = false;
-    private int kCansparkId = 9; // TODO change ID (I think the actual robot's is 15)
+    private int kCansparkId = SystemSettings.kElevatorNEOAddress; // TODO change ID (I think the actual robot's is 15)
     private PIDController mPidController;
     private double mCurrentTime;
     private double mNeoEncoderPosition;
@@ -43,6 +45,9 @@ public class Elevator extends Module {
 
     private double mBottomEncoderTicks = 0;
     private double mTopEncoderTicks = 0;
+
+    private DigitalInput channelA = new DigitalInput(0);
+    private DigitalInput channelB = new DigitalInput(1);
 
     EElevatorPosition mCurrentPosition = EElevatorPosition.HATCH_BOTTOM;
 
@@ -58,7 +63,7 @@ public class Elevator extends Module {
         this.mData = pData;
 
         this.mPidController = new PIDController(SystemSettings.kElevatorPositionGains, 100, 1500, SystemSettings.kControlLoopPeriod);
-        this.mEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
+//        this.mEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
 
         // Create default NEO
         mMasterElevator = SparkMaxFactory.createDefaultSparkMax(kCansparkId, MotorType.kBrushless);
@@ -139,7 +144,8 @@ public class Elevator extends Module {
         mData.kSmartDashboard.putDouble( "Set Point ", mSetPoint);
         mData.kSmartDashboard.putString( "Desired Position", mDesiredPosition.toString() );
 
-
+        SmartDashboard.putBoolean("Channel A", channelA.get());
+        SmartDashboard.putBoolean("Channel B", channelB.get());
         mData.elevator.set( EElevator.AT_BOTTOM, isAtBottomVal() );
         mData.elevator.set( EElevator.AT_TOP, isAtTopVal() );
         mData.elevator.set( EElevator.BUS_VOLTAGE, getBusVoltage());
@@ -200,7 +206,7 @@ public class Elevator extends Module {
      * to zero
      */
     public void zeroEncoder() {
-        mEncoder.reset();
+//        mEncoder.reset();
         mMasterElevator.getEncoder().setPosition( 0 );
         mCurrentEncoderTicks = 0;
     }
@@ -241,7 +247,7 @@ public class Elevator extends Module {
     }
 
     public double getCurrentEncoderTicks() {
-        return mCurrentEncoderTicks;
+        return /*mEncoder.get()*/0;
     }
 
     public void setDesiredPower(double pPower) {
@@ -266,8 +272,8 @@ public class Elevator extends Module {
     }
 
     public double getEncoderPosition() {
-//        return mEncoder.get();
-        return mMasterElevator.getEncoder().getPosition();
+        return /*mEncoder.get()*/0;
+//        return mMasterElevator.getEncoder().getPosition();
     }
 
     public double getCurrent() {
