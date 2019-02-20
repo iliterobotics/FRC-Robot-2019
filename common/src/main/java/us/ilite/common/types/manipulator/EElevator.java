@@ -19,7 +19,8 @@ public enum EElevator implements CodexOf<Double> {
     AT_BOTTOM,
     DESIRED_DIRECTION_UP,
     DESIRED_POSITION_ABOVE_INITIAL,
-    SETTING_POSITION;
+    SETTING_POSITION,
+    CURRENT_CONTROL_MODE;
 
 }
 
