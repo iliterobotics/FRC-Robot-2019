@@ -25,7 +25,8 @@ public class TargetLock implements ICommand {
 
     private Drive mDrive;
     private ITargetDataProvider mCamera;
-    private IThrottleProvider mThrottleProvider;
+    // Different throttle providers give us some control over behavior in autonomous
+    private IThrottleProvider mTargetSearchThrottleProvider, mTargetLockThrottleProvider;
     private PIDController mPID = new PIDController(SystemSettings.kTargetLockPIDGains, kMIN_INPUT, kMAX_INPUT, SystemSettings.kControlLoopPeriod);
     private ETrackingType mTrackingType;
 
@@ -43,7 +44,8 @@ public class TargetLock implements ICommand {
         this.mAllowableError = pAllowableError;
         this.mTrackingType = pTrackingType;
         this.mCamera = pCamera;
-        this.mThrottleProvider = pThrottleProvider;
+        this.mTargetSearchThrottleProvider = pThrottleProvider;
+        this.mTargetLockThrottleProvider = pThrottleProvider;
         this.mEndOnAlignment = pEndOnAlignment;
     }
 
@@ -70,7 +72,7 @@ public class TargetLock implements ICommand {
 //            System.out.println("USING PID");
             //if there is a target in the limelight's pov, lock onto target using feedback loop
             mOutput = -1 * mPID.calculate(currentData.get(ETargetingData.tx), pNow - mPreviousTime) + kFrictionFeedforward;
-            mDrive.setDriveMessage(new DriveMessage(mThrottleProvider.getThrottle() + mOutput, mThrottleProvider.getThrottle() - mOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
+            mDrive.setDriveMessage(new DriveMessage(mTargetLockThrottleProvider.getThrottle() + mOutput, mTargetLockThrottleProvider.getThrottle() - mOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
             SmartDashboard.putNumber("PID Turn Output", mOutput);
 
             if(mEndOnAlignment && Math.abs(currentData.get(ETargetingData.tx)) < mAllowableError) {
@@ -88,8 +90,8 @@ public class TargetLock implements ICommand {
             //if there is no target in the limelight's pov, continue turning in direction specified by SearchDirection
             mDrive.setDriveMessage(
                 new DriveMessage(
-                    mThrottleProvider.getThrottle() + mTrackingType.getTurnScalar() * kTURN_POWER,
-                    mThrottleProvider.getThrottle() + mTrackingType.getTurnScalar() * -kTURN_POWER,
+                    mTargetSearchThrottleProvider.getThrottle() + mTrackingType.getTurnScalar() * kTURN_POWER,
+                    mTargetSearchThrottleProvider.getThrottle() + mTrackingType.getTurnScalar() * -kTURN_POWER,
                     ControlMode.PercentOutput
                 ).setNeutralMode(NeutralMode.Brake)
             );
@@ -106,4 +108,15 @@ public class TargetLock implements ICommand {
     public void shutdown(double pNow) {
 
     }
+
+    public TargetLock setTargetLockThrottleProvider(IThrottleProvider pThrottleProvider) {
+        this.mTargetLockThrottleProvider = pThrottleProvider;
+        return this;
+    }
+
+    public TargetLock setTargetSearchThrottleProvider(IThrottleProvider pThrottleProvider) {
+        this.mTargetSearchThrottleProvider = pThrottleProvider;
+        return this;
+    }
+
 }
