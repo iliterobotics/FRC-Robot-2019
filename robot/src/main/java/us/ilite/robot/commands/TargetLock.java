@@ -27,7 +27,7 @@ public class TargetLock implements ICommand {
     private ITargetDataProvider mCamera;
     // Different throttle providers give us some control over behavior in autonomous
     private IThrottleProvider mTargetSearchThrottleProvider, mTargetLockThrottleProvider;
-    private PIDController mPID = new PIDController(SystemSettings.kTargetLockPIDGains, kMIN_INPUT, kMAX_INPUT, SystemSettings.kControlLoopPeriod);
+    private PIDController mPID = new PIDController(SystemSettings.kTargetAngleLockGains, kMIN_INPUT, kMAX_INPUT, SystemSettings.kControlLoopPeriod);
     private ETrackingType mTrackingType;
 
     private double mAllowableError, mPreviousTime, mOutput = 0.0;
