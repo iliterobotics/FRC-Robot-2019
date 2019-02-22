@@ -133,14 +133,12 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             updateHatchGrabber();
             updateElevator();
             updateIntake();
-        } 
 
+        }
 
     }
 
     private void updateIntake() {
-        System.out.println("Is Cargo:  " + mIsCargo);
-        System.out.println("Is Ground:  " + mIsGround);
         if(mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_ACQUIRE) > 0.5) {
             if(mIsCargo) {
                 /*
@@ -156,17 +154,17 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 Reset the hatch grabber so it's ready to receive another hatch and tell the intake to start intaking.
                 We intake to stop automatically, or when we release the intake button.
                  */
-                mHatchFlower.pushHatch();
                 if(mIsGround) {
+                    mHatchFlower.pushHatch();
                     mIntake.setIntakeState( EIntakeState.GROUND_HATCH );
+                } else {
+                    mHatchFlower.captureHatch();
                 }
             }
         } else if(mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
-            // If the intake is handing off or stowed, disable these controls
             // if(mIntake.isAtPosition( Intake.EWristState.STOWED) || mIntake.isAtPosition(Intake.EWristState.HANDOFF)) {
                 if(mIsCargo) {
                     mCargoSpit.setOuttake();
-
                 } else {
                     mHatchFlower.pushHatch();
                 }
@@ -178,7 +176,6 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         } else {
             // If the intake button is released, stop everything.
             mCargoSpit.stop();
-//            mIntake.stop();
             mIntake.stopIntake();
         }
 
@@ -219,32 +216,29 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     }
 
     private void updateElevator() {
-        double throttle1 = -mData.operatorinput.get(ELogitech310.LEFT_TRIGGER_AXIS);
-        double throttle2 = mData.operatorinput.get(ELogitech310.RIGHT_TRIGGER_AXIS);
-        double throttle = throttle1 + throttle2;
 
         if(mIsCargo) {
             if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
-                mElevator.setDesirecPosition(EElevatorPosition.CARGO_BOTTOM);
+                mElevator.setDesiredPosition(EElevatorPosition.CARGO_BOTTOM);
             } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
-                mElevator.setDesirecPosition(EElevatorPosition.CARGO_MIDDLE);
+                mElevator.setDesiredPosition(EElevatorPosition.CARGO_MIDDLE);
             } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
-                mElevator.setDesirecPosition(EElevatorPosition.CARGO_TOP);
+                mElevator.setDesiredPosition(EElevatorPosition.CARGO_TOP);
             } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-                double power = mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
+                double throttle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
                 mElevator.setDesiredPower(throttle);
             } else {
                 mElevator.setDesiredPower(0d);
             }
         } else {
             if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
-                mElevator.setDesirecPosition(EElevatorPosition.HATCH_BOTTOM);
+                mElevator.setDesiredPosition(EElevatorPosition.HATCH_BOTTOM);
             } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
-                mElevator.setDesirecPosition(EElevatorPosition.HATCH_MIDDLE);
+                mElevator.setDesiredPosition(EElevatorPosition.HATCH_MIDDLE);
             } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
-                mElevator.setDesirecPosition(EElevatorPosition.HATCH_TOP);
+                mElevator.setDesiredPosition(EElevatorPosition.HATCH_TOP);
             } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-                double power = mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
+                double throttle = mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
                 mElevator.setDesiredPower(throttle);
             } else {
                 mElevator.setDesiredPower(0d);
@@ -252,36 +246,16 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         }
 
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_POSITION_ELEVATOR)) {
-            mElevator.setDesirecPosition(EElevatorPosition.HATCH_BOTTOM);
+            mElevator.setDesiredPosition(EElevatorPosition.HATCH_BOTTOM);
         }
 
          
     }
-
-//    private void updateElevator() {
-//        double throttle1 = -mData.operatorinput.get(ELogitech310.LEFT_TRIGGER_AXIS);
-//        double throttle2 = mData.operatorinput.get(ELogitech310.RIGHT_TRIGGER_AXIS);
-//        double throttle = throttle1 + throttle2;
-//
-//
-//        if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
-//            mElevator.setDesiredPosition(EElevatorPosition.HATCH_BOTTOM);
-//        } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
-//            mElevator.setDesiredPosition(EElevatorPosition.HATCH_MIDDLE);
-//        } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
-//            mElevator.setDesiredPosition(EElevatorPosition.TOP);
-//        } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-//            double power = mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
-//            mElevator.setDesiredPower(throttle);
-//        } else {
-//            mElevator.setDesiredPower(0d);
-//        }
-//    }
       
     private void updateSplitTriggerAxisFlip() {
 
-        double rotate = mDriverInputCodex.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
-        double throttle = -mDriverInputCodex.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
+        double rotate = getTurn();
+        double throttle = getThrottle();
 
         if (mDriverInputCodex.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.3) {
             rotate = rotate;

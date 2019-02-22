@@ -49,7 +49,7 @@ public class PIDController {
      * @param kPIDGains PIDGains object holding PIDF values
      * @param pMinInput the minimum input for calculation
      * @param pMaxInput the maximum input for calculation
-     * @param KdefaultDT the default delta time ( SystemSettings.kControlLoopPeriod )
+     * @param kDefaultDT the default delta time ( SystemSettings.kControlLoopPeriod )
      */
     public PIDController( PIDGains kPIDGains, double pMinInput, double pMaxInput, double kDefaultDT ) {
         mPIDGains = kPIDGains;

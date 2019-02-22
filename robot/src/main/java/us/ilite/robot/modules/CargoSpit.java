@@ -5,8 +5,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import com.team254.lib.drivers.TalonSRXFactory;
 
+import com.team254.lib.drivers.talon.TalonSRXFactory;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.manipulator.ECargoSpit;
@@ -34,14 +34,17 @@ public class CargoSpit extends Module {
 
         this.mData = pData;
         // TODO Change to VictorSPX (or keep as TalonSRX)
-        mLeftMotor = new VictorSPX(SystemSettings.kCargoSpitLeftSPXAddress);
-        mRightMotor = new VictorSPX(SystemSettings.kCargoSpitRightSPXAddress);
+        mLeftMotor = TalonSRXFactory.createDefaultVictor(SystemSettings.kCargoSpitLeftSPXAddress);
+//        mLeftMotor = new VictorSPX(SystemSettings.kCargoSpitLeftSPXAddress);
+        mRightMotor = TalonSRXFactory.createDefaultVictor(SystemSettings.kCargoSpitRightSPXAddress);
+//        mRightMotor = new VictorSPX(SystemSettings.kCargoSpitRightSPXAddress);
         //TODO figure out these values and make them constants
         mRightMotor.configOpenloopRamp( mPower, 5 );
         mLeftMotor.configOpenloopRamp( mPower, 5 );
 
         // mRightMotor.follow( mLeftMotor );
-        // mRightMotor.setInverted( true ); //Set one motor inverted
+        mLeftMotor.setInverted(false);
+        mRightMotor.setInverted( true ); //Set one motor inverted
 
         mIntaking = false;
         mOuttaking = false;
