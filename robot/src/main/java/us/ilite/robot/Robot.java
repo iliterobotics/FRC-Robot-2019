@@ -78,6 +78,8 @@ public class Robot extends TimedRobot {
         Logger.setLevel(ELevel.WARN);
         mLogger.info("Starting Robot Initialization...");
 
+        mSettings.writeToNetworkTables();
+
         new Thread(new DSConnectInitThread()).start();
         // Init static variables and get singleton instances first
 
@@ -153,6 +155,9 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         initMatchMetadata();
+
+        mSettings.loadFromNetworkTables();
+
         mRunningModules.setModules(mDriverInput, mLimelight, mTeleopCommandManager, mAutonomousCommandManager, mDrive, mElevator, mHatchFlower, mIntake, mCargoSpit);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());

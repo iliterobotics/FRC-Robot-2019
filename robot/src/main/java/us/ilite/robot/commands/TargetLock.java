@@ -27,7 +27,7 @@ public class TargetLock implements ICommand {
     private ITargetDataProvider mCamera;
     // Different throttle providers give us some control over behavior in autonomous
     private IThrottleProvider mTargetSearchThrottleProvider, mTargetLockThrottleProvider;
-    private PIDController mPID = new PIDController(SystemSettings.kTargetAngleLockGains, kMIN_INPUT, kMAX_INPUT, SystemSettings.kControlLoopPeriod);
+    private PIDController mPID;
     private ETrackingType mTrackingType;
 
     private double mAllowableError, mPreviousTime, mOutput = 0.0;
@@ -53,6 +53,7 @@ public class TargetLock implements ICommand {
     public void init(double pNow) {
         System.out.println("++++++++++++++++++++++++++TARGET LOCKING++++++++++++++++++++++++++++++++++++\n\n\n\n");
         mHasAcquiredTarget = false;
+        mPID = new PIDController(SystemSettings.kTargetAngleLockGains, kMIN_INPUT, kMAX_INPUT, SystemSettings.kControlLoopPeriod);
         mPID.setOutputRange(kMIN_POWER, kMAX_POWER);
         mPID.setSetpoint(0);
         mPID.reset();
