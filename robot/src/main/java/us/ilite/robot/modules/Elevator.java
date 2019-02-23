@@ -125,7 +125,7 @@ public class Elevator extends Module {
 
 //        updateElevatorState(pNow);
         double output  = calculateDesiredPower(mCurrentState, mCurrentControlMode);
-        output = Util.limit(output, -1, 1);
+        output = Util.limit(output, -0.5, 0.3);
 
         System.out.printf("Current: %s\tDesired Power: %s\tActual Output: %s\t\n", getCurrent(), output, mMasterElevator.getAppliedOutput());
 
