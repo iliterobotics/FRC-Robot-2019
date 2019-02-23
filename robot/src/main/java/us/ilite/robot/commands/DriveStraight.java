@@ -34,7 +34,7 @@ public class DriveStraight implements ICommand {
 
     private double mDistanceToDrive;
     private double mInitialDistance;
-    private Rotation2d mTargetHeading;
+    private Rotation2d mTargetHeading = null;
 
     private double mDrivePercentOutput = 0.3;
     private double mAllowableDistanceError = 3.0;
@@ -65,7 +65,10 @@ public class DriveStraight implements ICommand {
 
     @Override
     public void init(double pNow) {
-        mTargetHeading = Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES));
+        // Set target heading to current heading if setTargetHeading() wasn't called manually
+        if(mTargetHeading == null) {
+            mTargetHeading = Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES));
+        }
         mInitialDistance = getAverageDriveDistance();
         mLastTime = pNow;
 
