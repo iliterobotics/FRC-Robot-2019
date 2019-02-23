@@ -11,8 +11,10 @@ apply plugin: 'org.openjfx.javafxplugin'
 
 apply from: 'plot.gradle'
 
+def javaFxMods = [ 'javafx.base', 'javafx.controls', 'javafx.media', 'javafx.graphics', 'javafx.fxml' ]
+
 javafx {
-    modules = [ 'javafx.base', 'javafx.controls', 'javafx.media', 'javafx.graphics', 'javafx.fxml' ]
+    modules = javaFxMods
     version = "11.0.+"
 }
 
@@ -38,5 +40,35 @@ dependencies {
     runtime group: "edu.wpi.first.ntcore", name: "ntcore-jni", version: "2019.+", classifier: "all"
     compile group: "edu.wpi.first.ntcore", name: "ntcore-java", version: "2019.+"
     compile group: "edu.wpi.first.wpiutil", name: "wpiutil-java", version: "2019.+"
+    
+    project.
+    // task runApp(type: JavaExec) {
+    //     classpath = sourceSets.main.runtimeClasspath
+    //     main = 'us.ilite.display.Main'
 
+    //     List<String> moduleJvmArgs = new ArrayList<String>(Arrays.asList("--module-path",sourceSets.main.runtimeClasspath.getAsPath()));
+        
+    //     String addModules = String.join(",", javaFxMods);
+
+    //     List<String> jvmArgs = new ArrayList<String>();
+    //     jvmArgs.add("--add-modules");
+    //     jvmArgs.add(addModules);
+    //     jvmArgs.addAll(moduleJvmArgs);
+    //     setJvmArgs(jvmArgs);
+        
+    // }
+
+    afterEvaluate {project->
+        project.task(["type":JavaExec], 'runApp') {
+            classpath = sourceSets.main.runtimeClasspath
+            main = 'us.ilite.display.Main'
+            List<String> moduleJvmArgs = new ArrayList<String>(Arrays.asList("--module-path",sourceSets.main.runtimeClasspath.getAsPath()));
+            String addModules = String.join(",", javaFxMods);
+            List<String> jvmArgs = new ArrayList<String>();
+            jvmArgs.add("--add-modules");
+            jvmArgs.add(addModules);
+            jvmArgs.addAll(moduleJvmArgs);
+            setJvmArgs(jvmArgs);
+        }
+    }
 }
