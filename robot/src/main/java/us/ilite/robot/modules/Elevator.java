@@ -68,6 +68,7 @@ public class Elevator extends Module {
         // Create default NEO
         mMasterElevator = SparkMaxFactory.createDefaultSparkMax(kCansparkId, MotorType.kBrushless);
         mMasterElevator.setIdleMode(IdleMode.kBrake);
+        mMasterElevator.setInverted(true);
         this.mCanController = mMasterElevator.getPIDController();
 
          mMasterElevator.setOpenLoopRampRate(SystemSettings.kElevatorRampRate);
