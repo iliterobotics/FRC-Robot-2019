@@ -70,7 +70,7 @@ public class Elevator extends Module {
         mMasterElevator.setIdleMode(IdleMode.kBrake);
         this.mCanController = mMasterElevator.getPIDController();
 
-        // mMasterElevator.setRampRate(SystemSettings.kElevatorRampRate);
+         mMasterElevator.setOpenLoopRampRate(SystemSettings.kElevatorRampRate);
         mMasterElevator.setSmartCurrentLimit(SystemSettings.kElevatorSmartCurrentLimit);
         mMasterElevator.setSecondaryCurrentLimit(SystemSettings.kElevatorSecondaryCurrentLimit);
 
