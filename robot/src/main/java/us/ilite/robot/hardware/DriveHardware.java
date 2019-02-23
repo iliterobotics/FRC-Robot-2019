@@ -67,21 +67,21 @@ public class DriveHardware implements IDriveHardware {
         configureMotor(mRightMiddle);
         configureMotor(mRightRear);
 
-//        mLeftMaster.setInverted(true);
-//        mLeftMiddle.setInverted(true);
-//        mLeftRear.setInverted(true);
+        mLeftMaster.setInverted(true);
+        mLeftMiddle.setInverted(true);
+        mLeftRear.setInverted(true);
+
+        mRightMaster.setInverted(false);
+        mRightMiddle.setInverted(false);
+        mRightRear.setInverted(false);
+
+//        mLeftMaster.setInverted(false);
+//        mLeftMiddle.setInverted(false);
+//        mLeftRear.setInverted(false);
 //
-//        mRightMaster.setInverted(false);
-//        mRightMiddle.setInverted(false);
-//        mRightRear.setInverted(false);
-
-        mLeftMaster.setInverted(false);
-        mLeftMiddle.setInverted(false);
-        mLeftRear.setInverted(false);
-
-        mRightMaster.setInverted(true);
-        mRightMiddle.setInverted(true);
-        mRightRear.setInverted(true);
+//        mRightMaster.setInverted(true);
+//        mRightMiddle.setInverted(true);
+//        mRightRear.setInverted(true);
 
         mLeftMaster.setSensorPhase(false);
         mRightMaster.setSensorPhase(false);
