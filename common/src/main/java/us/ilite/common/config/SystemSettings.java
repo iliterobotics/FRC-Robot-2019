@@ -123,16 +123,39 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     //elevator's properties will be like
     public static int kTopEncoderTicks = 0;
 
-    public static double kElevatorP = 0.1;
-    public static double kElevatorI = 0; 
-    public static double kElevatorD = 0;
+    public static PIDGains kElevatorPositionGains = new PIDGains(0.1, 0.0, 0.0, 0.0);
     public static double kElevatorF = 0;
-    public static double kELevatorControlLoopPeriod = 0.01;
+
     // public static int kUpperElevatorEncoderThreshold = 0; //Will be calculated on the regular
     // public static int kLowerElevatorEncoderThreshold = 0;
     public static double kElevatorMinPower = -1.0;
     public static double kElevatorMaxPower = 1.0;
-    public static int kElevatorCurrentLimit = 10;
+
+    public static double kElevatorRampRate = 0.01;
+    public static int kElevatorSmartCurrentLimit = 80;
+    public static int kElevatorSecondaryCurrentLimit = 100;
+
+    //----Motion Magic Constants------
+
+
+    //TODO Change values to correct values
+    public static double kElevatorMotionP = 0.0;
+    public static double kElevatorMotionI = 0.0;
+    public static double kElevatorMotionD = 0.0;
+    public static double kElevatorMotionF = 0.1;
+
+    public static double kMaxElevatorVelocity = 2000;
+    public static double kMinElevatorVelocity = 1500;
+    public static double kMaxElevatorAcceleration = 1500;
+    public static double kMinElevatorAcceleration = 100;
+    public static double kElevatorRPM = 5700;
+    public static double kElevatorIZone = 0;
+    public static double kElevatorFeedForward = 0;
+    public static double kElevatorAllowedError = 5; //The allowed deficit in rotations
+
+
+
+    //--------------------------------
 
     // public static int kCansparkMasterId = 0;
     // public static int kTalonId = 0;
@@ -327,7 +350,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kCargoSpitRollerPower = 0.15; // 15% seems like adequate power (maybe more?)
     public static double kCargoSpitSPXCurrentRatioLimit = 1.1; // Voltage ~ 1.8
 
-    public static int kElevatorNEOAddress = -15;
+    public static int kElevatorNEOAddress = 15;
     // TO-DO: Elevator encoder address?
     public static int kElevatorNEOEncoderAddress = -1;
     // public static int kElevatorRedundantEncoderAddress = -1;

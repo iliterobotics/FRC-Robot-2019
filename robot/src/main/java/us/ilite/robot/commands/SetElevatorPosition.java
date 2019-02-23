@@ -17,7 +17,7 @@ public class SetElevatorPosition implements ICommand {
     @Override
     public void init(double pNow) {
 
-        mElevator.setDesirecPosition(mDesiredPosition);
+        mElevator.setDesiredPosition(mDesiredPosition);
 
     }
 
