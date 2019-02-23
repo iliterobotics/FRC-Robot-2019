@@ -52,10 +52,8 @@ public class DriveHardware implements IDriveHardware {
         mLeftRear = TalonSRXFactory.createPermanentSlaveTalon(SystemSettings.kDriveLeftMiddleTalonId, SystemSettings.kDriveLeftMasterTalonId);
 
         mRightMaster = TalonSRXFactory.createDefaultTalon(SystemSettings.kDriveRightMasterTalonId);
-//        mRightMiddle = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveRightMiddleTalonId, mRightMaster);
-//        mRightRear = TalonSRXFactory.createPermanentSlaveVictor(SystemSettings.kDriveRightRearTalonId, mRightMaster);
-        mRightMiddle = TalonSRXFactory.createPermanentSlaveTalon(SystemSettings.kDriveRightMiddleTalonId, SystemSettings.kDriveLeftMasterTalonId);
-        mRightRear = TalonSRXFactory.createPermanentSlaveTalon(SystemSettings.kDriveRightMiddleTalonId, SystemSettings.kDriveLeftMasterTalonId);
+        mRightMiddle = TalonSRXFactory.createPermanentSlaveTalon(SystemSettings.kDriveRightMiddleTalonId, SystemSettings.kDriveRightMasterTalonId);
+        mRightRear = TalonSRXFactory.createPermanentSlaveTalon(SystemSettings.kDriveRightMiddleTalonId, SystemSettings.kDriveRightMasterTalonId);
 
         configureMaster(mLeftMaster, true);
         configureMotor(mLeftMaster);
@@ -67,21 +65,17 @@ public class DriveHardware implements IDriveHardware {
         configureMotor(mRightMiddle);
         configureMotor(mRightRear);
 
-        mLeftMaster.setInverted(true);
-        mLeftMiddle.setInverted(true);
-        mLeftRear.setInverted(true);
-
-        mRightMaster.setInverted(false);
-        mRightMiddle.setInverted(false);
-        mRightRear.setInverted(false);
-
-//        mLeftMaster.setInverted(false);
-//        mLeftMiddle.setInverted(false);
-//        mLeftRear.setInverted(false);
+//        mLeftMaster.setInverted(true);
+//        mLeftMiddle.setInverted(true);
+//        mLeftRear.setInverted(true);
 //
-//        mRightMaster.setInverted(true);
-//        mRightMiddle.setInverted(true);
-//        mRightRear.setInverted(true);
+//        mRightMaster.setInverted(false);
+//        mRightMiddle.setInverted(false);
+//        mRightRear.setInverted(false);
+
+        mLeftMaster.setInverted(false);
+        mLeftMiddle.setInverted(false);
+        mLeftRear.setInverted(false);
 
         mLeftMaster.setSensorPhase(false);
         mRightMaster.setSensorPhase(false);
