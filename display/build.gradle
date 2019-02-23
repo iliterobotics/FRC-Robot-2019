@@ -63,13 +63,12 @@ dependencies {
     //evaluated so that the run task, which is created by the application plugin, 
     //has been fully created so that these tasks can inherit the classpath and modules.
     afterEvaluate {project->
-
         javaFxMains.each{key, value ->
             project.task(["type":JavaExec, "description" : value.description,"group" : "application"], 'run'+key) {
                 classpath = sourceSets.main.runtimeClasspath
                 main = value.mainClass
                 List<String> moduleJvmArgs = new ArrayList<String>(Arrays.asList("--module-path",sourceSets.main.runtimeClasspath.getAsPath()));
-                String addModules = String.join(",", javaFxMods);
+                String addModules = String.join(",", project.extensions.javafx.modules);
                 List<String> jvmArgs = new ArrayList<String>();
                 jvmArgs.add("--add-modules");
                 jvmArgs.add(addModules);
