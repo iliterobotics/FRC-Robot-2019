@@ -11,7 +11,7 @@ import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
 
-public class FollowTrajectoryToVisionTarget extends CommandQueue {
+public class FollowTrajectoryToVisionTargetPose extends CommandQueue {
 
     private Drive mDrive;
     private Data mData;
@@ -19,7 +19,7 @@ public class FollowTrajectoryToVisionTarget extends CommandQueue {
 
     private FollowTrajectoryToPoint mFollowTrajectoryCommand;
 
-    public FollowTrajectoryToVisionTarget(Drive mDrive, Data mData, TrajectoryGenerator mTrajectoryGenerator) {
+    public FollowTrajectoryToVisionTargetPose(Drive mDrive, Data mData, TrajectoryGenerator mTrajectoryGenerator) {
         this.mDrive = mDrive;
         this.mData = mData;
         this.mTrajectoryGenerator = mTrajectoryGenerator;

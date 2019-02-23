@@ -18,6 +18,7 @@ import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.GetLocalIP;
+import us.ilite.lib.drivers.VisionGyro;
 import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.MatchMetadata;
@@ -57,6 +58,7 @@ public class Robot extends TimedRobot {
     private CargoSpit mCargoSpit = new CargoSpit(mData);
     private HatchFlower mHatchFlower = new HatchFlower();
     private Limelight mLimelight = new Limelight(mData);
+    private VisionGyro mVisionGyro = new VisionGyro(mData);
 
     //private Arm mArm = new BasicArm();
     private Arm mArm = new MotionMagicArm();
@@ -64,7 +66,7 @@ public class Robot extends TimedRobot {
     private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mIntake, mCargoSpit, mArm, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager);
 
     private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
-    private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator, mIntake, mCargoSpit, mHatchFlower, mLimelight, mData);
+    private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator, mIntake, mCargoSpit, mHatchFlower, mLimelight, mVisionGyro, mData);
     private MatchMetadata mMatchMeta = null;
 
     private PerfTimer mClockUpdateTimer = new PerfTimer();

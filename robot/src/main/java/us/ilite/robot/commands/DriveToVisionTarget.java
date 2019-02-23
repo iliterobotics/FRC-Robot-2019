@@ -9,6 +9,9 @@ import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
 
+/**
+ * Untested. Should turn more aggressively when further away from the target.
+ */
 public class DriveToVisionTarget implements ICommand {
 
     private static final double kMaxTargetAngle = 27.0;
