@@ -10,6 +10,7 @@ import com.team254.lib.util.Util;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.PIDController;
+import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.util.Conversions;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
@@ -175,6 +176,11 @@ public class DriveStraight implements ICommand {
     public DriveStraight setTargetHeading(Rotation2d pTargetHeading) {
         mTargetHeading = pTargetHeading;
         mHeadingController.setSetpoint(mTargetHeading.getDegrees());
+        return this;
+    }
+
+    public DriveStraight setHeadingGains(PIDGains pHeadingControlGains) {
+        mHeadingController.setPIDGains(pHeadingControlGains);
         return this;
     }
 
