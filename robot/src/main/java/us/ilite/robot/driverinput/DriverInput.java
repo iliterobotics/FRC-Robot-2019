@@ -217,39 +217,40 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     private void updateElevator() {
 
-        if(mIsCargo) {
-            if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
-                mElevator.setDesiredPosition(EElevatorPosition.CARGO_BOTTOM);
-            } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
-                mElevator.setDesiredPosition(EElevatorPosition.CARGO_MIDDLE);
-            } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
-                mElevator.setDesiredPosition(EElevatorPosition.CARGO_TOP);
-            } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-                double throttle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
-                mElevator.setDesiredPower(throttle);
-            } else {
-                mElevator.setDesiredPower(0d);
-            }
-        } else {
-            if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
-                mElevator.setDesiredPosition(EElevatorPosition.HATCH_BOTTOM);
-            } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
-                mElevator.setDesiredPosition(EElevatorPosition.HATCH_MIDDLE);
-            } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
-                mElevator.setDesiredPosition(EElevatorPosition.HATCH_TOP);
-            } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-                double throttle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
-                mElevator.setDesiredPower(throttle);
-            } else {
-                mElevator.setDesiredPower(0d);
-            }
-        }
-
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_POSITION_ELEVATOR)) {
             mElevator.setDesiredPosition(EElevatorPosition.HATCH_BOTTOM);
+        } 
+        else {
+            if(mIsCargo) {
+                if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
+                    mElevator.setDesiredPosition(EElevatorPosition.CARGO_BOTTOM);
+                } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
+                    mElevator.setDesiredPosition(EElevatorPosition.CARGO_MIDDLE);
+                } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
+                    mElevator.setDesiredPosition(EElevatorPosition.CARGO_TOP);
+                } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
+                    double throttle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
+                    mElevator.setDesiredPower(throttle);
+                } else {
+                    mElevator.setDesiredPower(0d);
+                }
+            } else {
+                if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
+                    mElevator.setDesiredPosition(EElevatorPosition.HATCH_BOTTOM);
+                } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
+                    mElevator.setDesiredPosition(EElevatorPosition.HATCH_MIDDLE);
+                } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
+                    mElevator.setDesiredPosition(EElevatorPosition.HATCH_TOP);
+                } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
+                    double throttle = mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
+                    mElevator.setDesiredPower(throttle);
+                } else {
+                    mElevator.setDesiredPower(0d);
+                }
+            }
+    
         }
 
-         
     }
       
     private void updateSplitTriggerAxisFlip() {

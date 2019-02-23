@@ -363,7 +363,7 @@ public class Elevator extends Module {
 
         switch (pCurrentState) {
         case NORMAL:
-            power = mDesiredPower; // 10% of the actual power equals what the driver wants
+            power = mDesiredPower; 
             mSettingPosition = false;
             break;
 //        case DECEL_TOP:
@@ -386,12 +386,17 @@ public class Elevator extends Module {
                 case MOTION_MAGIC:
                     calculateMotionMagic();
                     break;
-                    default:
-                        break;
+                default:
+                    // Should not have hit this
+                    System.out.println("Reached invalid Control Mode state with " + pCurrentControlMode.toString()); // In case,
+                    power = 0;
+                    break;
             }
             break;
         default:
             System.out.println("Somehow reached an unaccounted state with " + pCurrentState.toString()); // In case,
+            power = 0;
+            break;
         }
 
         return Util.limit(power, mMinPower, mMaxPower);
