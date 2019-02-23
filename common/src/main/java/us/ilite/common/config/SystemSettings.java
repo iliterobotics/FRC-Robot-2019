@@ -131,7 +131,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kElevatorMinPower = -1.0;
     public static double kElevatorMaxPower = 1.0;
 
-    public static double kElevatorRampRate = 0.01;
+    public static double kElevatorRampRate = 0.1;
     public static int kElevatorSmartCurrentLimit = 80;
     public static int kElevatorSecondaryCurrentLimit = 100;
 
