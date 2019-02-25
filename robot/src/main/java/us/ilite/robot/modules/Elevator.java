@@ -53,7 +53,7 @@ public class Elevator extends Module {
 
     EElevatorState mCurrentState = EElevatorState.NORMAL;
     EElevatorPosition mDesiredPosition;
-    EControlMode mCurrentControlMode = EControlMode.PID; //TODO test.
+    EControlMode mCurrentControlMode = EControlMode.MOTION_MAGIC; //TODO test.
 
     CANSparkMax mMasterElevator;
     Encoder mEncoder;
@@ -68,20 +68,24 @@ public class Elevator extends Module {
         // Create default NEO
         mMasterElevator = SparkMaxFactory.createDefaultSparkMax(kCansparkId, MotorType.kBrushless);
         mMasterElevator.setIdleMode(IdleMode.kBrake);
+        mMasterElevator.setClosedLoopRampRate( 0 );
+        mMasterElevator.setInverted(true);
         this.mCanController = mMasterElevator.getPIDController();
 
-        // mMasterElevator.setRampRate(SystemSettings.kElevatorRampRate);
+         mMasterElevator.setOpenLoopRampRate(SystemSettings.kElevatorRampRate);
         mMasterElevator.setSmartCurrentLimit(SystemSettings.kElevatorSmartCurrentLimit);
         mMasterElevator.setSecondaryCurrentLimit(SystemSettings.kElevatorSecondaryCurrentLimit);
+        mCanController.setOutputRange( -0.3, 0.5, mSmartMotionSlot );
 
         //Setting PID Coefficients for Motion Magic
         mCanController.setP( SystemSettings.kElevatorMotionP );
         mCanController.setI( SystemSettings.kElevatorMotionI );
         mCanController.setD( SystemSettings.kElevatorMotionD );
-        mCanController.setFF( SystemSettings.kElevatorMotionF );
+        mCanController.setFF( SystemSettings.kElevatorMotionFF );
 
         mCanController.setOutputRange( mMinPower, mMaxPower );
         mCanController.setSmartMotionMaxAccel( SystemSettings.kMaxElevatorAcceleration, mSmartMotionSlot );
+        mCanController.setSmartMotionMinOutputVelocity( SystemSettings.kMinElevatorVelocity, mSmartMotionSlot );
         mCanController.setSmartMotionMaxVelocity( SystemSettings.kMaxElevatorVelocity, mSmartMotionSlot );
         mCanController.setSmartMotionMinOutputVelocity( 0, mSmartMotionSlot );
         mCanController.setSmartMotionAllowedClosedLoopError( SystemSettings.kElevatorAllowedError, mSmartMotionSlot );
@@ -124,7 +128,7 @@ public class Elevator extends Module {
 
 //        updateElevatorState(pNow);
         double output  = calculateDesiredPower(mCurrentState, mCurrentControlMode);
-        output = Util.limit(output, -1, 1);
+        output = Util.limit(output, -0.1, 0.5); //Remember, positive is up and negative is down
 
         System.out.printf("Current: %s\tDesired Power: %s\tActual Output: %s\t\n", getCurrent(), output, mMasterElevator.getAppliedOutput());
 
@@ -143,6 +147,8 @@ public class Elevator extends Module {
         mData.kSmartDashboard.putString( "Current Control Mode", mCurrentControlMode.toString() );
         mData.kSmartDashboard.putDouble( "Set Point ", mSetPoint);
         mData.kSmartDashboard.putString( "Desired Position", mDesiredPosition.toString() );
+        mData.kSmartDashboard.putDouble( "Magic Velocity", mMasterElevator.getEncoder().getVelocity());
+//        mData.kSmartDashboard.putDouble( "Magic Acceleration", mMasterElevator.getEncoder().getVelocity());
 
         SmartDashboard.putBoolean("Channel A", channelA.get());
         SmartDashboard.putBoolean("Channel B", channelB.get());
@@ -150,7 +156,7 @@ public class Elevator extends Module {
         mData.elevator.set( EElevator.AT_TOP, isAtTopVal() );
         mData.elevator.set( EElevator.BUS_VOLTAGE, getBusVoltage());
         mData.elevator.set( EElevator.CURRENT, getCurrent());
-        mData.elevator.set( EElevator.CURRENT_ENCODER_TICKS, (double) getCurrentEncoderTicks());
+//        mData.elevator.set( EElevator.CURRENT_ENCODER_TICKS, (double) getCurrentEncoderTicks());
         mData.elevator.set( EElevator.CURRENT_NEO_TICKS, getNeoEncoderPosition());
         mData.elevator.set( EElevator.CURRENT_POSITION, (double) getCurrentPosition().ordinal());
         mData.elevator.set( EElevator.CURRENT_STATE, (double) getCurrentState().ordinal());
@@ -247,7 +253,7 @@ public class Elevator extends Module {
     }
 
     public double getCurrentEncoderTicks() {
-        return /*mEncoder.get()*/0;
+        return mMasterElevator.getEncoder().getPosition();
     }
 
     public void setDesiredPower(double pPower) {
@@ -402,6 +408,7 @@ public class Elevator extends Module {
     // This method is made to be called from outside the class
     // the state should only reach set point when driver input call it
     public void setDesiredPosition( EElevatorPosition pDesiredPosition) {
+
         mCurrentState = EElevatorState.SET_POSITION;
         mDesiredPosition = pDesiredPosition;
         if(mCurrentControlMode == EControlMode.PID) {
