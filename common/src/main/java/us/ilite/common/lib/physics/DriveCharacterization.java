@@ -40,18 +40,18 @@ public class DriveCharacterization {
     }
 
     private static double[][] getVelocityData(List<DriveCharacterization.VelocityDataPoint> input) {
-        double[][] output = (double[][])null;
+        double[][] output = null;
         int startTrim = 0;
 
         for(int i = 0; i < input.size(); ++i) {
-            if (((DriveCharacterization.VelocityDataPoint)input.get(i)).velocity > 1.0E-12D) {
+            if (input.get(i).velocity > 1.0E-12D) {
                 if (output == null) {
                     output = new double[input.size() - i][2];
                     startTrim = i;
                 }
 
-                output[i - startTrim][0] = ((DriveCharacterization.VelocityDataPoint)input.get(i)).velocity;
-                output[i - startTrim][1] = ((DriveCharacterization.VelocityDataPoint)input.get(i)).power;
+                output[i - startTrim][0] = input.get(i).velocity;
+                output[i - startTrim][1] = input.get(i).power;
             }
         }
 
@@ -62,8 +62,8 @@ public class DriveCharacterization {
         double[][] output = new double[input.size()][2];
 
         for(int i = 0; i < input.size(); ++i) {
-            output[i][0] = ((DriveCharacterization.AccelerationDataPoint)input.get(i)).acceleration;
-            output[i][1] = ((DriveCharacterization.AccelerationDataPoint)input.get(i)).power - constants.kv * ((DriveCharacterization.AccelerationDataPoint)input.get(i)).velocity - constants.ks;
+            output[i][0] = input.get(i).acceleration;
+            output[i][1] = input.get(i).power - constants.kv * input.get(i).velocity - constants.ks;
         }
 
         return output;

@@ -7,6 +7,6 @@ public enum EIntake implements CodexOf<Double> {
     // HATCH_BEAM_ACTIVE,
     SOLENOID_EXTENDED,
     ROLLER_CURRENT,
-    ROLLER_VOLTAGE;
+    ROLLER_VOLTAGE
 
 }
