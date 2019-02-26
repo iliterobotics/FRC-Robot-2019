@@ -50,29 +50,29 @@ public class TestingDisplay extends Application {
 
     public static void main(String[] args) {
         Logger.setLevel(ELevel.DEBUG);
-        kNetworkTableInst.startServer();
-        kNetworkTableInst.startClient("localhost");
+//        kNetworkTableInst.startServer();
+        kNetworkTableInst.startClientTeam(1885);
 
-        Thread debugThread = new Thread(new Runnable() {
-            SystemSettings settings = new SystemSettings();
-
-            @Override
-            public void run() {
-                settings.writeToNetworkTables();
-                while(!Thread.interrupted()) {
-                    settings.loadFromNetworkTables();
-//                    mLog.debug("kDriveVelocity_kP: ", SystemSettings.kDriveVelocity_kP);
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-        });
-
-        debugThread.start();
+//        Thread debugThread = new Thread(new Runnable() {
+//            SystemSettings settings = new SystemSettings();
+//
+//            @Override
+//            public void run() {
+//                settings.writeToNetworkTables();
+//                while(!Thread.interrupted()) {
+//                    settings.loadFromNetworkTables();
+////                    mLog.debug("kDriveVelocity_kP: ", SystemSettings.kDriveVelocity_kP);
+//                    try {
+//                        Thread.sleep(500);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//
+//        });
+//
+//        debugThread.start();
 
         launch(args);
     }

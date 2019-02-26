@@ -4,10 +4,10 @@ apply plugin: 'application'
 apply plugin: 'org.openjfx.javafxplugin'
 //mainClassName = 'eu.hansolo.tilesfxdemo.Main'
 //mainClassName = 'eu.hansolo.tilesfxdemo.MiscDemo'
- mainClassName = 'us.ilite.display.DriverStation'
+// mainClassName = 'us.ilite.display.DriverStation'
 // mainClassName = 'us.ilite.display.Main'
 //mainClassName = 'us.ilite.display.testing.AutonConfigDisplay'
-//mainClassName = 'us.ilite.display.testing.TestingDisplay'
+mainClassName = 'us.ilite.display.testing.TestingDisplay'
 
 apply from: 'plot.gradle'
 

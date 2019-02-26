@@ -43,22 +43,23 @@ public class TrajectoryGenerator {
     public Trajectory<TimedState<Pose2dWithCurvature>> generateTrajectory(
             boolean reversed,
             final List<Pose2d> waypoints,
-            final List<TimingConstraint<Pose2dWithCurvature>> constraints,
-            double max_vel,  // inches/s
-            double max_accel,  // inches/s^2
-            double max_voltage) {
-        return generateTrajectory(reversed, waypoints, constraints, 0.0, 0.0, max_vel, max_accel, max_voltage);
+            final TrajectoryConstraints constraints
+    ) {
+        return generateTrajectory(
+                reversed,
+                waypoints,
+                0.0,
+                0.0,
+                constraints);
     }
 
     public Trajectory<TimedState<Pose2dWithCurvature>> generateTrajectory(
             boolean reversed,
             final List<Pose2d> waypoints,
-            final List<TimingConstraint<Pose2dWithCurvature>> constraints,
             double start_vel,
             double end_vel,
-            double max_vel,  // inches/s
-            double max_accel,  // inches/s^2
-            double max_voltage) {
+            final TrajectoryConstraints constraints
+    ) {
 
         // We'll assume that any paths passed to us are pointing in the correct direction (the direction the robot is actually moving) already.
         // In other words, we will consider the heading passed to us to be the heading w.r.t the BACK of the robot, NOT the front.
@@ -76,17 +77,22 @@ public class TrajectoryGenerator {
         // Create the constraint that the robot must be able to traverse the trajectory without ever applying more
         // than the specified voltage.
         final DifferentialDriveDynamicsConstraint<Pose2dWithCurvature> drive_constraints = new
-                DifferentialDriveDynamicsConstraint<>(mDriveMotionPlanner.getDriveModel(), max_voltage);
-        List<TimingConstraint<Pose2dWithCurvature>> all_constraints = new ArrayList<>();
-        all_constraints.add(drive_constraints);
-        if (constraints != null) {
-            all_constraints.addAll(constraints);
-        }
+                DifferentialDriveDynamicsConstraint<>(mDriveMotionPlanner.getDriveModel(), constraints.getMaximumVoltage());
+        final TrajectoryConstraints all_constraints = new TrajectoryConstraints(constraints);
+        all_constraints.getTimingConstraints().add(drive_constraints);
 
         // Generate the timed trajectory.
-        Trajectory<TimedState<Pose2dWithCurvature>> timed_trajectory = TimingUtil.timeParameterizeTrajectory
-                (reversed, new
-                        DistanceView<>(trajectory), kMaxDx, all_constraints, start_vel, end_vel, max_vel, max_accel);
+        Trajectory<TimedState<Pose2dWithCurvature>> timed_trajectory = TimingUtil.timeParameterizeTrajectory(
+                reversed,
+                new DistanceView<>(trajectory),
+                kMaxDx,
+                all_constraints.getTimingConstraints(),
+                start_vel,
+                end_vel,
+                constraints.getMaximumVelocity(),
+                constraints.getMaximumAcceleration()
+        );
+
         return timed_trajectory;
     }
 
@@ -96,18 +102,12 @@ public class TrajectoryGenerator {
      * @param final_heading
      * @param constraints
      * @param end_vel
-     * @param max_vel
-     * @param max_accel
-     * @param max_voltage
      * @return A rotation trajectory for the robot to follow while turning in place.
      */
     public Trajectory<TimedState<Rotation2d>> generateTurnInPlaceTrajectory(Rotation2d initial_heading,
                                                                             Rotation2d final_heading,
-                                                                            final List<TimingConstraint<Pose2dWithCurvature>> constraints,
                                                                             double end_vel,
-                                                                            double max_vel,  // inches/s
-                                                                            double max_accel,  // inches/s^2
-                                                                            double max_voltage) {
+                                                                            final TrajectoryConstraints constraints) {
 
         Rotation2d rotation_delta = initial_heading.inverse().rotateBy(final_heading);
 
@@ -119,14 +119,11 @@ public class TrajectoryGenerator {
         // Create the constraint that the robot must be able to traverse the trajectory without ever applying more
         // than the specified voltage.
         final DifferentialDriveDynamicsConstraint<Pose2dWithCurvature> drive_constraints = new
-                DifferentialDriveDynamicsConstraint<>(mDriveMotionPlanner.getDriveModel(), max_voltage);
-        List<TimingConstraint<Pose2dWithCurvature>> all_constraints = new ArrayList<>();
-        all_constraints.add(drive_constraints);
-        if (constraints != null) {
-            all_constraints.addAll(constraints);
-        }
+                DifferentialDriveDynamicsConstraint<>(mDriveMotionPlanner.getDriveModel(), constraints.getMaximumVoltage());
+        TrajectoryConstraints all_constraints = new TrajectoryConstraints(constraints);
+        all_constraints.getTimingConstraints().add(drive_constraints);
 
-        Trajectory<TimedState<Pose2dWithCurvature>> wheelTrajectory = generateTrajectory(false, wheelTravel, all_constraints, 0.0, end_vel, max_vel, max_accel, max_voltage);
+        Trajectory<TimedState<Pose2dWithCurvature>> wheelTrajectory = generateTrajectory(false, wheelTravel, 0.0, end_vel, all_constraints);
 
         Trajectory<TimedState<Rotation2d>> timedRotationDeltaTrajectory = distanceToRotation(wheelTrajectory,
                 initial_heading,
@@ -139,18 +136,19 @@ public class TrajectoryGenerator {
      * For convenience, allow headings to be entered in degrees.
      * @param pInitialHeadingDegrees
      * @param pFinalHeadingDegrees
-     * @param pTrajectoryConstraints
      * @param pEndVel
-     * @param pMaxVel
-     * @param pMaxAccel
-     * @param pMaxVoltage
      * @return
      */
-    public Trajectory<TimedState<Rotation2d>> generateTurnInPlaceTrajectory(double pInitialHeadingDegrees, double pFinalHeadingDegrees,
-                                                                            List<TimingConstraint<Pose2dWithCurvature>> pTrajectoryConstraints,
-                                                                            double pEndVel, double pMaxVel, double pMaxAccel, double pMaxVoltage) {
-        return generateTurnInPlaceTrajectory(Rotation2d.fromDegrees(pInitialHeadingDegrees), Rotation2d.fromDegrees(pFinalHeadingDegrees),
-                pTrajectoryConstraints, pEndVel, pMaxVel, pMaxAccel, pMaxVoltage);
+    public Trajectory<TimedState<Rotation2d>> generateTurnInPlaceTrajectory(double pInitialHeadingDegrees,
+                                                                            double pFinalHeadingDegrees,
+                                                                            double pEndVel,
+                                                                            final TrajectoryConstraints constraints
+    ) {
+        return generateTurnInPlaceTrajectory(
+                Rotation2d.fromDegrees(pInitialHeadingDegrees),
+                Rotation2d.fromDegrees(pFinalHeadingDegrees),
+                pEndVel,
+                constraints);
     }
 
     public static Trajectory<Pose2dWithCurvature> flip(final Trajectory<Pose2dWithCurvature> trajectory, final Pose2d pAxisFlip) {

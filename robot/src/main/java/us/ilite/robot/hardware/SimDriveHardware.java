@@ -10,6 +10,7 @@ import com.team254.frc2018.Kinematics;
 import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.util.Conversions;
 import us.ilite.lib.drivers.Clock;
+import us.ilite.lib.drivers.IMU;
 import us.ilite.robot.modules.DriveMessage;
 
 /**
@@ -55,7 +56,17 @@ public class SimDriveHardware implements IDriveHardware {
     public void configureMode(ControlMode pControlMode) {
         
     }
-    
+
+    @Override
+    public void setImu(IMU pImu) {
+
+    }
+
+    @Override
+    public IMU getImu() {
+        return null;
+    }
+
     public void update(double pNow) {
         double dt = pNow - mLastTime;
         mLogger.debug("Updating");
