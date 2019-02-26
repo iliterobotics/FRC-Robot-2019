@@ -292,18 +292,13 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public enum VisionTarget {
         HatchPort(25.6875), // height of the bottom of the reflective tape in inches for the hatch port
         CargoPort(33.3125), // height of the bottom of the reflective tape in inches for the cargo port
-        Ground(0.0,"Ground_Tape_Tracking.vpr"), //The ground
-        CargoHeight(6.5d,"Cargo_Ball_Tracking.vpr");//This may change, not sure what the correct value
+        Ground(0.0), //The ground
+        CargoHeight(6.5d);//This may change, not sure what the correct value
 
         private final double height;
-        private final Optional<String> pipelineName;
 
-        VisionTarget(double height) {
-            this(height, null);
-        }
-        VisionTarget( double height, String pipelineName)  {
+        VisionTarget( double height)  {
             this.height = height;
-            this.pipelineName = Optional.ofNullable(pipelineName);
         }
 
         /**
@@ -315,10 +310,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
         /**
          * @return the pipelineName
          */
-        public Optional<String> getPipelineName() {
-            return pipelineName;
-        }
-
     }
 
     // =============================================================================
