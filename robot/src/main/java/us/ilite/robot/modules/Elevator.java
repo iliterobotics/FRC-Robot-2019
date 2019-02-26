@@ -75,7 +75,7 @@ public class Elevator extends Module {
          mMasterElevator.setOpenLoopRampRate(SystemSettings.kElevatorRampRate);
         mMasterElevator.setSmartCurrentLimit(SystemSettings.kElevatorSmartCurrentLimit);
         mMasterElevator.setSecondaryCurrentLimit(SystemSettings.kElevatorSecondaryCurrentLimit);
-        mCanController.setOutputRange( -0.3, 0.5, mSmartMotionSlot );
+        mCanController.setOutputRange( -0.5, 0.5, mSmartMotionSlot );
 
         //Setting PID Coefficients for Motion Magic
         mCanController.setP( SystemSettings.kElevatorMotionP );
