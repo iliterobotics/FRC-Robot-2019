@@ -131,7 +131,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kElevatorMinPower = -1.0;
     public static double kElevatorMaxPower = 1.0;
 
-    public static double kElevatorRampRate = 0.01;
+    public static double kElevatorRampRate = 0.1;
     public static int kElevatorSmartCurrentLimit = 80;
     public static int kElevatorSecondaryCurrentLimit = 100;
 
@@ -142,16 +142,16 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kElevatorMotionP = 0.0;
     public static double kElevatorMotionI = 0.0;
     public static double kElevatorMotionD = 0.0;
-    public static double kElevatorMotionF = 0.1;
+    public static double kElevatorMotionFF = 0.01;
 
-    public static double kMaxElevatorVelocity = 2000;
-    public static double kMinElevatorVelocity = 1500;
-    public static double kMaxElevatorAcceleration = 1500;
+    public static double kMaxElevatorVelocity = 1000;
+    public static double kMinElevatorVelocity = 0;
+    public static double kMaxElevatorAcceleration = 46.875;
     public static double kMinElevatorAcceleration = 100;
     public static double kElevatorRPM = 5700;
     public static double kElevatorIZone = 0;
     public static double kElevatorFeedForward = 0;
-    public static double kElevatorAllowedError = 5; //The allowed deficit in rotations
+    public static double kElevatorAllowedError = 0.5; //The allowed deficit in rotations
 
 
 
