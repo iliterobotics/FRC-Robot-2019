@@ -4,6 +4,7 @@ import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import us.ilite.common.Data;
+import us.ilite.common.lib.trajectory.TrajectoryConstraints;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.lib.drivers.VisionGyro;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideRocket;
@@ -15,10 +16,12 @@ import java.util.List;
 
 public class AutonomousRoutines {
 
-    public static final List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(20.0));
-    public static final double kMaxVel = 100.0;
-    public static final double kMaxAccel = 40.0;
-    public static final double kMaxVoltage = 12.0;
+    public static final TrajectoryConstraints kDefaultTrajectoryConstraints = new TrajectoryConstraints(
+            100.0,
+            40.0,
+            12.0,
+            new CentripetalAccelerationConstraint(20.0)
+    );
 
     private TrajectoryGenerator mTrajectoryGenerator;
 

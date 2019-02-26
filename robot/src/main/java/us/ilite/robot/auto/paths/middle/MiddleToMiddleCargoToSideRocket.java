@@ -71,15 +71,15 @@ public class MiddleToMiddleCargoToSideRocket extends AutoSequence {
     );
 
     public Trajectory<TimedState<Pose2dWithCurvature>> getStartToMiddleLeftHatchTrajectory() {
-        return mTrajectoryGenerator.generateTrajectory(false, kStartToMiddleLeftHatchPath, AutonomousRoutines.kTrajectoryConstraints,  80.0, 30.0, 10.0);
+        return mTrajectoryGenerator.generateTrajectory(false, kStartToMiddleLeftHatchPath, AutonomousRoutines.kDefaultTrajectoryConstraints);
     }
 
     public Trajectory<TimedState<Pose2dWithCurvature>> getMiddleLeftHatchToLoadingStationPath() {
-        return mTrajectoryGenerator.generateTrajectory(true, kMiddleLeftHatchToLoadingStationPath, AutonomousRoutines.kTrajectoryConstraints,  100.0, 40.0, 12.0);
+        return mTrajectoryGenerator.generateTrajectory(true, kMiddleLeftHatchToLoadingStationPath, AutonomousRoutines.kDefaultTrajectoryConstraints);
     }
 
     public Trajectory<TimedState<Pose2dWithCurvature>> getLoadingStationToSideRocketPath() {
-        return mTrajectoryGenerator.generateTrajectory(false, kLoadingStationToSideRocketPath, AutonomousRoutines.kTrajectoryConstraints,  100.0, 40.0, 12.0);
+        return mTrajectoryGenerator.generateTrajectory(false, kLoadingStationToSideRocketPath, AutonomousRoutines.kDefaultTrajectoryConstraints);
     }
 
     @Override

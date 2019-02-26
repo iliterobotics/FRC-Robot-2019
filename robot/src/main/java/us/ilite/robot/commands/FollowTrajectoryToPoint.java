@@ -7,6 +7,7 @@ import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.robot.modules.Drive;
 
 import java.util.Arrays;
@@ -22,11 +23,6 @@ import java.util.concurrent.Future;
  * so that we don't unnecessarily block execution.
  */
 public class FollowTrajectoryToPoint implements ICommand {
-
-    public static final List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(40.0));
-    public static final double kMaxVel = 100.0;
-    public static final double kMaxAccel = 40.0;
-    public static final double kMaxVoltage = 12.0;
 
     private Drive mDrive;
     private TrajectoryGenerator mTrajectoryGenerator;
@@ -93,7 +89,7 @@ public class FollowTrajectoryToPoint implements ICommand {
     private Trajectory<TimedState<Pose2dWithCurvature>> generateTrajectory() {
         Pose2d currentPose = mDrive.getDriveController().getCurrentPose();
         List<Pose2d> waypoints = Arrays.asList(currentPose, mTargetPose);
-        return mTrajectoryGenerator.generateTrajectory(mIsReversed, waypoints, kTrajectoryConstraints, kMaxVel, kMaxAccel, kMaxVoltage);
+        return mTrajectoryGenerator.generateTrajectory(mIsReversed, waypoints, AutonomousRoutines.kDefaultTrajectoryConstraints);
     }
 
 }
