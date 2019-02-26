@@ -10,8 +10,10 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
+import us.ilite.common.Data;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.types.ETrackingType;
+import us.ilite.lib.drivers.VisionGyro;
 import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.robot.auto.paths.AutoSequence;
 import us.ilite.robot.auto.paths.FieldElementLocations;
@@ -26,13 +28,17 @@ import us.ilite.robot.modules.Limelight;
  */
 public class MiddleToMiddleCargoToSideRocket extends AutoSequence {
 
+    private final Data mData;
     private final Drive mDrive;
     private final Limelight mLimelight;
+    private final VisionGyro mVisionGyro;
 
-    public MiddleToMiddleCargoToSideRocket(TrajectoryGenerator pTrajectoryGenerator, Drive pDrive, Limelight pLimelight) {
+    public MiddleToMiddleCargoToSideRocket(TrajectoryGenerator pTrajectoryGenerator, Data mData, Drive mDrive, Limelight mLimelight, VisionGyro mVisionGyro) {
         super(pTrajectoryGenerator);
-        mDrive = pDrive;
-        mLimelight = pLimelight;
+        this.mData = mData;
+        this.mDrive = mDrive;
+        this.mLimelight = mLimelight;
+        this.mVisionGyro = mVisionGyro;
     }
 
     // End pose of robot @ middle left hatch
@@ -65,27 +71,31 @@ public class MiddleToMiddleCargoToSideRocket extends AutoSequence {
     );
 
     public Trajectory<TimedState<Pose2dWithCurvature>> getStartToMiddleLeftHatchTrajectory() {
-        return mTrajectoryGenerator.generateTrajectory(false, kStartToMiddleLeftHatchPath, AutonomousRoutines.kTrajectoryConstraints,  100.0, 40.0, 12.0);
+        return mTrajectoryGenerator.generateTrajectory(false, kStartToMiddleLeftHatchPath, AutonomousRoutines.kDefaultTrajectoryConstraints);
     }
 
     public Trajectory<TimedState<Pose2dWithCurvature>> getMiddleLeftHatchToLoadingStationPath() {
-        return mTrajectoryGenerator.generateTrajectory(true, kMiddleLeftHatchToLoadingStationPath, AutonomousRoutines.kTrajectoryConstraints,  100.0, 40.0, 12.0);
+        return mTrajectoryGenerator.generateTrajectory(true, kMiddleLeftHatchToLoadingStationPath, AutonomousRoutines.kDefaultTrajectoryConstraints);
     }
 
     public Trajectory<TimedState<Pose2dWithCurvature>> getLoadingStationToSideRocketPath() {
-        return mTrajectoryGenerator.generateTrajectory(false, kLoadingStationToSideRocketPath, AutonomousRoutines.kTrajectoryConstraints,  100.0, 40.0, 12.0);
+        return mTrajectoryGenerator.generateTrajectory(false, kLoadingStationToSideRocketPath, AutonomousRoutines.kDefaultTrajectoryConstraints);
     }
 
     @Override
     public ICommand[] generateSequence() {
         return new ICommand[] {
+                new FollowTrajectoryUntilCommandFinished(getStartToMiddleLeftHatchTrajectory(), mDrive, true,
+                        new WaitForVisionTarget(mData, 3.5)),
+                new TargetLock(mDrive, 2.0, ETrackingType.TARGET_LEFT, mLimelight, () -> 0.0, false).setTargetLockThrottleProvider(() -> 0.5)
                 /*new DriveStraight(mDrive, mData, DriveStraight.EDriveControlMode.PERCENT_OUTPUT,
                         MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchFromStart.getTranslation().translateBy(StartingPoses.kMiddleStart.getTranslation().inverse()).norm()),
                 new Delay(5),*/
                 /* new FollowTrajectory(getMiddleLeftHatchToLoadingStationPath(), mDrive, true), */
                 /*new Delay(5),
-                new TurnToDegree(mDrive, Rotation2d.fromDegrees(180.0), 10.0, mData)*/
-                new LimelightTargetLock(mDrive, mLimelight, 3, ETrackingType.TARGET_RIGHT, mLimelight, () -> 0.0, true)
+                new TurnToDegree(mDrive, Rotation2d.fromDegrees(180.0), 10.0, mData)
+                new LimelightTargetLock(mDrive, mLimelight, 3, ETrackingType.TARGET_LEFT, mLimelight, () -> 0.0, true),
+                new DriveStraightVision(mDrive, mVisionGyro, mData, DriveStraight.EDriveControlMode.PERCENT_OUTPUT, 12.0 * 4.0)*/
         };
     }
 

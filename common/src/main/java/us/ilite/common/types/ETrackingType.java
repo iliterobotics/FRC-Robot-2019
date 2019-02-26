@@ -18,7 +18,7 @@ public enum ETrackingType {
     private final int kPipelineNum;
     private final int kTurnScalar;
 
-    private ETrackingType(int pPipelineNum, int pTurnScalar) {
+    ETrackingType(int pPipelineNum, int pTurnScalar) {
         kPipelineNum = pPipelineNum;
         kTurnScalar = pTurnScalar;
     }

@@ -12,8 +12,8 @@ public enum EPigeon implements CodexOf<Double>{
   fACCEL_Y,
   JERK_X,
   JERK_Y,
-  COLLISION;
-  
+  COLLISION
+
 //  public static void map(Codex<Double, EPigeon> pCodex, Pigeon pPigeon, double pTimestampNow) {
 //    pCodex.reset();
 //    pPigeon.update(pTimestampNow);

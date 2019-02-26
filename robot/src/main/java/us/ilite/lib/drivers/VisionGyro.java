@@ -56,7 +56,7 @@ public class VisionGyro extends IMU {
         Double x = mTargetingData.get(ETargetingData.tx);
 
         if(x != null) {
-            return Rotation2d.fromDegrees(x);
+            return Rotation2d.fromDegrees(x).inverse();
         }
         
         return new Rotation2d();
