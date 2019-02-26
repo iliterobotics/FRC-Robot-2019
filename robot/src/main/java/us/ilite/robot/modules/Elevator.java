@@ -130,7 +130,7 @@ public class Elevator extends Module {
         double output  = calculateDesiredPower(mCurrentState, mCurrentControlMode);
         output = Util.limit(output, -0.1, 0.5); //Remember, positive is up and negative is down
 
-        System.out.printf("Current: %s\tDesired Power: %s\tActual Output: %s\t\n", getCurrent(), output, mMasterElevator.getAppliedOutput());
+//        System.out.printf("Current: %s\tDesired Power: %s\tActual Output: %s\t\n", getCurrent(), output, mMasterElevator.getAppliedOutput());
 
         if(mCurrentControlMode == EControlMode.MOTION_MAGIC && mCurrentState != EElevatorState.SET_POSITION) { //If we are motion magic and not set position
             mMasterElevator.set(output);
