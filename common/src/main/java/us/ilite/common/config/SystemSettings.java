@@ -139,19 +139,19 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
 
     //TODO Change values to correct values
-    public static double kElevatorMotionP = 0.0;
+    public static double kElevatorMotionP = /*(5e-3) / 2d*/0;
     public static double kElevatorMotionI = 0.0;
     public static double kElevatorMotionD = 0.0;
-    public static double kElevatorMotionFF = 0.01;
+    public static double kElevatorMotionFF = 0.000391419;
 
-    public static double kMaxElevatorVelocity = 1000;
+    public static double kMaxElevatorVelocity = 2000;
     public static double kMinElevatorVelocity = 0;
-    public static double kMaxElevatorAcceleration = 46.875;
+    public static double kMaxElevatorAcceleration = 1500;
     public static double kMinElevatorAcceleration = 100;
     public static double kElevatorRPM = 5700;
     public static double kElevatorIZone = 0;
     public static double kElevatorFeedForward = 0;
-    public static double kElevatorAllowedError = 0.5; //The allowed deficit in rotations
+    public static double kElevatorAllowedError = 0; //The allowed deficit in rotations
 
 
 
