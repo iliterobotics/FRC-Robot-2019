@@ -14,6 +14,7 @@ import us.ilite.common.types.auton.ECargoAction;
 import us.ilite.common.types.auton.EHatchAction;
 import us.ilite.common.types.auton.EStartingPosition;
 import us.ilite.robot.auto.paths.AutoSequence;
+import us.ilite.robot.auto.paths.DefaultAuto;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToMiddleCargo;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideCargo;
 import us.ilite.lib.drivers.VisionGyro;
@@ -47,6 +48,7 @@ public class AutonomousRoutines {
     private AutoSequence mMiddleToMiddleCargoToSideRocket;
     private AutoSequence mMiddleToMiddleCargoToMiddleCargo;
     private AutoSequence mMiddleToMiddleCargoToSideCargo;
+    private DefaultAuto mDefaultAuto;
 
     private ICommand[] mMiddleToMiddleCargoToSideRocketSequence;
     private ICommand[] mMiddleToMiddleHatchToSideRocketSequence;
@@ -102,13 +104,10 @@ public class AutonomousRoutines {
                 switch ( ECargoAction.intToEnum( cargoAction ) ) {
                     case A:
                         return mMiddleToMiddleCargoToSideRocket.generateCargoSequence();
-                        break;
                     case B:
                         return mMiddleToMiddleCargoToSideCargo.generateCargoSequence();
-                        break;
                     case C:
                         return mMiddleToMiddleCargoToMiddleCargo.generateCargoSequence();
-                        break;
 
                         default:
                             break;
@@ -116,18 +115,17 @@ public class AutonomousRoutines {
                 switch ( EHatchAction.intToEnum( hatchAction )) {
                     case A:
                         return mMiddleToMiddleCargoToSideRocket.generateHatchSequence();
-                        break;
                     case B:
                         return mMiddleToMiddleCargoToMiddleCargo.generateHatchSequence();
-                        break;
                     case C:
                         return mMiddleToMiddleCargoToSideCargo.generateHatchSequence();
-                        break;
 
                         default:
                             break;
                 }
             case UNKNOWN:
+            default:
+                return mDefaultAuto.generateDefaultSequence();
         }
 
     }

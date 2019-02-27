@@ -7,6 +7,11 @@ import com.team254.lib.geometry.Translation2d;
  * Naming always assumes that the robot is starting on the LEFT.
  */
 public class FieldElementLocations {
+    //----------
+    // Hab Line
+    //----------
+    public static final double kHabLineDistance = 94.3;
+
     //------------------------------
     // Cargo ship scoring locations
     //------------------------------
