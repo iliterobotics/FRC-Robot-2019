@@ -414,7 +414,7 @@ public class Elevator extends Module {
         if(mCurrentControlMode == EControlMode.PID) {
             mPidController.setSetpoint(pDesiredPosition.mEncoderThreshold()); // Our set point is the threshold of the
         } else {
-            mCanController.setReference( mSetPoint, ControlType.kSmartMotion ); //Maybe should be a velocity control type..?
+            mCanController.setReference( mSetPoint, ControlType.kSmartMotion, 0, SystemSettings.kElevatorFrictionVoltage ); //Maybe should be a velocity control type..?
         }
 
         // destination state
