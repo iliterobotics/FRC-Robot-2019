@@ -148,11 +148,13 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 if(mIsGround) {
                     mIntake.setIntakeState( EIntakeState.GROUND_CARGO );
                     mCargoSpit.setIntake();
+                } else {
+                    mCargoSpit.setIntake();
                 }
             } else {
                 /*
                 Reset the hatch grabber so it's ready to receive another hatch and tell the intake to start intaking.
-                We intake to stop automatically, or when we release the intake button.
+                The intake to stops automatically, or when we release the intake button.
                  */
                 if(mIsGround) {
                     mHatchFlower.pushHatch();

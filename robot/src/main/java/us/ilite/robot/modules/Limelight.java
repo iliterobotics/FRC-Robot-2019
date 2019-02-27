@@ -59,7 +59,7 @@ public class Limelight extends Module implements ITargetDataProvider {
                 Optional<Translation2d> p = calcTargetLocation(mVisionTarget);
                 if(p.isPresent()) {
                     mData.limelight.set(ETargetingData.calcTargetX, p.get().x());
-                    mData.limelight.set(ETargetingData.calcTargetX, p.get().y());
+                    mData.limelight.set(ETargetingData.calcTargetY, p.get().y());
                 }
             }
         }

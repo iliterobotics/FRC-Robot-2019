@@ -11,7 +11,9 @@ public abstract class AutoSequence {
         mTrajectoryGenerator = pTrajectoryGenerator;
     }
 
-    public abstract ICommand[] generateSequence();
+    public abstract ICommand[] generateCargoSequence();
+
+    public abstract ICommand[] generateHatchSequence();
 
 
 }

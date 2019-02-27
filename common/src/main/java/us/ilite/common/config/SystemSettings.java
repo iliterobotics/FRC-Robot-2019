@@ -139,14 +139,15 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
 
     //TODO Change values to correct values
-    public static double kElevatorMotionP = /*(5e-3) / 2d*/0;
+    public static double kElevatorMotionP = 2.5e-4;
     public static double kElevatorMotionI = 0.0;
     public static double kElevatorMotionD = 0.0;
     public static double kElevatorMotionFF = 0.000391419;
+    public static double kElevatorFrictionVoltage = 0.02 * 12.0;
 
-    public static double kMaxElevatorVelocity = 2000;
+    public static double kMaxElevatorVelocity = 4000;
     public static double kMinElevatorVelocity = 0;
-    public static double kMaxElevatorAcceleration = 1500;
+    public static double kMaxElevatorAcceleration = 4000;
     public static double kMinElevatorAcceleration = 100;
     public static double kElevatorRPM = 5700;
     public static double kElevatorIZone = 0;
@@ -279,7 +280,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // PID TargetLock constants
     // =============================================================================
-    public static PIDGains kTargetLockPIDGains = new PIDGains(0.02, 0.002, 0.0);
+    public static PIDGains kTargetAngleLockGains = new PIDGains(0.01, 0.000, 0.0);
+    public static PIDGains kTargetDistanceLockGains = new PIDGains( 0.1, 0.0, 0.0);
 
     // =============================================================================
     // Target Constants
@@ -291,18 +293,13 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public enum VisionTarget {
         HatchPort(25.6875), // height of the bottom of the reflective tape in inches for the hatch port
         CargoPort(33.3125), // height of the bottom of the reflective tape in inches for the cargo port
-        Ground(0.0,"Ground_Tape_Tracking.vpr"), //The ground
-        CargoHeight(6.5d,"Cargo_Ball_Tracking.vpr");//This may change, not sure what the correct value
+        Ground(0.0), //The ground
+        CargoHeight(6.5d);//This may change, not sure what the correct value
 
         private final double height;
-        private final Optional<String> pipelineName;
 
-        VisionTarget(double height) {
-            this(height, null);
-        }
-        VisionTarget( double height, String pipelineName)  {
+        VisionTarget( double height)  {
             this.height = height;
-            this.pipelineName = Optional.ofNullable(pipelineName);
         }
 
         /**
@@ -314,10 +311,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
         /**
          * @return the pipelineName
          */
-        public Optional<String> getPipelineName() {
-            return pipelineName;
-        }
-
     }
 
     // =============================================================================
