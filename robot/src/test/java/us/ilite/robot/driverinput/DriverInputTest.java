@@ -16,7 +16,6 @@ import us.ilite.common.types.input.ELogitech310;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.commands.Delay;
 import us.ilite.robot.modules.*;
-import us.ilite.robot.modules.CommandManager;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -42,6 +41,7 @@ public class DriverInputTest {
 
     private Data mData;
     private Clock mClock;
+    private CargoSpit mCargoSpit;
     private ModuleList mModuleList;
 
     @Before
@@ -54,7 +54,7 @@ public class DriverInputTest {
         mModuleList = new ModuleList();
         mTeleopCommandManager = spy(new CommandManager());
         mLimelight = new Limelight(mData);
-        mDriverInput = spy(new DriverInput(mDrive, mElevator, mHatchFlower,mIntake, mCargospit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager));
+        mDriverInput = spy(new DriverInput(mDrive, mElevator, mHatchFlower,mIntake, mCargospit, mArm, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager));
         
         mModuleList.setModules(mDriverInput, mTeleopCommandManager, mDrive);
         mModuleList.modeInit(mClock.getCurrentTime());

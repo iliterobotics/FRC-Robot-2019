@@ -16,8 +16,7 @@ import com.team254.lib.drivers.talon.TalonSRXFactory;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import us.ilite.
-common.config.SystemSettings;
+import us.ilite.common.config.SystemSettings;
 import us.ilite.common.config.SystemSettings.ArmPosition;
 import us.ilite.common.lib.control.PIDController;
 import us.ilite.common.lib.control.PIDGains;
@@ -382,7 +381,6 @@ public class MotionMagicArm extends Arm
     {
         // TODO Parameterize the angle limits
         // Constrain the angle to the allowed values
-        // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ angle = " + angle);
         angle = Util.limit(angle, SystemSettings.kArmMinAngle, SystemSettings.kArmMaxAngle);
         this.desiredNumTicks = angleToTicks( angle );
     }

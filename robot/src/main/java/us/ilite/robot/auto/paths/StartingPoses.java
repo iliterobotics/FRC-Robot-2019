@@ -15,6 +15,6 @@ public class StartingPoses {
      * X: 4 feet + length from back to center
      * Y: 11.5 feet + length from side of robot to center
      */
-    public static final Pose2d kSideStart = new Pose2d(4.5 * 12.0 + RobotDimensions.kBackToCenter, 12.5 * 12.0, Rotation2d.fromDegrees(0.0));
+    public static final Pose2d kSideStart = new Pose2d(47.0 + RobotDimensions.kBackToCenter, 133.13 - RobotDimensions.kSideToCenter, Rotation2d.fromDegrees(0.0));
 
 }

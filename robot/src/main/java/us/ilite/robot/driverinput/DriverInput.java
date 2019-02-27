@@ -54,12 +54,13 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     private ETrackingType mLastTrackingType = null;
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, CargoSpit pCargoSpit, Arm pArm, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, boolean pSimulated) {
         this.mDrive = pDrivetrain;
         this.mElevator = pElevator;
         this.mIntake = pIntake;
         this.mCargoSpit = pCargoSpit;
         this.mHatchFlower = pHatchFlower;
+        this.mArm = pArm;
         this.mLimelight = pLimelight;
         this.mData = pData;
         this.mTeleopCommandManager = pTeleopCommandManager;
@@ -76,8 +77,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager) {
-        this(pDrivetrain, pElevator, pHatchFlower, pIntake, pCargoSpit, pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, false);
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, CargoSpit pCargoSpit, Arm pArm, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager) {
+        this(pDrivetrain, pElevator, pHatchFlower, pIntake, pCargoSpit, pArm, pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, false);
     }
 
     @Override
@@ -132,14 +133,12 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             updateHatchGrabber();
             updateElevator();
             updateIntake();
-//            updateArm();
-        } 
 
+        }
 
     }
 
     private void updateIntake() {
-
         if(mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_ACQUIRE) > 0.5) {
             if(mIsCargo) {
                 /*
@@ -147,37 +146,38 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 We expect the cargo spit to stop automatically.
                  */
                 if(mIsGround) {
-                    mIntake.setIntakeState( EIntakeState.GROUND_CARGO ); //TODO may be wrong..?
-                    mCargoSpit.setIntaking();
+                    mIntake.setIntakeState( EIntakeState.GROUND_CARGO );
+                    mCargoSpit.setIntake();
+                } else {
+                    mCargoSpit.setIntake();
                 }
             } else {
                 /*
                 Reset the hatch grabber so it's ready to receive another hatch and tell the intake to start intaking.
-                We intake to stop automatically, or when we release the intake button.
+                The intake to stops automatically, or when we release the intake button.
                  */
-                mHatchFlower.pushHatch();
                 if(mIsGround) {
+                    mHatchFlower.pushHatch();
                     mIntake.setIntakeState( EIntakeState.GROUND_HATCH );
+                } else {
+                    mHatchFlower.captureHatch();
                 }
             }
         } else if(mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
-            // If the intake is handing off or stowed, disable these controls
-            if(mIntake.isAtPosition( Intake.EWristState.STOWED) || mIntake.isAtPosition(Intake.EWristState.HANDOFF)) {
+            // if(mIntake.isAtPosition( Intake.EWristState.STOWED) || mIntake.isAtPosition(Intake.EWristState.HANDOFF)) {
                 if(mIsCargo) {
-                    mCargoSpit.setOuttaking();
-
+                    mCargoSpit.setOuttake();
                 } else {
                     mHatchFlower.pushHatch();
                 }
-            } else {
+            // } else {
                 // If the intake is on the ground, outtake with the intake instead of scoring mechanisms
 //                mIntake.setOuttaking();
-                mIntake.setIntakeState( EIntakeState.HANDOFF ); //TODO this probably isn't right
-            }
+            //     mIntake.setIntakeState( EIntakeState.HANDOFF ); //TODO this probably isn't right
+            // }
         } else {
             // If the intake button is released, stop everything.
             mCargoSpit.stop();
-//            mIntake.stop();
             mIntake.stopIntake();
         }
 
@@ -218,69 +218,47 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     }
 
     private void updateElevator() {
-        double throttle1 = -mData.operatorinput.get(ELogitech310.LEFT_TRIGGER_AXIS);
-        double throttle2 = mData.operatorinput.get(ELogitech310.RIGHT_TRIGGER_AXIS);
-        double throttle = throttle1 + throttle2;
-
-        if(mIsCargo) {
-            if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
-                mElevator.setDesirecPosition(EElevatorPosition.CARGO_BOTTOM);
-            } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
-                mElevator.setDesirecPosition(EElevatorPosition.CARGO_MIDDLE);
-            } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
-                mElevator.setDesirecPosition(EElevatorPosition.CARGO_TOP);
-            } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-                double power = mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
-                mElevator.setDesiredPower(throttle);
-            } else {
-                mElevator.setDesiredPower(0d);
-            }
-        } else {
-            if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
-                mElevator.setDesirecPosition(EElevatorPosition.HATCH_BOTTOM);
-            } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
-                mElevator.setDesirecPosition(EElevatorPosition.HATCH_MIDDLE);
-            } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
-                mElevator.setDesirecPosition(EElevatorPosition.HATCH_TOP);
-            } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-                double power = mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
-                mElevator.setDesiredPower(throttle);
-            } else {
-                mElevator.setDesiredPower(0d);
-            }
-        }
 
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_POSITION_ELEVATOR)) {
-            mElevator.setDesirecPosition(EElevatorPosition.HATCH_BOTTOM);
+            mElevator.setDesiredPosition(EElevatorPosition.HATCH_BOTTOM);
+        } 
+        else {
+            if(mIsCargo) {
+                if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
+                    mElevator.setDesiredPosition(EElevatorPosition.CARGO_BOTTOM);
+                } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
+                    mElevator.setDesiredPosition(EElevatorPosition.CARGO_MIDDLE);
+                } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
+                    mElevator.setDesiredPosition(EElevatorPosition.CARGO_TOP);
+                } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
+                    double throttle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
+                    mElevator.setDesiredPower(throttle);
+                } else {
+                    mElevator.setDesiredPower(0d);
+                }
+            } else {
+                if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
+                    mElevator.setDesiredPosition(EElevatorPosition.HATCH_BOTTOM);
+                } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
+                    mElevator.setDesiredPosition(EElevatorPosition.HATCH_MIDDLE);
+                } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
+                    mElevator.setDesiredPosition(EElevatorPosition.HATCH_TOP);
+                } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
+                    double throttle = mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
+                    mElevator.setDesiredPower(throttle);
+                } else {
+                    mElevator.setDesiredPower(0d);
+                }
+            }
+    
         }
 
-         
     }
-
-//    private void updateElevator() {
-//        double throttle1 = -mData.operatorinput.get(ELogitech310.LEFT_TRIGGER_AXIS);
-//        double throttle2 = mData.operatorinput.get(ELogitech310.RIGHT_TRIGGER_AXIS);
-//        double throttle = throttle1 + throttle2;
-//
-//
-//        if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
-//            mElevator.setDesiredPosition(EElevatorPosition.HATCH_BOTTOM);
-//        } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
-//            mElevator.setDesiredPosition(EElevatorPosition.HATCH_MIDDLE);
-//        } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
-//            mElevator.setDesiredPosition(EElevatorPosition.TOP);
-//        } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-//            double power = mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
-//            mElevator.setDesiredPower(throttle);
-//        } else {
-//            mElevator.setDesiredPower(0d);
-//        }
-//    }
       
     private void updateSplitTriggerAxisFlip() {
 
-        double rotate = mDriverInputCodex.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
-        double throttle = -mDriverInputCodex.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
+        double rotate = getTurn();
+        double throttle = getThrottle();
 
         if (mDriverInputCodex.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.3) {
             rotate = rotate;
@@ -308,54 +286,6 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         mDrive.setDriveMessage(driveMessage);
 
     }
-
-//    /**
-//     * Commands the superstructure to update where the arm should move
-//     * depending on joystick movements. (in progress)
-//     */
-//    protected void updateArm()
-//    {
-//        double mult = 1.0;
-//        //temporarily assuming this setpoint will be set by the operator Y button
-//        if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_UP ) )
-//        {
-//            mArm.setArmAngle(SystemSettings.ArmPosition.FULLY_UP.getAngle());
-//        }
-//        //temporarily assuming this setpoint will be set by the operator A button
-//        else if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_DOWN ) )
-//        {
-//            mArm.setArmAngle(SystemSettings.ArmPosition.FULLY_DOWN.getAngle());
-//        }
-//        //temporarily assuming this setpoint will be set by the operator B button
-//        else if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_SETPOINT_OUT ) )
-//        {
-//            mArm.setArmAngle(SystemSettings.ArmPosition.FULLY_OUT.getAngle());
-//        }
-//        //temporarily assuming the arm will be controlled by the operator joystick
-//        else if( mOperatorInputCodex.isSet( DriveTeamInputMap.OPERATOR_ARM_MOTION ) )
-//        {
-//            //mArm.setArmAngle( mArm.getCurrentArmAngle() + mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) );
-//            // System.out.println(mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
-//
-//            // // Drive the arm directly with the joystick.  Joystick output is -1 to 1
-//            // // Talon desired output range is -1 to 1
-//            // // Scale the output by the button pressed
-//            // // which of these is correct???  both?
-//            // mArm.setDesiredOutput( mOperatorInputCodex.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * mult );
-//            // mArm.setDesiredOutput( mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) * mult );
-//
-//            // System.out.println( "+++++++++++++++DriverInput operator joystick: " + mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
-//
-//            // Drive the arm to track the joystick
-//            // Assuming a mapping of 0 to 135 deg for the joysticks -1 to 1
-//            // angle = ((joystick + 1)/2) * 135
-//            // double angle = (mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ) + 1 ) / 2 * 135;
-//
-//            double angle = this.armJoyStickToAngleScaler.scaleAtoB(mData.operatorinput.get( DriveTeamInputMap.OPERATOR_ARM_MOTION ));
-//            mArm.setArmAngle(angle);
-//
-//        }
-//    }
 
     /**
      * Commands the superstructure to start vision tracking depending on

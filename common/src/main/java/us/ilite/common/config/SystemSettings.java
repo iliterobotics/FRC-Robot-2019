@@ -123,16 +123,40 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     //elevator's properties will be like
     public static int kTopEncoderTicks = 0;
 
-    public static double kElevatorP = 0.1;
-    public static double kElevatorI = 0; 
-    public static double kElevatorD = 0;
+    public static PIDGains kElevatorPositionGains = new PIDGains(0.1, 0.0, 0.0, 0.0);
     public static double kElevatorF = 0;
-    public static double kELevatorControlLoopPeriod = 0.01;
+
     // public static int kUpperElevatorEncoderThreshold = 0; //Will be calculated on the regular
     // public static int kLowerElevatorEncoderThreshold = 0;
     public static double kElevatorMinPower = -1.0;
     public static double kElevatorMaxPower = 1.0;
-    public static int kElevatorCurrentLimit = 10;
+
+    public static double kElevatorRampRate = 0.1;
+    public static int kElevatorSmartCurrentLimit = 80;
+    public static int kElevatorSecondaryCurrentLimit = 100;
+
+    //----Motion Magic Constants------
+
+
+    //TODO Change values to correct values
+    public static double kElevatorMotionP = 2.5e-4;
+    public static double kElevatorMotionI = 0.0;
+    public static double kElevatorMotionD = 0.0;
+    public static double kElevatorMotionFF = 0.000391419;
+    public static double kElevatorFrictionVoltage = 0.02 * 12.0;
+
+    public static double kMaxElevatorVelocity = 4000;
+    public static double kMinElevatorVelocity = 0;
+    public static double kMaxElevatorAcceleration = 4000;
+    public static double kMinElevatorAcceleration = 100;
+    public static double kElevatorRPM = 5700;
+    public static double kElevatorIZone = 0;
+    public static double kElevatorFeedForward = 0;
+    public static double kElevatorAllowedError = 0; //The allowed deficit in rotations
+
+
+
+    //--------------------------------
 
     // public static int kCansparkMasterId = 0;
     // public static int kTalonId = 0;
@@ -150,7 +174,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveVelocity_kD = 0.0;
 //    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
-    public static int ULTRASONIC_PORT = 2;
+    public static int ULTRASONIC_PORT = 1;
 
     // =============================================================================
     // Turn-To PID constants
@@ -256,7 +280,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // PID TargetLock constants
     // =============================================================================
-    public static PIDGains kTargetLockPIDGains = new PIDGains(0.02, 0.002, 0.0);
+    public static PIDGains kTargetAngleLockGains = new PIDGains(0.01, 0.000, 0.0);
+    public static PIDGains kTargetDistanceLockGains = new PIDGains( 0.1, 0.0, 0.0);
 
     // =============================================================================
     // Target Constants
@@ -268,18 +293,13 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public enum VisionTarget {
         HatchPort(25.6875), // height of the bottom of the reflective tape in inches for the hatch port
         CargoPort(33.3125), // height of the bottom of the reflective tape in inches for the cargo port
-        Ground(0.0,"Ground_Tape_Tracking.vpr"), //The ground
-        CargoHeight(6.5d,"Cargo_Ball_Tracking.vpr");//This may change, not sure what the correct value
+        Ground(0.0), //The ground
+        CargoHeight(6.5d);//This may change, not sure what the correct value
 
         private final double height;
-        private final Optional<String> pipelineName;
 
-        VisionTarget(double height) {
-            this(height, null);
-        }
-        VisionTarget( double height, String pipelineName)  {
+        VisionTarget( double height)  {
             this.height = height;
-            this.pipelineName = Optional.ofNullable(pipelineName);
         }
 
         /**
@@ -291,10 +311,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
         /**
          * @return the pipelineName
          */
-        public Optional<String> getPipelineName() {
-            return pipelineName;
-        }
-
     }
 
     // =============================================================================
@@ -324,9 +340,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kPowerDistPanelAddress = 21;
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
-    public static double kCargoSpitSPXCurrentLimit = -1.0;
+    public static double kCargoSpitRollerPower = 0.15; // 15% seems like adequate power (maybe more?)
+    public static double kCargoSpitSPXCurrentRatioLimit = 1.1; // Voltage ~ 1.8
 
-    public static int kElevatorNEOAddress = -15;
+    public static int kElevatorNEOAddress = 15;
     // TO-DO: Elevator encoder address?
     public static int kElevatorNEOEncoderAddress = -1;
     // public static int kElevatorRedundantEncoderAddress = -1;
@@ -343,11 +360,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static int kHatchIntakeSPXAddress = 11;
     public static int kCargoIntakeSPXLowerAddress = 12;
-    // TO-DO DIO spreadsheet empty
-    // public static int kIntakeBeamBreakAddress = -1;
+    // TO-DO DO spreadsheet empty
 
     public static int kIntakeWristSRXAddress = 16;
-    // TO-DO Writs encoder addresses?
+    // TO-DO Write encoder addresses?
     public static int kIntakeWristEncoderA_Address = -1;
     public static int kIntakeWristEncoderB_Address = -1;
     public static int kIntakeSolenoidAddress = 2; // and/or 3 according to integration sheet

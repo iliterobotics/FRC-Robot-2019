@@ -10,8 +10,9 @@ public class DataLogger extends Thread {
         // loggedData.closeWriters();
         Thread logger = new Thread() {
             public void run() {
+                boolean running = true;
                 loggedData.logFromCodexToCSVHeader();
-                    while(true) {
+                    while(running) {
                         loggedData.logFromNetworkTables();
                         // System.out.println(System.currentTimeMillis() + " " + loggedData.imu);
                         loggedData.logFromCodexToCSVLog();

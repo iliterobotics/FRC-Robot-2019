@@ -31,7 +31,7 @@ public class DriveHardware implements IDriveHardware {
 
     private final ILog mLogger = Logger.createLog(DriveHardware.class);
 
-    private final IMU mGyro;
+    private IMU mGyro;
 
     private final TalonSRX mLeftMaster, mRightMaster;
     private final VictorSPX mLeftMiddle, mRightMiddle, mLeftRear, mRightRear;
@@ -121,6 +121,15 @@ public class DriveHardware implements IDriveHardware {
     public void configureMode(ControlMode pControlMode) {
         mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pControlMode);
         mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pControlMode);
+    }
+
+    @Override
+    public void setImu(IMU pImu) {
+        mGyro = pImu;
+    }
+
+    public IMU getImu() {
+        return mGyro;
     }
 
     private ControlMode configForControlMode(TalonSRX pTalon, ControlMode pCurrentControlMode, ControlMode pDesiredControlMode) {
