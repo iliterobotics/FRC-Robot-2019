@@ -1,9 +1,11 @@
 package us.ilite.robot.auto;
 
+import com.google.gson.Gson;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import org.apache.commons.lang3.EnumUtils;
+import us.ilite.common.AutonSelectionData;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.trajectory.TrajectoryConstraints;
@@ -11,6 +13,7 @@ import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.types.auton.ECargoAction;
 import us.ilite.common.types.auton.EHatchAction;
 import us.ilite.common.types.auton.EStartingPosition;
+import us.ilite.robot.auto.paths.AutoSequence;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToMiddleCargo;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideCargo;
 import us.ilite.lib.drivers.VisionGyro;
@@ -41,9 +44,9 @@ public class AutonomousRoutines {
     private VisionGyro mVisionGyro;
     private Data mData;
 
-    private MiddleToMiddleCargoToSideRocket mMiddleToMiddleCargoToSideRocket;
-    private MiddleToMiddleCargoToMiddleCargo mMiddleToMiddleCargoToMiddleCargo;
-    private MiddleToMiddleCargoToSideCargo mMiddleToMiddleCargoToSideCargo;
+    private AutoSequence mMiddleToMiddleCargoToSideRocket;
+    private AutoSequence mMiddleToMiddleCargoToMiddleCargo;
+    private AutoSequence mMiddleToMiddleCargoToSideCargo;
 
     private ICommand[] mMiddleToMiddleCargoToSideRocketSequence;
     private ICommand[] mMiddleToMiddleHatchToSideRocketSequence;
@@ -51,6 +54,8 @@ public class AutonomousRoutines {
     private ICommand[] mMiddleToMiddleCargoToSideHatchSequence;
     private ICommand[] mMiddleToMiddleCargoMiddleCargoSequence;
     private ICommand[] mMiddleToMiddleCargoMiddleHatchSequence;
+
+    private Gson mGson = new Gson();
 
     public AutonomousRoutines(TrajectoryGenerator mTrajectoryGenerator, Drive mDrive, Elevator mElevator, Intake mIntake, CargoSpit mCargoSpit, HatchFlower mHatchFlower, Limelight mLimelight, VisionGyro mVisionGyro, Data mData) {
         this.mTrajectoryGenerator = mTrajectoryGenerator;
@@ -88,7 +93,8 @@ public class AutonomousRoutines {
         Integer cargoAction = (int)SystemSettings.AUTON_TABLE.getEntry( ECargoAction.class.getSimpleName() ).getDouble( 99 );
         Integer hatchAction = (int)SystemSettings.AUTON_TABLE.getEntry( EHatchAction.class.getSimpleName() ).getDouble( 99 );
         Integer startingPosition = (int)SystemSettings.AUTON_TABLE.getEntry( EStartingPosition.class.getSimpleName() ).getDouble( 99 );
-
+        AutonSelectionData data = mGson.fromJson("", AutonSelectionData.class);
+        
         switch(EStartingPosition.intToEnum( startingPosition )) {
             case LEFT:
             case RIGHT:
