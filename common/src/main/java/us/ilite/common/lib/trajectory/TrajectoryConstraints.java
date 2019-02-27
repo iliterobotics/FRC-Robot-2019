@@ -3,6 +3,7 @@ package us.ilite.common.lib.trajectory;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,7 +21,8 @@ public class TrajectoryConstraints {
         mMaximumVelocity = pMaximumVelocity;
         mMaximumAcceleration = pMaximumAcceleration;
         mMaximumVoltage = pMaximumVoltage;
-        mTimingConstraints = Arrays.asList(pTimingConstraints);
+        mTimingConstraints = new ArrayList<>();
+        mTimingConstraints.addAll(Arrays.asList(pTimingConstraints));
     }
 
     public TrajectoryConstraints(TrajectoryConstraints pConstraints) {
