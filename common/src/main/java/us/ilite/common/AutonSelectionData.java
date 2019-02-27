@@ -1,7 +1,5 @@
 package us.ilite.common;
 
-import us.ilite.common.types.auton.ECargoAction;
-import us.ilite.common.types.auton.EHatchAction;
 import us.ilite.common.types.auton.EStartingPosition;
 
 public class AutonSelectionData {

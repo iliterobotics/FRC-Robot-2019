@@ -1,18 +1,13 @@
 package us.ilite.robot.auto;
 
 import com.google.gson.Gson;
-import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
-import com.team254.lib.trajectory.timing.TimingConstraint;
-import org.apache.commons.lang3.EnumUtils;
 import us.ilite.common.AutonSelectionData;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.trajectory.TrajectoryConstraints;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
-import us.ilite.common.types.auton.ECargoAction;
-import us.ilite.common.types.auton.EHatchAction;
-import us.ilite.common.types.auton.EStartingPosition;
+import us.ilite.common.types.auton.*;
 import us.ilite.robot.auto.paths.AutoSequence;
 import us.ilite.robot.auto.paths.DefaultAuto;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToMiddleCargo;
@@ -21,9 +16,6 @@ import us.ilite.lib.drivers.VisionGyro;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideRocket;
 import us.ilite.robot.commands.*;
 import us.ilite.robot.modules.*;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class AutonomousRoutines {
 
@@ -92,8 +84,10 @@ public class AutonomousRoutines {
     }
 
     public ICommand[] getSequence() {
-        Integer cargoAction = (int)SystemSettings.AUTON_TABLE.getEntry( ECargoAction.class.getSimpleName() ).getDouble( 99 );
-        Integer hatchAction = (int)SystemSettings.AUTON_TABLE.getEntry( EHatchAction.class.getSimpleName() ).getDouble( 99 );
+        Integer cargoShipAction = (int)SystemSettings.AUTON_TABLE.getEntry( ECargoShipAction.class.getSimpleName() ).getDouble(99);
+        Integer hatchShipAction = (int)SystemSettings.AUTON_TABLE.getEntry( EHatchShipAction.class.getSimpleName() ).getDouble(99);;
+        Integer cargoRocketAction = (int)SystemSettings.AUTON_TABLE.getEntry( ECargoRocketAction.class.getSimpleName() ).getDouble( 99 );
+        Integer hatchRocketAction = (int)SystemSettings.AUTON_TABLE.getEntry( EHatchRocketAction.class.getSimpleName() ).getDouble( 99 );
         Integer startingPosition = (int)SystemSettings.AUTON_TABLE.getEntry( EStartingPosition.class.getSimpleName() ).getDouble( 99 );
         AutonSelectionData data = mGson.fromJson("", AutonSelectionData.class);
         
@@ -101,27 +95,35 @@ public class AutonomousRoutines {
             case LEFT:
             case RIGHT:
             case MIDDLE:
-                switch ( ECargoAction.intToEnum( cargoAction ) ) {
-                    case A:
-                        return mMiddleToMiddleCargoToSideRocket.generateCargoSequence();
-                    case B:
-                        return mMiddleToMiddleCargoToSideCargo.generateCargoSequence();
-                    case C:
-                        return mMiddleToMiddleCargoToMiddleCargo.generateCargoSequence();
+                switch (ECargoShipAction.intToEnum( cargoShipAction )) {
+                    case FRONT_LEFT:
+                        //return mMiddleToMiddleCargoToSideRocket.generateCargoSequence();
+                    case FRONT_RIGHT:
+                        //return mMiddleToMiddleCargoToSideCargo.generateCargoSequence();
 
                         default:
                             break;
                 }
-                switch ( EHatchAction.intToEnum( hatchAction )) {
-                    case A:
-                        return mMiddleToMiddleCargoToSideRocket.generateHatchSequence();
-                    case B:
-                        return mMiddleToMiddleCargoToMiddleCargo.generateHatchSequence();
-                    case C:
-                        return mMiddleToMiddleCargoToSideCargo.generateHatchSequence();
+                switch (ECargoRocketAction.intToEnum( cargoRocketAction )) {
+                    case FRONT:
+                        //return mMiddleToMiddleCargoToSideRocket.generateHatchSequence();
+                    case LEFT:
+                        //return mMiddleToMiddleCargoToMiddleCargo.generateHatchSequence();
+                    case RIGHT:
+                        //return mMiddleToMiddleCargoToSideCargo.generateHatchSequence();
 
                         default:
                             break;
+                }
+                switch (EHatchShipAction.intToEnum( hatchShipAction )) {
+                    case FRONT:
+                    case LEFT:
+                    case RIGHT:
+                }
+                switch (EHatchRocketAction.intToEnum( hatchRocketAction )) {
+                    case FRONT:
+                    case LEFT:
+                    case RIGHT:
                 }
             case UNKNOWN:
             default:

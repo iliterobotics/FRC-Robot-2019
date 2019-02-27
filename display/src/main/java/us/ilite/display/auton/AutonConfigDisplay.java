@@ -24,10 +24,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import us.ilite.common.AutonSelectionData;
-import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.types.auton.ECargoAction;
-import us.ilite.common.types.auton.EHatchAction;
 import us.ilite.common.types.auton.EStartingPosition;
 
 import java.io.File;
