@@ -13,11 +13,17 @@ public class CSVLogger implements Runnable {
         mLoggingNotifier = new Notifier( this );
     }
 
+    /**
+     * Starts the periodically called logging by mLoggingNotifier
+     */
     public void start() {
         mLoggingNotifier.startPeriodic( SystemSettings.kControlLoopPeriod );
         mData.logFromCodexToCSVHeader();
     }
 
+    /**
+     * Stops the periodically called logging by mLoggingNotifier
+     */
     public void stop() {
         mLoggingNotifier.stop();
     }
