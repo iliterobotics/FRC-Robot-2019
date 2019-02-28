@@ -105,9 +105,11 @@ public class Data {
     }
 
     /**
-     * Makes a csv file and writes the starting row/header for each CodexNetworkTablesParser in mParsers
+     * Logs csv headers to the files
+     * -- This should be called once before csv logging --
      */
     public void logFromCodexToCSVHeader() {
+        checkWriters();
         for (CodexNetworkTablesParser parser : mParsers) {
             try {
                 Writer logger = mWriters.get(parser.getCSVIdentifier());
@@ -123,22 +125,7 @@ public class Data {
      * Logs codex values to its corresponding csv
      */
     public void logFromCodexToCSVLog() {
-
-        if(!mHasMadeWriters) {
-            //This loop makes a Writer for each parser and sticks it into mWriters
-            for (CodexNetworkTablesParser parser : mParsers) {
-                try {
-                    File file = parser.file();
-                    handleCreation(file);
-                    mWriters.put(parser.getCSVIdentifier(), new BufferedWriter(new FileWriter(parser.file())));
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            mHasMadeWriters = true;
-        }
-
+        checkWriters();
         for (CodexNetworkTablesParser parser : mParsers) {
             try {
                 Writer logger = mWriters.get(parser.getCSVIdentifier());
@@ -161,6 +148,23 @@ public class Data {
             catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void checkWriters() {
+        if(!mHasMadeWriters) {
+            //This loop makes a Writer for each parser and sticks it into mWriters
+            for (CodexNetworkTablesParser parser : mParsers) {
+                try {
+                    File file = parser.file();
+                    handleCreation(file);
+                    mWriters.put(parser.getCSVIdentifier(), new BufferedWriter(new FileWriter(parser.file())));
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            mHasMadeWriters = true;
         }
     }
 
