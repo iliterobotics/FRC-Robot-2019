@@ -93,7 +93,9 @@ public class AutonomousRoutines {
         
         switch(EStartingPosition.intToEnum( startingPosition )) {
             case LEFT:
+                break;
             case RIGHT:
+                break;
             case MIDDLE:
                 switch (ECargoShipAction.intToEnum( cargoShipAction )) {
                     case FRONT_LEFT:
