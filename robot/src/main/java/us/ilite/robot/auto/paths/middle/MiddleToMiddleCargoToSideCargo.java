@@ -45,7 +45,7 @@ public class MiddleToMiddleCargoToSideCargo extends AutoSequence {
     // End pose of robot @ loading station from middle left hatch
     public static final Pose2d kLoadingStationFromMiddleLeftHatch = new Pose2d(FieldElementLocations.kLoadingStation, Rotation2d.fromDegrees(180.0));
     // End pose of robot @ left side middle cargo ship hatch from loading station
-    public static final Pose2d kCargoShipSideMiddleHatchFromLoadingStation = new Pose2d(FieldElementLocations.kCargoShipSideMiddleHatch, Rotation2d.fromDegrees(-60.0));
+    public static final Pose2d kMiddleRightHatchFromLoadingStation = new Pose2d(FieldElementLocations.kCargoShipMiddleRightHatch, Rotation2d.fromDegrees(-60.0));
     // Turn towards side middle cargo ship hatch
     public static final Rotation2d kTurnToSideCargoShipMiddleHatch = Rotation2d.fromDegrees(180.0);
 
@@ -64,7 +64,7 @@ public class MiddleToMiddleCargoToSideCargo extends AutoSequence {
     // Drive (also probably in reverse) to the Middle Side Cargo
     public static final List<Pose2d> kLoadingStationToSideMiddleCargoPath = Arrays.asList(
             new Pose2d(kLoadingStationFromMiddleLeftHatch.getTranslation(), kTurnToSideCargoShipMiddleHatch),
-            kCargoShipSideMiddleHatchFromLoadingStation
+            kMiddleRightHatchFromLoadingStation
     );
 
     public Trajectory<TimedState<Pose2dWithCurvature>> getStartToMiddleLeftHatchTrajectory() {
