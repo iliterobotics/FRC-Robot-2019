@@ -124,7 +124,6 @@ public class Data {
      */
     public void logFromCodexToCSVLog() {
 
-
         if(!mHasMadeWriters) {
             //This loop makes a Writer for each parser and sticks it into mWriters
             for (CodexNetworkTablesParser parser : mParsers) {
