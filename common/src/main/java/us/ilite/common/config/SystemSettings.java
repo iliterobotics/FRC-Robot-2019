@@ -226,7 +226,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // We measured .7 volts on the motor to hold the arm horizontal
     // For gravity compensation Kg = % power to hold arm horizontal, which is
     // the measured voltage / 12 volts
-    public static double kArmKg = 0.7/12.0;
+    public static double kArmKg = 1.1;
 
     // Control power clamping limits
     public static double kArmPIDOutputMaxLimit = 1.0; // max 1.0
@@ -364,16 +364,16 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static int kIntakeWristSRXAddress = 16;
     // TO-DO Write encoder addresses?
-    public static int kIntakeWristEncoderA_Address = -1;
-    public static int kIntakeWristEncoderB_Address = -1;
+    // public static int kIntakeWristEncoderA_Address = -1;
+    // public static int kIntakeWristEncoderB_Address = -1;
     public static int kIntakeSolenoidAddress = 2; // and/or 3 according to integration sheet
-    public static double kIntakeRollerHatchPower = -1;
-    public static double kIntakeRollerCargoPower = -1;
-    public static double kIntakeRollerHoldPower = -1;
-    public static double kIntakeWristStowedAngle = -1;
-    public static double kIntakeWristHandoffAngle = -1;
-    public static double kIntakeWristGroundAngle = -1;
+    public static double kIntakeRollerHatchPower = .25;
+    public static double kIntakeRollerCargoPower = .25;
+    public static double kIntakeRollerHoldPower = .25;
+    public static double kIntakeWristStowedAngle = 0;
+    public static double kIntakeWristHandoffAngle = 48;
+    public static double kIntakeWristGroundAngle = 105;
     //The minimum angle where it is safe to continue intake process (engage solenoid/roller)
-    public static double kIntakeWristGroundMinBound = -1;
+    public static double kIntakeWristGroundMinBound = 95;
 
 }

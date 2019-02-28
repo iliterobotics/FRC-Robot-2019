@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.types.input.ELogitech310;
 import us.ilite.common.types.manipulator.EIntake;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 
@@ -31,8 +32,10 @@ public class Intake extends Module {
     private double mIntakeRollerVoltage;
 
     // Wrist/Arm fields
-    private Arm mWrist;
+    private MotionMagicArm mWrist;
     private Double mWristAngle;
+
+    private TalonSRX mWristTalon;
 
     // Pneumatic/Solenoid for hatch/cargo roller mode toggle
     private Solenoid mSolenoid;
@@ -47,7 +50,7 @@ public class Intake extends Module {
         this.mData = pData;
     
         // Wrist control
-        TalonSRX mWristTalon = TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress);
+        mWristTalon = TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress);
         mWrist = new MotionMagicArm(mWristTalon);
 
         // Solenoid for changing between cargo and hatch mode
@@ -72,49 +75,60 @@ public class Intake extends Module {
         mData.intake.set(EIntake.ROLLER_CURRENT, mIntakeRollerCurrent);
         mData.intake.set(EIntake.ROLLER_VOLTAGE, mIntakeRollerVoltage);
         mData.intake.set(EIntake.SOLENOID_EXTENDED, mSolenoid.get() ? 1.0 : 0.0);
+
         
         mWrist.periodicInput(pNow);
     }
 
     @Override
     public void update(double pNow) {
+
+        double power = mData.driverinput.get(ELogitech310.LEFT_Y_AXIS);
+        // mWristTalon.set(ControlMode.PercentOutput, power );
+        
+        // System.out.println(mWristTalon.getOutputCurrent());
+        mData.kSmartDashboard.putDouble("Desired Power", power);
+
+        mWrist.setArmPower(power);
         // EPowerDistPanel ID 11 (CURRENT11) corresponds to Intake Rollers
         mIntakeRollerCurrent = mData.pdp.get(EPowerDistPanel.CURRENT11);
         mIntakeRollerVoltage = mIntakeRoller.getMotorOutputVoltage();
 
         mWristAngle = mWrist.getCurrentArmAngle();
+        mData.kSmartDashboard.putDouble("Wrist Angle", mWristAngle);
+        mData.kSmartDashboard.putDouble("Wrist Voltage", mWristTalon.getMotorOutputVoltage());
         
         // SmartDashboard.putString("Desired State", mDesiredIntakeState.name());        
         // SmartDashboard.putNumber("pNow var", pNow);
         // SmartDashboard.putNumber("Intake Wrist Angle", mWristAngle);
 
-        switch (mDesiredIntakeState) {
-            case GROUND_HATCH:
-                setWristState(EWristState.GROUND);
-                if (mWristAngle < SystemSettings.kIntakeWristGroundMinBound) break;
-                setSolenoidState(ESolenoidState.HATCH);
-                setRollerState(ERollerState.HATCH);
-                break;
-            case GROUND_CARGO:
-                setWristState(EWristState.GROUND);
-                if (mWristAngle < SystemSettings.kIntakeWristGroundMinBound) break;
-                setSolenoidState(ESolenoidState.CARGO);
-                setRollerState(ERollerState.CARGO);
-                break;
-            case HANDOFF:
-                setSolenoidState(ESolenoidState.HATCH);
-                setRollerState(ERollerState.HOLD);
-                setWristState(EWristState.HANDOFF);
-                break;
-            case STOWED:
-                setSolenoidState(ESolenoidState.HATCH);
-                setRollerState(ERollerState.STOPPED);
-                setWristState(EWristState.STOWED);
-                break;
-            default:
-                mLog.error(kDefaultError);
-                break;
-        }
+        // switch (mDesiredIntakeState) {
+        //     case GROUND_HATCH:
+        //         setWristState(EWristState.GROUND);
+        //         if (mWristAngle < SystemSettings.kIntakeWristGroundMinBound) break;
+        //         setSolenoidState(ESolenoidState.HATCH);
+        //         setRollerState(ERollerState.HATCH);
+        //         break;
+        //     case GROUND_CARGO:
+        //         setWristState(EWristState.GROUND);
+        //         if (mWristAngle < SystemSettings.kIntakeWristGroundMinBound) break;
+        //         setSolenoidState(ESolenoidState.CARGO);
+        //         setRollerState(ERollerState.CARGO);
+        //         break;
+        //     case HANDOFF:
+        //         setSolenoidState(ESolenoidState.HATCH);
+        //         setRollerState(ERollerState.HOLD);
+        //         setWristState(EWristState.HANDOFF);
+        //         break;
+        //     case STOWED:
+        //         setSolenoidState(ESolenoidState.HATCH);
+        //         setRollerState(ERollerState.STOPPED);
+        //         setWristState(EWristState.STOWED);
+        //         break;
+        //     default:
+        //         mLog.error(kDefaultError);
+        //         break;
+        // }
 
         mWrist.update(pNow);
     }

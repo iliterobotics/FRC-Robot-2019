@@ -6,6 +6,7 @@ package us.ilite.robot.modules;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
@@ -66,6 +67,7 @@ public class MotionMagicArm extends Arm
     private boolean stalled = false;
     private boolean motorOff = false; // Motor turned off for a time because of current limiting
     private Timer mTimer;
+    private double mOverridePower = 0;
 
 
     // Constants used for translating ticks to angle, values based on ticks per full rotation
@@ -76,8 +78,8 @@ public class MotionMagicArm extends Arm
     {
         this.talon = new TalonSRX(SystemSettings.kIntakeWristSRXAddress);
 
-        int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
-        int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
+        int minTickPosition = this.angleToTicks(SystemSettings.kIntakeWristStowedAngle);
+        int maxTickPosition = this.angleToTicks(SystemSettings.kIntakeWristGroundAngle);
 
         this.currentNumTicks = 0;
         // pid = new PIDController( SystemSettings.kArmPIDGains /*new PIDGains(kP, kI, kD)*/, SystemSettings.kControlLoopPeriod );
@@ -123,7 +125,7 @@ public class MotionMagicArm extends Arm
         this.currentNumTicks = 0;
         // pid = new PIDController( SystemSettings.kArmPIDGains /*new PIDGains(kP, kI, kD)*/, SystemSettings.kControlLoopPeriod );
         // pid.setInputRange( minTickPosition, maxTickPosition ); //min and max ticks of arm
-        if ( talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.kLongCANTimeoutMs) != ErrorCode.OK ) {
+        if ( talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, SystemSettings.kLongCANTimeoutMs) != ErrorCode.OK ) {
             mLogger.error("ArmMotionMagic talon.configSelectedFeedbackSensor error");
         }
         talon.setSelectedSensorPosition(0);
@@ -134,10 +136,10 @@ public class MotionMagicArm extends Arm
         this.mTimer.reset();
 
         // Protect the motors and protect from brown out
+        talon.enableCurrentLimit(false);
         talon.configContinuousCurrentLimit(40, 0);
         talon.configPeakCurrentLimit(60, 0);
         talon.configPeakCurrentDuration(100, 0);
-        talon.enableCurrentLimit(true);
 
         talon.setNeutralMode(NeutralMode.Brake);
 
@@ -147,8 +149,8 @@ public class MotionMagicArm extends Arm
         talon.config_kD(0, SystemSettings.kArmPidD, SystemSettings.CTRE_TIMEOUT_INIT);
         talon.config_kF(0, SystemSettings.kArmPidF, SystemSettings.CTRE_TIMEOUT_INIT);
         
-        setArmSoftLimits(minTickPosition, maxTickPosition);
-        setArmMotionProfile(SystemSettings.K_ARM_ACCELERATION, SystemSettings.K_ARM_CRUISE);
+        // setArmSoftLimits(minTickPosition, maxTickPosition);
+        // setArmMotionProfile(SystemSettings.K_ARM_ACCELERATION, SystemSettings.K_ARM_CRUISE);
 
         talon.configAllowableClosedloopError(0, 2, SystemSettings.CTRE_TIMEOUT_INIT);
     }
@@ -164,8 +166,8 @@ public class MotionMagicArm extends Arm
         talon.config_kF(0, SystemSettings.kArmPidF, SystemSettings.CTRE_TIMEOUT_INIT);
         int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
         int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
-        setArmSoftLimits(minTickPosition, maxTickPosition);
-        setArmMotionProfile(SystemSettings.K_ARM_ACCELERATION, SystemSettings.K_ARM_CRUISE);
+        // setArmSoftLimits(minTickPosition, maxTickPosition);
+        // setArmMotionProfile(SystemSettings.K_ARM_ACCELERATION, SystemSettings.K_ARM_CRUISE);
     }
 
     @Override
@@ -208,6 +210,8 @@ public class MotionMagicArm extends Arm
         SmartDashboard.putNumber("MMArmVoltage", voltage);
         SmartDashboard.putNumber("MMArmCurrent", current);
         SmartDashboard.putNumber("MMArmStallRatio", ratio);
+
+        SmartDashboard.putNumber("*Wrist Ticks", currentNumTicks);
 
 
         // System.out.println("-----------Current ratio = " + ratio + "------------");
@@ -290,7 +294,10 @@ public class MotionMagicArm extends Arm
         }
         else
         {
-            talon.set(ControlMode.MotionMagic, this.desiredNumTicks);
+            double gravityCompensationVoltage = SystemSettings.kArmKg * Math.cos(this.ticksToAngle(this.currentNumTicks));
+            // talon.set(ControlMode.MotionMagic, this.desiredNumTicks, DemandType.ArbitraryFeedForward, gravityCompensationVoltage);
+            talon.set(ControlMode.PercentOutput, mOverridePower);
+            System.out.println("Torque Constant: " + (talon.getMotorOutputVoltage() / Math.cos(this.ticksToAngle(this.currentNumTicks))));
         }
         
     }
@@ -360,6 +367,10 @@ public class MotionMagicArm extends Arm
     private double ticksToAngle(int numTicks)
     {
         return numTicks * this.degreePerTick;
+    }
+
+    public void setArmPower(double pPower) {
+        mOverridePower = pPower;
     }
 
     /**
