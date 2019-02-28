@@ -21,6 +21,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
 
     public static double kControlLoopPeriod = 0.01; // seconds
+    public static double kCSVLoggingPeriod = 0.02;  // seconds
 
     public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
 
