@@ -91,8 +91,8 @@ public class Data {
             new CodexNetworkTablesParser<EDriveData>(drive),
             new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
             new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR"),
-                new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" ),
-                new CodexNetworkTablesParser<ECargoSpit>( cargospit, "CARGOSPIT" ),
+            new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" ),
+            new CodexNetworkTablesParser<ECargoSpit>( cargospit, "CARGOSPIT" ),
             new CodexNetworkTablesParser<EPowerDistPanel>( pdp, "PDP" )
         );
     }
