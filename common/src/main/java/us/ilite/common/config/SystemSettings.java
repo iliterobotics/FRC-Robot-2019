@@ -26,12 +26,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static int sCODEX_COMMS_PORT = 5805;
 
-    //==============================================================================
-    // Comms
-    // =============================================================================
-    public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE");
-    public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
-
     // ===========================
     // System ID's
     // ================================

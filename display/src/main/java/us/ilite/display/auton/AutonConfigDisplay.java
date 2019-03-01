@@ -22,6 +22,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.auton.ECargoAction;
 import us.ilite.common.types.auton.EHatchAction;
@@ -216,9 +217,9 @@ public class AutonConfigDisplay extends Application {
   }
   
   private void sendData() {
-    SystemSettings.AUTON_TABLE.putNumber(ECargoAction.class.getSimpleName(), mCargoAction);
-    SystemSettings.AUTON_TABLE.putNumber(EHatchAction.class.getSimpleName(), mHatchAction);
-    SystemSettings.AUTON_TABLE.putNumber(EStartingPosition.class.getSimpleName(), mStartingPosition);
+      Data.kAutonTable.getEntry(ECargoAction.class.getSimpleName()).setDouble(mCargoAction);
+      Data.kAutonTable.getEntry(EHatchAction.class.getSimpleName()).setDouble(mHatchAction);
+      Data.kAutonTable.getEntry(EStartingPosition.class.getSimpleName()).setDouble(mStartingPosition);
 
   //   SystemSettings.AUTON_TABLE.putDouble(SystemSettings.AUTO_DELAY_KEY, mDelay);
   //   SystemSettings.AUTON_TABLE.putNumber(ECross.class.getSimpleName(), mCross);
