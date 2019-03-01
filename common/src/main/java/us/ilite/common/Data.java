@@ -109,7 +109,7 @@ public class Data {
      * -- This should be called once before csv logging --
      */
     public void logFromCodexToCSVHeader() {
-        checkWriters();
+        handleWriterCreation();
         for (CodexNetworkTablesParser parser : mParsers) {
             try {
                 Writer logger = mWriters.get(parser.getCSVIdentifier());
@@ -125,7 +125,7 @@ public class Data {
      * Logs codex values to its corresponding csv
      */
     public void logFromCodexToCSVLog() {
-        checkWriters();
+        handleWriterCreation();
         for (CodexNetworkTablesParser parser : mParsers) {
             try {
                 Writer logger = mWriters.get(parser.getCSVIdentifier());
@@ -208,7 +208,7 @@ public class Data {
     }
 
     /**
-     * @deprecated
+     * @Deprecated
      * Do this before sending codices to NetworkTables
      */
     public void registerCodices() {
