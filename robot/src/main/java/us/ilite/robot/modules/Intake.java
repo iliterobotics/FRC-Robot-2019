@@ -8,12 +8,11 @@ import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.drivers.talon.TalonSRXFactory;
 
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.types.input.ELogitech310;
 import us.ilite.common.types.manipulator.EIntake;
 import us.ilite.common.types.sensor.EPowerDistPanel;
+import us.ilite.robot.driverinput.DriverInput.EGamePiece;
 
 
 public class Intake extends Module {
@@ -31,22 +30,20 @@ public class Intake extends Module {
     private double mIntakeRollerCurrent;
     private double mIntakeRollerVoltage;
 
-    // Wrist/Arm fields
+    // Wrist/Arm fields - keep a reference to the talon so we can power output 'off'
     private MotionMagicArm mWrist;
-    private Double mWristAngle;
-
     private TalonSRX mWristTalon;
 
     // Pneumatic/Solenoid for hatch/cargo roller mode toggle
     private Solenoid mSolenoid;
 
     // Present intake states
-    private EWristState mWristPosition;
     private EIntakeState mDesiredIntakeState;
+    private EGamePiece mGamePiece;
 
     public Intake(Data pData) {
         // Basic Construction
-        mIntakeRoller = new VictorSPX(SystemSettings.kHatchIntakeSPXAddress);
+        mIntakeRoller = new VictorSPX(SystemSettings.kCargoIntakeSPXLowerAddress);
         this.mData = pData;
     
         // Wrist control
@@ -55,7 +52,6 @@ public class Intake extends Module {
 
         // Solenoid for changing between cargo and hatch mode
         mSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kIntakeSolenoidAddress);
-        mWristPosition = EWristState.STOWED;
         mDesiredIntakeState = EIntakeState.STOWED;
     }
 
@@ -63,15 +59,14 @@ public class Intake extends Module {
     @Override
     public void modeInit(double pNow) {
         mLog.error("MODE INIT");
-        mWristPosition = EWristState.STOWED;
         mDesiredIntakeState = EIntakeState.STOWED;
-
+        mGamePiece = EGamePiece.HATCH;
         mWrist.modeInit(pNow);
     }
 
     @Override
     public void periodicInput(double pNow) {
-        mData.intake.set(EIntake.ARM_ANGLE, mWristAngle);
+        mData.intake.set(EIntake.ARM_ANGLE, mWrist.getCurrentArmAngle());
         mData.intake.set(EIntake.ROLLER_CURRENT, mIntakeRollerCurrent);
         mData.intake.set(EIntake.ROLLER_VOLTAGE, mIntakeRollerVoltage);
         mData.intake.set(EIntake.SOLENOID_EXTENDED, mSolenoid.get() ? 1.0 : 0.0);
@@ -82,55 +77,40 @@ public class Intake extends Module {
 
     @Override
     public void update(double pNow) {
-
-        double power = mData.driverinput.get(ELogitech310.LEFT_Y_AXIS);
-        // mWristTalon.set(ControlMode.PercentOutput, power );
-        
-        // System.out.println(mWristTalon.getOutputCurrent());
-        mData.kSmartDashboard.putDouble("Desired Power", power);
-
-        mWrist.setArmPower(power);
+        // mWrist.setArmPower(power);
         // EPowerDistPanel ID 11 (CURRENT11) corresponds to Intake Rollers
         mIntakeRollerCurrent = mData.pdp.get(EPowerDistPanel.CURRENT11);
         mIntakeRollerVoltage = mIntakeRoller.getMotorOutputVoltage();
 
-        mWristAngle = mWrist.getCurrentArmAngle();
-        mData.kSmartDashboard.putDouble("Wrist Angle", mWristAngle);
-        mData.kSmartDashboard.putDouble("Wrist Voltage", mWristTalon.getMotorOutputVoltage());
-        
-        // SmartDashboard.putString("Desired State", mDesiredIntakeState.name());        
-        // SmartDashboard.putNumber("pNow var", pNow);
-        // SmartDashboard.putNumber("Intake Wrist Angle", mWristAngle);
+        mData.kSmartDashboard.putDouble("Intake Wrist Angle", mWrist.getCurrentArmAngle());
 
-        // switch (mDesiredIntakeState) {
-        //     case GROUND_HATCH:
-        //         setWristState(EWristState.GROUND);
-        //         if (mWristAngle < SystemSettings.kIntakeWristGroundMinBound) break;
-        //         setSolenoidState(ESolenoidState.HATCH);
-        //         setRollerState(ERollerState.HATCH);
-        //         break;
-        //     case GROUND_CARGO:
-        //         setWristState(EWristState.GROUND);
-        //         if (mWristAngle < SystemSettings.kIntakeWristGroundMinBound) break;
-        //         setSolenoidState(ESolenoidState.CARGO);
-        //         setRollerState(ERollerState.CARGO);
-        //         break;
-        //     case HANDOFF:
-        //         setSolenoidState(ESolenoidState.HATCH);
-        //         setRollerState(ERollerState.HOLD);
-        //         setWristState(EWristState.HANDOFF);
-        //         break;
-        //     case STOWED:
-        //         setSolenoidState(ESolenoidState.HATCH);
-        //         setRollerState(ERollerState.STOPPED);
-        //         setWristState(EWristState.STOWED);
-        //         break;
-        //     default:
-        //         mLog.error(kDefaultError);
-        //         break;
-        // }
+        // TODO put this into each case in IntakeState to prevent unwanted solenoid extension
+        setSolenoidState(mGamePiece);        
+
+        switch (mDesiredIntakeState) {
+            case GROUND:
+                //if (mWristAngle < SystemSettings.kIntakeWristGroundMinBound) break;
+                setRollerState(ERollerState.CARGO);
+                mWrist.setArmAngle(mDesiredIntakeState.kWristAngleDegrees);
+                break;
+            case HANDOFF:
+                setRollerState(ERollerState.HOLD);
+                mWrist.setArmAngle(mDesiredIntakeState.kWristAngleDegrees);
+                break;
+            case STOWED:
+                setSolenoidState(EGamePiece.HATCH);
+                setRollerState(ERollerState.STOPPED);
+                mWrist.setArmAngle(mDesiredIntakeState.kWristAngleDegrees);
+                break;
+            case STOPPED: 
+            default:
+                setRollerState(ERollerState.STOPPED);
+                mWristTalon.set(ControlMode.PercentOutput, 0d);
+                break;
+        }
 
         mWrist.update(pNow);
+        //mWristTalon.set(ControlMode.PercentOutput, this.power);
     }
 
     /**
@@ -139,24 +119,10 @@ public class Intake extends Module {
     public void setIntakeState(EIntakeState pIntakeState) {
         mDesiredIntakeState = pIntakeState;
     }
-    public void stopRoller() {
-        mIntakeRoller.set(ControlMode.PercentOutput, kZero);
-    }
-    public void stopWrist() {
-        mWrist.setDesiredOutput(kZero);
-    }
-    public void stopIntake() {
-        stopRoller();
-        stopWrist();
-    }
 
-    /**
-     * Sets the wrist position to a preset position.
-     * @param pWristPosition desired wrist position
-     */
-    private void setWristState(EWristState pWristPosition) {
-        mWrist.setArmAngle(pWristPosition.kWristAngleDegrees);
-        mWristPosition = pWristPosition;
+    private double power = 0d;
+    public void overridePower(double pPower){
+        power = pPower;
     }
 
     /**
@@ -180,23 +146,36 @@ public class Intake extends Module {
      * i.e. sets whether the intake is in "cargo mode" or "hatch mode".
      * @param pSolenoidState desired solenoid state
      */
-    private void setSolenoidState(ESolenoidState pSolenoidState) {
-        mSolenoid.set(pSolenoidState.kExtended);
+    private void setSolenoidState(EGamePiece pGamePiece) {
+        switch(pGamePiece) {
+            case HATCH:
+                mSolenoid.set(ESolenoidState.HATCH.kExtended);
+                break;
+            case CARGO:
+                mSolenoid.set(ESolenoidState.CARGO.kExtended);
+                break;
+            default:
+                mLog.error(kDefaultError);
+        }
+        
     }
 
-    /**
-     * Asks if the a given wrist position matches the current wrist position.
-     * @param pWristPosition position in question
-     * @return Whether the wrist had been at the specified setpoint for a certain amount of time within a certain deadband.
-     */
-    public boolean isAtPosition(EWristState pWristPosition) {
-        return mWristPosition.equals(pWristPosition);
+    public void setGamePiece(EGamePiece pGamePiece) {
+        mGamePiece = pGamePiece;
     }
+
+    // /**
+    //  * Asks if the a given wrist position matches the current wrist position.
+    //  * @param pWristPosition position in question
+    //  * @return Whether the wrist had been at the specified setpoint for a certain amount of time within a certain deadband.
+    //  */
+    // public boolean isAtPosition(EIntakeState pWristPosition) {
+    //     return true;
+    // }
 
     @Override
     public boolean checkModule(double pNow) {
-        mWrist.checkModule(pNow);
-        return false;
+        return mWrist.checkModule(pNow);
     }
 
     @Override
@@ -210,32 +189,15 @@ public class Intake extends Module {
     //                     Enumerators                     //
     //*****************************************************//
 
-    /**
-     * Wrist position based on angle
-     */
-    public enum EWristState {
-        // TODO update wrist position angles
-        GROUND(SystemSettings.kIntakeWristGroundAngle), HANDOFF(SystemSettings.kIntakeWristHandoffAngle), STOWED(SystemSettings.kIntakeWristStowedAngle);
-
-        public final double kWristAngleDegrees;
-
-        EWristState(double pWristAngle) {
-            kWristAngleDegrees = pWristAngle;
-        }
-
-    }
-    /**
-     * Pneumatic/Solenoid state for hatch or cargo roller mode
-     */
-    public enum ESolenoidState {
-        HATCH(false), CARGO(true);
+    private enum ESolenoidState {
+        HATCH(false),
+        CARGO(true);
 
         public final boolean kExtended;
 
         private ESolenoidState(boolean pExtended) {
-            this.kExtended = pExtended;
+            kExtended = pExtended;
         }
-
     }
 
     /**
@@ -258,7 +220,17 @@ public class Intake extends Module {
     }
 
     public enum EIntakeState {
-        GROUND_HATCH, GROUND_CARGO, HANDOFF, STOWED;
+        GROUND(SystemSettings.kIntakeWristGroundAngle),
+        HANDOFF(SystemSettings.kIntakeWristHandoffAngle), 
+        STOWED(SystemSettings.kIntakeWristStowedAngle),
+        STOPPED(0);
+
+        // TODO update wrist position angles
+        public final double kWristAngleDegrees;
+
+        EIntakeState(double pWristAngle) {
+            kWristAngleDegrees = pWristAngle;
+        }
     }
 
 }

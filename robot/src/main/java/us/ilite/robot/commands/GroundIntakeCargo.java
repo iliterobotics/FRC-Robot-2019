@@ -1,5 +1,6 @@
 package us.ilite.robot.commands;
 
+import us.ilite.robot.driverinput.DriverInput.EGamePiece;
 import us.ilite.robot.modules.*;
 
 public class GroundIntakeCargo extends CommandQueue {
@@ -12,7 +13,7 @@ public class GroundIntakeCargo extends CommandQueue {
                         new ReleaseHatch(pHatchFlower)
                 ),
                 new ParallelCommand(
-                        new SetIntakeState(pIntake, Intake.EIntakeState.GROUND_CARGO),
+                        new SetIntakeState(pIntake, Intake.EIntakeState.GROUND, EGamePiece.CARGO),
                         new IntakeCargo(pCargoSpit)
                 )
         );

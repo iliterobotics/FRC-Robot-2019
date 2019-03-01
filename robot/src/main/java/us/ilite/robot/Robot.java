@@ -60,10 +60,7 @@ public class Robot extends TimedRobot {
     private Limelight mLimelight = new Limelight(mData);
     private VisionGyro mVisionGyro = new VisionGyro(mData);
 
-    //private Arm mArm = new BasicArm();
-    private Arm mArm = new MotionMagicArm();
-
-    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mIntake, mCargoSpit, mArm, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager);
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager);
 
     private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
     private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator, mIntake, mCargoSpit, mHatchFlower, mLimelight, mVisionGyro, mData);

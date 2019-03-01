@@ -63,11 +63,9 @@ public class MotionMagicArm extends Arm
     // private boolean settingPosition;
     private int currentNumTicks = 0; //revisit this and check if correct for encoder type
     private int desiredNumTicks = 0;
-    private double mDesiredOutput = 0;
     private boolean stalled = false;
     private boolean motorOff = false; // Motor turned off for a time because of current limiting
     private Timer mTimer;
-    private double mOverridePower = 0;
 
 
     // Constants used for translating ticks to angle, values based on ticks per full rotation
@@ -76,7 +74,7 @@ public class MotionMagicArm extends Arm
     
     public MotionMagicArm()
     {
-        this.talon = new TalonSRX(SystemSettings.kIntakeWristSRXAddress);
+        this(new TalonSRX(SystemSettings.kIntakeWristSRXAddress));
 
         int minTickPosition = this.angleToTicks(SystemSettings.kIntakeWristStowedAngle);
         int maxTickPosition = this.angleToTicks(SystemSettings.kIntakeWristGroundAngle);
@@ -84,7 +82,7 @@ public class MotionMagicArm extends Arm
         this.currentNumTicks = 0;
         // pid = new PIDController( SystemSettings.kArmPIDGains /*new PIDGains(kP, kI, kD)*/, SystemSettings.kControlLoopPeriod );
         // pid.setInputRange( minTickPosition, maxTickPosition ); //min and max ticks of arm
-        if ( talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, SystemSettings.kLongCANTimeoutMs) != ErrorCode.OK ) {
+        if ( talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, SystemSettings.kLongCANTimeoutMs) != ErrorCode.OK ) {
             mLogger.error("ArmMotionMagic talon.configSelectedFeedbackSensor error");
         }
         talon.setSelectedSensorPosition(0);
@@ -103,54 +101,50 @@ public class MotionMagicArm extends Arm
         talon.setNeutralMode(NeutralMode.Brake);
 
         talon.selectProfileSlot(0, 0);
-        talon.config_kP(0, SystemSettings.kArmPidP, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kI(0, SystemSettings.kArmPidI, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kD(0, SystemSettings.kArmPidD, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kF(0, SystemSettings.kArmPidF, SystemSettings.CTRE_TIMEOUT_INIT);
+        // talon.config_kP(0, SystemSettings.kArmPidP, SystemSettings.CTRE_TIMEOUT_INIT);
+        // talon.config_kI(0, SystemSettings.kArmPidI, SystemSettings.CTRE_TIMEOUT_INIT);
+        // talon.config_kD(0, SystemSettings.kArmPidD, SystemSettings.CTRE_TIMEOUT_INIT);
+        // talon.config_kF(0, SystemSettings.kArmPidF, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kP(0, SystemSettings.kIntakeWristPidP, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kI(0, SystemSettings.kIntakeWristPidI, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kD(0, SystemSettings.kIntakeWristPidD, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kF(0, SystemSettings.kIntakeWristPidF, SystemSettings.CTRE_TIMEOUT_INIT);
         
         setArmSoftLimits(minTickPosition, maxTickPosition);
-        setArmMotionProfile(SystemSettings.K_ARM_ACCELERATION, SystemSettings.K_ARM_CRUISE);
+        setArmMotionProfile(SystemSettings.K_INTAKE_WRIST_ACCELERATION, SystemSettings.K_INTAKE_WRIST_CRUISE);
 
         talon.configAllowableClosedloopError(0, 2, SystemSettings.CTRE_TIMEOUT_INIT);
     }
 
-    public MotionMagicArm( TalonSRX talon )
+    public MotionMagicArm( TalonSRX pTalon )
     {
-        this.talon = talon;
-        talon.setInverted(true);
-        
-        int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
-        int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
+        this.talon = pTalon;
+               
 
         this.currentNumTicks = 0;
-        // pid = new PIDController( SystemSettings.kArmPIDGains /*new PIDGains(kP, kI, kD)*/, SystemSettings.kControlLoopPeriod );
-        // pid.setInputRange( minTickPosition, maxTickPosition ); //min and max ticks of arm
-        if ( talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, SystemSettings.kLongCANTimeoutMs) != ErrorCode.OK ) {
+        if ( talon.configSelectedFeedbackSensor(
+            FeedbackDevice.CTRE_MagEncoder_Relative, 
+            0, 
+            SystemSettings.kLongCANTimeoutMs
+            ) != ErrorCode.OK 
+        ) {
             mLogger.error("ArmMotionMagic talon.configSelectedFeedbackSensor error");
         }
-        talon.setSelectedSensorPosition(0);
-        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5);
+        talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
 
         // init the timer
         this.mTimer = new Timer();
         this.mTimer.reset();
 
         // Protect the motors and protect from brown out
-        talon.enableCurrentLimit(false);
-        talon.configContinuousCurrentLimit(40, 0);
+        talon.enableCurrentLimit(true);
+        talon.configContinuousCurrentLimit(30, 0);
         talon.configPeakCurrentLimit(60, 0);
         talon.configPeakCurrentDuration(100, 0);
 
         talon.setNeutralMode(NeutralMode.Brake);
 
         talon.selectProfileSlot(0, 0);
-        talon.config_kP(0, SystemSettings.kArmPidP, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kI(0, SystemSettings.kArmPidI, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kD(0, SystemSettings.kArmPidD, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kF(0, SystemSettings.kArmPidF, SystemSettings.CTRE_TIMEOUT_INIT);
-        
-        // setArmSoftLimits(minTickPosition, maxTickPosition);
-        // setArmMotionProfile(SystemSettings.K_ARM_ACCELERATION, SystemSettings.K_ARM_CRUISE);
 
         talon.configAllowableClosedloopError(0, 2, SystemSettings.CTRE_TIMEOUT_INIT);
     }
@@ -160,14 +154,14 @@ public class MotionMagicArm extends Arm
     {
         // reconfigure on enable
         talon.setSelectedSensorPosition(0);
-        talon.config_kP(0, SystemSettings.kArmPidP, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kI(0, SystemSettings.kArmPidI, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kD(0, SystemSettings.kArmPidD, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kF(0, SystemSettings.kArmPidF, SystemSettings.CTRE_TIMEOUT_INIT);
-        int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
-        int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
-        // setArmSoftLimits(minTickPosition, maxTickPosition);
-        // setArmMotionProfile(SystemSettings.K_ARM_ACCELERATION, SystemSettings.K_ARM_CRUISE);
+        talon.config_kP(0, SystemSettings.kIntakeWristPidP, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kI(0, SystemSettings.kIntakeWristPidI, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kD(0, SystemSettings.kIntakeWristPidD, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kF(0, SystemSettings.kIntakeWristPidF, SystemSettings.CTRE_TIMEOUT_INIT);
+        //int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
+        //int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
+        //setArmSoftLimits(minTickPosition, maxTickPosition);
+        setArmMotionProfile(SystemSettings.K_INTAKE_WRIST_ACCELERATION, SystemSettings.K_INTAKE_WRIST_CRUISE);
     }
 
     @Override
@@ -211,7 +205,7 @@ public class MotionMagicArm extends Arm
         SmartDashboard.putNumber("MMArmCurrent", current);
         SmartDashboard.putNumber("MMArmStallRatio", ratio);
 
-        SmartDashboard.putNumber("*Wrist Ticks", currentNumTicks);
+        SmartDashboard.putNumber("Intake Wrist Ticks", currentNumTicks);
 
 
         // System.out.println("-----------Current ratio = " + ratio + "------------");
@@ -223,70 +217,70 @@ public class MotionMagicArm extends Arm
 
 
         // If the motor is off check for completion of the cool off period
-        if(this.motorOff)
-        {
-            // System.out.println("*************** Motor OFF **********************************************");
-            if( mTimer.hasPeriodPassed(SystemSettings.kArmMotorOffTimeSec) )
-            {
-                // Cool Off Period has passed, turn the motor back on
-                this.motorOff = false;
-                this.mTimer.stop();
-                this.mTimer.reset();
-            }
-            else
-            {
-                // The motor is off, make sure the output is 0.0
-            }
-        }
-        else 
-        {
-            // check for stalled motor
-            if(ratio > SystemSettings.kArmMaxCurrentVoltRatio)
-            {
-                // System.err.println("++++++++++++++++++++++++++ Motor STALLED ++++++++++++++++++++++++++++++++++++++");
-                // System.out.println( "Arm.update: stalled: " + this.stalled);
-                // Motor is stalled, where we stalled already
-                if(!this.stalled)
-                {
-                    // Initial motor stall
-                    this.stalled = true;
-                    // Start counting stall time
-                    mTimer.stop();
-                    mTimer.reset();
-                    mTimer.start();
-                }
-                else
-                {
-                    // Already stalled, check for maximum stall time
-                    if( mTimer.hasPeriodPassed(SystemSettings.kArmMaxStallTimeSec) )
-                    {
-                        // We've exceeded the max stall time, stop the motor
-                        // System.out.println( "Arm.update Max stall time exceeded." );
+        // if(this.motorOff)
+        // {
+        //     // System.out.println("*************** Motor OFF **********************************************");
+        //     if( mTimer.hasPeriodPassed(SystemSettings.kArmMotorOffTimeSec) )
+        //     {
+        //         // Cool Off Period has passed, turn the motor back on
+        //         this.motorOff = false;
+        //         this.mTimer.stop();
+        //         this.mTimer.reset();
+        //     }
+        //     else
+        //     {
+        //         // The motor is off, make sure the output is 0.0
+        //     }
+        // }
+        // else 
+        // {
+        //     // check for stalled motor
+        //     if(ratio > SystemSettings.kArmMaxCurrentVoltRatio)
+        //     {
+        //         // System.err.println("++++++++++++++++++++++++++ Motor STALLED ++++++++++++++++++++++++++++++++++++++");
+        //         // System.out.println( "Arm.update: stalled: " + this.stalled);
+        //         // Motor is stalled, where we stalled already
+        //         if(!this.stalled)
+        //         {
+        //             // Initial motor stall
+        //             this.stalled = true;
+        //             // Start counting stall time
+        //             mTimer.stop();
+        //             mTimer.reset();
+        //             mTimer.start();
+        //         }
+        //         else
+        //         {
+        //             // Already stalled, check for maximum stall time
+        //             if( mTimer.hasPeriodPassed(SystemSettings.kArmMaxStallTimeSec) )
+        //             {
+        //                 // We've exceeded the max stall time, stop the motor
+        //                 // System.out.println( "Arm.update Max stall time exceeded." );
 
-                        // We're stopping the motor so reset the stall flag
-                        this.stalled = false;
+        //                 // We're stopping the motor so reset the stall flag
+        //                 this.stalled = false;
 
-                        // Setting output to 0.0 stops the motor
-                        this.motorOff = true;
+        //                 // Setting output to 0.0 stops the motor
+        //                 this.motorOff = true;
 
-                        // Restart the timer to measure the cooling off time after the stall
-                        mTimer.stop();
-                        mTimer.reset();
-                        mTimer.start(); // starting for cool-off period
+        //                 // Restart the timer to measure the cooling off time after the stall
+        //                 mTimer.stop();
+        //                 mTimer.reset();
+        //                 mTimer.start(); // starting for cool-off period
 
-                    }
-                }
-            }
-            else
-            {
-                // No longer stalled, clear the flag and reset the timer
-                this.stalled = false;
-                mTimer.stop();
-                mTimer.reset();
-            }
+        //             }
+        //         }
+        //     }
+        //     else
+        //     {
+        //         // No longer stalled, clear the flag and reset the timer
+        //         this.stalled = false;
+        //         mTimer.stop();
+        //         mTimer.reset();
+        //     }
 
 
-        }
+        // }
 
         if(motorOff)
         {
@@ -294,10 +288,7 @@ public class MotionMagicArm extends Arm
         }
         else
         {
-            double gravityCompensationVoltage = SystemSettings.kArmKg * Math.cos(this.ticksToAngle(this.currentNumTicks));
-            // talon.set(ControlMode.MotionMagic, this.desiredNumTicks, DemandType.ArbitraryFeedForward, gravityCompensationVoltage);
-            talon.set(ControlMode.PercentOutput, mOverridePower);
-            System.out.println("Torque Constant: " + (talon.getMotorOutputVoltage() / Math.cos(this.ticksToAngle(this.currentNumTicks))));
+            talon.set(ControlMode.MotionMagic, this.desiredNumTicks);
         }
         
     }
@@ -369,10 +360,6 @@ public class MotionMagicArm extends Arm
         return numTicks * this.degreePerTick;
     }
 
-    public void setArmPower(double pPower) {
-        mOverridePower = pPower;
-    }
-
     /**
      * Choose a predetermined set point.
      */
@@ -385,11 +372,12 @@ public class MotionMagicArm extends Arm
      * Choose a predefined arm position
      */
     public void setArmPosition( ArmPosition position ) {
-        this.setArmAngle(position.getAngle());
+        //this.setArmAngle(position.getAngle());
     }
 
     public void setArmAngle( double angle )
     {
+        System.out.println("Setting angle to " + angle);
         // TODO Parameterize the angle limits
         // Constrain the angle to the allowed values
         angle = Util.limit(angle, SystemSettings.kArmMinAngle, SystemSettings.kArmMaxAngle);
@@ -407,7 +395,7 @@ public class MotionMagicArm extends Arm
      */
     public void setDesiredOutput( double desiredOutput )
     {
-        this.mDesiredOutput = Util.limit(desiredOutput, -1, 1);
+       // this.mDesiredOutput = Util.limit(desiredOutput, -1, 1);
     }
 
 }
