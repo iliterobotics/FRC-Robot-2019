@@ -151,7 +151,10 @@ public class Data {
         }
     }
 
-    public void checkWriters() {
+    /**
+     * Creates writers if they don't already exist
+     */
+    public void handleWriterCreation() {
         if(!mHasMadeWriters) {
             //This loop makes a Writer for each parser and sticks it into mWriters
             for (CodexNetworkTablesParser parser : mParsers) {
