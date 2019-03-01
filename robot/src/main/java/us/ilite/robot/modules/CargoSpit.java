@@ -17,7 +17,7 @@ import us.ilite.common.types.sensor.EPowerDistPanel;
 public class CargoSpit extends Module {
 
     private final double kZero = 0.0;
-    private final double kLaunchPower = 1.0;
+    private final double kLaunchPower = 0.8;
 
     private ILog mLog = Logger.createLog(CargoSpit.class);
 
