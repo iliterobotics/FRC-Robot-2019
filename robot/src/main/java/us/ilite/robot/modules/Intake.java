@@ -67,6 +67,7 @@ public class Intake extends Module {
     @Override
     public void periodicInput(double pNow) {
         mData.intake.set(EIntake.ARM_ANGLE, mWrist.getCurrentArmAngle());
+        mData.intake.set(EIntake.ENCODER_TICKS, (double)mWristTalon.getSelectedSensorPosition());
         mData.intake.set(EIntake.ROLLER_CURRENT, mIntakeRollerCurrent);
         mData.intake.set(EIntake.ROLLER_VOLTAGE, mIntakeRollerVoltage);
         mData.intake.set(EIntake.SOLENOID_EXTENDED, mSolenoid.get() ? 1.0 : 0.0);
@@ -144,7 +145,6 @@ public class Intake extends Module {
     /**
      * Sets the solenoid state.
      * i.e. sets whether the intake is in "cargo mode" or "hatch mode".
-     * @param pSolenoidState desired solenoid state
      */
     private void setSolenoidState(EGamePiece pGamePiece) {
         switch(pGamePiece) {
