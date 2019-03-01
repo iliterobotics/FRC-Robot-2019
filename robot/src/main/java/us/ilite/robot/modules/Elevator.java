@@ -97,7 +97,7 @@ public class Elevator extends Module {
         mCanController.setSmartMotionMinOutputVelocity(SystemSettings.kMinElevatorVelocity, SystemSettings.kElevatorSmartMotionSlot);
         mCanController.setSmartMotionMaxVelocity(SystemSettings.kMaxElevatorVelocity, SystemSettings.kElevatorSmartMotionSlot);
         mCanController.setSmartMotionMinOutputVelocity(0, SystemSettings.kElevatorSmartMotionSlot);
-        mCanController.setSmartMotionAllowedClosedLoopError(SystemSettings.kElevatorAllowedError, SystemSettings.kElevatorSmartMotionSlot);
+        mCanController.setSmartMotionAllowedClosedLoopError(SystemSettings.kElevatorClosedLoopAllowableError, SystemSettings.kElevatorSmartMotionSlot);
 
         // Make sure the elevator is stopped upon initialization
         mDesiredPosition = EElevatorPosition.HATCH_BOTTOM;
