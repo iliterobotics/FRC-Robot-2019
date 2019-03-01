@@ -23,7 +23,6 @@ import us.ilite.robot.commands.TargetLock;
 import us.ilite.robot.modules.*;
 import us.ilite.robot.modules.Module;
 import us.ilite.robot.modules.Intake.EIntakeState;
-import us.ilite.robot.commands.HandoffHatch;
 
 public class DriverInput extends Module implements IThrottleProvider, ITurnProvider {
 
@@ -43,24 +42,19 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private final Data mData;
 
     private boolean mIsCargo = false;
-    private boolean mIsGround = false;
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
-
-    private Arm mArm;
-    private RangeScale armJoyStickToAngleScaler = new RangeScale(-1.0, 1.0, SystemSettings.kArmMinAngle, SystemSettings.kArmMaxAngle);
 
     protected Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
 
     private ETrackingType mLastTrackingType = null;
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, CargoSpit pCargoSpit, Arm pArm, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, boolean pSimulated) {
         this.mDrive = pDrivetrain;
         this.mElevator = pElevator;
         this.mIntake = pIntake;
         this.mCargoSpit = pCargoSpit;
         this.mHatchFlower = pHatchFlower;
-        this.mArm = pArm;
         this.mLimelight = pLimelight;
         this.mData = pData;
         this.mTeleopCommandManager = pTeleopCommandManager;
@@ -77,8 +71,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, CargoSpit pCargoSpit, Arm pArm, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager) {
-        this(pDrivetrain, pElevator, pHatchFlower, pIntake, pCargoSpit, pArm, pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, false);
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager) {
+        this(pDrivetrain, pElevator, pHatchFlower, pIntake, pCargoSpit, pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, false);
     }
 
     @Override
@@ -123,14 +117,9 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 mIsCargo = false;
             }
 
-            if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_SELECT)) {
-                mIsGround = true;
-            } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_LOADING_STATION_SELECT)){
-                mIsGround = false;
-            }
-
             updateDriveTrain();
             updateHatchGrabber();
+            updateCargoSpit();
             updateElevator();
             updateIntake();
 
@@ -139,62 +128,76 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     }
 
     private void updateIntake() {
-        if(mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_ACQUIRE) > 0.5) {
-            if(mIsCargo) {
-                /*
-                Tell both the intake and the cargo spit to start intaking.
-                We expect the cargo spit to stop automatically.
-                 */
-                if(mIsGround) {
-                    mIntake.setIntakeState( EIntakeState.GROUND_CARGO );
-                    mCargoSpit.setIntake();
-                } else {
-                    mCargoSpit.setIntake();
-                }
-            } else {
-                /*
-                Reset the hatch grabber so it's ready to receive another hatch and tell the intake to start intaking.
-                The intake to stops automatically, or when we release the intake button.
-                 */
-                if(mIsGround) {
-                    mHatchFlower.pushHatch();
-                    mIntake.setIntakeState( EIntakeState.GROUND_HATCH );
-                } else {
-                    mHatchFlower.captureHatch();
-                }
-            }
-        } else if(mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
-            // if(mIntake.isAtPosition( Intake.EWristState.STOWED) || mIntake.isAtPosition(Intake.EWristState.HANDOFF)) {
-                if(mIsCargo) {
-                    mCargoSpit.setOuttake();
-                } else {
-                    mHatchFlower.pushHatch();
-                }
-            // } else {
-                // If the intake is on the ground, outtake with the intake instead of scoring mechanisms
-//                mIntake.setOuttaking();
-            //     mIntake.setIntakeState( EIntakeState.HANDOFF ); //TODO this probably isn't right
-            // }
+        if (mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_INTAKE_GROUND) > 0.5) {
+            mIntake.setIntakeState( EIntakeState.GROUND );
+            System.out.println("Setting intake to GROUND");
+        }
+        else if (mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_INTAKE_STOWED)) {
+            mIntake.setIntakeState( EIntakeState.STOWED );
+            System.out.println("Setting intake to STOWED");
+        } 
+        else if (mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_INTAKE_HANDOFF)) {
+            mIntake.setIntakeState( EIntakeState.HANDOFF );
         } else {
-            // If the intake button is released, stop everything.
-            mCargoSpit.stop();
-            mIntake.stopIntake();
+            mIntake.setIntakeState(EIntakeState.STOPPED);
         }
 
-        if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_HANDOFF) /* || mIntake.hasHatch() */) { //TODO Subject to change
-            mTeleopCommandManager.startCommands(new HandoffHatch(mElevator, mIntake, mHatchFlower));
+        // if(mOperatorInputCodex.isSet(DriveTeamInputMap.WRIST_MANUAL_POWER)) {
+        //     mIntake.overridePower(mOperatorInputCodex.get(DriveTeamInputMap.WRIST_MANUAL_POWER));
+        // }
+
+
+        if(mIsCargo) {
+            mIntake.setGamePiece(EGamePiece.CARGO);
+        }
+        else {
+            mIntake.setGamePiece(EGamePiece.HATCH);
         }
 
     }
 
     private void updateHatchGrabber() {
 
-        if(mIsCargo) {
+        if (mIsCargo) {
+            // Hatch grabber up so we can recieve cargo
             mHatchFlower.setFlowerExtended(HatchFlower.ExtensionState.UP);
+            // Reset hatch grabber
+            mHatchFlower.pushHatch();
         } else {
+            // Hatch grabber down
             mHatchFlower.setFlowerExtended(HatchFlower.ExtensionState.DOWN);
+
+            if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_INTAKE_LOADING_STATION)) {
+                // Intake from loading station - grab hatch
+                mHatchFlower.captureHatch();
+            } else if (mData.operatorinput.get(DriveTeamInputMap.OPERATOR_INTAKE_GROUND) > 0.5) {
+                // Grabbing is handled automagically
+            } else if (mData.operatorinput.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
+                // Score - release hatch
+                mHatchFlower.pushHatch();
+            } else {
+                // Do nothing
+            }
         }
 
+    }
+
+    private void updateCargoSpit() {
+        if(mIsCargo) {
+            if(mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_INTAKE_LOADING_STATION)) {
+                // Intake from loading station
+                mCargoSpit.setIntaking();
+            } else if(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_INTAKE_GROUND) > 0.5) {
+                // Intake from ground - recieve cargo from ground intake
+                mCargoSpit.setIntaking();
+            } else if(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
+                // Spit
+                mCargoSpit.setOuttaking();
+            } else {
+                // Stop
+                mCargoSpit.stop();
+            }
+        }
     }
 
     private void updateDriveTrain() {
@@ -221,8 +224,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_POSITION_ELEVATOR)) {
             mElevator.setDesiredPosition(EElevatorPosition.HATCH_BOTTOM);
-        } 
-        else {
+        } else {
             if(mIsCargo) {
                 if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
                     mElevator.setDesiredPosition(EElevatorPosition.CARGO_BOTTOM);
@@ -230,7 +232,9 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                     mElevator.setDesiredPosition(EElevatorPosition.CARGO_MIDDLE);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
                     mElevator.setDesiredPosition(EElevatorPosition.CARGO_TOP);
-                } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
+                } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_INTAKE_LOADING_STATION)) {
+                    mElevator.setDesiredPosition(EElevatorPosition.CARGO_BOTTOM);
+                } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
                     double throttle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
                     mElevator.setDesiredPower(throttle);
                 } else {
@@ -377,5 +381,10 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         } else {
             return 0.0;
         }
+    }
+
+    public enum EGamePiece {
+        CARGO,
+        HATCH;
     }
 }

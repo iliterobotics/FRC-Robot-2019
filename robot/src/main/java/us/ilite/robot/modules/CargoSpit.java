@@ -91,7 +91,7 @@ public class CargoSpit extends Module {
         mEmergencyStopped = false;
     }
 
-    private void setOuttaking() {
+    public void setOuttaking() {
         if ( !mEmergencyStopped ) {
             mIntaking = false;
             mOuttaking = true;
@@ -99,14 +99,6 @@ public class CargoSpit extends Module {
             mRightMotor.set( ControlMode. PercentOutput, -kLaunchPower );
         }
         mEmergencyStopped = false;
-    }
-
-    public void setIntake() {
-        setIntaking();
-    }
-
-    public void setOuttake() {
-        setOuttaking();
     }
 
     public boolean hasCargo() {

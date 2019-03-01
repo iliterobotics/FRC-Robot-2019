@@ -24,7 +24,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
 
-    public static final int sCODEX_COMMS_PORT = 5805;
+    public static int sCODEX_COMMS_PORT = 5805;
 
     //==============================================================================
     // Comms
@@ -204,10 +204,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
         }
     }
 
-    public static int kArmPositionEncoderTicksPerRotation = 3552;
+    //public static int kArmPositionEncoderTicksPerRotation = 3552;
+    public static int kArmPositionEncoderTicksPerRotation = 4096;
     public static double kArmMinAngle = 0.0;
     public static double kArmMaxAngle = 135.0;
-    public static double kArmMaxCurrentVoltRatio = 2; //tune - overcurrent ratio for arm motor
+    public static double kArmMaxCurrentVoltRatio = 20; //tune - overcurrent ratio for arm motor
     public static double kArmMotorOffTimeSec = 0.5; // seconds
     public static double kArmMaxStallTimeSec = 0.1; // seconds
     public static double kArmMinMotorStallVoltage = 0.1;
@@ -226,7 +227,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // We measured .7 volts on the motor to hold the arm horizontal
     // For gravity compensation Kg = % power to hold arm horizontal, which is
     // the measured voltage / 12 volts
-    public static double kArmKg = 0.7/12.0;
+    public static double kArmKg = 1.1;
 
     // Control power clamping limits
     public static double kArmPIDOutputMaxLimit = 1.0; // max 1.0
@@ -240,8 +241,28 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kArmPidI = 0.020;
     public static double kArmPidD = 0.0;
     public static double kArmPidF = 0.1;
-    // public static int K_ARM_ACCELERATION = 512;
-    // public static int K_ARM_CRUISE = 4096;
+
+    public static double kIntakeWristPidP = 0.1;
+    public static double kIntakeWristPidI = 0.001;
+    public static double kIntakeWristPidD = 0.0;
+    public static double kIntakeWristPidF = 0.1;
+    public static int K_INTAKE_WRIST_ACCELERATION = 1000;
+    // ticks per 100 ms, or N * 10 = ticks / sec
+    public static int K_INTAKE_WRIST_CRUISE = 200;
+
+
+    public static double kIntakeRollerHatchPower = .25;
+    public static double kIntakeRollerCargoPower = .25;
+    public static double kIntakeRollerHoldPower = .25;
+    public static double kIntakeWristStowedAngle = 0;
+    public static double kIntakeWristHandoffAngle = 48;
+    // temp set to 90 to validate angles
+    public static double kIntakeWristGroundAngle = 90;
+    // public static double kIntakeWristGroundAngle = 105;
+    //The minimum angle where it is safe to continue intake process (engage solenoid/roller)
+    public static double kIntakeWristGroundMinBound = 95;
+
+
     public static int K_ARM_ACCELERATION = 5;
     public static int K_ARM_CRUISE = 30;
     /////////////////////////////////////
@@ -358,22 +379,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kHatchFlowerOpenCloseSolenoidAddress = 5;
     public static int kHatchFlowerExtensionSolenoidAddress = 6;
 
-    public static int kHatchIntakeSPXAddress = 11;
+    //public static int kHatchIntakeSPXAddress = 11;
     public static int kCargoIntakeSPXLowerAddress = 12;
     // TO-DO DO spreadsheet empty
 
     public static int kIntakeWristSRXAddress = 16;
-    // TO-DO Write encoder addresses?
-    public static int kIntakeWristEncoderA_Address = -1;
-    public static int kIntakeWristEncoderB_Address = -1;
     public static int kIntakeSolenoidAddress = 2; // and/or 3 according to integration sheet
-    public static double kIntakeRollerHatchPower = -1;
-    public static double kIntakeRollerCargoPower = -1;
-    public static double kIntakeRollerHoldPower = -1;
-    public static double kIntakeWristStowedAngle = -1;
-    public static double kIntakeWristHandoffAngle = -1;
-    public static double kIntakeWristGroundAngle = -1;
-    //The minimum angle where it is safe to continue intake process (engage solenoid/roller)
-    public static double kIntakeWristGroundMinBound = -1;
 
 }

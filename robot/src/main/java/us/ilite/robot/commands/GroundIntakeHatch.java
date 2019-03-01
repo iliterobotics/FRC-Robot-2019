@@ -1,5 +1,6 @@
 package us.ilite.robot.commands;
 
+import us.ilite.robot.driverinput.DriverInput.EGamePiece;
 import us.ilite.robot.modules.EElevatorPosition;
 import us.ilite.robot.modules.Elevator;
 import us.ilite.robot.modules.HatchFlower;
@@ -14,7 +15,7 @@ public class GroundIntakeHatch extends CommandQueue {
                         new ReleaseHatch(pHatchFlower),
                         new SetHatchGrabberExtension(pHatchFlower, HatchFlower.ExtensionState.DOWN)
                 ),
-                new SetIntakeState(pIntake, Intake.EIntakeState.GROUND_HATCH)
+                new SetIntakeState(pIntake, Intake.EIntakeState.GROUND, EGamePiece.HATCH)
         );
     }
 }
