@@ -8,7 +8,7 @@ public class GroundIntakeCargo extends CommandQueue {
     public GroundIntakeCargo(Elevator pElevator, Intake pIntake, CargoSpit pCargoSpit, HatchFlower pHatchFlower) {
         setCommands(
                 new ParallelCommand(
-                        new SetElevatorPosition(pElevator, EElevatorPosition.HATCH_BOTTOM),
+                        new SetElevatorPosition(pElevator, Elevator.EElevatorPosition.HATCH_BOTTOM),
                         new SetHatchGrabberExtension(pHatchFlower, HatchFlower.ExtensionState.UP),
                         new ReleaseHatch(pHatchFlower)
                 ),

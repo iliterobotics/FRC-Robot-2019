@@ -7,12 +7,10 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.Data;
 import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.lib.util.RangeScale;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
@@ -222,34 +220,35 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     private void updateElevator() {
 
+        double manualThrottle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR) * 0.5;
+
+
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_POSITION_ELEVATOR)) {
-            mElevator.setDesiredPosition(EElevatorPosition.HATCH_BOTTOM);
+            mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_BOTTOM);
         } else {
             if(mIsCargo) {
                 if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(EElevatorPosition.CARGO_BOTTOM);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_BOTTOM);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(EElevatorPosition.CARGO_MIDDLE);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_MIDDLE);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(EElevatorPosition.CARGO_TOP);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_TOP);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_INTAKE_LOADING_STATION)) {
-                    mElevator.setDesiredPosition(EElevatorPosition.CARGO_BOTTOM);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_BOTTOM);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-                    double throttle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
-                    mElevator.setDesiredPower(throttle);
+                    mElevator.setDesiredPower(manualThrottle);
                 } else {
                     mElevator.setDesiredPower(0d);
                 }
             } else {
                 if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(EElevatorPosition.HATCH_BOTTOM);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_BOTTOM);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(EElevatorPosition.HATCH_MIDDLE);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_MIDDLE);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(EElevatorPosition.HATCH_TOP);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_TOP);
                 } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-                    double throttle = mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
-                    mElevator.setDesiredPower(throttle);
+                    mElevator.setDesiredPower(manualThrottle);
                 } else {
                     mElevator.setDesiredPower(0d);
                 }
