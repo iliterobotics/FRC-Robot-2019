@@ -102,8 +102,12 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
      */
     public File file() {
         // return new File(String.format(LOG_PATH_FORMAT, new SimpleDateFormat("MM-dd-YYYY_HH-mm").format(Calendar.getInstance().getTime()), csvIdentifier));
+        String eventName = DriverStation.getInstance().getEventName();
+        if ( eventName.length() <= 0 ) {
+            eventName = "Default-Event";
+        }
         return new File( String.format( LOG_PATH_FORMAT, 
-                         DriverStation.getInstance().getEventName(),
+                         eventName,
                          DriverStation.getInstance().getMatchType().name(),
                          DriverStation.getInstance().getMatchNumber() ) );
     }
