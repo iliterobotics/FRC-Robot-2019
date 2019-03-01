@@ -220,6 +220,9 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     private void updateElevator() {
 
+        double manualThrottle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR) * 0.5;
+
+
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_POSITION_ELEVATOR)) {
             mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_BOTTOM);
         } else {
@@ -233,8 +236,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_INTAKE_LOADING_STATION)) {
                     mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_BOTTOM);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-                    double throttle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
-                    mElevator.setDesiredPower(throttle);
+                    mElevator.setDesiredPower(manualThrottle);
                 } else {
                     mElevator.setDesiredPower(0d);
                 }
@@ -246,8 +248,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
                     mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_TOP);
                 } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-                    double throttle = mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
-                    mElevator.setDesiredPower(throttle);
+                    mElevator.setDesiredPower(manualThrottle);
                 } else {
                     mElevator.setDesiredPower(0d);
                 }
