@@ -12,6 +12,7 @@ import com.flybotix.hfr.util.lang.EnumUtils;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
@@ -102,9 +103,9 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
     public File file() {
         // return new File(String.format(LOG_PATH_FORMAT, new SimpleDateFormat("MM-dd-YYYY_HH-mm").format(Calendar.getInstance().getTime()), csvIdentifier));
         return new File( String.format( LOG_PATH_FORMAT, 
-                         SmartDashboard.getString( "EventName", "Default-Event" ),
-                         SmartDashboard.getNumber( "MatchType", 0.0 ),
-                         SmartDashboard.getNumber( "MatchNumber", 0.0 ) ) );
+                         DriverStation.getInstance().getEventName(),
+                         DriverStation.getInstance().getMatchType().name(),
+                         DriverStation.getInstance().getMatchNumber() ) );
     }
 
     /**
