@@ -4,6 +4,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.codex.Codex;
 
+import com.team254.lib.util.CheesyDriveHelper;
+import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.PIDController;
@@ -22,7 +25,8 @@ public class TargetLock implements ICommand {
     private static final double kMAX_INPUT = 27;
     private static final double kTURN_POWER = 0.2;
     private static final int kAlignCount = 10;
-    private static final double kFrictionFeedforward = 0.6 / 12;
+    private static final double kFrictionFeedforward = 0.44 / 12;
+    private static final double kTargetAreaScalar = 1.0;
 
     private Drive mDrive;
     private ITargetDataProvider mCamera;
@@ -36,6 +40,8 @@ public class TargetLock implements ICommand {
     private boolean mEndOnAlignment = true;
     private int mAlignedCount = 0;
     private boolean mHasAcquiredTarget = false;
+
+    private CheesyDriveHelper mCheesyDriveHelper = new CheesyDriveHelper();
 
     public TargetLock(Drive pDrive, double pAllowableError, ETrackingType pTrackingType, ITargetDataProvider pCamera, IThrottleProvider pThrottleProvider) {
         this(pDrive, pAllowableError, pTrackingType, pCamera, pThrottleProvider, true);
@@ -73,10 +79,15 @@ public class TargetLock implements ICommand {
 
         if(mPID != null && currentData != null && currentData.isSet(ETargetingData.tv) && currentData.get(ETargetingData.tx) != null) {
             mHasAcquiredTarget = true;
-//            System.out.println("USING PID");
+
             //if there is a target in the limelight's fov, lock onto target using feedback loop
-            mOutput = mPID.calculate(-1.0 * currentData.get(ETargetingData.tx), pNow - mPreviousTime) + kFrictionFeedforward;
-            mDrive.setDriveMessage(new DriveMessage(mTargetLockThrottleProvider.getThrottle() + mOutput, mTargetLockThrottleProvider.getThrottle() - mOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
+            mOutput = mPID.calculate(-1.0 * currentData.get(ETargetingData.tx), pNow - mPreviousTime);
+            mOutput = mOutput + (Math.signum(mOutput) * kFrictionFeedforward);
+
+            double throttle = mTargetLockThrottleProvider.getThrottle() * SystemSettings.kSnailModePercentThrottleReduction;
+
+            mDrive.setDriveMessage(getArcadeDrive(throttle, mOutput, currentData));
+
             SmartDashboard.putNumber("PID Turn Output", mOutput);
             mAlignedCount++;
             if(mEndOnAlignment && Math.abs(currentData.get(ETargetingData.tx)) < mAllowableError && mAlignedCount > kAlignCount) {
@@ -112,6 +123,18 @@ public class TargetLock implements ICommand {
     @Override
     public void shutdown(double pNow) {
 
+    }
+
+    private DriveMessage getCheesyDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
+        boolean isQuickTurn = Math.abs(throttle) < Util.kEpsilon ? false : true;
+
+        DriveSignal cheesyOutput = mCheesyDriveHelper.cheesyDrive(throttle, turn, isQuickTurn, false);
+        return new DriveMessage(cheesyOutput.getLeft(), cheesyOutput.getRight(), ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake);
+    }
+
+    private DriveMessage getArcadeDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
+        mOutput *= targetData.get(ETargetingData.ta) * kTargetAreaScalar;
+        return new DriveMessage(throttle + turn, throttle - turn, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake);
     }
 
     public TargetLock setTargetLockThrottleProvider(IThrottleProvider pThrottleProvider) {
