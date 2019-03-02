@@ -73,7 +73,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Input Constants
     // =============================================================================
     public static double kSnailModePercentThrottleReduction = .5;
-    public static double kSnailModePercentRotateReduction = .4;
+    public static double kSnailModePercentRotateReduction = .5;
     public static double kDriverInputTurnMaxMagnitude = 0.5;
     public static double  INPUT_DEADBAND_F310_JOYSTICK = 0.05;
     public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
@@ -359,8 +359,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kPowerDistPanelAddress = 21;
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
-    public static double kCargoSpitRollerPower = 0.15; // 15% seems like adequate power (maybe more?)
-    public static double kCargoSpitSPXCurrentRatioLimit = 1.1; // Voltage ~ 1.8
+    public static double kCargoSpitRollerPower = 0.30; // 15% seems like adequate power (maybe more?)
+    public static double kCargoSpitSPXCurrentRatioLimit = 8.4; // Voltage ~ 1.8
 
     // TO-DO: Elevator encoder address?
     // public static int kElevatorRedundantEncoderAddress = -1;

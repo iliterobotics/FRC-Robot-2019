@@ -238,7 +238,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
                     mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_TOP);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_INTAKE_LOADING_STATION)) {
-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_BOTTOM);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_LOADING_STATION);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
                     mElevator.setDesiredPower(manualThrottle);
                 } else {
