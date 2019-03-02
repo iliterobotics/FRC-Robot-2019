@@ -244,9 +244,9 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kIntakeWristPidI = 0.0;
     public static double kIntakeWristPidD = 0.0;
     public static double kIntakeWristPidF = 0.008903875;
-    public static int K_INTAKE_WRIST_ACCELERATION = 1000;
+    public static int kIntakeWristAcceleration = 1000;
     // ticks per 100 ms, or N * 10 = ticks / sec
-    public static int K_INTAKE_WRIST_CRUISE = 200;
+    public static int kIntakeWristCruise = 200;
 
 
     public static double kIntakeRollerHatchPower = .25;
@@ -261,12 +261,12 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kIntakeWristGroundMinBound = 95;
 
 
-    public static int K_ARM_ACCELERATION = 5;
-    public static int K_ARM_CRUISE = 30;
+    public static int kArmAcceleration = 5;
+    public static int kArmCruise = 30;
     /////////////////////////////////////
 
-    public static int CTRE_TIMEOUT_INIT = 10;
-    public static int CTRE_TIMEOUT_PERIODIC = 0;
+    public static int CTRETimeoutInit = 10;
+    public static int CTRETimeoutPeriodic = 0;
     // =============================================================================
 
 
