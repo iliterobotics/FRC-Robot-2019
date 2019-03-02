@@ -53,9 +53,11 @@ public class MotionMagicArm extends Arm
     // private double mDesiredTheta;
     // private ESetPoint mDesiredSetPoint;
     // private ESetPoint mCurrentSetPoint;
-    // private double kP = 0.002;
-    // private double kI = 0.001;
-    // private double kD = 0.0;
+    private PIDGains mPIDGains;
+    private int mAcceleration;
+    private int mCruise;
+    private int mMinTickPosition;
+    private int mMaxTickPosition;
     // private static final int maxNumTicks = 383; //number of ticks at max arm angle
     // private static final int minNumTicks = 0; //number of ticks at min arm angle
     private TalonSRX mTalon; //TalonSRXFactory.createDefaultTalon(SystemSettings.kArmTalonSRXAddress);
@@ -75,65 +77,47 @@ public class MotionMagicArm extends Arm
     private boolean mUsePercentOutput = false;
     private double mOverridePower = 0.0;
     
-    public MotionMagicArm()
-    {
-        this(new TalonSRX(SystemSettings.kIntakeWristSRXAddress));
+    // public MotionMagicArm()
+    // {
+    //     this(new TalonSRX(SystemSettings.kIntakeWristSRXAddress),
+    //         new PIDGains(
+    //         SystemSettings.kIntakeWristPidP,
+    //         SystemSettings.kIntakeWristPidI,
+    //         SystemSettings.kIntakeWristPidD,
+    //         SystemSettings.kIntakeWristPidF),
+    //         SystemSettings.K_INTAKE_WRIST_ACCELERATION, SystemSettings.K_INTAKE_WRIST_CRUISE);
+    // }
 
-        int minTickPosition = this.angleToTicks(SystemSettings.kIntakeWristStowedAngle);
-        int maxTickPosition = this.angleToTicks(SystemSettings.kIntakeWristGroundAngle);
+    public MotionMagicArm( TalonSRX pTalon, PIDGains pPIDGains, int pAcceleration, int pCruise ) {
+        this(pTalon, pPIDGains, pAcceleration, pCruise, 0, 360);
+    }
+
+    public MotionMagicArm( TalonSRX pTalon, PIDGains pPIDGains, int pAcceleration, int pCruise, int pMinTickPosition, int pMaxTickPosition )
+    {
+        this.mTalon = pTalon;
+
+        mPIDGains = pPIDGains;
+        mAcceleration = pAcceleration;
+        mCruise = pCruise;
+               
+        // pMinTickPosition = this.angleToTicks(SystemSettings.kIntakeWristStowedAngle);
+        // pMaxTickPosition = this.angleToTicks(SystemSettings.kIntakeWristGroundAngle);
+        mMinTickPosition = pMinTickPosition;
+        mMaxTickPosition = pMaxTickPosition;
 
         this.mCurrentNumTicks = 0;
         // pid = new PIDController( SystemSettings.kArmPIDGains /*new PIDGains(kP, kI, kD)*/, SystemSettings.kControlLoopPeriod );
         // pid.setInputRange( minTickPosition, maxTickPosition ); //min and max ticks of arm
-        if ( mTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, SystemSettings.kLongCANTimeoutMs) != ErrorCode.OK ) {
-            mLogger.error("Encoder configuration fault");
-        }
-        mTalon.setSelectedSensorPosition(0);
-        mTalon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5);
-
-        // init the timer
-        this.mTimer = new Timer();
-        this.mTimer.reset();
-
-        // Protect the motors and protect from brown out
-        mTalon.configContinuousCurrentLimit(40, 0);
-        mTalon.configPeakCurrentLimit(60, 0);
-        mTalon.configPeakCurrentDuration(100, 0);
-        mTalon.enableCurrentLimit(true);
-
-        mTalon.setNeutralMode(NeutralMode.Brake);
-
-        mTalon.selectProfileSlot(0, 0);
-        // talon.config_kP(0, SystemSettings.kArmPidP, SystemSettings.CTRE_TIMEOUT_INIT);
-        // talon.config_kI(0, SystemSettings.kArmPidI, SystemSettings.CTRE_TIMEOUT_INIT);
-        // talon.config_kD(0, SystemSettings.kArmPidD, SystemSettings.CTRE_TIMEOUT_INIT);
-        // talon.config_kF(0, SystemSettings.kArmPidF, SystemSettings.CTRE_TIMEOUT_INIT);
-        mTalon.config_kP(0, SystemSettings.kIntakeWristPidP, SystemSettings.CTRE_TIMEOUT_INIT);
-        mTalon.config_kI(0, SystemSettings.kIntakeWristPidI, SystemSettings.CTRE_TIMEOUT_INIT);
-        mTalon.config_kD(0, SystemSettings.kIntakeWristPidD, SystemSettings.CTRE_TIMEOUT_INIT);
-        mTalon.config_kF(0, SystemSettings.kIntakeWristPidF, SystemSettings.CTRE_TIMEOUT_INIT);
-        
-        setArmSoftLimits(minTickPosition, maxTickPosition);
-        setArmMotionProfile(SystemSettings.K_INTAKE_WRIST_ACCELERATION, SystemSettings.K_INTAKE_WRIST_CRUISE);
-
-        mTalon.configAllowableClosedloopError(0, 2, SystemSettings.CTRE_TIMEOUT_INIT);
-    }
-
-    public MotionMagicArm( TalonSRX pTalon )
-    {
-        this.mTalon = pTalon;
-               
-
-        this.mCurrentNumTicks = 0;
         if ( mTalon.configSelectedFeedbackSensor(
-            FeedbackDevice.CTRE_MagEncoder_Relative, 
+            FeedbackDevice.CTRE_MagEncoder_Relative, // TODO CTRE_MagEncoder_Absolute?
             0, 
             SystemSettings.kLongCANTimeoutMs
             ) != ErrorCode.OK 
         ) {
             mLogger.error("ArmMotionMagic talon.configSelectedFeedbackSensor error");
         }
-        mTalon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
+        mTalon.setSelectedSensorPosition(0);
+        mTalon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20); // TODO 5 or 20
 
         // init the timer
         this.mTimer = new Timer();
@@ -141,7 +125,7 @@ public class MotionMagicArm extends Arm
 
         // Protect the motors and protect from brown out
         mTalon.enableCurrentLimit(true);
-        mTalon.configContinuousCurrentLimit(30, 0);
+        mTalon.configContinuousCurrentLimit(30, 0); //30 or 40
         mTalon.configPeakCurrentLimit(60, 0);
         mTalon.configPeakCurrentDuration(100, 0);
 
@@ -157,14 +141,14 @@ public class MotionMagicArm extends Arm
     {
         // reconfigure on enable
         mTalon.setSelectedSensorPosition(0);
-        mTalon.config_kP(0, SystemSettings.kIntakeWristPidP, SystemSettings.CTRE_TIMEOUT_INIT);
-        mTalon.config_kI(0, SystemSettings.kIntakeWristPidI, SystemSettings.CTRE_TIMEOUT_INIT);
-        mTalon.config_kD(0, SystemSettings.kIntakeWristPidD, SystemSettings.CTRE_TIMEOUT_INIT);
-        mTalon.config_kF(0, SystemSettings.kIntakeWristPidF, SystemSettings.CTRE_TIMEOUT_INIT);
+        mTalon.config_kP(0, mPIDGains.kP, SystemSettings.CTRE_TIMEOUT_INIT);
+        mTalon.config_kI(0, mPIDGains.kI, SystemSettings.CTRE_TIMEOUT_INIT);
+        mTalon.config_kD(0, mPIDGains.kD, SystemSettings.CTRE_TIMEOUT_INIT);
+        mTalon.config_kF(0, mPIDGains.kF, SystemSettings.CTRE_TIMEOUT_INIT);
         //int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
         //int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
-        //setArmSoftLimits(minTickPosition, maxTickPosition);
-        setArmMotionProfile(SystemSettings.K_INTAKE_WRIST_ACCELERATION, SystemSettings.K_INTAKE_WRIST_CRUISE);
+        setArmSoftLimits(mMinTickPosition, mMaxTickPosition);
+        setArmMotionProfile(mAcceleration, mCruise);
     }
 
     @Override
