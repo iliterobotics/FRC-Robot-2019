@@ -126,9 +126,14 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     }
 
     private void updateIntake() {
+
+        // Default to retracted
+        EGamePiece gamePiece = EGamePiece.HATCH;
+
         if (mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_INTAKE_GROUND) > 0.5) {
             mIntake.setIntakeState( EIntakeState.GROUND );
             System.out.println("Setting intake to GROUND");
+            gamePiece = mIsCargo ? EGamePiece.CARGO : EGamePiece.HATCH;
         }
         else if (mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_INTAKE_STOWED)) {
             mIntake.setIntakeState( EIntakeState.STOWED );
@@ -136,6 +141,10 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         } 
         else if (mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_INTAKE_HANDOFF)) {
             mIntake.setIntakeState( EIntakeState.HANDOFF );
+        } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_MANUAL_ARM_UP)) {
+            mIntake.overridePower(0.3);
+        } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_MANUAL_ARM_DOWN)) {
+            mIntake.overridePower(-0.3);
         } else {
             mIntake.setIntakeState(EIntakeState.STOPPED);
         }
@@ -145,12 +154,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         // }
 
 
-        if(mIsCargo) {
-            mIntake.setGamePiece(EGamePiece.CARGO);
-        }
-        else {
-            mIntake.setGamePiece(EGamePiece.HATCH);
-        }
+        mIntake.setGamePiece(gamePiece);
 
     }
 
