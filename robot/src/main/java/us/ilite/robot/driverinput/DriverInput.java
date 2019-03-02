@@ -5,6 +5,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
+import com.team254.lib.util.CheesyDriveHelper;
+import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -44,6 +46,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private boolean mIsCargo = false;
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
+
+    private CheesyDriveHelper mCheesyDriveHelper = new CheesyDriveHelper();
 
     protected Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
 
@@ -118,6 +122,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             }
 
             updateDriveTrain();
+//            updateCheesyDrivetrain();
             updateHatchGrabber();
             updateCargoSpit();
             updateElevator();
@@ -206,7 +211,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
         //		    throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
         rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
-        rotate = Util.limit(rotate, 0.7);
+        rotate *= 0.5;
 
         if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) && mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
             throttle *= SystemSettings.kSnailModePercentThrottleReduction;
@@ -217,6 +222,13 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         driveMessage.setNeutralMode(NeutralMode.Brake);
         driveMessage.setControlMode(ControlMode.PercentOutput);
 
+        mDrive.setDriveMessage(driveMessage);
+    }
+
+    private void updateCheesyDrivetrain() {
+        boolean isQuickTurn = mData.driverinput.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.5;
+        DriveSignal cheesySignal = mCheesyDriveHelper.cheesyDrive(getThrottle(), getTurn() * 0.5, isQuickTurn, false);
+        DriveMessage driveMessage = new DriveMessage(cheesySignal.getLeft(), cheesySignal.getRight(), ControlMode.PercentOutput);
         mDrive.setDriveMessage(driveMessage);
     }
 
