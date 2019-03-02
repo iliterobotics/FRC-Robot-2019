@@ -20,9 +20,9 @@ public class TargetLock implements ICommand {
     private static final double kMAX_POWER = 0.5;
     private static final double kMIN_INPUT = -27;
     private static final double kMAX_INPUT = 27;
-    private static final double kTURN_POWER = 0.3;
+    private static final double kTURN_POWER = 0.2;
     private static final int kAlignCount = 10;
-    private static final double kFrictionFeedforward = 0.9 / 12;
+    private static final double kFrictionFeedforward = 0.6 / 12;
 
     private Drive mDrive;
     private ITargetDataProvider mCamera;
@@ -71,7 +71,7 @@ public class TargetLock implements ICommand {
         Codex<Double, ETargetingData> currentData = mCamera.getTargetingData();
         System.out.println("LOCKING " + currentData.get(ETargetingData.tx));
 
-        if(currentData.isSet(ETargetingData.tv) && currentData.get(ETargetingData.tx) != null) {
+        if(mPID != null && currentData != null && currentData.isSet(ETargetingData.tv) && currentData.get(ETargetingData.tx) != null) {
             mHasAcquiredTarget = true;
 //            System.out.println("USING PID");
             //if there is a target in the limelight's fov, lock onto target using feedback loop
@@ -79,7 +79,7 @@ public class TargetLock implements ICommand {
             mDrive.setDriveMessage(new DriveMessage(mTargetLockThrottleProvider.getThrottle() + mOutput, mTargetLockThrottleProvider.getThrottle() - mOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
             SmartDashboard.putNumber("PID Turn Output", mOutput);
             mAlignedCount++;
-            if(mEndOnAlignment && Math.abs(currentData.get(ETargetingData.tx)) < mAllowableError) {
+            if(mEndOnAlignment && Math.abs(currentData.get(ETargetingData.tx)) < mAllowableError && mAlignedCount > kAlignCount) {
                 //if x offset from crosshair is within acceptable error, command TargetLock is completed
                 System.out.println("FINISHED");
                 mDrive.setDriveMessage(DriveMessage.kNeutral);
