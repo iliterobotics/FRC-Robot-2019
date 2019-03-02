@@ -240,10 +240,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kArmPidD = 0.0;
     public static double kArmPidF = 0.1;
 
-    public static double kIntakeWristPidP = 0.1;
-    public static double kIntakeWristPidI = 0.001;
+    public static double kIntakeWristPidP = 0.0;
+    public static double kIntakeWristPidI = 0.0;
     public static double kIntakeWristPidD = 0.0;
-    public static double kIntakeWristPidF = 0.1;
+    public static double kIntakeWristPidF = 0.008903875;
     public static int K_INTAKE_WRIST_ACCELERATION = 1000;
     // ticks per 100 ms, or N * 10 = ticks / sec
     public static int K_INTAKE_WRIST_CRUISE = 200;
@@ -380,6 +380,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // TO-DO DO spreadsheet empty
 
     public static int kIntakeWristSRXAddress = 16;
-    public static int kIntakeSolenoidAddress = 2; // and/or 3 according to integration sheet
+    public static int kIntakeSolenoidAddress = 1;
 
 }
