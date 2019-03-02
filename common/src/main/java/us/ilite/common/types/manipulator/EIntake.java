@@ -5,6 +5,7 @@ public enum EIntake implements CodexOf<Double> {
 
     ARM_ANGLE,
     ENCODER_TICKS,
+    ENCODER_VEL_TICKS,
     // HATCH_BEAM_ACTIVE,
     SOLENOID_EXTENDED,
     ROLLER_CURRENT,
