@@ -86,7 +86,7 @@ public class TargetLock implements ICommand {
 
             double throttle = mTargetLockThrottleProvider.getThrottle() * SystemSettings.kSnailModePercentThrottleReduction;
 
-            mDrive.setDriveMessage(getArcadeDrive(throttle, mOutput, currentData));
+            mDrive.setDriveMessage(getCheesyDrive(throttle, mOutput, currentData));
 
             SmartDashboard.putNumber("PID Turn Output", mOutput);
             mAlignedCount++;
