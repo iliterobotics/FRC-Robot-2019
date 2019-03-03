@@ -126,7 +126,7 @@ public class TargetLock implements ICommand {
     }
 
     private DriveMessage getCheesyDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
-        boolean isQuickTurn = Math.abs(throttle) < Util.kEpsilon ? false : true;
+        boolean isQuickTurn = Math.abs(throttle) < Util.kEpsilon;
 
         DriveSignal cheesyOutput = mCheesyDriveHelper.cheesyDrive(throttle, turn, isQuickTurn, false);
         return new DriveMessage(cheesyOutput.getLeft(), cheesyOutput.getRight(), ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake);
