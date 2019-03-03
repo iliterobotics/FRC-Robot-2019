@@ -262,6 +262,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kIntakeWristHandoffAngle = 48;
     // temp set to 90 to validate angles
     public static double kIntakeWristGroundAngle = 90;
+    public static double kCargoSpitDelay = 5;
     // public static double kIntakeWristGroundAngle = 105;
     //The minimum angle where it is safe to continue intake process (engage solenoid/roller)
     public static double kIntakeWristGroundMinBound = 95;
@@ -365,8 +366,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kPowerDistPanelAddress = 21;
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
-    public static double kCargoSpitRollerPower = 0.15; // 15% seems like adequate power (maybe more?)
-    public static double kCargoSpitSPXCurrentRatioLimit = 1.1; // Voltage ~ 1.8
+    public static double kCargoSpitRollerPower = 0.40; // 15% seems like adequate power (maybe more?)
+    public static double kCargoSpitSPXCurrentRatioLimit = 8.5; // Voltage ~ 1.8
 
     // TO-DO: Elevator encoder address?
     // public static int kElevatorRedundantEncoderAddress = -1;
