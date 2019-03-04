@@ -47,7 +47,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
 
-    private CheesyDriveHelper mCheesyDriveHelper = new CheesyDriveHelper();
+    private CheesyDriveHelper mCheesyDriveHelper = new CheesyDriveHelper(SystemSettings.kCheesyDriveGains);
 
     protected Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
 
@@ -227,7 +227,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     private void updateCheesyDrivetrain() {
         boolean isQuickTurn = mData.driverinput.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.5;
-        DriveSignal cheesySignal = mCheesyDriveHelper.cheesyDrive(getThrottle(), getTurn() * 0.5, isQuickTurn, false);
+        DriveSignal cheesySignal = mCheesyDriveHelper.cheesyDrive(getThrottle(), getTurn() * 0.5, isQuickTurn);
         DriveMessage driveMessage = new DriveMessage(cheesySignal.getLeft(), cheesySignal.getRight(), ControlMode.PercentOutput);
         mDrive.setDriveMessage(driveMessage);
     }
