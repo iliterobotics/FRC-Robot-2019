@@ -125,6 +125,12 @@ public class TargetLock implements ICommand {
 
     }
 
+    /*
+    Why CheesyDrive?
+    The short answer is that it's a hack. We noticed that we tended to get oscillations that were bigger in amplitude the
+    faster we drove forward, which led us to believe the steering response of the PID was having less of an effect on the
+    turn of the robot the faster we drove. Cheesy Drive fixes this by scaling steering power by throttle power.
+     */
     private DriveMessage getCheesyDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
         boolean isQuickTurn = Math.abs(throttle) < Util.kEpsilon;
 
