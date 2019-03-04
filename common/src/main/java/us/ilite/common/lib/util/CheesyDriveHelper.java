@@ -1,4 +1,8 @@
-package com.team254.lib.util;
+package us.ilite.common.lib.util;
+
+import com.team254.lib.util.CheesyDriveGains;
+import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.Util;
 
 /**
  * Helper class to implement "Cheesy Drive". "Cheesy Drive" simply means that the "turning" stick controls the curvature

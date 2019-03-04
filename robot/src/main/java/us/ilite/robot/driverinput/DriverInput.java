@@ -5,7 +5,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import com.team254.lib.util.CheesyDriveHelper;
+import us.ilite.common.lib.util.CheesyDriveHelper;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Joystick;
@@ -16,6 +16,7 @@ import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
+import us.ilite.robot.commands.LimelightTargetLock;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.HatchFlower;
@@ -94,20 +95,20 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         If we aren't already running commands and the driver is pressing a button that triggers a command,
         set the superstructure command queue based off of buttons
         */
-        if(!mTeleopCommandManager.isRunningCommands() && isDriverAllowingCommandsInTeleop()) {
-            updateVisionCommands();
+        if(isDriverAllowingCommandsInTeleop()) {
+            updateVisionCommands(pNow);
         /*
         If the driver started the commands that the superstructure is running and then released the button,
         stop running commands.
         */
         } else if(mTeleopCommandManager.isRunningCommands() && !isDriverAllowingCommandsInTeleop()) {
             mLog.warn("Requesting command stop: driver no longer allowing commands");
-            mTeleopCommandManager.stopRunningCommands();
+            mTeleopCommandManager.stopRunningCommands(pNow);
         }
 
         if(mAutonomousCommandManager.isRunningCommands() && isAutoOverridePressed()) {
             mLog.warn("Requesting command stop: override pressed");
-            mAutonomousCommandManager.stopRunningCommands();
+            mAutonomousCommandManager.stopRunningCommands(pNow);
         }
 
         // Teleop control
@@ -310,7 +311,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
      * Commands the superstructure to start vision tracking depending on
      * button presses.
      */
-    protected void updateVisionCommands() {
+    protected void updateVisionCommands(double pNow) {
 
         ETrackingType trackingType = null;
         SystemSettings.VisionTarget visionTarget = null;
@@ -343,11 +344,10 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         }
 
         if(trackingType != null && trackingType != mLastTrackingType) {
-            mLimelight.setVisionTarget(visionTarget);
-            mLimelight.setPipeline(trackingType.getPipeline());
-            mLog.warn("Requesting command start");
-            mTeleopCommandManager.stopRunningCommands();
-            mTeleopCommandManager.startCommands(new TargetLock(mDrive, 3, trackingType, mLimelight, this, false));
+            mLog.warn(
+                    "Requesting command start");
+            mTeleopCommandManager.stopRunningCommands(pNow);
+            mTeleopCommandManager.startCommands(new LimelightTargetLock(mDrive, mLimelight, 3, trackingType, this, false));
             SmartDashboard.putString("Last Tracking Type", mLastTrackingType == null ? "Null" : mLastTrackingType.name());
             SmartDashboard.putString("Tracking Type", trackingType.name());
         }

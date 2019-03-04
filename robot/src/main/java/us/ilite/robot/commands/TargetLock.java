@@ -4,7 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.codex.Codex;
 
-import com.team254.lib.util.CheesyDriveHelper;
+import us.ilite.common.lib.util.CheesyDriveHelper;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,7 +41,7 @@ public class TargetLock implements ICommand {
     private int mAlignedCount = 0;
     private boolean mHasAcquiredTarget = false;
 
-    private CheesyDriveHelper mCheesyDriveHelper = new CheesyDriveHelper();
+    private CheesyDriveHelper mCheesyDriveHelper = new CheesyDriveHelper(SystemSettings.kCheesyDriveGains);
 
     public TargetLock(Drive pDrive, double pAllowableError, ETrackingType pTrackingType, ITargetDataProvider pCamera, IThrottleProvider pThrottleProvider) {
         this(pDrive, pAllowableError, pTrackingType, pCamera, pThrottleProvider, true);
@@ -134,7 +134,7 @@ public class TargetLock implements ICommand {
     private DriveMessage getCheesyDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
         boolean isQuickTurn = Math.abs(throttle) < Util.kEpsilon;
 
-        DriveSignal cheesyOutput = mCheesyDriveHelper.cheesyDrive(throttle, turn, isQuickTurn, false);
+        DriveSignal cheesyOutput = mCheesyDriveHelper.cheesyDrive(throttle, turn, true);
         return new DriveMessage(cheesyOutput.getLeft(), cheesyOutput.getRight(), ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake);
     }
 
