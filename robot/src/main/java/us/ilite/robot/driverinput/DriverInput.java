@@ -90,15 +90,15 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         If we aren't already running commands and the driver is pressing a button that triggers a command,
         set the superstructure command queue based off of buttons
         */
-        if(isDriverAllowingAutonomousControlInTeleop()) {
+        if(!mTeleopCommandManager.isRunningCommands() && isDriverAllowingCommandsInTeleop()) {
             updateVisionCommands();
         /*
         If the driver started the commands that the superstructure is running and then released the button,
         stop running commands.
         */
-        } else if(mAutonomousCommandManager.isRunningCommands() && !isDriverAllowingAutonomousControlInTeleop()) {
+        } else if(mTeleopCommandManager.isRunningCommands() && !isDriverAllowingCommandsInTeleop()) {
             mLog.warn("Requesting command stop: driver no longer allowing commands");
-            mAutonomousCommandManager.stopRunningCommands();
+            mTeleopCommandManager.stopRunningCommands();
         }
 
         if(mAutonomousCommandManager.isRunningCommands() && isAutoOverridePressed()) {
@@ -330,8 +330,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             mLimelight.setVisionTarget(visionTarget);
             mLimelight.setPipeline(trackingType.getPipeline());
             mLog.warn("Requesting command start");
-            mAutonomousCommandManager.stopRunningCommands();
-            mAutonomousCommandManager.startCommands(new TargetLock(mDrive, 3, trackingType, mLimelight, this, false));
+            mTeleopCommandManager.stopRunningCommands();
+            mTeleopCommandManager.startCommands(new TargetLock(mDrive, 3, trackingType, mLimelight, this, false));
             SmartDashboard.putString("Last Tracking Type", mLastTrackingType == null ? "Null" : mLastTrackingType.name());
             SmartDashboard.putString("Tracking Type", trackingType.name());
         }
@@ -339,7 +339,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         mLastTrackingType = trackingType;
     }
 
-    public boolean isDriverAllowingAutonomousControlInTeleop() {
+    public boolean isDriverAllowingCommandsInTeleop() {
         boolean runCommands = false;
         for(ELogitech310 l : SystemSettings.kTeleopCommandTriggers) {
             if(mDriverInputCodex.isSet(l)) {
