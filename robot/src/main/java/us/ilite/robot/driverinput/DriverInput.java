@@ -121,8 +121,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 mIsCargo = false;
             }
 
-            updateDriveTrain();
-//            updateCheesyDrivetrain();
+//            updateDriveTrain();
+            updateCheesyDrivetrain();
             updateHatchGrabber();
             updateCargoSpit();
             updateElevator();
@@ -226,7 +226,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     }
 
     private void updateCheesyDrivetrain() {
-        boolean isQuickTurn = mData.driverinput.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.5;
+        boolean isQuickTurn = getThrottle() < 0.05;
         DriveSignal cheesySignal = mCheesyDriveHelper.cheesyDrive(getThrottle(), getTurn() * 0.5, isQuickTurn);
         DriveMessage driveMessage = new DriveMessage(cheesySignal.getLeft(), cheesySignal.getRight(), ControlMode.PercentOutput);
         mDrive.setDriveMessage(driveMessage);
