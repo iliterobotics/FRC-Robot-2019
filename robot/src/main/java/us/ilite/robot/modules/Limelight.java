@@ -32,7 +32,7 @@ public class Limelight extends Module implements ITargetDataProvider {
 
     @Override
     public void modeInit(double pNow) {
-
+        setTracking(ETrackingType.NONE);
     }
 
     @Override
