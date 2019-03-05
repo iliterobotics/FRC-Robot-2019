@@ -13,22 +13,19 @@ public class LimelightTargetLock extends TargetLock {
     public LimelightTargetLock(Drive pDrive, Limelight pLimelight, double pAllowableError, ETrackingType pTrackingType, IThrottleProvider pThrottleProvider) {
         super(pDrive, pAllowableError, pTrackingType, pLimelight, pThrottleProvider);
         this.mLimelight = pLimelight;
-        mLimelight.setPipeline(pTrackingType.getPipeline());
-        mLimelight.setLedMode(pTrackingType.getLedOn() ? Limelight.LedMode.LED_ON : Limelight.LedMode.LED_OFF);
+        mLimelight.setTracking(pTrackingType);
     }
 
     public LimelightTargetLock(Drive pDrive, Limelight pLimelight, double pAllowableError, ETrackingType pTrackingType, IThrottleProvider pThrottleProvider, boolean pEndOnAlignment) {
         super(pDrive, pAllowableError, pTrackingType, pLimelight, pThrottleProvider, pEndOnAlignment);
 
         this.mLimelight = pLimelight;
-        mLimelight.setPipeline(pTrackingType.getPipeline());
-        mLimelight.setLedMode(pTrackingType.getLedOn() ? Limelight.LedMode.LED_ON : Limelight.LedMode.LED_OFF);
+        mLimelight.setTracking(pTrackingType);
     }
 
     public void shutdown(double pNow) {
         super.shutdown(pNow);
-        mLimelight.setLedMode(Limelight.LedMode.LED_OFF);
-        mLimelight.setPipeline(ETrackingType.NONE.getPipeline());
+        mLimelight.setTracking(ETrackingType.NONE);
     }
 
 }
