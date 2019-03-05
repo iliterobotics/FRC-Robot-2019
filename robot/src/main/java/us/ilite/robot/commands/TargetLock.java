@@ -19,8 +19,8 @@ import us.ilite.robot.modules.targetData.ITargetDataProvider;
 
 public class TargetLock implements ICommand {
 
-    private static final double kMIN_POWER = -0.5;
-    private static final double kMAX_POWER = 0.5;
+    private static final double kMIN_POWER = -1.0;
+    private static final double kMAX_POWER = 1.0;
     private static final double kMIN_INPUT = -27;
     private static final double kMAX_INPUT = 27;
     private static final double kTURN_POWER = 0.2;
@@ -170,8 +170,7 @@ public class TargetLock implements ICommand {
     This *should* give us better performance at low speeds + the benefits of "clamped turn" drive.
      */
     private DriveMessage getCurvatureDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
-        double turnSensitivity = 0.85;
-        double adjustedTurn = Math.abs(throttle) * turn * turnSensitivity;
+        double adjustedTurn = Math.abs(throttle) * turn * SystemSettings.kTurnSensitivity;
 
         return DriveMessage.fromThrottleAndTurn(throttle, adjustedTurn).setNeutralMode(NeutralMode.Brake);
     }
