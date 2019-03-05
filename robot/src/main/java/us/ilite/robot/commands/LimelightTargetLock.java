@@ -28,6 +28,7 @@ public class LimelightTargetLock extends TargetLock {
     public void shutdown(double pNow) {
         super.shutdown(pNow);
         mLimelight.setLedMode(Limelight.LedMode.LED_OFF);
+        mLimelight.setPipeline(ETrackingType.NONE.getPipeline());
     }
 
 }
