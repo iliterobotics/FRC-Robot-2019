@@ -20,6 +20,7 @@ public class ActionBar implements IDisplayComponent {
     private HBox mActionBar = new HBox();
     private TextField mSearchField = new TextField();
     private Button mSearchFieldClearButton = new Button("Clear");
+    private Button mRefreshButton = new Button("Refresh");
     private Button mHistoryButton = new Button("Show History");
 
     public ActionBar(SettingsTable pSettingsTable) {
@@ -42,8 +43,9 @@ public class ActionBar implements IDisplayComponent {
         });
 
         mSearchFieldClearButton.setOnAction(actionEvent -> mSearchField.clear());
+        mRefreshButton.setOnAction(actionEvent -> mSettingsTable.refresh());
 
-        mActionBar.getChildren().addAll(mSearchField, mSearchFieldClearButton);
+        mActionBar.getChildren().addAll(mSearchField, mSearchFieldClearButton, mRefreshButton);
 
         return mActionBar;
     }
