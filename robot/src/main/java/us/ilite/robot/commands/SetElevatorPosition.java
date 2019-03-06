@@ -1,14 +1,15 @@
 package us.ilite.robot.commands;
 
+import us.ilite.robot.modules.EElevatorPosition;
 import us.ilite.robot.modules.Elevator;
 
 public class SetElevatorPosition implements ICommand {
 
     private final Elevator mElevator;
 
-    private final Elevator.EElevatorPosition mDesiredPosition;
+    private final EElevatorPosition mDesiredPosition;
 
-    public SetElevatorPosition(Elevator pElevator, Elevator.EElevatorPosition pDesiredPosition) {
+    public SetElevatorPosition(Elevator pElevator, EElevatorPosition pDesiredPosition) {
         mElevator = pElevator;
         mDesiredPosition = pDesiredPosition;
     }

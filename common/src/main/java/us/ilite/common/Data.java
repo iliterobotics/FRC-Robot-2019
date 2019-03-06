@@ -61,7 +61,6 @@ public class Data {
     public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
     public static SimpleNetworkTable kSmartDashboard = new SimpleNetworkTable("SmartDashboard");
     public static NetworkTable kLimelight = kInst.getTable("limelight");
-    public static NetworkTable kAutonTable = kInst.getTable("AUTON_SELECTION");
     public static SimpleNetworkTable kDriverControlSelection = new SimpleNetworkTable("DriverControlSelection") {
         @Override
         public void initKeys() {

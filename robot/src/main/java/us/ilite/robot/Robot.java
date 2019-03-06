@@ -23,7 +23,6 @@ import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.MatchMetadata;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.commands.CharacterizeDrive;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.*;
@@ -60,9 +59,11 @@ public class Robot extends TimedRobot {
     private HatchFlower mHatchFlower = new HatchFlower();
     private Limelight mLimelight = new Limelight(mData);
     private VisionGyro mVisionGyro = new VisionGyro(mData);
-    private PneumaticIntake mPneumaticIntake = new PneumaticIntake( mData );
 
-    private DriverInput mDriverInput = new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, false  );
+    //private Arm mArm = new BasicArm();
+    private Arm mArm = new MotionMagicArm();
+
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mIntake, mCargoSpit, mArm, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager);
 
     private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
     private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator, mIntake, mCargoSpit, mHatchFlower, mLimelight, mVisionGyro, mData);
@@ -139,8 +140,8 @@ public class Robot extends TimedRobot {
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
-        mAutonomousCommandManager.startCommands(new CharacterizeDrive(mDrive, false, false));
-//        mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
+//        mAutonomousCommandManager.startCommands(new CharacterizeDrive(mDrive, false, false));
+        mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
 
         mData.registerCodices();
 
@@ -159,7 +160,7 @@ public class Robot extends TimedRobot {
 
         mSettings.loadFromNetworkTables();
 
-        mRunningModules.setModules(mDriverInput, mLimelight, mTeleopCommandManager, mAutonomousCommandManager, mDrive, mElevator, mHatchFlower, /*mIntake,*/ mCargoSpit, mPneumaticIntake);
+        mRunningModules.setModules(mDriverInput, mLimelight, mTeleopCommandManager, mAutonomousCommandManager, mDrive, mElevator, mHatchFlower, mIntake, mCargoSpit);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 

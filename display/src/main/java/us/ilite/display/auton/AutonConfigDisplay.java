@@ -23,7 +23,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import us.ilite.common.Data;
 import us.ilite.common.AutonSelectionData;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.auton.EStartingPosition;
@@ -218,13 +217,6 @@ public class AutonConfigDisplay extends Application {
         }
         return sb.toString();
     }
-    return sb.toString();
-  }
-  
-  private void sendData() {
-      Data.kAutonTable.getEntry(ECargoAction.class.getSimpleName()).setDouble(mCargoAction);
-      Data.kAutonTable.getEntry(EHatchAction.class.getSimpleName()).setDouble(mHatchAction);
-      Data.kAutonTable.getEntry(EStartingPosition.class.getSimpleName()).setDouble(mStartingPosition);
 
     private void sendData() {
         SystemSettings.AUTON_TABLE.putNumber(ECargoAction.class.getSimpleName(), mCargoAction);
