@@ -1,4 +1,4 @@
-package us.ilite.robot.modules;
+package us.ilite.robot.driverinput;
 
 public interface IThrottleProvider {
 

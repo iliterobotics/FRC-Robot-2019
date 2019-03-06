@@ -2,7 +2,7 @@ package us.ilite.robot.commands;
 
 import us.ilite.common.types.ETrackingType;
 import us.ilite.robot.modules.Drive;
-import us.ilite.robot.modules.IThrottleProvider;
+import us.ilite.robot.driverinput.IThrottleProvider;
 import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
 

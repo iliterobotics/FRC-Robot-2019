@@ -14,7 +14,7 @@ import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
-import us.ilite.robot.modules.IThrottleProvider;
+import us.ilite.robot.driverinput.IThrottleProvider;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
 
 public class TargetLock implements ICommand {
