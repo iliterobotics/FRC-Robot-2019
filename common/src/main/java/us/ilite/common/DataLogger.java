@@ -10,11 +10,11 @@ public class DataLogger extends Thread {
         // loggedData.closeWriters();
         Thread logger = new Thread() {
             public void run() {
-                loggedData.logFromCodexToCSVHeader();
+                loggedData.networkTablesCodexToCSVHeader();
                     while(true) {
                         loggedData.logFromNetworkTables();
                         // System.out.println(System.currentTimeMillis() + " " + loggedData.imu);
-                        loggedData.logFromCodexToCSVLog();
+                        loggedData.networkTablesCodexToCSVLog();
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
