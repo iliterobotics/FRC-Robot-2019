@@ -106,10 +106,8 @@ public class Drive extends Loop {
 
 		mData.drive.set(EDriveData.LEFT_POS_INCHES, mDriveHardware.getLeftInches());
 		mData.drive.set(EDriveData.RIGHT_POS_INCHES, mDriveHardware.getRightInches());
-//		mData.drive.set(EDriveData.LEFT_VEL_IPS, mDriveHardware.getLeftVelInches());
-//		mData.drive.set(EDriveData.RIGHT_VEL_IPS, mDriveHardware.getRightVelInches());
-		mData.drive.set(EDriveData.LEFT_VEL_IPS, (double)mDriveHardware.getLeftVelTicks());
-		mData.drive.set(EDriveData.RIGHT_VEL_IPS, (double)mDriveHardware.getRightVelTicks());
+		mData.drive.set(EDriveData.LEFT_VEL_IPS, mDriveHardware.getLeftVelInches());
+		mData.drive.set(EDriveData.RIGHT_VEL_IPS, mDriveHardware.getRightVelInches());
 
 //		mData.drive.set(EDriveData.LEFT_CURRENT, mDriveHardware.getLeftCurrent());
 //		mData.drive.set(EDriveData.RIGHT_CURRENT, mDriveHardware.getRightCurrent());
@@ -118,16 +116,16 @@ public class Drive extends Loop {
 // 		mData.drive.set(EDriveData.LEFT_VOLTAGE, 0.0);
 //		mData.drive.set(EDriveData.RIGHT_VOLTAGE, 0.0);
 //
-//		mData.drive.set(EDriveData.LEFT_MESSAGE_OUTPUT, mDriveMessage.leftOutput);
-//		mData.drive.set(EDriveData.RIGHT_MESSAGE_OUTPUT, mDriveMessage.rightOutput);
-//		mData.drive.set(EDriveData.LEFT_MESSAGE_CONTROL_MODE, (double)mDriveMessage.leftControlMode.value);
-//		mData.drive.set(EDriveData.RIGHT_MESSAGE_CONTROL_MODE, (double)mDriveMessage.rightControlMode.value);
-//		mData.drive.set(EDriveData.LEFT_MESSAGE_NEUTRAL_MODE, (double)mDriveMessage.leftNeutralMode.value);
-//		mData.drive.set(EDriveData.RIGHT_MESSAGE_NEUTRAL_MODE, (double)mDriveMessage.rightNeutralMode.value);
-//		mData.drive.set(EDriveData.LEFT_MESSAGE_DEMAND_TYPE, (double)mDriveMessage.leftDemandType.value);
-//		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND_TYPE, (double)mDriveMessage.rightDemandType.value);
-//		mData.drive.set(EDriveData.LEFT_MESSAGE_DEMAND, mDriveMessage.leftDemand);
-//		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND, mDriveMessage.rightDemand);
+		mData.drive.set(EDriveData.LEFT_MESSAGE_OUTPUT, mDriveMessage.leftOutput);
+		mData.drive.set(EDriveData.RIGHT_MESSAGE_OUTPUT, mDriveMessage.rightOutput);
+		mData.drive.set(EDriveData.LEFT_MESSAGE_CONTROL_MODE, (double)mDriveMessage.leftControlMode.value);
+		mData.drive.set(EDriveData.RIGHT_MESSAGE_CONTROL_MODE, (double)mDriveMessage.rightControlMode.value);
+		mData.drive.set(EDriveData.LEFT_MESSAGE_NEUTRAL_MODE, (double)mDriveMessage.leftNeutralMode.value);
+		mData.drive.set(EDriveData.RIGHT_MESSAGE_NEUTRAL_MODE, (double)mDriveMessage.rightNeutralMode.value);
+		mData.drive.set(EDriveData.LEFT_MESSAGE_DEMAND_TYPE, (double)mDriveMessage.leftDemandType.value);
+		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND_TYPE, (double)mDriveMessage.rightDemandType.value);
+		mData.drive.set(EDriveData.LEFT_MESSAGE_DEMAND, mDriveMessage.leftDemand);
+		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND, mDriveMessage.rightDemand);
 //
 		mData.imu.set(EGyro.YAW_DEGREES, getHeading().getDegrees());
 
@@ -277,7 +275,6 @@ public class Drive extends Loop {
 	}
 
 	public class DebugOutput {
-//		public final NetworkTable livedashboard = NetworkTableInstance.getDefault().getTable("Live Dashboard");
 
 		public double t = 0.0;
 
@@ -319,21 +316,6 @@ public class Drive extends Loop {
 
 //			error = mDriveController.getDriveMotionPlanner().error();
 		}
-
-//		public void outputToLiveDashboard() {
-//			final Pose2d robotPose = mDriveController.getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose();
-//			final Pose2d targetPose = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose();
-//
-//			livedashboard.getEntry("Robot X").setDouble(robotPose.getTranslation().x() / 12.0);
-//			livedashboard.getEntry("Robot Y").setDouble((robotPose.getTranslation().y() + 13.5) / 12.0);
-//			livedashboard.getEntry("Robot Heading").setDouble(robotPose.getRotation().getRadians());
-//
-//			livedashboard.getEntry("Path X").setDouble(targetPose.getTranslation().x() / 12.0);
-//			livedashboard.getEntry("Path Y").setDouble((targetPose.getTranslation().y() + 13.5) / 12.0);
-//
-//			Data.kSmartDashboard.getEntry("Left Vel Error Inches").setDouble(targetLeftVel - leftVel);
-//			Data.kSmartDashboard.getEntry("Right Vel Error Inches").setDouble(targetRightVel - rightVel);
-//		}
 
 	}
 
