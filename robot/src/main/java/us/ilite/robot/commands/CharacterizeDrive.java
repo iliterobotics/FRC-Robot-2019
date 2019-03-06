@@ -44,8 +44,8 @@ public class CharacterizeDrive implements ICommand {
 
     @Override
     public void shutdown(double pNow) {
-        mLog.info("\nLeft:\n", DriveCharacterization.characterizeDrive(mLeftVelData, mLeftAccelData));
-        mLog.info("\nRight:\n", DriveCharacterization.characterizeDrive(mRightVelData, mRightAccelData));
+        System.out.println("\nLeft:\n" + DriveCharacterization.characterizeDrive(mLeftVelData, mLeftAccelData));
+        System.out.println("\nRight:\n" + DriveCharacterization.characterizeDrive(mRightVelData, mRightAccelData));
         mCommandQueue.shutdown(pNow);
     }
 }

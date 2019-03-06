@@ -56,6 +56,7 @@ public class Elevator extends Module {
         HATCH_MIDDLE(18),
         HATCH_TOP(36),
         CARGO_BOTTOM(8.5),
+        CARGO_LOADING_STATION(17),
         CARGO_MIDDLE(25),
         CARGO_TOP(41.5);
 
@@ -98,6 +99,8 @@ public class Elevator extends Module {
         mCanController.setSmartMotionMaxVelocity(SystemSettings.kMaxElevatorVelocity, SystemSettings.kElevatorSmartMotionSlot);
         mCanController.setSmartMotionMinOutputVelocity(0, SystemSettings.kElevatorSmartMotionSlot);
         mCanController.setSmartMotionAllowedClosedLoopError(SystemSettings.kElevatorClosedLoopAllowableError, SystemSettings.kElevatorSmartMotionSlot);
+
+        mMasterElevator.getEncoder().setPosition(0);
 
         // Make sure the elevator is stopped upon initialization
         mDesiredPosition = EElevatorPosition.HATCH_BOTTOM;

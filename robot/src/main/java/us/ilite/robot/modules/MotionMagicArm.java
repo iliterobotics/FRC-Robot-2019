@@ -71,6 +71,9 @@ public class MotionMagicArm extends Arm
     // Constants used for translating ticks to angle, values based on ticks per full rotation
     private double tickPerDegree = SystemSettings.kArmPositionEncoderTicksPerRotation / 360.0;
     private double degreePerTick = 360.0 / SystemSettings.kArmPositionEncoderTicksPerRotation;
+
+    private boolean mUsePercentOutput = false;
+    private double mOverridePower = 0.0;
     
     public MotionMagicArm()
     {
@@ -83,7 +86,7 @@ public class MotionMagicArm extends Arm
         // pid = new PIDController( SystemSettings.kArmPIDGains /*new PIDGains(kP, kI, kD)*/, SystemSettings.kControlLoopPeriod );
         // pid.setInputRange( minTickPosition, maxTickPosition ); //min and max ticks of arm
         if ( talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, 0, SystemSettings.kLongCANTimeoutMs) != ErrorCode.OK ) {
-            mLogger.error("ArmMotionMagic talon.configSelectedFeedbackSensor error");
+            mLogger.error("Encoder configuration fault");
         }
         talon.setSelectedSensorPosition(0);
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5);
@@ -282,13 +285,18 @@ public class MotionMagicArm extends Arm
 
         // }
 
-        if(motorOff)
-        {
-            talon.set(ControlMode.PercentOutput, 0);
-        }
-        else
-        {
-            talon.set(ControlMode.MotionMagic, this.desiredNumTicks);
+        if(mUsePercentOutput) {
+            mUsePercentOutput = false;
+            talon.set(ControlMode.PercentOutput, mOverridePower);
+        } else {
+            if(motorOff)
+            {
+                talon.set(ControlMode.PercentOutput, 0);
+            }
+            else
+            {
+                talon.set(ControlMode.MotionMagic, this.desiredNumTicks);
+            }
         }
         
     }
@@ -395,6 +403,8 @@ public class MotionMagicArm extends Arm
      */
     public void setDesiredOutput( double desiredOutput )
     {
+        mUsePercentOutput = true;
+        mOverridePower = desiredOutput;
        // this.mDesiredOutput = Util.limit(desiredOutput, -1, 1);
     }
 

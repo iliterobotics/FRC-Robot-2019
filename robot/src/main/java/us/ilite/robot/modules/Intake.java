@@ -8,6 +8,7 @@ import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.drivers.talon.TalonSRXFactory;
 
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.manipulator.EIntake;
@@ -67,6 +68,8 @@ public class Intake extends Module {
     @Override
     public void periodicInput(double pNow) {
         mData.intake.set(EIntake.ARM_ANGLE, mWrist.getCurrentArmAngle());
+        mData.intake.set(EIntake.ENCODER_TICKS, (double)mWristTalon.getSelectedSensorPosition());
+        mData.intake.set(EIntake.ENCODER_VEL_TICKS, (double)mWristTalon.getSelectedSensorVelocity());
         mData.intake.set(EIntake.ROLLER_CURRENT, mIntakeRollerCurrent);
         mData.intake.set(EIntake.ROLLER_VOLTAGE, mIntakeRollerVoltage);
         mData.intake.set(EIntake.SOLENOID_EXTENDED, mSolenoid.get() ? 1.0 : 0.0);
@@ -83,6 +86,7 @@ public class Intake extends Module {
         mIntakeRollerVoltage = mIntakeRoller.getMotorOutputVoltage();
 
         mData.kSmartDashboard.putDouble("Intake Wrist Angle", mWrist.getCurrentArmAngle());
+        SmartDashboard.putNumber("Arm kF", 0.3 / ((double)mWristTalon.getSelectedSensorVelocity()));
 
         // TODO put this into each case in IntakeState to prevent unwanted solenoid extension
         setSolenoidState(mGamePiece);        
@@ -123,6 +127,7 @@ public class Intake extends Module {
     private double power = 0d;
     public void overridePower(double pPower){
         power = pPower;
+        mWrist.setDesiredOutput(pPower);
     }
 
     /**
@@ -144,7 +149,6 @@ public class Intake extends Module {
     /**
      * Sets the solenoid state.
      * i.e. sets whether the intake is in "cargo mode" or "hatch mode".
-     * @param pSolenoidState desired solenoid state
      */
     private void setSolenoidState(EGamePiece pGamePiece) {
         switch(pGamePiece) {
@@ -215,6 +219,7 @@ public class Intake extends Module {
             this.kPower = pPower;
         }
     }
+
     public boolean hasReachedState(EIntakeState pIntakeState) {
         return mDesiredIntakeState.equals( pIntakeState );
     }

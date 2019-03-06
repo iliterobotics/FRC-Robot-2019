@@ -60,16 +60,16 @@ public class CargoSpitTest {
         mModuleList.modeInit( mClock.getCurrentTime() );
     }
 
-    @Test
-    public void testIntakeOneCycle() {
-        mData.operatorinput.set( DriveTeamInputMap.OPERATOR_CARGO_SELECT, 1.0 );
-        updateRobot();
-        assertTrue( mCargoSpit.isIntaking() );
-
-        mData.operatorinput.set( DriveTeamInputMap.OPERATOR_CARGO_SELECT, null );
-        updateRobot();
-        assertFalse( mCargoSpit.isIntaking() );
-    }
+//    @Test
+//    public void testIntakeOneCycle() {
+//        mData.operatorinput.set( DriveTeamInputMap.OPERATOR_CARGO_SELECT, 1.0 );
+//        updateRobot();
+//        assertTrue( mCargoSpit.isIntaking() );
+//
+//        mData.operatorinput.set( DriveTeamInputMap.OPERATOR_CARGO_SELECT, null );
+//        updateRobot();
+//        assertFalse( mCargoSpit.isIntaking() );
+//    }
 
     private void updateRobot() {
         mModuleList.update( mClock.getCurrentTime() );

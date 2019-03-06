@@ -5,6 +5,8 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
+import com.team254.lib.util.CheesyDriveHelper;
+import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
@@ -45,6 +47,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private boolean mIsCargo = false;
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
+
+    private CheesyDriveHelper mCheesyDriveHelper = new CheesyDriveHelper();
 
     protected Codex<Double, ELogitech310> mDriverInputCodex, mOperatorInputCodex;
 
@@ -94,15 +98,16 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         If we aren't already running commands and the driver is pressing a button that triggers a command,
         set the superstructure command queue based off of buttons
         */
-        if(isDriverAllowingAutonomousControlInTeleop()) {
+        if(!mTeleopCommandManager.isRunningCommands() && isDriverAllowingCommandsInTeleop()) {
+            mAutonomousCommandManager.stopRunningCommands();
             updateVisionCommands();
         /*
         If the driver started the commands that the superstructure is running and then released the button,
         stop running commands.
         */
-        } else if(mAutonomousCommandManager.isRunningCommands() && !isDriverAllowingAutonomousControlInTeleop()) {
+        } else if(mTeleopCommandManager.isRunningCommands() && !isDriverAllowingCommandsInTeleop()) {
             mLog.warn("Requesting command stop: driver no longer allowing commands");
-            mAutonomousCommandManager.stopRunningCommands();
+            mTeleopCommandManager.stopRunningCommands();
         }
 
         if(mAutonomousCommandManager.isRunningCommands() && isAutoOverridePressed()) {
@@ -120,6 +125,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             }
 
             updateDriveTrain();
+//            updateCheesyDrivetrain();
             updateHatchGrabber();
             updateCargoSpit();
             updateElevator();
@@ -130,9 +136,14 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     }
 
     private void updateIntake() {
+
+        // Default to retracted
+        EGamePiece gamePiece = EGamePiece.HATCH;
+
         if (mOperatorInputCodex.get(DriveTeamInputMap.OPERATOR_INTAKE_GROUND) > 0.5) {
             mIntake.setIntakeState( EIntakeState.GROUND );
             System.out.println("Setting intake to GROUND");
+            gamePiece = mIsCargo ? EGamePiece.CARGO : EGamePiece.HATCH;
         }
         else if (mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_INTAKE_STOWED)) {
             mIntake.setIntakeState( EIntakeState.STOWED );
@@ -140,6 +151,10 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         } 
         else if (mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_INTAKE_HANDOFF)) {
             mIntake.setIntakeState( EIntakeState.HANDOFF );
+        } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_MANUAL_ARM_UP)) {
+            mIntake.overridePower(0.3);
+        } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_MANUAL_ARM_DOWN)) {
+            mIntake.overridePower(-0.3);
         } else {
             mIntake.setIntakeState(EIntakeState.STOPPED);
         }
@@ -149,12 +164,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         // }
 
 
-        if(mIsCargo) {
-            mIntake.setGamePiece(EGamePiece.CARGO);
-        }
-        else {
-            mIntake.setGamePiece(EGamePiece.HATCH);
-        }
+        mIntake.setGamePiece(gamePiece);
 
     }
 
@@ -238,7 +248,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
         //		    throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
         rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
-        rotate = Util.limit(rotate, 0.7);
+        rotate *= SystemSettings.kNormalPercentThrottleReduction;
 
         if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) && mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
             throttle *= SystemSettings.kSnailModePercentThrottleReduction;
@@ -249,6 +259,13 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         driveMessage.setNeutralMode(NeutralMode.Brake);
         driveMessage.setControlMode(ControlMode.PercentOutput);
 
+        mDrive.setDriveMessage(driveMessage);
+    }
+
+    private void updateCheesyDrivetrain() {
+        boolean isQuickTurn = mData.driverinput.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.5;
+        DriveSignal cheesySignal = mCheesyDriveHelper.cheesyDrive(getThrottle(), getTurn() * 0.5, isQuickTurn, false);
+        DriveMessage driveMessage = new DriveMessage(cheesySignal.getLeft(), cheesySignal.getRight(), ControlMode.PercentOutput);
         mDrive.setDriveMessage(driveMessage);
     }
 
@@ -268,7 +285,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
                     mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_TOP);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_INTAKE_LOADING_STATION)) {
-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_BOTTOM);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_LOADING_STATION);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
                     mElevator.setDesiredPower(manualThrottle);
                 } else {
@@ -305,8 +322,6 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             rotate = rotate;
         }
 
-        rotate = Util.limit(rotate, SystemSettings.kDriverInputTurnMaxMagnitude);
-
         // throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
         // rotate = Util.limit(rotate, 0.7);
 
@@ -314,7 +329,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         //     throttle *= SystemSettings.kSnailModePercentThrottleReduction;
         //     rotate *= SystemSettings.kSnailModePercentRotateReduction;
         // }
-
+        rotate = Util.limit(rotate, SystemSettings.kDriverInputTurnMaxMagnitude);
+		
         DriveMessage driveMessage = DriveMessage.fromThrottleAndTurn(throttle, rotate);
 
         driveMessage.setNeutralMode(NeutralMode.Brake);
@@ -364,8 +380,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             mLimelight.setVisionTarget(visionTarget);
             mLimelight.setPipeline(trackingType.getPipeline());
             mLog.warn("Requesting command start");
-            mAutonomousCommandManager.stopRunningCommands();
-            mAutonomousCommandManager.startCommands(new TargetLock(mDrive, 3, trackingType, mLimelight, this, false));
+            mTeleopCommandManager.stopRunningCommands();
+            mTeleopCommandManager.startCommands(new TargetLock(mDrive, 3, trackingType, mLimelight, this, false));
             SmartDashboard.putString("Last Tracking Type", mLastTrackingType == null ? "Null" : mLastTrackingType.name());
             SmartDashboard.putString("Tracking Type", trackingType.name());
         }
@@ -373,7 +389,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         mLastTrackingType = trackingType;
     }
 
-    public boolean isDriverAllowingAutonomousControlInTeleop() {
+    public boolean isDriverAllowingCommandsInTeleop() {
         boolean runCommands = false;
         for(ELogitech310 l : SystemSettings.kTeleopCommandTriggers) {
             if(mDriverInputCodex.isSet(l)) {
