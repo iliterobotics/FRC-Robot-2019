@@ -72,10 +72,16 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Input Constants
     // =============================================================================
+	public static double kNormalPercentThrottleReduction = 0.5;
+	
+	// These are applied AFTER the normal throttle reduction
     public static double kSnailModePercentThrottleReduction = .5;
     public static double kSnailModePercentRotateReduction = .5;
+	
+	// Applied after any scaling
     public static double kDriverInputTurnMaxMagnitude = 0.5;
-    public static double  INPUT_DEADBAND_F310_JOYSTICK = 0.05;
+    
+	public static double  INPUT_DEADBAND_F310_JOYSTICK = 0.05;
     public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
     public static int     JOYSTICK_PORT_DRIVER = 0;
     public static int     JOYSTICK_PORT_OPERATOR = 1;
