@@ -1,6 +1,7 @@
-package us.ilite.common;
+package us.ilite.common.io;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
+import us.ilite.common.Data;
 
 public class DataLogger extends Thread {
     //This is for logging codexes to csv
