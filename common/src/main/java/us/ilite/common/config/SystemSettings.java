@@ -128,8 +128,16 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     // public static int kUpperElevatorEncoderThreshold = 0; //Will be calculated on the regular
     // public static int kLowerElevatorEncoderThreshold = 0;
-    public static double kElevatorMinPower = -1.0;
-    public static double kElevatorMaxPower = 1.0;
+    public static double kElevatorClosedLoopMinPower = -1.0;
+    public static double kElevatorClosedLoopMaxPower = 1.0;
+
+    public static double kElevatorAllowableError = 5;
+    public static int kElevatorNEOAddress = 15;
+
+    public static int kElevatorSmartMotionSlot = 0;
+    public static double kElevatorOpenLoopMinower = -1.0;
+    public static double kElevatorOpenLoopMaxPower = 1.0;
+
 
     public static double kElevatorRampRate = 0.1;
     public static int kElevatorSmartCurrentLimit = 80;
@@ -148,11 +156,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kMaxElevatorVelocity = 4000;
     public static double kMinElevatorVelocity = 0;
     public static double kMaxElevatorAcceleration = 4000;
-    public static double kMinElevatorAcceleration = 100;
-    public static double kElevatorRPM = 5700;
-    public static double kElevatorIZone = 0;
-    public static double kElevatorFeedForward = 0;
-    public static double kElevatorAllowedError = 0; //The allowed deficit in rotations
+    public static double kElevatorClosedLoopAllowableError = 0; //The allowed deficit in rotations
 
 
 
@@ -364,9 +368,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kCargoSpitRollerPower = 0.15; // 15% seems like adequate power (maybe more?)
     public static double kCargoSpitSPXCurrentRatioLimit = 1.1; // Voltage ~ 1.8
 
-    public static int kElevatorNEOAddress = 15;
     // TO-DO: Elevator encoder address?
-    public static int kElevatorNEOEncoderAddress = -1;
     // public static int kElevatorRedundantEncoderAddress = -1;
 
     public static int kFourBarNEO1Address = 9;

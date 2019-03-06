@@ -7,12 +7,10 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.Data;
 import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.lib.util.RangeScale;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
@@ -92,15 +90,15 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         If we aren't already running commands and the driver is pressing a button that triggers a command,
         set the superstructure command queue based off of buttons
         */
-        if(isDriverAllowingAutonomousControlInTeleop()) {
+        if(!mTeleopCommandManager.isRunningCommands() && isDriverAllowingCommandsInTeleop()) {
             updateVisionCommands();
         /*
         If the driver started the commands that the superstructure is running and then released the button,
         stop running commands.
         */
-        } else if(mAutonomousCommandManager.isRunningCommands() && !isDriverAllowingAutonomousControlInTeleop()) {
+        } else if(mTeleopCommandManager.isRunningCommands() && !isDriverAllowingCommandsInTeleop()) {
             mLog.warn("Requesting command stop: driver no longer allowing commands");
-            mAutonomousCommandManager.stopRunningCommands();
+            mTeleopCommandManager.stopRunningCommands();
         }
 
         if(mAutonomousCommandManager.isRunningCommands() && isAutoOverridePressed()) {
@@ -222,34 +220,35 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     private void updateElevator() {
 
+        double manualThrottle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR) * 0.5;
+
+
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_POSITION_ELEVATOR)) {
-            mElevator.setDesiredPosition(EElevatorPosition.HATCH_BOTTOM);
+            mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_BOTTOM);
         } else {
             if(mIsCargo) {
                 if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(EElevatorPosition.CARGO_BOTTOM);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_BOTTOM);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(EElevatorPosition.CARGO_MIDDLE);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_MIDDLE);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(EElevatorPosition.CARGO_TOP);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_TOP);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_INTAKE_LOADING_STATION)) {
-                    mElevator.setDesiredPosition(EElevatorPosition.CARGO_BOTTOM);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_BOTTOM);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-                    double throttle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
-                    mElevator.setDesiredPower(throttle);
+                    mElevator.setDesiredPower(manualThrottle);
                 } else {
                     mElevator.setDesiredPower(0d);
                 }
             } else {
                 if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(EElevatorPosition.HATCH_BOTTOM);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_BOTTOM);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(EElevatorPosition.HATCH_MIDDLE);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_MIDDLE);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(EElevatorPosition.HATCH_TOP);
+                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_TOP);
                 } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-                    double throttle = mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
-                    mElevator.setDesiredPower(throttle);
+                    mElevator.setDesiredPower(manualThrottle);
                 } else {
                     mElevator.setDesiredPower(0d);
                 }
@@ -331,8 +330,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             mLimelight.setVisionTarget(visionTarget);
             mLimelight.setPipeline(trackingType.getPipeline());
             mLog.warn("Requesting command start");
-            mAutonomousCommandManager.stopRunningCommands();
-            mAutonomousCommandManager.startCommands(new TargetLock(mDrive, 3, trackingType, mLimelight, this, false));
+            mTeleopCommandManager.stopRunningCommands();
+            mTeleopCommandManager.startCommands(new TargetLock(mDrive, 3, trackingType, mLimelight, this, false));
             SmartDashboard.putString("Last Tracking Type", mLastTrackingType == null ? "Null" : mLastTrackingType.name());
             SmartDashboard.putString("Tracking Type", trackingType.name());
         }
@@ -340,7 +339,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         mLastTrackingType = trackingType;
     }
 
-    public boolean isDriverAllowingAutonomousControlInTeleop() {
+    public boolean isDriverAllowingCommandsInTeleop() {
         boolean runCommands = false;
         for(ELogitech310 l : SystemSettings.kTeleopCommandTriggers) {
             if(mDriverInputCodex.isSet(l)) {
