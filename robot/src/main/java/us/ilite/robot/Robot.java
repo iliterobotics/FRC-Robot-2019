@@ -23,6 +23,7 @@ import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.MatchMetadata;
 import us.ilite.lib.drivers.Clock;
+import us.ilite.robot.commands.CharacterizeDrive;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.*;
@@ -137,8 +138,8 @@ public class Robot extends TimedRobot {
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
-//        mAutonomousCommandManager.startCommands(new CharacterizeDrive(mDrive, false, false));
-        mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
+        mAutonomousCommandManager.startCommands(new CharacterizeDrive(mDrive, false, false));
+//        mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
 
         mData.registerCodices();
 

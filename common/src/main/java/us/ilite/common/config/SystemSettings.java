@@ -26,12 +26,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static int sCODEX_COMMS_PORT = 5805;
 
-    //==============================================================================
-    // Comms
-    // =============================================================================
-    public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE");
-    public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
-
     // ===========================
     // System ID's
     // ================================
@@ -78,10 +72,16 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Input Constants
     // =============================================================================
+	public static double kNormalPercentThrottleReduction = 0.5;
+	
+	// These are applied AFTER the normal throttle reduction
     public static double kSnailModePercentThrottleReduction = .5;
-    public static double kSnailModePercentRotateReduction = .4;
+    public static double kSnailModePercentRotateReduction = .5;
+	
+	// Applied after any scaling
     public static double kDriverInputTurnMaxMagnitude = 0.5;
-    public static double  INPUT_DEADBAND_F310_JOYSTICK = 0.05;
+    
+	public static double  INPUT_DEADBAND_F310_JOYSTICK = 0.05;
     public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
     public static int     JOYSTICK_PORT_DRIVER = 0;
     public static int     JOYSTICK_PORT_OPERATOR = 1;
@@ -246,10 +246,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kArmPidD = 0.0;
     public static double kArmPidF = 0.1;
 
-    public static double kIntakeWristPidP = 0.1;
-    public static double kIntakeWristPidI = 0.001;
+    public static double kIntakeWristPidP = 0.0;
+    public static double kIntakeWristPidI = 0.0;
     public static double kIntakeWristPidD = 0.0;
-    public static double kIntakeWristPidF = 0.1;
+    public static double kIntakeWristPidF = 0.008903875;
     public static int K_INTAKE_WRIST_ACCELERATION = 1000;
     // ticks per 100 ms, or N * 10 = ticks / sec
     public static int K_INTAKE_WRIST_CRUISE = 200;
@@ -305,7 +305,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // PID TargetLock constants
     // =============================================================================
-    public static PIDGains kTargetAngleLockGains = new PIDGains(0.01, 0.000, 0.0);
+    public static PIDGains kTargetAngleLockGains = new PIDGains(0.004, 0.000, 0.0);
     public static PIDGains kTargetDistanceLockGains = new PIDGains( 0.1, 0.0, 0.0);
 
     // =============================================================================
@@ -365,8 +365,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kPowerDistPanelAddress = 21;
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
-    public static double kCargoSpitRollerPower = 0.15; // 15% seems like adequate power (maybe more?)
-    public static double kCargoSpitSPXCurrentRatioLimit = 1.1; // Voltage ~ 1.8
+    public static double kCargoSpitRollerPower = 0.30; // 15% seems like adequate power (maybe more?)
+    public static double kCargoSpitSPXCurrentRatioLimit = 8.4; // Voltage ~ 1.8
 
     // TO-DO: Elevator encoder address?
     // public static int kElevatorRedundantEncoderAddress = -1;
@@ -386,6 +386,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // TO-DO DO spreadsheet empty
 
     public static int kIntakeWristSRXAddress = 16;
-    public static int kIntakeSolenoidAddress = 2; // and/or 3 according to integration sheet
+    public static int kIntakeSolenoidAddress = 1;
 
 }
