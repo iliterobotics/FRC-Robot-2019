@@ -25,7 +25,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     //==============================================================================
     // Logging
     // =============================================================================
-    public static String kLoggingTimestampKey = "TIME";
 
     public static int kCANTimeoutMs = 10; //use for on the fly updates
     public static int kLongCANTimeoutMs = 100; //use for constructors
@@ -41,7 +40,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDrivetrainWheelDiameterFeet = kDriveWheelDiameterInches / 12.0;
     public static double kDriveWheelCircumference = kDriveWheelDiameterInches * Math.PI;
     public static double kDrivetrainDefaultRampRate = 120.0; // in V/sec
-    public static double kDrivetrainHighGearRampRate = 120.0; // in V/sec
     public static double kDriveTicksPerRotation = 1024;
     public static double kDriveEffectiveWheelbase = 23.75 * 1.025;
     public static double kDrivetrainTurnCircumference = kDriveEffectiveWheelbase * Math.PI;
@@ -110,15 +108,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Elevator Constants
     // =============================================================================
 
-    //All these values will be changed once we have a better idea of what the
-    //elevator's properties will be like
-    public static int kTopEncoderTicks = 0;
-
-    public static PIDGains kElevatorPositionGains = new PIDGains(0.1, 0.0, 0.0, 0.0);
-    public static double kElevatorF = 0;
-
-    // public static int kUpperElevatorEncoderThreshold = 0; //Will be calculated on the regular
-    // public static int kLowerElevatorEncoderThreshold = 0;
     public static double kElevatorClosedLoopMinPower = -1.0;
     public static double kElevatorClosedLoopMaxPower = 1.0;
 
@@ -126,18 +115,18 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kElevatorNEOAddress = 15;
 
     public static int kElevatorSmartMotionSlot = 0;
-    public static double kElevatorOpenLoopMinower = -1.0;
+    public static double kElevatorOpenLoopMinPower = -1.0;
     public static double kElevatorOpenLoopMaxPower = 1.0;
 
-
-    public static double kElevatorRampRate = 0.1;
+    public static double kElevatorOpenLoopRampRate = 0.1;
     public static int kElevatorSmartCurrentLimit = 80;
     public static int kElevatorSecondaryCurrentLimit = 100;
 
-    //----Motion Magic Constants------
+    /*
+    Smart Motion Constants
 
-
-    //TODO Change values to correct values
+    Units are RPM
+     */
     public static double kElevatorMotionP = 2.5e-4;
     public static double kElevatorMotionI = 0.0;
     public static double kElevatorMotionD = 0.0;
@@ -150,15 +139,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kElevatorClosedLoopAllowableError = 0; //The allowed deficit in rotations
 
 
-
-    //--------------------------------
-
-    // public static int kCansparkMasterId = 0;
-    // public static int kTalonId = 0;
-
-    //This is the value that it was last year. It will most likely change. 
-    public static int kELEVATOR_ENCODER_DEADBAND = 20;
-
     // =============================================================================
     // Closed-Loop Velocity Constants
     // =============================================================================
@@ -167,15 +147,13 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveVelocity_kP = 1.0;
     public static double kDriveVelocity_kI = 0.0;
     public static double kDriveVelocity_kD = 0.0;
-//    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
+//    public static double kDriveVelocity_kF = (1023.0 / 1155.0);
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
-    public static int ULTRASONIC_PORT = 1;
 
     // =============================================================================
     // Turn-To PID constants
     // =============================================================================
     public static PIDGains kPIDGains = new PIDGains( 0.0, 0.0, 0.0, 0.085 );
-
 
 
     // =============================================================================
@@ -241,9 +219,9 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kIntakeWristPidI = 0.0;
     public static double kIntakeWristPidD = 0.0;
     public static double kIntakeWristPidF = 0.008903875;
-    public static int K_INTAKE_WRIST_ACCELERATION = 1000;
+    public static int kIntakeWristAcceleration = 1000;
     // ticks per 100 ms, or N * 10 = ticks / sec
-    public static int K_INTAKE_WRIST_CRUISE = 200;
+    public static int kIntakeWristCruise = 200;
 
 
     public static double kIntakeRollerHatchPower = .25;
@@ -259,17 +237,9 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kIntakeWristGroundMinBound = 95;
 
 
-    public static int K_ARM_ACCELERATION = 5;
-    public static int K_ARM_CRUISE = 30;
-    /////////////////////////////////////
-
-    public static int CTRE_TIMEOUT_INIT = 10;
-    public static int CTRE_TIMEOUT_PERIODIC = 0;
-    // =============================================================================
-
-
-
-
+    public static int kArmAcceleration = 5;
+    public static int kArmCruise = 30;
+    
     // =============================================================================
     // LimeLight Camera Constants
     // Note: These constants need to be recalculted for a specific robot geometry
