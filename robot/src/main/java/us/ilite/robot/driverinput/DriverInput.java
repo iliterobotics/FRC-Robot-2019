@@ -9,6 +9,7 @@ import com.team254.lib.util.CheesyDriveHelper;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.Data;
 import us.ilite.common.config.DriveTeamInputMap;
@@ -34,12 +35,14 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     protected final Drive mDrive;
     protected final Elevator mElevator;
     protected final Intake mIntake;
+    protected final PneumaticIntake mPneumaticIntake;
     protected final CargoSpit mCargoSpit;
     protected final HatchFlower mHatchFlower;
     private final CommandManager mTeleopCommandManager;
     private final CommandManager mAutonomousCommandManager;
     private final Limelight mLimelight;
     private final Data mData;
+    private Timer mGroundCargoTimer = new Timer();
 
     private boolean mIsCargo = false;
     private Joystick mDriverJoystick;
@@ -51,10 +54,11 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     private ETrackingType mLastTrackingType = null;
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, boolean pSimulated) {
         this.mDrive = pDrivetrain;
         this.mElevator = pElevator;
         this.mIntake = pIntake;
+        this.mPneumaticIntake = pPneumaticIntake;
         this.mCargoSpit = pCargoSpit;
         this.mHatchFlower = pHatchFlower;
         this.mLimelight = pLimelight;
@@ -73,8 +77,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager) {
-        this(pDrivetrain, pElevator, pHatchFlower, pIntake, pCargoSpit, pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, false);
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager) {
+        this(pDrivetrain, pElevator, pHatchFlower, pIntake, pPneumaticIntake, pCargoSpit, pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, false);
     }
 
     @Override
@@ -95,6 +99,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         set the superstructure command queue based off of buttons
         */
         if(!mTeleopCommandManager.isRunningCommands() && isDriverAllowingCommandsInTeleop()) {
+            mAutonomousCommandManager.stopRunningCommands();
             updateVisionCommands();
         /*
         If the driver started the commands that the superstructure is running and then released the button,
@@ -124,8 +129,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             updateHatchGrabber();
             updateCargoSpit();
             updateElevator();
-            updateIntake();
-
+//            updateIntake();
+            updatePneumaticIntake();
         }
 
     }
@@ -189,22 +194,52 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     }
 
+    private void updatePneumaticIntake() {
+        if(mIsCargo) {
+            if ( mData.operatorinput.get( DriveTeamInputMap.OPERATOR_INTAKE_GROUND ) > 0.5 ) {
+                mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.OUT );
+            } else {
+                mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.STOWED );
+            }
+        } else {
+            mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.STOWED );
+        }
+    }
+
     private void updateCargoSpit() {
         if(mIsCargo) {
             if(mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_INTAKE_LOADING_STATION)) {
                 // Intake from loading station
                 mCargoSpit.setIntaking();
+
+                resetCargoTimer();
+
             } else if(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_INTAKE_GROUND) > 0.5) {
                 // Intake from ground - recieve cargo from ground intake
                 mCargoSpit.setIntaking();
+
+                mGroundCargoTimer.start();
+
             } else if(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
                 // Spit
                 mCargoSpit.setOuttaking();
-            } else {
+
+                resetCargoTimer();
+
+                // Stop if timer has expired or was reset
+            } else if ( mGroundCargoTimer.hasPeriodPassed( SystemSettings.kCargoSpitDelay ) || mGroundCargoTimer.get() == 0 ) {
+
                 // Stop
+                resetCargoTimer();
+
                 mCargoSpit.stop();
             }
         }
+    }
+
+    private void resetCargoTimer() {
+        mGroundCargoTimer.stop();
+        mGroundCargoTimer.reset();
     }
 
     private void updateDriveTrain() {

@@ -3,7 +3,6 @@ package us.ilite.robot.driverinput;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.Logger;
-import com.team254.lib.drivers.talon.TalonSRXFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +34,8 @@ public class DriverInputTest {
     @Mock private CargoSpit mCargospit;
     @Mock private Arm mArm;
     @Mock private TalonSRX mTalon;
+    @Mock private PneumaticIntake mPneumaticIntake;
+    @Mock private CargoSpit mCargoSpit;
 
 
     private DriverInput mDriverInput;
@@ -42,7 +43,6 @@ public class DriverInputTest {
 
     private Data mData;
     private Clock mClock;
-    private CargoSpit mCargoSpit;
     private ModuleList mModuleList;
 
     @Before
@@ -56,7 +56,7 @@ public class DriverInputTest {
         mTeleopCommandManager = spy(new CommandManager());
         mAutonomousCommandManager = spy(new CommandManager());
         mLimelight = new Limelight(mData);
-        mDriverInput = spy(new DriverInput(mDrive, mElevator, mHatchFlower,mIntake, mCargospit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, true));
+        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, true ) );
         
         mModuleList.setModules(mDriverInput, mTeleopCommandManager, mAutonomousCommandManager, mDrive);
         mModuleList.modeInit(mClock.getCurrentTime());
@@ -121,17 +121,12 @@ public class DriverInputTest {
 
         for(ELogitech310 commandTrigger : SystemSettings.kTeleopCommandTriggers) {
             mAutonomousCommandManager.stopRunningCommands();
+            mTeleopCommandManager.stopRunningCommands();
             mAutonomousCommandManager.startCommands(new Delay(30));
             // If we press and release a button the command queue should get stopped
             mData.driverinput.set(commandTrigger, 1.0);
-            // Update twice to verify that commands aren't reset twice
-            updateRobot();
-            verify(mAutonomousCommandManager).stopRunningCommands();
-            updateRobot();
 
-            mData.driverinput.set(commandTrigger, null);
             updateRobot();
-            verify(mAutonomousCommandManager).stopRunningCommands();
             assertFalse(mAutonomousCommandManager.isRunningCommands());
 
             resetSpies();
