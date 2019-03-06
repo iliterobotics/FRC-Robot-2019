@@ -1,6 +1,5 @@
 package us.ilite.display.simulation;
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.flybotix.hfr.util.log.ELevel;
@@ -9,9 +8,7 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
-import com.team254.lib.trajectory.timing.TimingConstraint;
 import com.team254.lib.util.ReflectingCSVWriter;
 
 import us.ilite.common.Data;
@@ -21,7 +18,7 @@ import com.team254.frc2018.planners.DriveMotionPlanner;
 import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.StrongholdProfile;
+import us.ilite.common.config.HenryProfile;
 import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideRocket;
 import us.ilite.robot.modules.Drive;
@@ -41,14 +38,14 @@ public class TrackingSimulation {
     private final DriveSimulation mDriveSimulation;
 
     public TrackingSimulation(double pDt) {
-        this(new StrongholdProfile(), pDt);
+        this(new HenryProfile(), pDt);
     }
 
     public TrackingSimulation(RobotProfile pRobotProfile, double pDt) {
         kDt = pDt;
         mData = new Data();
         mClock = new Clock().simulated();
-        mDriveController = new DriveController(new StrongholdProfile());
+        mDriveController = new DriveController(new HenryProfile());
         mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
         mDrive = new Drive(mData, mDriveController, mClock, true);
         csvPoseWriter = new ReflectingCSVWriter<>("tracking.csv", Pose2d.class);

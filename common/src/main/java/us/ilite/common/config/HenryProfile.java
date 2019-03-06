@@ -1,46 +1,39 @@
-package us.ilite.robot;
+package us.ilite.common.config;
 
-import us.ilite.common.lib.RobotProfile;
 import us.ilite.common.config.SystemSettings;
-import com.team254.lib.util.Units;
+import us.ilite.common.lib.RobotProfile;
+import us.ilite.common.lib.util.Units;
 
-/**
- * These values were obtained by running the "CharacterizeDrive" command with the robot on blocks.
- *
- * Wheelbase and wheel radius were obtained theoretically (from physical measurements with a tape measure). This shouldn't
- * affect performance, as this robot has corner omnis and thus does not experience wheel scrub.
- *
- * Linear and angular inertia terms are theoretically calculated (or not calculated at all...)
- */
-public class StrongholdProfile implements RobotProfile {
+public class HenryProfile implements RobotProfile {
+
     @Override
     public double getLeftVoltPerAccel() {
-        return 0.020548508346599333;
+        return 0.01150625538259917;
     }
 
     @Override
     public double getLeftVoltPerSpeed() {
-        return 0.393530524546484;
+        return 0.24744231405368078;
     }
 
     @Override
     public double getLeftFrictionVoltage() {
-        return 1.099701306138158;
+        return 0.6096948673174356;
     }
 
     @Override
     public double getRightVoltPerAccel() {
-        return 0.018778029411794406;
+        return 0.013188926536306073;
     }
 
     @Override
     public double getRightVoltPerSpeed() {
-        return 0.37658382623100706;
+        return 0.26596262541467847;
     }
 
     @Override
     public double getRightFrictionVoltage() {
-        return 1.0488696460140612;
+        return 0.44698232783836034;
     }
 
     @Override
@@ -60,16 +53,17 @@ public class StrongholdProfile implements RobotProfile {
 
     @Override
     public double getLinearInertia() {
-        return 54.4311;
+        return 1.0;
     }
 
     @Override
     public double getAngularInertia() {
-        return 1;
+        return 1.0;
     }
 
     @Override
     public double getAngularDrag() {
         return 0;
     }
+
 }
