@@ -1,4 +1,4 @@
-package us.ilite.robot.driverinput;
+package us.ilite.robot.modules;
 
 public interface ITurnProvider {
 
