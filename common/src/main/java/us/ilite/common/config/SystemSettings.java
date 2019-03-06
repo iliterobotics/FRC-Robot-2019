@@ -2,15 +2,6 @@ package us.ilite.common.config;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-
-import us.ilite.common.types.auton.EHatchAction;
-import us.ilite.common.types.auton.ECargoAction;
-import us.ilite.common.types.auton.EStartingPosition;
-import us.ilite.common.lib.util.SimpleNetworkTable;
-
-import com.team254.lib.util.ConstantsBase;
 
 import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.util.NetworkTablesConstantsBase;
@@ -22,7 +13,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static double kControlLoopPeriod = 0.01; // seconds
 
-    public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
+    public static double kNetworkTableUpdateRate = 0.01;
 
     public static int sCODEX_COMMS_PORT = 5805;
 
@@ -47,15 +38,15 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kDriveCurrentLimitAmps = 40;
     public static int kDriveCurrentLimitTriggerDurationMs = 100;
     public static double kDriveWheelDiameterInches = 6.0;
-    public static double  DRIVETRAIN_WHEEL_DIAMETER_FEET = kDriveWheelDiameterInches / 12.0;
+    public static double kDrivetrainWheelDiameterFeet = kDriveWheelDiameterInches / 12.0;
     public static double kDriveWheelCircumference = kDriveWheelDiameterInches * Math.PI;
-    public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
-    public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
+    public static double kDrivetrainDefaultRampRate = 120.0; // in V/sec
+    public static double kDrivetrainHighGearRampRate = 120.0; // in V/sec
     public static double kDriveTicksPerRotation = 1024;
     public static double kDriveEffectiveWheelbase = 23.75 * 1.025;
-    public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = kDriveEffectiveWheelbase * Math.PI;
-    public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360.0;
-    public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / kDriveWheelDiameterInches;
+    public static double kDrivetrainTurnCircumference = kDriveEffectiveWheelbase * Math.PI;
+    public static double kDrivetrainInchesPerDegree = kDrivetrainTurnCircumference / 360.0;
+    public static double kDrivetrainWheelTurnsPerDegree = kDrivetrainInchesPerDegree / kDriveWheelDiameterInches;
 
     // =============================================================================
     // IMU Constants
@@ -81,11 +72,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 	// Applied after any scaling
     public static double kDriverInputTurnMaxMagnitude = 0.5;
     
-	public static double  INPUT_DEADBAND_F310_JOYSTICK = 0.05;
-    public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
-    public static int     JOYSTICK_PORT_DRIVER = 0;
-    public static int     JOYSTICK_PORT_OPERATOR = 1;
-    public static int     JOYSTICK_PORT_TESTER = 2;
+	public static double kInputDeadbandF310Joystick = 0.05;
+    public static double kInputDeadbandF310Trigger = 0.5;
+    public static int kJoystickPortDriver = 0;
+    public static int kJoystickPortOperator = 1;
+    public static int kJoystickPortTester = 2;
 
     public static int kLimelightDefaultPipeline = ETrackingType.TARGET_LEFT.getPipeline();
     public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN, 
