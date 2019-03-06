@@ -214,7 +214,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
         //		    throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
         rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
-        rotate *= 0.5;
+        rotate *= SystemSettings.kNormalPercentThrottleReduction;
 
         if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) && mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
             throttle *= SystemSettings.kSnailModePercentThrottleReduction;
@@ -288,8 +288,6 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             rotate = rotate;
         }
 
-        rotate = Util.limit(rotate, SystemSettings.kDriverInputTurnMaxMagnitude);
-
         // throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
         // rotate = Util.limit(rotate, 0.7);
 
@@ -297,7 +295,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         //     throttle *= SystemSettings.kSnailModePercentThrottleReduction;
         //     rotate *= SystemSettings.kSnailModePercentRotateReduction;
         // }
-
+        rotate = Util.limit(rotate, SystemSettings.kDriverInputTurnMaxMagnitude);
+		
         DriveMessage driveMessage = DriveMessage.fromThrottleAndTurn(throttle, rotate);
 
         driveMessage.setNeutralMode(NeutralMode.Brake);
