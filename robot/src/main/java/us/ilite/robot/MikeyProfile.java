@@ -1,4 +1,4 @@
-package us.ilite.common.config;
+package us.ilite.robot;
 
 import us.ilite.common.lib.RobotProfile;
 import us.ilite.common.config.SystemSettings;

@@ -11,10 +11,11 @@ import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.first.wpilibj.*;
 import us.ilite.common.Data;
-import us.ilite.common.config.HenryProfile;
 import us.ilite.common.lib.control.DriveController;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.lib.util.PerfTimer;
+import us.ilite.common.types.drive.EDriveData;
+import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.lib.drivers.VisionGyro;
@@ -26,6 +27,9 @@ import us.ilite.robot.commands.CharacterizeDrive;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.*;
+import us.ilite.common.lib.control.DriveController;
+import us.ilite.common.lib.control.PIDGains;
+import us.ilite.common.lib.control.PIDController;
 
 public class Robot extends TimedRobot {
 
@@ -47,7 +51,7 @@ public class Robot extends TimedRobot {
     // Module declarations here
     private CommandManager mAutonomousCommandManager = new CommandManager();
     private CommandManager mTeleopCommandManager = new CommandManager();
-    private DriveController mDriveController = new DriveController(new HenryProfile());
+    private DriveController mDriveController = new DriveController(new StrongholdProfile());
 
     private Drive mDrive = new Drive(mData, mDriveController);
     private Elevator mElevator = new Elevator(mData);
