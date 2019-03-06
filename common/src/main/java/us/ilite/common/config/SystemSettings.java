@@ -17,13 +17,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
 
-    public static final int sCODEX_COMMS_PORT = 5805;
-
-    //==============================================================================
-    // Comms
-    // =============================================================================
-    public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE");
-    public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
+    public static int sCODEX_COMMS_PORT = 5805;
 
     // ===========================
     // System ID's
@@ -71,10 +65,16 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Input Constants
     // =============================================================================
+	public static double kNormalPercentThrottleReduction = 0.5;
+	
+	// These are applied AFTER the normal throttle reduction
     public static double kSnailModePercentThrottleReduction = .5;
-    public static double kSnailModePercentRotateReduction = .4;
+    public static double kSnailModePercentRotateReduction = .5;
+	
+	// Applied after any scaling
     public static double kDriverInputTurnMaxMagnitude = 0.5;
-    public static double  INPUT_DEADBAND_F310_JOYSTICK = 0.05;
+    
+	public static double  INPUT_DEADBAND_F310_JOYSTICK = 0.05;
     public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
     public static int     JOYSTICK_PORT_DRIVER = 0;
     public static int     JOYSTICK_PORT_OPERATOR = 1;
@@ -121,8 +121,16 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     // public static int kUpperElevatorEncoderThreshold = 0; //Will be calculated on the regular
     // public static int kLowerElevatorEncoderThreshold = 0;
-    public static double kElevatorMinPower = -1.0;
-    public static double kElevatorMaxPower = 1.0;
+    public static double kElevatorClosedLoopMinPower = -1.0;
+    public static double kElevatorClosedLoopMaxPower = 1.0;
+
+    public static double kElevatorAllowableError = 5;
+    public static int kElevatorNEOAddress = 15;
+
+    public static int kElevatorSmartMotionSlot = 0;
+    public static double kElevatorOpenLoopMinower = -1.0;
+    public static double kElevatorOpenLoopMaxPower = 1.0;
+
 
     public static double kElevatorRampRate = 0.1;
     public static int kElevatorSmartCurrentLimit = 80;
@@ -141,11 +149,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kMaxElevatorVelocity = 4000;
     public static double kMinElevatorVelocity = 0;
     public static double kMaxElevatorAcceleration = 4000;
-    public static double kMinElevatorAcceleration = 100;
-    public static double kElevatorRPM = 5700;
-    public static double kElevatorIZone = 0;
-    public static double kElevatorFeedForward = 0;
-    public static double kElevatorAllowedError = 0; //The allowed deficit in rotations
+    public static double kElevatorClosedLoopAllowableError = 0; //The allowed deficit in rotations
 
 
 
@@ -197,10 +201,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
         }
     }
 
-    public static int kArmPositionEncoderTicksPerRotation = 3552;
+    //public static int kArmPositionEncoderTicksPerRotation = 3552;
+    public static int kArmPositionEncoderTicksPerRotation = 4096;
     public static double kArmMinAngle = 0.0;
     public static double kArmMaxAngle = 135.0;
-    public static double kArmMaxCurrentVoltRatio = 2; //tune - overcurrent ratio for arm motor
+    public static double kArmMaxCurrentVoltRatio = 20; //tune - overcurrent ratio for arm motor
     public static double kArmMotorOffTimeSec = 0.5; // seconds
     public static double kArmMaxStallTimeSec = 0.1; // seconds
     public static double kArmMinMotorStallVoltage = 0.1;
@@ -219,7 +224,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // We measured .7 volts on the motor to hold the arm horizontal
     // For gravity compensation Kg = % power to hold arm horizontal, which is
     // the measured voltage / 12 volts
-    public static double kArmKg = 0.7/12.0;
+    public static double kArmKg = 1.1;
 
     // Control power clamping limits
     public static double kArmPIDOutputMaxLimit = 1.0; // max 1.0
@@ -233,8 +238,29 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kArmPidI = 0.020;
     public static double kArmPidD = 0.0;
     public static double kArmPidF = 0.1;
-    // public static int K_ARM_ACCELERATION = 512;
-    // public static int K_ARM_CRUISE = 4096;
+
+    public static double kIntakeWristPidP = 0.0;
+    public static double kIntakeWristPidI = 0.0;
+    public static double kIntakeWristPidD = 0.0;
+    public static double kIntakeWristPidF = 0.008903875;
+    public static int K_INTAKE_WRIST_ACCELERATION = 1000;
+    // ticks per 100 ms, or N * 10 = ticks / sec
+    public static int K_INTAKE_WRIST_CRUISE = 200;
+
+
+    public static double kIntakeRollerHatchPower = .25;
+    public static double kIntakeRollerCargoPower = .25;
+    public static double kIntakeRollerHoldPower = .25;
+    public static double kIntakeWristStowedAngle = 0;
+    public static double kIntakeWristHandoffAngle = 48;
+    // temp set to 90 to validate angles
+    public static double kIntakeWristGroundAngle = 90;
+    public static double kCargoSpitDelay = 5;
+    // public static double kIntakeWristGroundAngle = 105;
+    //The minimum angle where it is safe to continue intake process (engage solenoid/roller)
+    public static double kIntakeWristGroundMinBound = 95;
+
+
     public static int K_ARM_ACCELERATION = 5;
     public static int K_ARM_CRUISE = 30;
     /////////////////////////////////////
@@ -273,7 +299,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // PID TargetLock constants
     // =============================================================================
-    public static PIDGains kTargetAngleLockGains = new PIDGains(0.01, 0.000, 0.0);
+    public static PIDGains kTargetAngleLockGains = new PIDGains(0.004, 0.000, 0.0);
     public static PIDGains kTargetDistanceLockGains = new PIDGains( 0.1, 0.0, 0.0);
 
     // =============================================================================
@@ -333,12 +359,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kPowerDistPanelAddress = 21;
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
-    public static double kCargoSpitRollerPower = 0.15; // 15% seems like adequate power (maybe more?)
-    public static double kCargoSpitSPXCurrentRatioLimit = 1.1; // Voltage ~ 1.8
+    public static double kCargoSpitRollerPower = 0.40; // 15% seems like adequate power (maybe more?)
+    public static double kCargoSpitSPXCurrentRatioLimit = 8.5; // Voltage ~ 1.8
 
-    public static int kElevatorNEOAddress = 15;
     // TO-DO: Elevator encoder address?
-    public static int kElevatorNEOEncoderAddress = -1;
     // public static int kElevatorRedundantEncoderAddress = -1;
 
     public static int kFourBarNEO1Address = 9;
@@ -351,22 +375,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kHatchFlowerOpenCloseSolenoidAddress = 5;
     public static int kHatchFlowerExtensionSolenoidAddress = 6;
 
-    public static int kHatchIntakeSPXAddress = 11;
+    //public static int kHatchIntakeSPXAddress = 11;
     public static int kCargoIntakeSPXLowerAddress = 12;
     // TO-DO DO spreadsheet empty
 
     public static int kIntakeWristSRXAddress = 16;
-    // TO-DO Write encoder addresses?
-    public static int kIntakeWristEncoderA_Address = -1;
-    public static int kIntakeWristEncoderB_Address = -1;
-    public static int kIntakeSolenoidAddress = 2; // and/or 3 according to integration sheet
-    public static double kIntakeRollerHatchPower = -1;
-    public static double kIntakeRollerCargoPower = -1;
-    public static double kIntakeRollerHoldPower = -1;
-    public static double kIntakeWristStowedAngle = -1;
-    public static double kIntakeWristHandoffAngle = -1;
-    public static double kIntakeWristGroundAngle = -1;
-    //The minimum angle where it is safe to continue intake process (engage solenoid/roller)
-    public static double kIntakeWristGroundMinBound = -1;
+    public static int kIntakeSolenoidAddress = 1;
 
 }
