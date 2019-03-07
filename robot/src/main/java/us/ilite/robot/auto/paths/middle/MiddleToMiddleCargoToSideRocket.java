@@ -86,7 +86,7 @@ public class MiddleToMiddleCargoToSideRocket extends AutoSequence {
     public ICommand[] generateSequence() {
         return new ICommand[] {
                 new FollowTrajectoryUntilCommandFinished(getStartToMiddleLeftHatchTrajectory(), mDrive, true,
-                        new WaitForVisionTarget(mData, 3.5)),
+                        new WaitForVisionTarget(mData, mLimelight, 3.5)),
                 new TargetLock(mDrive, 2.0, ETrackingType.TARGET_LEFT, mLimelight, () -> 0.0, false).setTargetLockThrottleProvider(() -> 0.5)
                 /*new DriveStraight(mDrive, mData, DriveStraight.EDriveControlMode.PERCENT_OUTPUT,
                         MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchFromStart.getTranslation().translateBy(StartingPoses.kMiddleStart.getTranslation().inverse()).norm()),
