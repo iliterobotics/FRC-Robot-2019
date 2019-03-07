@@ -6,22 +6,17 @@ package us.ilite.robot.modules;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import com.team254.lib.drivers.talon.TalonSRXFactory;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.config.SystemSettings.ArmPosition;
-import us.ilite.common.lib.control.PIDController;
-import us.ilite.common.lib.control.PIDGains;
-import us.ilite.robot.loops.Loop;
 
 import com.team254.lib.util.Util;
 
@@ -104,19 +99,19 @@ public class MotionMagicArm extends Arm
         talon.setNeutralMode(NeutralMode.Brake);
 
         talon.selectProfileSlot(0, 0);
-        // talon.config_kP(0, SystemSettings.kArmPidP, SystemSettings.CTRE_TIMEOUT_INIT);
-        // talon.config_kI(0, SystemSettings.kArmPidI, SystemSettings.CTRE_TIMEOUT_INIT);
-        // talon.config_kD(0, SystemSettings.kArmPidD, SystemSettings.CTRE_TIMEOUT_INIT);
-        // talon.config_kF(0, SystemSettings.kArmPidF, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kP(0, SystemSettings.kIntakeWristPidP, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kI(0, SystemSettings.kIntakeWristPidI, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kD(0, SystemSettings.kIntakeWristPidD, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kF(0, SystemSettings.kIntakeWristPidF, SystemSettings.CTRE_TIMEOUT_INIT);
+        // talon.config_kP(0, SystemSettings.kArmPidP, SystemSettings.kCANTimeoutMs);
+        // talon.config_kI(0, SystemSettings.kArmPidI, SystemSettings.kCANTimeoutMs);
+        // talon.config_kD(0, SystemSettings.kArmPidD, SystemSettings.kCANTimeoutMs);
+        // talon.config_kF(0, SystemSettings.kArmPidF, SystemSettings.kCANTimeoutMs);
+        talon.config_kP(0, SystemSettings.kIntakeWristPidP, SystemSettings.kCANTimeoutMs);
+        talon.config_kI(0, SystemSettings.kIntakeWristPidI, SystemSettings.kCANTimeoutMs);
+        talon.config_kD(0, SystemSettings.kIntakeWristPidD, SystemSettings.kCANTimeoutMs);
+        talon.config_kF(0, SystemSettings.kIntakeWristPidF, SystemSettings.kCANTimeoutMs);
         
         setArmSoftLimits(minTickPosition, maxTickPosition);
-        setArmMotionProfile(SystemSettings.K_INTAKE_WRIST_ACCELERATION, SystemSettings.K_INTAKE_WRIST_CRUISE);
+        setArmMotionProfile(SystemSettings.kIntakeWristAcceleration, SystemSettings.kIntakeWristCruise);
 
-        talon.configAllowableClosedloopError(0, 2, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.configAllowableClosedloopError(0, 2, SystemSettings.kCANTimeoutMs);
     }
 
     public MotionMagicArm( TalonSRX pTalon )
@@ -149,7 +144,7 @@ public class MotionMagicArm extends Arm
 
         talon.selectProfileSlot(0, 0);
 
-        talon.configAllowableClosedloopError(0, 2, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.configAllowableClosedloopError(0, 2, SystemSettings.kCANTimeoutMs);
     }
 
     @Override
@@ -157,14 +152,14 @@ public class MotionMagicArm extends Arm
     {
         // reconfigure on enable
         talon.setSelectedSensorPosition(0);
-        talon.config_kP(0, SystemSettings.kIntakeWristPidP, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kI(0, SystemSettings.kIntakeWristPidI, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kD(0, SystemSettings.kIntakeWristPidD, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.config_kF(0, SystemSettings.kIntakeWristPidF, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.config_kP(0, SystemSettings.kIntakeWristPidP, SystemSettings.kCANTimeoutMs);
+        talon.config_kI(0, SystemSettings.kIntakeWristPidI, SystemSettings.kCANTimeoutMs);
+        talon.config_kD(0, SystemSettings.kIntakeWristPidD, SystemSettings.kCANTimeoutMs);
+        talon.config_kF(0, SystemSettings.kIntakeWristPidF, SystemSettings.kCANTimeoutMs);
         //int minTickPosition = this.angleToTicks(ArmPosition.FULLY_DOWN.getAngle());
         //int maxTickPosition = this.angleToTicks(ArmPosition.FULLY_UP.getAngle());
         //setArmSoftLimits(minTickPosition, maxTickPosition);
-        setArmMotionProfile(SystemSettings.K_INTAKE_WRIST_ACCELERATION, SystemSettings.K_INTAKE_WRIST_CRUISE);
+        setArmMotionProfile(SystemSettings.kIntakeWristAcceleration, SystemSettings.kIntakeWristCruise);
     }
 
     @Override
@@ -313,16 +308,16 @@ public class MotionMagicArm extends Arm
     }
 
     public void setArmSoftLimits(int reverseSoftLimit, int forwardSoftLimit) {
-        talon.configReverseSoftLimitEnable(true, SystemSettings.CTRE_TIMEOUT_PERIODIC);
-        talon.configReverseSoftLimitThreshold(reverseSoftLimit, SystemSettings.CTRE_TIMEOUT_PERIODIC);
+        talon.configReverseSoftLimitEnable(true, SystemSettings.kCANTimeoutMs);
+        talon.configReverseSoftLimitThreshold(reverseSoftLimit, SystemSettings.kCANTimeoutMs);
 
-        talon.configForwardSoftLimitEnable(true, SystemSettings.CTRE_TIMEOUT_PERIODIC);
-        talon.configForwardSoftLimitThreshold(forwardSoftLimit, SystemSettings.CTRE_TIMEOUT_PERIODIC);
+        talon.configForwardSoftLimitEnable(true, SystemSettings.kCANTimeoutMs);
+        talon.configForwardSoftLimitThreshold(forwardSoftLimit, SystemSettings.kCANTimeoutMs);
     }
 
     private void setArmMotionProfile(int acceleration, int cruise) {
-        talon.configMotionAcceleration(acceleration, SystemSettings.CTRE_TIMEOUT_INIT);
-        talon.configMotionCruiseVelocity(cruise, SystemSettings.CTRE_TIMEOUT_INIT);
+        talon.configMotionAcceleration(acceleration, SystemSettings.kCANTimeoutMs);
+        talon.configMotionCruiseVelocity(cruise, SystemSettings.kCANTimeoutMs);
     }
 
     // public int getSetPoints(ESetPoint pPoint)
