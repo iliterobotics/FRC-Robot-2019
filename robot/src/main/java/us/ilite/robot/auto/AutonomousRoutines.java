@@ -41,8 +41,8 @@ public class AutonomousRoutines {
 
     private AutoSequence mMid_MidLeftCargo_LeftRocket;//TODO these
     private AutoSequence mMid_MidRightCargo_LeftRocket;//TODO these
-    private AutoSequence mMid_MidRightCargo_LeftCargoShip;
-    private AutoSequence mMid_MidLeftCargo_LeftCargoShip;
+    private AutoSequence mMid_MidRightCargo_LeftCargoShip;//TODO these
+    private AutoSequence mMid_MidLeftCargo_LeftCargoShip;//TODO these
 
     private AutoSequence mMiddleToMiddleCargoToMiddleCargo;
     private AutoSequence mMiddleToMiddleCargoToSideCargo;
@@ -56,9 +56,9 @@ public class AutonomousRoutines {
     private ICommand[] mMiddleToMiddleCargoMiddleHatchSequence;
 
     private ICommand[] mMid_MidLeftCargo_LeftRocket_Sequence; //TODO these
-    private ICommand[] mMid_MidLeftCargo_LeftCargoShip_Sequence;
-    private ICommand mMid_MidRightCargo_LeftRocket_Sequence;//TODO these
-    private ICommand[] mMid_MidRightCargo_LeftCargoShip_Sequence;
+    private ICommand[] mMid_MidLeftCargo_LeftCargoShip_Sequence;//TODO these
+    private ICommand[] mMid_MidRightCargo_LeftRocket_Sequence;//TODO these
+    private ICommand[] mMid_MidRightCargo_LeftCargoShip_Sequence;//TODO these
 
     private Gson mGson = new Gson();
 
@@ -84,9 +84,13 @@ public class AutonomousRoutines {
         mMiddleToMiddleCargoToSideCargoSequence = mMiddleToMiddleCargoToSideCargo.generateCargoSequence();
         mMiddleToMiddleCargoMiddleCargoSequence = mMiddleToMiddleCargoToMiddleCargo.generateCargoSequence();
 
-
+        //---------------------------------------------------------------------------------------------
         mMid_MidLeftCargo_LeftCargoShip_Sequence = mMid_MidLeftCargo_LeftRocket.generateCargoSequence();
         mMid_MidLeftCargo_LeftRocket_Sequence = mMid_MidLeftCargo_LeftCargoShip.generateCargoSequence();
+        mMid_MidRightCargo_LeftCargoShip_Sequence = mMid_MidRightCargo_LeftCargoShip.generateCargoSequence();
+        mMid_MidRightCargo_LeftRocket_Sequence = mMid_MidRightCargo_LeftRocket.generateCargoSequence();
+        //---------------------------------------------------------------------------------------------
+
 
         //Hatch Sequences
         mMiddleToMiddleHatchToSideRocketSequence = mMiddleToMiddleCargoToSideRocket.generateHatchSequence();
@@ -114,18 +118,26 @@ public class AutonomousRoutines {
             case MIDDLE:
                 switch (ECargoShipAction.intToEnum( cargoShipAction )) {
                     case FRONT_LEFT:
+                        switch (ECargoRocketAction.intToEnum( cargoRocketAction )) {
+                            case FRONT:
+                            case LEFT:
+                                return mMid_MidLeftCargo_LeftRocket_Sequence;
+                            case RIGHT:
+                            default:
+                                break;
+                        }
                     case FRONT_RIGHT:
+                        switch (ECargoRocketAction.intToEnum( cargoRocketAction )) {
+                            case FRONT:
+                            case LEFT:
+                            case RIGHT:
+                            default:
+                                break;
+                        }
+                        default:
+                            break;
+                }
 
-                        default:
-                            break;
-                }
-                switch (ECargoRocketAction.intToEnum( cargoRocketAction )) {
-                    case FRONT:
-                    case LEFT:
-                    case RIGHT:
-                        default:
-                            break;
-                }
                 switch (EHatchShipAction.intToEnum( hatchShipAction )) {
                     case FRONT:
                     case LEFT:
