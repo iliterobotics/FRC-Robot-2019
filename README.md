@@ -8,6 +8,11 @@ This is ILITE's robot, display, and telemetry code for the 2019 FIRST Robotics C
 - Jaci for [GradleRIO](https://github.com/wpilibsuite/GradleRIO), as well as the [GNUPlot integration](https://github.com/GrappleRobotics/Pathfinder/blob/master/Pathfinder/plot.gradle)
 - Jesse for the [highfrequencyrobots](https://github.com/flybotix/highfrequencyrobots) project, which allows us to define data structures for robot telemetry as well as internal use.
 - Team 1678 for their excellent README section on contributing code with Git, which can be found [here](https://github.com/frc1678/robot-code-public)
+- YourKit for YourKit Java Profiler
+
+![YourKit](https://www.yourkit.com/images/yklogo.png)
+
+[YourKit Java Profiler](https://www.yourkit.com/java/profiler/)
 
 ## Project Structure
 
