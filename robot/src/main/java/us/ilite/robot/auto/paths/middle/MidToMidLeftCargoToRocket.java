@@ -23,14 +23,17 @@ import us.ilite.robot.commands.*;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.Limelight;
 
-public class MiddleToMiddleCargoToMiddleCargo extends AutoSequence {
+/**
+ * This auto places 1 hatch on the cargo ship's middle port and one hatch on the side of the rocket.
+ */
+public class MidToMidLeftCargoToRocket extends AutoSequence {
 
     private final Data mData;
     private final Drive mDrive;
     private final Limelight mLimelight;
     private final VisionGyro mVisionGyro;
 
-    public MiddleToMiddleCargoToMiddleCargo(TrajectoryGenerator pTrajectoryGenerator, Data mData, Drive mDrive, Limelight mLimelight, VisionGyro mVisionGyro) {
+    public MidToMidLeftCargoToRocket(TrajectoryGenerator pTrajectoryGenerator, Data mData, Drive mDrive, Limelight mLimelight, VisionGyro mVisionGyro) {
         super(pTrajectoryGenerator);
         this.mData = mData;
         this.mDrive = mDrive;
@@ -38,35 +41,33 @@ public class MiddleToMiddleCargoToMiddleCargo extends AutoSequence {
         this.mVisionGyro = mVisionGyro;
     }
 
-    // End pose of robot @ middle left cargo
-    public static final Pose2d kMiddleLeftCargoFromStart = new Pose2d(FieldElementLocations.kCargoShipMiddleLeftHatch.translateBy(new Translation2d(-RobotDimensions.kFrontToCenter, 0.0)), Rotation2d.fromDegrees(0.0));
+    // End pose of robot @ middle left hatch
+    public static final Pose2d kMiddleLeftHatchFromStart = new Pose2d(FieldElementLocations.kCargoShipMiddleLeftHatch.translateBy(new Translation2d(-RobotDimensions.kFrontToCenter, 0.0)), Rotation2d.fromDegrees(0.0));
     // Turn towards loading station
     public static final Rotation2d kTurnToLoadingStationFromMiddleLeftHatch = Rotation2d.fromDegrees(180.0);
     // End pose of robot @ loading station from middle left hatch
     public static final Pose2d kLoadingStationFromMiddleLeftHatch = new Pose2d(FieldElementLocations.kLoadingStation, Rotation2d.fromDegrees(180.0));
-    // Turn towards middle right cargo
-    public static final Rotation2d kTurnToRightMiddleHatchFromLoadingStation = Rotation2d.fromDegrees(180);
-    // End pose of robot @ middle right cargo from loading station, tune angle
-    public static final Pose2d kMiddleRightCargoFromLoadingStation = new Pose2d(FieldElementLocations.kCargoShipMiddleRightHatch, Rotation2d.fromDegrees(-60));
-    //May not need above
-
+    // End pose of robot @ left rocket hatch from loading station
+    public static final Pose2d kLeftRocketHatchFromLoadingStation = new Pose2d(FieldElementLocations.kRocketLeftHatch, Rotation2d.fromDegrees(-60.0));
+    // Turn towards rocket side
+    public static final Rotation2d kTurnToLeftRocketHatch = Rotation2d.fromDegrees(180.0);
 
     // Drive to the middle of the cargo ship's left-hand port
     public static final List<Pose2d> kStartToMiddleLeftHatchPath = Arrays.asList(
         StartingPoses.kSideStart,
-        kMiddleLeftCargoFromStart
+        kMiddleLeftHatchFromStart
     );
 
-     // Drive (probably in reverse) to the loading station
-      public static final List<Pose2d> kMiddleLeftHatchToLoadingStationPath = Arrays.asList(
-        new Pose2d(kMiddleLeftCargoFromStart.getTranslation(), kTurnToLoadingStationFromMiddleLeftHatch),
+    // Drive (probably in reverse) to the loading station
+    public static final List<Pose2d> kMiddleLeftHatchToLoadingStationPath = Arrays.asList(
+        new Pose2d(kMiddleLeftHatchFromStart.getTranslation(), kTurnToLoadingStationFromMiddleLeftHatch),
         kLoadingStationFromMiddleLeftHatch
     );
 
-    //Drive (reverse?) to middle of the cargo ship's right-hand port
-    public static final List<Pose2d> kLoadingStationToRightHatchPath = Arrays.asList(
-        new Pose2d(kLoadingStationFromMiddleLeftHatch.getTranslation(), kTurnToRightMiddleHatchFromLoadingStation),
-        kMiddleRightCargoFromLoadingStation
+    // Drive (also probably in reverse) to the rocket
+    public static final List<Pose2d> kLoadingStationToSideRocketPath = Arrays.asList(
+        new Pose2d(kLoadingStationFromMiddleLeftHatch.getTranslation(), kTurnToLeftRocketHatch),
+        kLeftRocketHatchFromLoadingStation
     );
 
     public Trajectory<TimedState<Pose2dWithCurvature>> getStartToMiddleLeftHatchTrajectory() {
@@ -77,25 +78,22 @@ public class MiddleToMiddleCargoToMiddleCargo extends AutoSequence {
         return mTrajectoryGenerator.generateTrajectory(true, kMiddleLeftHatchToLoadingStationPath, AutonomousRoutines.kDefaultTrajectoryConstraints);
     }
 
-    public Trajectory<TimedState<Pose2dWithCurvature>> getLoadingStationToRightCargoPath() {
-        return mTrajectoryGenerator.generateTrajectory(false, kLoadingStationToRightHatchPath, AutonomousRoutines.kDefaultTrajectoryConstraints);
+    public Trajectory<TimedState<Pose2dWithCurvature>> getLoadingStationToSideRocketPath() {
+        return mTrajectoryGenerator.generateTrajectory(false, kLoadingStationToSideRocketPath, AutonomousRoutines.kDefaultTrajectoryConstraints);
     }
 
     @Override
     public ICommand[] generateCargoSequence() {
-        return new ICommand[]{
-            new FollowTrajectoryUntilCommandFinished(getStartToMiddleLeftHatchTrajectory(), mDrive, true,
-                        new WaitForVisionTarget(mData, 3.5)),
-                new TargetLock(mDrive, 2.0, ETrackingType.TARGET_LEFT, mLimelight, () -> 0.0, false).setTargetLockThrottleProvider(() -> 0.5)
+        return new ICommand[] {
+
         };
-
     }
-
 
     @Override
     public ICommand[] generateHatchSequence() {
-        return new ICommand[]{
-                //TODO Create this
+        return new ICommand[] {
+                //TODO Make this
         };
     }
+
 }
