@@ -109,8 +109,10 @@ public class Drive extends Loop {
 
 		mData.drive.set(EDriveData.LEFT_POS_INCHES, mDriveHardware.getLeftInches());
 		mData.drive.set(EDriveData.RIGHT_POS_INCHES, mDriveHardware.getRightInches());
-		mData.drive.set(EDriveData.LEFT_VEL_IPS, mDriveHardware.getLeftVelInches());
-		mData.drive.set(EDriveData.RIGHT_VEL_IPS, mDriveHardware.getRightVelInches());
+//		mData.drive.set(EDriveData.LEFT_VEL_IPS, mDriveHardware.getLeftVelInches());
+//		mData.drive.set(EDriveData.RIGHT_VEL_IPS, mDriveHardware.getRightVelInches());
+		mData.drive.set(EDriveData.LEFT_VEL_TICKS, (double)mDriveHardware.getLeftVelTicks());
+		mData.drive.set(EDriveData.RIGHT_VEL_TICKS, (double)mDriveHardware.getRightVelTicks());
 
 //		mData.drive.set(EDriveData.LEFT_CURRENT, mDriveHardware.getLeftCurrent());
 //		mData.drive.set(EDriveData.RIGHT_CURRENT, mDriveHardware.getRightCurrent());
@@ -303,8 +305,8 @@ public class Drive extends Loop {
 			targetRightVel = output.rightOutput;
 
 
-			leftVel = mData.drive.get(EDriveData.LEFT_VEL_IPS);
-			rightVel = mData.drive.get(EDriveData.RIGHT_VEL_IPS);
+			leftVel = mData.drive.get(EDriveData.LEFT_VEL_TICKS);
+			rightVel = mData.drive.get(EDriveData.RIGHT_VEL_TICKS);
 
 //			status = Logger.getRecentLogs().stream().filter(logOutput -> logOutput.thread.equals(this.getClass().getName())).collect(Collectors.toList());
 			targetX = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().x();
