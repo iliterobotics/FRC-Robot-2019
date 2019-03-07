@@ -55,7 +55,7 @@ public class CommandQueue implements ICommand {
 
     @Override
     public void shutdown(double pNow) {
-
+        if(mCommandQueue.peek() != null) mCommandQueue.peek().shutdown(pNow);
     }
 
     public void setCommands(ICommand ... pCommands) {
