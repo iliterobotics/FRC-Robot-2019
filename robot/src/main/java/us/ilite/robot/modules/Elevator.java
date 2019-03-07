@@ -83,7 +83,7 @@ public class Elevator extends Module {
 
         this.mCanController = mMasterElevator.getPIDController();
 
-        mMasterElevator.setOpenLoopRampRate(SystemSettings.kElevatorRampRate);
+        mMasterElevator.setOpenLoopRampRate(SystemSettings.kElevatorOpenLoopRampRate);
         mMasterElevator.setSmartCurrentLimit(SystemSettings.kElevatorSmartCurrentLimit);
         mMasterElevator.setSecondaryCurrentLimit(SystemSettings.kElevatorSecondaryCurrentLimit);
         mCanController.setOutputRange(SystemSettings.kElevatorClosedLoopMinPower, SystemSettings.kElevatorClosedLoopMaxPower, SystemSettings.kElevatorSmartMotionSlot);
@@ -134,7 +134,7 @@ public class Elevator extends Module {
 
         switch (mCurrentState) {
             case NORMAL:
-                mDesiredPower = Util.limit(mDesiredPower, SystemSettings.kElevatorClosedLoopMinPower, SystemSettings.kElevatorClosedLoopMaxPower);
+                mDesiredPower = Util.limit(mDesiredPower, SystemSettings.kElevatorOpenLoopMinPower, SystemSettings.kElevatorOpenLoopMaxPower);
                 mMasterElevator.set(mDesiredPower);
                 break;
             case STOP:
