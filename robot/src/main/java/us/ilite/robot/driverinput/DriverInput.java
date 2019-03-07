@@ -100,7 +100,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         set the superstructure command queue based off of buttons
         */
         if(isDriverAllowingCommandsInTeleop()) {
-            mAutonomousCommandManager.stopRunningCommands();
+            mAutonomousCommandManager.stopRunningCommands(pNow);
             updateVisionCommands(pNow);
         /*
         If the driver started the commands that the superstructure is running and then released the button,
