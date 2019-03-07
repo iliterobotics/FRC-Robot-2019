@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
 
-    // private static final String LOG_PATH_FORMAT = System.getProperty("user.dir")+"/logs/%s/%s.csv";
+    // private static final String LOG_PATH_FORMAT = System.getProperty("user.dir")+"\\logs\\%s\\%s.csv";
     private static final String LOG_PATH_FORMAT = "/u/logs/%s/%s-%s.csv";
 
     private final NetworkTableInstance kNetworkTablesInstance = NetworkTableInstance.getDefault();

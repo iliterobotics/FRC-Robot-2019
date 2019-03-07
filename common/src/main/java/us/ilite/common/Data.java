@@ -160,15 +160,17 @@ public class Data {
     public void logFromCodexToCSVHeader() {
         handleCodexWriterCreation();
         for ( CodexParser parser : mCodexParsers ) {
-            try {
+            
+                try {
                 Writer logger = mCodexWriters.get( parser.getWriterKey() );
-                logger.append( parser.codexToCSVHeader() );
+                logger.append("String test");
                 logger.flush();
             } catch ( IOException e ) {
                 e.printStackTrace();
             }
         }
     }
+    
 
     public void logFromCodexToCSVLog() {
         handleCodexWriterCreation();
@@ -208,7 +210,7 @@ public class Data {
             for ( CodexParser parser : mCodexParsers ) {
                 try {
                     File file = parser.file();
-                    // handleCreation( file );
+                    handleCreation( file );
                     mCodexWriters.put( parser.getWriterKey(), new BufferedWriter( new FileWriter( parser.file() ) ) );
                 } catch ( IOException e ) {
                     e.printStackTrace();
@@ -244,10 +246,10 @@ public class Data {
      * Makes the log file if it doesn't already exist
      */
     private void handleCreation(File pFile) {
+        initParsers();
         //Makes every folder before the file if the CSV's parent folder doesn't exist
         if(Files.notExists(pFile.toPath())) {
-            System.out.println("********************************** first if");
-            pFile.getParentFile().mkdirs();
+            pFile.getAbsoluteFile().getParentFile().mkdirs();
         }
 
         //Creates the .CSV if it doesn't exist
