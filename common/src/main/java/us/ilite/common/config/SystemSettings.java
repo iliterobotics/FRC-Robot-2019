@@ -349,6 +349,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // grab solenoid and engaging the push solenoid.
     public static double kHatchFlowerGrabToPushTransitionTimeSec = 0.250;
     public static double kHatchFlowerExtendStatusTimerDuration = 0.5;
+    public static double kHatchFlowerSwitchPressedTime = 0.1;
 
 
     // =============================================================================

@@ -3,7 +3,9 @@ package us.ilite.robot.modules;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.config.SystemSettings;
 
 /**
@@ -20,9 +22,12 @@ public class HatchFlower extends Module {
 
     private Solenoid mGrabSolenoid;
     private Solenoid mExtendSolenoid;
+    private DigitalInput mUpperHatchSwitch, mLowerHatchSwitch;
 
     private GrabberState mGrabberState;
     private ExtensionState mExtensionState;
+    private Timer mHasHatchTimer = new Timer();
+    private boolean mHasHatch = false;
 
 
     /////////////////////////////////////////////////////////////////////////
@@ -55,6 +60,8 @@ public class HatchFlower extends Module {
         // TODO Do we need to pass the CAN Addresses in via the constructor?
         mGrabSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
         mExtendSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerExtensionSolenoidAddress);
+//        mUpperHatchSwitch = new DigitalInput();
+//        mLowerHatchSwitch = new DigitalInput();
 
         // Init Hatch Flower to grab state - Per JKnight we will start with a hatch or cargo onboard
         this.mGrabberState = GrabberState.GRAB;
@@ -62,7 +69,6 @@ public class HatchFlower extends Module {
 
         this.mGrabSolenoid.set(GrabberState.GRAB.grabber);
         this.mExtendSolenoid.set(ExtensionState.DOWN.extension);
-
     }
 
     /**
@@ -83,6 +89,13 @@ public class HatchFlower extends Module {
 
         mGrabSolenoid.set(mGrabberState.grabber);
         mExtendSolenoid.set(mExtensionState.extension);
+
+        if(isHatchSwitchTriggered()) {
+            mHasHatchTimer.reset();
+            mHasHatchTimer.start();
+        } else {
+            mHasHatchTimer.stop();
+        }
 
     }
 
@@ -130,7 +143,11 @@ public class HatchFlower extends Module {
      * @return Whether the hatch grabber is currently holding a hatch.
      */
     public boolean hasHatch() {
-        return true;
+        return isHatchSwitchTriggered() && mHasHatchTimer.hasPeriodPassed(SystemSettings.kHatchFlowerSwitchPressedTime);
+    }
+
+    private boolean isHatchSwitchTriggered() {
+        return mLowerHatchSwitch.get() || mUpperHatchSwitch.get();
     }
 
 }
