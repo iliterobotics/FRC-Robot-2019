@@ -99,11 +99,11 @@ public class AutonomousRoutines {
     }
 
     public ICommand[] getSequence() {
-        Integer cargoShipAction = (int)SystemSettings.AUTON_TABLE.getEntry( ECargoShipAction.class.getSimpleName() ).getDouble(99);
-        Integer hatchShipAction = (int)SystemSettings.AUTON_TABLE.getEntry( EHatchShipAction.class.getSimpleName() ).getDouble(99);;
-        Integer cargoRocketAction = (int)SystemSettings.AUTON_TABLE.getEntry( ECargoRocketAction.class.getSimpleName() ).getDouble( 99 );
-        Integer hatchRocketAction = (int)SystemSettings.AUTON_TABLE.getEntry( EHatchRocketAction.class.getSimpleName() ).getDouble( 99 );
-        Integer startingPosition = (int)SystemSettings.AUTON_TABLE.getEntry( EStartingPosition.class.getSimpleName() ).getDouble( 99 );
+        Integer cargoShipAction = (int)Data.kAutonTable.getEntry( ECargoShipAction.class.getSimpleName() ).getDouble(99);
+        Integer hatchShipAction = (int)Data.kAutonTable.getEntry( EHatchShipAction.class.getSimpleName() ).getDouble(99);;
+        Integer cargoRocketAction = (int)Data.kAutonTable.getEntry( ECargoRocketAction.class.getSimpleName() ).getDouble( 99 );
+        Integer hatchRocketAction = (int)Data.kAutonTable.getEntry( EHatchRocketAction.class.getSimpleName() ).getDouble( 99 );
+        Integer startingPosition = (int)Data.kAutonTable.getEntry( EStartingPosition.class.getSimpleName() ).getDouble( 99 );
         AutonSelectionData data = mGson.fromJson("", AutonSelectionData.class);
         
         switch(EStartingPosition.intToEnum( startingPosition )) {
@@ -140,6 +140,8 @@ public class AutonomousRoutines {
             default:
                 return mDefaultAuto.generateDefaultSequence();
         }
+
+        return null;
 
     }
 

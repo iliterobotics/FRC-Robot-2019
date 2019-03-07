@@ -1,11 +1,5 @@
 package us.ilite.common.lib.util;
 
-import java.util.List;
-
-import com.flybotix.hfr.codex.Codex;
-import com.flybotix.hfr.codex.CodexOf;
-import com.flybotix.hfr.util.lang.EnumUtils;
-
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -16,10 +10,10 @@ public class SimpleNetworkTable  {
     private NetworkTable netTable;
             
     public SimpleNetworkTable(String name) {
-        NetworkTableInstance.getDefault().setUpdateRate(SystemSettings.NETWORK_TABLE_UPDATE_RATE);
+        NetworkTableInstance.getDefault().setUpdateRate(SystemSettings.kNetworkTableUpdateRate);
         netTable = NetworkTableInstance.getDefault().getTable(name);
 
-        netTable.getInstance().setUpdateRate(SystemSettings.NETWORK_TABLE_UPDATE_RATE);
+        netTable.getInstance().setUpdateRate(SystemSettings.kNetworkTableUpdateRate);
         netTable.getInstance().setServerTeam(1885);
         netTable.getInstance().startClientTeam(1885);
     }
