@@ -23,7 +23,7 @@ import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.MatchMetadata;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.commands.CharacterizeDrive;
+import us.ilite.robot.commands.*;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.*;
@@ -51,7 +51,7 @@ public class Robot extends TimedRobot {
     // Module declarations here
     private CommandManager mAutonomousCommandManager = new CommandManager();
     private CommandManager mTeleopCommandManager = new CommandManager();
-    private DriveController mDriveController = new DriveController(new StrongholdProfile());
+    private DriveController mDriveController = new DriveController(new HenryProfile());
 
     private Drive mDrive = new Drive(mData, mDriveController);
     private Elevator mElevator = new Elevator(mData);
@@ -105,7 +105,11 @@ public class Robot extends TimedRobot {
 
         mRunningModules.setModules();
 
-        mAutonomousRoutines.generateTrajectories();
+        try {
+            mAutonomousRoutines.generateTrajectories();
+        } catch(Exception e) {
+            mLogger.exception(e);
+        }
 
         mData.registerCodices();
 
@@ -135,12 +139,11 @@ public class Robot extends TimedRobot {
         mLoopManager.start();
 
         // Init modules after commands are set
-        mRunningModules.setModules(mAutonomousCommandManager, mTeleopCommandManager, mLimelight);
+        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mTeleopCommandManager, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
-        mAutonomousCommandManager.startCommands(new CharacterizeDrive(mDrive, false, false));
-//        mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
+        mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
 
         mData.registerCodices();
 
@@ -151,6 +154,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         commonPeriodic();
+        mData.sendCodicesToNetworkTables();
     }
 
     @Override
