@@ -17,7 +17,7 @@ import us.ilite.common.types.sensor.EPowerDistPanel;
 public class CargoSpit extends Module {
 
     private final double kZero = 0.0;
-    private final double kLaunchPower = 1.0;
+    private final double kLaunchPower = 0.8;
 
     private ILog mLog = Logger.createLog(CargoSpit.class);
 
@@ -91,7 +91,7 @@ public class CargoSpit extends Module {
         mEmergencyStopped = false;
     }
 
-    private void setOuttaking() {
+    public void setOuttaking() {
         if ( !mEmergencyStopped ) {
             mIntaking = false;
             mOuttaking = true;
@@ -99,14 +99,6 @@ public class CargoSpit extends Module {
             mRightMotor.set( ControlMode. PercentOutput, -kLaunchPower );
         }
         mEmergencyStopped = false;
-    }
-
-    public void setIntake() {
-        setIntaking();
-    }
-
-    public void setOuttake() {
-        setOuttaking();
     }
 
     public boolean hasCargo() {
