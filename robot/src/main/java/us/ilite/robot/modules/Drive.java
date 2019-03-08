@@ -216,6 +216,10 @@ public class Drive extends Loop {
 		mDriveHardware.set(new DriveMessage(0.0, 0.0, ControlMode.Velocity));
 	}
 
+	public void setNormal() {
+		mDriveState = EDriveState.NORMAL;
+	}
+
 	public void setPath(Trajectory<TimedState<Pose2dWithCurvature>> pPath, boolean pResetPoseToStart) {
 		mDriveController.setTrajectory(pPath, pResetPoseToStart);
 		if(pResetPoseToStart) {

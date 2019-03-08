@@ -60,7 +60,7 @@ public class FollowTrajectory implements ICommand {
 
     @Override
     public void shutdown(double pNow) {
-
+        mDrive.setNormal();
     }
 
 }
