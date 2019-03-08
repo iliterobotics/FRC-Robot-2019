@@ -78,12 +78,13 @@ public class Data {
     private Map<String, Writer> mWriters = new HashMap<String, Writer>();
     private Map<String, Writer> mCodexWriters = new HashMap<String, Writer>();
     private boolean mHasMadeNetworkTableWriters = false;
-    private boolean mHasMadeCodexWriters = false;
+    private boolean mHasMadeCodexWriters;
 
     private List<CodexNetworkTablesParser> mParsers;
     private List<CodexParser> mCodexParsers;
 
     public Data(boolean pInitParsers) {
+        mHasMadeCodexWriters = false;
         if(pInitParsers) {
             initParsers();
         }
@@ -161,13 +162,14 @@ public class Data {
         handleCodexWriterCreation();
         for ( CodexParser parser : mCodexParsers ) {
             
-                try {
-                Writer logger = mCodexWriters.get( parser.getWriterKey() );
-                logger.append("String test");
-                logger.flush();
-            } catch ( IOException e ) {
-                e.printStackTrace();
-            }
+//                try {
+//                Writer logger = mCodexWriters.get( parser.getWriterKey() );
+//                logger.append(parser.codexToCSVHeader());
+//                logger.flush();
+//                System.out.println("-----------------------------------------------------------------+++++++++====+======" + mHasMadeCodexWriters);
+//            } catch ( IOException e ) {
+//                e.printStackTrace();
+//            }
         }
     }
     
@@ -206,6 +208,7 @@ public class Data {
     }
 
     public void handleCodexWriterCreation() {
+        System.out.println("-----------------------------------------------------------------+++++++++====+======" + mHasMadeCodexWriters);
         if ( !mHasMadeCodexWriters ) {
             for ( CodexParser parser : mCodexParsers ) {
                 try {
@@ -217,7 +220,8 @@ public class Data {
                 }
             }
             mHasMadeCodexWriters = true;
-        }
+//        }
+        System.out.println("-----------------------------------------------------------------+++++++++====+======" + mHasMadeCodexWriters);
     }
 
     /**
