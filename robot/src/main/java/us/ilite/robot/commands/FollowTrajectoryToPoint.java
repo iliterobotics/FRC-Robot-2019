@@ -80,7 +80,7 @@ public class FollowTrajectoryToPoint implements ICommand {
 
     @Override
     public void shutdown(double pNow) {
-
+        mDrive.setNormal();
     }
 
     /**

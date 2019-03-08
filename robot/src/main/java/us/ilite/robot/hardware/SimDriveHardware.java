@@ -90,7 +90,7 @@ public class SimDriveHardware implements IDriveHardware {
         }
 
         mEncoderStateEstimator.update(pNow, getLeftInches(), getRightInches());
-        System.out.println(mEncoderStateEstimator.getRobotState().getLatestFieldToVehiclePose().getRotation());
+//        System.out.println(mEncoderStateEstimator.getRobotState().getLatestFieldToVehiclePose().getRotation());
 
         mLastTime = pNow;
     }

@@ -47,9 +47,12 @@ public class DriveSimulation {
         double startTime = time;
 
         mDrive.modeInit(startTime);
+        mDrive.setPathFollowing();
         mDrive.setPath(pTrajectoryToDrive, pResetPoseToTrajectoryStart);
 
         simulate(3.5);
+
+        mDrive.setNormal();
 
         System.out.println("Trajectory time: " + (time - startTime));
 

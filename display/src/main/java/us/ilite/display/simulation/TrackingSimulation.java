@@ -21,6 +21,7 @@ import com.team254.frc2018.planners.DriveMotionPlanner;
 import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.lib.drivers.Clock;
+import us.ilite.robot.HenryProfile;
 import us.ilite.robot.StrongholdProfile;
 import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideRocket;
@@ -41,14 +42,14 @@ public class TrackingSimulation {
     private final DriveSimulation mDriveSimulation;
 
     public TrackingSimulation(double pDt) {
-        this(new StrongholdProfile(), pDt);
+        this(new HenryProfile(), pDt);
     }
 
     public TrackingSimulation(RobotProfile pRobotProfile, double pDt) {
         kDt = pDt;
         mData = new Data();
         mClock = new Clock().simulated();
-        mDriveController = new DriveController(new StrongholdProfile());
+        mDriveController = new DriveController(pRobotProfile);
         mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
         mDrive = new Drive(mData, mDriveController, mClock, true);
         csvPoseWriter = new ReflectingCSVWriter<>("tracking.csv", Pose2d.class);
@@ -58,17 +59,12 @@ public class TrackingSimulation {
 
     public void simulate() {
 
-        Logger.setLevel(ELevel.DEBUG);
+        Logger.setLevel(ELevel.ERROR);
 
         double timeDriven = 0.0;
 
-        // timeDriven += mDriveSimulation.driveTrajectory(generate(NearScaleAuto.kToScalePath), true);
-        // timeDriven += mDriveSimulation.driveTrajectory(generate(NearScaleAuto.kAtScale.getRotation(), NearScaleAuto.kTurnFromScaleToFirstCube.getRotation()));
-        // timeDriven += mDriveSimulation.driveTrajectory(generate(NearScaleAuto.kScaleToFirstCubePath), false);
-        // timeDriven += mDriveSimulation.driveTrajectory(generate(NearScaleAuto.kScaleToFirstCube.getRotation(), NearScaleAuto.kTurnFromFirstCubeToScale.getRotation()));
-        // timeDriven += mDriveSimulation.driveTrajectory(generate(NearScaleAuto.kFirstCubeToScalePath), false);
-
-        timeDriven += mDriveSimulation.driveTrajectory(generate(MiddleToMiddleCargoToSideRocket.kStartToMiddleLeftHatchPath), true);
+//        timeDriven += mDriveSimulation.driveTrajectory(generate(MiddleToMiddleCargoToSideRocket.kStartToMiddleLeftHatchPath), true);
+        timeDriven += mDriveSimulation.driveTrajectory(generate(MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchToLoadingStationPath), true);
 
         System.out.println("Time Driven:" + timeDriven);
 

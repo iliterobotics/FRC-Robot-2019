@@ -70,7 +70,7 @@ public class TrajectoryGenerator {
                 waypoints_maybe_flipped, kMaxDx, kMaxDy, kMaxDTheta);
 
         // Flip to be in same frame of reference as field
-        trajectory = TrajectoryUtil.mirror(trajectory);
+//        trajectory = TrajectoryUtil.mirror(trajectory);
 
         trajectory = (reversed) ? flip(trajectory, xAxisFlip) : trajectory;
 

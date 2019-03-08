@@ -20,6 +20,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import us.ilite.display.simulation.ISimulationListener;
 import us.ilite.display.simulation.TrackingSimulation;
+import us.ilite.robot.auto.paths.RobotDimensions;
 
 public class FieldWindow extends Application implements ISimulationListener {
 
@@ -31,12 +32,10 @@ public class FieldWindow extends Application implements ISimulationListener {
     private Button playButton, pauseButton;
 
     private Translation2d fieldInchesToPixels;
-    private final double robotWidth = 38.66;
-    private final double robotHeight = 33.91;
-    private RobotOutline robotOutline = new RobotOutline(new Translation2d(-robotWidth / 2, -robotHeight / 2),
-                                                         new Translation2d(-robotWidth / 2, robotHeight / 2),
-                                                         new Translation2d(robotWidth / 2, robotHeight / 2),
-                                                         new Translation2d(robotWidth / 2, -robotHeight / 2));
+    private RobotOutline robotOutline = new RobotOutline(new Translation2d(-RobotDimensions.kBackToCenter, -RobotDimensions.kSideToCenter),
+                                                         new Translation2d(-RobotDimensions.kBackToCenter, RobotDimensions.kSideToCenter),
+                                                         new Translation2d(RobotDimensions.kFrontToCenter, RobotDimensions.kSideToCenter),
+                                                         new Translation2d(RobotDimensions.kFrontToCenter, -RobotDimensions.kSideToCenter));
 
     private final TrackingSimulation mTrackingSimulation;
 
@@ -75,19 +74,18 @@ public class FieldWindow extends Application implements ISimulationListener {
         pauseButton.setOnAction(e -> pause());
 
         try {
-            fieldImage = new Image(new File("field.png").toURI().toURL().toExternalForm());
+            fieldImage = new Image(new File("field.png").toURI().toURL().toExternalForm(), 640, 480, true, false);
         } catch (Exception pE) {
             pE.printStackTrace();
         }
 
-
         fieldCanvas = new Canvas(fieldImage.getWidth(), fieldImage.getHeight());
-        fieldInchesToPixels = new Translation2d( fieldCanvas.getWidth() / (27.0 * 12.0 + 72.0), fieldCanvas.getHeight() / (27.0 * 12.0));
+        fieldInchesToPixels = new Translation2d( fieldCanvas.getWidth() / (27.0 * 12.0), fieldCanvas.getHeight() / (27.0 * 12.0));
         fieldContext = fieldCanvas.getGraphicsContext2D();
 
         fieldCanvas.setOnMouseMoved(e -> {
             double mouseXInchesVal = e.getX()/fieldInchesToPixels.x();
-            double mouseYInchesVal = Math.abs(e.getY() - fieldCanvas.getHeight()) / fieldInchesToPixels.y();
+            double mouseYInchesVal = Math.abs(e.getY()) / fieldInchesToPixels.y();
 
             mouseXInches.setText("X: " + mouseXInchesVal);
             mouseYInches.setText("Y: " + mouseYInchesVal);
@@ -179,7 +177,7 @@ public class FieldWindow extends Application implements ISimulationListener {
 
     public void drawLatest() {
         reset();
-        Pose2d correctedPose = new Pose2d(new Translation2d(nextPoseToDraw.getTranslation().x(), Math.abs(nextPoseToDraw.getTranslation().y() - 27.0 * 12.0)), nextPoseToDraw.getRotation().inverse());
+        Pose2d correctedPose = new Pose2d(new Translation2d(nextPoseToDraw.getTranslation().x(), Math.abs(nextPoseToDraw.getTranslation().y())), nextPoseToDraw.getRotation().inverse());
         robotOutline.draw(fieldContext, correctedPose, fieldInchesToPixels);
     }
 

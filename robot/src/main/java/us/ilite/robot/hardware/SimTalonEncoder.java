@@ -15,7 +15,7 @@ public class SimTalonEncoder {
     public void update(double pDt, double pVelocity) {
         // Convert to units of per 100ms
         double dt = pDt * 10.0;
-        System.out.println(dt);
+
         mAccel = (pVelocity - mVelocity) / dt;
         mVelocity = pVelocity;
         mPosition += (mVelocity * dt) /*+ (0.5 * mAccel * dt * dt)*/;

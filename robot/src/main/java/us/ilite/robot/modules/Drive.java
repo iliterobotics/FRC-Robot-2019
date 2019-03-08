@@ -165,7 +165,7 @@ public class Drive extends Loop {
 						pNow,
 						mData.drive.get(EDriveData.LEFT_POS_INCHES),
 						mData.drive.get(EDriveData.RIGHT_POS_INCHES),
-						Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES)).inverse());
+						Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES)));
 //				mMotionPlannerTimer.stop();
 				// Convert controller output into something compatible with Talons
 				DriveMessage driveMessage = new DriveMessage(
