@@ -41,7 +41,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveWheelCircumference = kDriveWheelDiameterInches * Math.PI;
     public static double kDrivetrainDefaultRampRate = 120.0; // in V/sec
     public static double kDriveTicksPerRotation = 1024;
-    public static double kDriveEffectiveWheelbase = 23.75 * 1.025;
+    public static double kDriveEffectiveWheelbase = 23.0;
     public static double kDrivetrainTurnCircumference = kDriveEffectiveWheelbase * Math.PI;
     public static double kDrivetrainInchesPerDegree = kDrivetrainTurnCircumference / 360.0;
     public static double kDrivetrainWheelTurnsPerDegree = kDrivetrainInchesPerDegree / kDriveWheelDiameterInches;
@@ -61,11 +61,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Input Constants
     // =============================================================================
-	public static double kNormalPercentThrottleReduction = 0.5;
+	public static double kNormalPercentThrottleReduction = 1.0;
 	
 	// These are applied AFTER the normal throttle reduction
-    public static double kSnailModePercentThrottleReduction = .5;
-    public static double kSnailModePercentRotateReduction = .5;
+    public static double kSnailModePercentThrottleReduction = 0.5;
+    public static double kSnailModePercentRotateReduction = 0.5;
 	
 	// Applied after any scaling
     public static double kDriverInputTurnMaxMagnitude = 0.5;
@@ -267,7 +267,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // PID TargetLock constants
     // =============================================================================
-    public static PIDGains kTargetAngleLockGains = new PIDGains(0.004, 0.000, 0.0);
+    public static PIDGains kTargetAngleLockGains = new PIDGains(0.05, 0.000, 0.0);
     public static PIDGains kTargetDistanceLockGains = new PIDGains( 0.1, 0.0, 0.0);
 
     // =============================================================================
