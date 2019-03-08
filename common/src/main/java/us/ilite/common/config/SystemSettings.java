@@ -3,6 +3,9 @@ package us.ilite.common.config;
 import java.util.Arrays;
 import java.util.List;
 
+import com.team254.lib.util.CheesyDriveGains;
+import us.ilite.common.lib.util.SimpleNetworkTable;
+
 import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.util.NetworkTablesConstantsBase;
 import us.ilite.common.types.ETrackingType;
@@ -45,6 +48,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDrivetrainTurnCircumference = kDriveEffectiveWheelbase * Math.PI;
     public static double kDrivetrainInchesPerDegree = kDrivetrainTurnCircumference / 360.0;
     public static double kDrivetrainWheelTurnsPerDegree = kDrivetrainInchesPerDegree / kDriveWheelDiameterInches;
+
+    public static CheesyDriveGains kCheesyDriveGains = new CheesyDriveGains();
 
     // =============================================================================
     // IMU Constants
@@ -111,7 +116,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kElevatorClosedLoopMinPower = -1.0;
     public static double kElevatorClosedLoopMaxPower = 1.0;
 
-    public static double kElevatorAllowableError = 5;
+    public static double kElevatorAllowableError = 1.0;
     public static int kElevatorNEOAddress = 15;
 
     public static int kElevatorSmartMotionSlot = 0;
@@ -154,6 +159,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Turn-To PID constants
     // =============================================================================
     public static PIDGains kPIDGains = new PIDGains( 0.0, 0.0, 0.0, 0.085 );
+    public static double kTurnSensitivity = 0.85;
 
 
     // =============================================================================

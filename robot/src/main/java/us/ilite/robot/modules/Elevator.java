@@ -194,7 +194,7 @@ public class Elevator extends Module {
     }
 
     public boolean isAtPosition(EElevatorPosition pPosition) {
-        return mCurrentState == EElevatorState.SET_POSITION && (getEncoderPosition() <= Math.abs(pPosition.getEncoderRotations() - SystemSettings.kElevatorAllowableError));
+        return mCurrentState == EElevatorState.SET_POSITION && (Math.abs(pPosition.getEncoderRotations() - getEncoderPosition()) <= SystemSettings.kElevatorAllowableError);
     }
 
     public void stop() {
