@@ -7,6 +7,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.team254.lib.util.Util;
 
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.EFourBarData;
@@ -23,6 +25,9 @@ public class FourBar extends Module {
 
     private CANSparkMax mNeos;
     private CANSparkMax mNeo2;
+    private Solenoid mPusherSolenoid;
+    private boolean mHasPusherActivated = false;
+    private Timer mPusherSolenoidTimer = new Timer();
     private CANEncoder mNeo1Encoder;
     private CANEncoder mNeo2Encoder;
 
@@ -38,8 +43,9 @@ public class FourBar extends Module {
      */
     public FourBar( Data pData ) {
         // Later: SystemSettings address
-        mNeos = new CANSparkMax( 9, CANSparkMaxLowLevel.MotorType.kBrushless );
-        mNeo2 = new CANSparkMax( 10, CANSparkMaxLowLevel.MotorType.kBrushless );
+        mNeos = new CANSparkMax( SystemSettings.kFourBarNEO1Address, CANSparkMaxLowLevel.MotorType.kBrushless );
+        mNeo2 = new CANSparkMax( SystemSettings.kFourBarNEO2Address, CANSparkMaxLowLevel.MotorType.kBrushless );
+        mPusherSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kFourBarPusherAddress);
         mNeo2.follow( mNeos, true );
     
         // Connect the NEO's to the encoders
@@ -85,8 +91,23 @@ public class FourBar extends Module {
         if ( isIdle ) {
             mOutput = 0;
         } else {
-            mOutput = Util.limit(desiredOutput + gravityCompAtPosition(), kMinOutput, kMaxOutput);
+
+            if(!mHasPusherActivated) {
+                mPusherSolenoidTimer.reset();
+                mPusherSolenoidTimer.start();
+                mPusherSolenoid.set(true);
+            }
+
+            if(mPusherSolenoidTimer.hasPeriodPassed(SystemSettings.kFourBarPusherDelay)) {
+                mOutput = Util.limit(desiredOutput + gravityCompAtPosition(), kMinOutput, kMaxOutput);
+            }
         }
+    }
+
+    public void retractPusher() {
+        mPusherSolenoid.set(false);
+        mPusherSolenoidTimer.stop();
+        mPusherSolenoidTimer.reset();
     }
 
     /**
