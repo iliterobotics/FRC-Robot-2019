@@ -197,9 +197,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     }
 
     private void updateFourBar() {
-        if (mData.driverinput.isSet(ELogitech310.B_BTN) &&
-                mData.operatorinput.isSet(ELogitech310.B_BTN)) {
-            mFourBar.setDesiredOutput(mData.driverinput.get(ELogitech310.LEFT_Y_AXIS), false);
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_CLIMBER_ALLOW)) {
+            mFourBar.setDesiredOutput(mData.driverinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS), false);
         } else {
             mFourBar.handleStopType();
         }

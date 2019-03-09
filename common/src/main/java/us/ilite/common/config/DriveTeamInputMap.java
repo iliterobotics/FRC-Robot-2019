@@ -3,7 +3,7 @@ package us.ilite.common.config;
 
 import us.ilite.common.types.input.ELogitech310;
 
-public class    DriveTeamInputMap {
+public class DriveTeamInputMap {
 
     public static final ELogitech310
   
@@ -40,6 +40,9 @@ public class    DriveTeamInputMap {
     OPERATOR_INTAKE_HANDOFF = ELogitech310.START,
     OPERATOR_INTAKE_STOWED = ELogitech310.R_BTN,
     OPERATOR_MANUAL_ARM_UP = ELogitech310.DPAD_UP,
-    OPERATOR_MANUAL_ARM_DOWN = ELogitech310.DPAD_DOWN;
+    OPERATOR_MANUAL_ARM_DOWN = ELogitech310.DPAD_DOWN,
+
+    DRIVER_CLIMBER_ALLOW = ELogitech310.BACK,
+    OPERATOR_CLIMBER_AXIS = ELogitech310.LEFT_Y_AXIS;
 
 }
