@@ -20,7 +20,8 @@ public class PneumaticIntake extends Module{
 
     public enum EPneumaticIntakePosition {
         STOWED,
-        OUT;
+        INTAKING,
+        OUTTAKING;
     }
 
     public PneumaticIntake(Data pData) {
@@ -49,9 +50,13 @@ public class PneumaticIntake extends Module{
                 mIntakeSolenoid.set( false );
                 deactivateRoller();
                 break;
-            case OUT:
+            case INTAKING:
                 mIntakeSolenoid.set( true );
-                activateRoller();
+                setRollerIntaking();
+                break;
+            case OUTTAKING:
+                mIntakeSolenoid.set( true );
+                setRollerOuttaking();
                 break;
                 default:
                     break;
@@ -66,8 +71,12 @@ public class PneumaticIntake extends Module{
 
     }
 
-    private void activateRoller() {
+    private void setRollerIntaking() {
         mPower = 0.50;
+    }
+
+    private void setRollerOuttaking() {
+        mPower = -0.50;
     }
 
     private void deactivateRoller() {
