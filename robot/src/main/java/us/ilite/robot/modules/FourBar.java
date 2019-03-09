@@ -64,7 +64,7 @@ public class FourBar extends Module {
         mPreviousNeo1Rotations = mNeo1Encoder.getPosition();
         mPreviousNeo2Rotations = mNeo2Encoder.getPosition();
 
-        mNeos.setSmartCurrentLimit( 20 );
+        mNeos.setSmartCurrentLimit( 80 );
     }
 
     @Override
