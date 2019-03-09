@@ -348,7 +348,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static int kFourBarNEO1Address = 9;
     public static int kFourBarNEO2Address = 10;
-    public static int kFourBarPusherAddress = -1;
+    public static int kFourBarPusherAddress = 0;
     // TO-DO: label solenoid as forward/reverse in spreadsheet
     public static int kFourBarDoubleSolenoidForwardAddress = 0;
     public static int kFourBarDoubleSolenoidReverseAddress = 1;
