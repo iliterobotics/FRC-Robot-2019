@@ -65,7 +65,7 @@ public class HatchFlower extends Module {
         // TODO Do we need to pass the CAN Addresses in via the constructor?
         mGrabSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
         mExtendSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerExtensionSolenoidAddress);
-        mUpperHatchSwitch = new DigitalInput(SystemSettings.kHatchFlowerUpperHatchSwitchAddress);
+        mUpperHatchSwitch = new DigitalInput(SystemSettings.kHatchFlowerHatchSwitchAddress);
 
         // Init Hatch Flower to grab state - Per JKnight we will start with a hatch or cargo onboard
         this.mGrabberState = GrabberState.GRAB;
