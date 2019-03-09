@@ -143,7 +143,7 @@ public class Robot extends TimedRobot {
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
-        mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
+//        mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
 
         mData.registerCodices();
 
