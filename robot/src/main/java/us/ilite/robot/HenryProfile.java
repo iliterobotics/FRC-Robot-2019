@@ -53,7 +53,7 @@ public class HenryProfile implements RobotProfile {
 
     @Override
     public double getLinearInertia() {
-        return 1.0;
+        return 45.35;
     }
 
     @Override

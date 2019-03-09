@@ -46,11 +46,11 @@ public class Data {
     private final List<CodexSender> mSenders = new ArrayList<>();
 
     public final Codex[] mAllCodexes = new Codex[] {
-            imu, drive, driverinput, operatorinput, elevator, cargospit, pdp, intake, limelight
+            imu, /*drive,*/ driverinput, operatorinput, elevator, cargospit, pdp, intake, limelight
     };
 
     public final Codex[] mLoggedCodexes = new Codex[] {
-        imu, drive, driverinput, /*operatorinput,*/ elevator, cargospit,  pdp, intake, limelight
+        imu, /*drive,*/ driverinput, /*operatorinput,*/ elevator, cargospit,  pdp, intake, limelight
     };
 
     public final Codex[] mDisplayedCodexes = new Codex[] {
@@ -92,8 +92,8 @@ public class Data {
             new CodexNetworkTablesParser<EDriveData>(drive),
             new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
             new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR"),
-                new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" ),
-                new CodexNetworkTablesParser<ECargoSpit>( cargospit, "CARGOSPIT" ),
+            new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" ),
+            new CodexNetworkTablesParser<ECargoSpit>( cargospit, "CARGOSPIT" ),
             new CodexNetworkTablesParser<EPowerDistPanel>( pdp, "PDP" )
         );
     }

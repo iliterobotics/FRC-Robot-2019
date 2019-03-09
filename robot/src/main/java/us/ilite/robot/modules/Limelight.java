@@ -32,7 +32,7 @@ public class Limelight extends Module implements ITargetDataProvider {
 
     @Override
     public void modeInit(double pNow) {
-
+        setTracking(ETrackingType.NONE);
     }
 
     @Override
@@ -68,6 +68,12 @@ public class Limelight extends Module implements ITargetDataProvider {
     @Override
     public void update(double pNow) {
 
+        if(mTrackingType != null) {
+            setLedMode(mTrackingType.getLedOn() ? LedMode.LED_ON : LedMode.LED_OFF);
+            setPipeline(mTrackingType.getPipeline());
+        } else {
+            setTracking(ETrackingType.NONE);
+        }
     }
 
     @Override

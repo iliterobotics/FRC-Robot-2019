@@ -1,27 +1,20 @@
 package us.ilite.robot.auto.paths.middle;
 
 import us.ilite.common.Data;
+import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.lib.drivers.VisionGyro;
+import us.ilite.robot.auto.paths.AutoSequence;
 import us.ilite.robot.commands.FollowTrajectoryUntilCommandFinished;
 import us.ilite.robot.commands.ICommand;
 import us.ilite.robot.commands.TargetLock;
 import us.ilite.robot.commands.WaitForVisionTarget;
-import us.ilite.robot.modules.Drive;
-import us.ilite.robot.modules.Limelight;
+import us.ilite.robot.modules.*;
 
-public class MidToMidRightCargoToSideCargo {
+public class MidToMidRightCargoToSideCargo extends AutoSequence {
 
-    private final Data mData;
-    private final Drive mDrive;
-    private final Limelight mLimelight;
-    private final VisionGyro mVisionGyro;
-
-    public MidToMidRightCargoToSideCargo(Data mData, Drive mDrive, Limelight mLimelight, VisionGyro mVisionGyro) {
-        this.mData = mData;
-        this.mDrive = mDrive;
-        this.mLimelight = mLimelight;
-        this.mVisionGyro = mVisionGyro;
+    public MidToMidRightCargoToSideCargo(TrajectoryGenerator mTrajectoryGenerator, Data mData, Drive mDrive, HatchFlower mHatchFlower, PneumaticIntake mPneumaticIntake, CargoSpit mCargoSpit, Elevator mElevator, Limelight mLimelight, VisionGyro mVisionGyro) {
+        super(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
     }
 
     public ICommand[] generateCargoSequence() {

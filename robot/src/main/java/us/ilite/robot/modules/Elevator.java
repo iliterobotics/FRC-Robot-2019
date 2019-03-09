@@ -57,6 +57,7 @@ public class Elevator extends Module {
         HATCH_TOP(36),
         CARGO_BOTTOM(8.5),
         CARGO_LOADING_STATION(17),
+        CARGO_CARGO_SHIP(16.5),
         CARGO_MIDDLE(25),
         CARGO_TOP(41.5);
 
@@ -193,7 +194,7 @@ public class Elevator extends Module {
     }
 
     public boolean isAtPosition(EElevatorPosition pPosition) {
-        return mCurrentState == EElevatorState.SET_POSITION && (getEncoderPosition() <= Math.abs(pPosition.getEncoderRotations() - SystemSettings.kElevatorAllowableError));
+        return mCurrentState == EElevatorState.SET_POSITION && (Math.abs(pPosition.getEncoderRotations() - getEncoderPosition()) <= SystemSettings.kElevatorAllowableError);
     }
 
     public void stop() {

@@ -43,78 +43,78 @@ public class Intake extends Module {
     private EGamePiece mGamePiece;
 
     public Intake(Data pData) {
-        // Basic Construction
-        mIntakeRoller = new VictorSPX(SystemSettings.kCargoIntakeSPXLowerAddress);
-        this.mData = pData;
-    
-        // Wrist control
-        mWristTalon = TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress);
-        mWrist = new MotionMagicArm(mWristTalon);
-
-        // Solenoid for changing between cargo and hatch mode
-        mSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kIntakeSolenoidAddress);
-        mDesiredIntakeState = EIntakeState.STOWED;
+//        // Basic Construction
+//        mIntakeRoller = new VictorSPX(SystemSettings.kCargoIntakeSPXLowerAddress);
+//        this.mData = pData;
+//
+//        // Wrist control
+//        mWristTalon = TalonSRXFactory.createDefaultTalon(SystemSettings.kIntakeWristSRXAddress);
+//        mWrist = new MotionMagicArm(mWristTalon);
+//
+//        // Solenoid for changing between cargo and hatch mode
+//        mSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kIntakeSolenoidAddress);
+//        mDesiredIntakeState = EIntakeState.STOWED;
     }
 
 
     @Override
     public void modeInit(double pNow) {
-        mLog.error("MODE INIT");
-        mDesiredIntakeState = EIntakeState.STOWED;
-        mGamePiece = EGamePiece.HATCH;
-        mWrist.modeInit(pNow);
+//        mLog.error("MODE INIT");
+//        mDesiredIntakeState = EIntakeState.STOWED;
+//        mGamePiece = EGamePiece.HATCH;
+//        mWrist.modeInit(pNow);
     }
 
     @Override
     public void periodicInput(double pNow) {
-        mData.intake.set(EIntake.ARM_ANGLE, mWrist.getCurrentArmAngle());
-        mData.intake.set(EIntake.ENCODER_TICKS, (double)mWristTalon.getSelectedSensorPosition());
-        mData.intake.set(EIntake.ENCODER_VEL_TICKS, (double)mWristTalon.getSelectedSensorVelocity());
-        mData.intake.set(EIntake.ROLLER_CURRENT, mIntakeRollerCurrent);
-        mData.intake.set(EIntake.ROLLER_VOLTAGE, mIntakeRollerVoltage);
-        mData.intake.set(EIntake.SOLENOID_EXTENDED, mSolenoid.get() ? 1.0 : 0.0);
-
-        
-        mWrist.periodicInput(pNow);
+//        mData.intake.set(EIntake.ARM_ANGLE, mWrist.getCurrentArmAngle());
+//        mData.intake.set(EIntake.ENCODER_TICKS, (double)mWristTalon.getSelectedSensorPosition());
+//        mData.intake.set(EIntake.ENCODER_VEL_TICKS, (double)mWristTalon.getSelectedSensorVelocity());
+//        mData.intake.set(EIntake.ROLLER_CURRENT, mIntakeRollerCurrent);
+//        mData.intake.set(EIntake.ROLLER_VOLTAGE, mIntakeRollerVoltage);
+//        mData.intake.set(EIntake.SOLENOID_EXTENDED, mSolenoid.get() ? 1.0 : 0.0);
+//
+//
+//        mWrist.periodicInput(pNow);
     }
 
     @Override
     public void update(double pNow) {
-        // mWrist.setArmPower(power);
-        // EPowerDistPanel ID 11 (CURRENT11) corresponds to Intake Rollers
-        mIntakeRollerCurrent = mData.pdp.get(EPowerDistPanel.CURRENT11);
-        mIntakeRollerVoltage = mIntakeRoller.getMotorOutputVoltage();
-
-        mData.kSmartDashboard.putDouble("Intake Wrist Angle", mWrist.getCurrentArmAngle());
-        SmartDashboard.putNumber("Arm kF", 0.3 / ((double)mWristTalon.getSelectedSensorVelocity()));
-
-        // TODO put this into each case in IntakeState to prevent unwanted solenoid extension
-        setSolenoidState(mGamePiece);        
-
-        switch (mDesiredIntakeState) {
-            case GROUND:
-                //if (mWristAngle < SystemSettings.kIntakeWristGroundMinBound) break;
-                setRollerState(ERollerState.CARGO);
-                mWrist.setArmAngle(mDesiredIntakeState.kWristAngleDegrees);
-                break;
-            case HANDOFF:
-                setRollerState(ERollerState.HOLD);
-                mWrist.setArmAngle(mDesiredIntakeState.kWristAngleDegrees);
-                break;
-            case STOWED:
-                setSolenoidState(EGamePiece.HATCH);
-                setRollerState(ERollerState.STOPPED);
-                mWrist.setArmAngle(mDesiredIntakeState.kWristAngleDegrees);
-                break;
-            case STOPPED: 
-            default:
-                setRollerState(ERollerState.STOPPED);
-                mWristTalon.set(ControlMode.PercentOutput, 0d);
-                break;
-        }
-
-        mWrist.update(pNow);
-        //mWristTalon.set(ControlMode.PercentOutput, this.power);
+//        // mWrist.setArmPower(power);
+//        // EPowerDistPanel ID 11 (CURRENT11) corresponds to Intake Rollers
+//        mIntakeRollerCurrent = mData.pdp.get(EPowerDistPanel.CURRENT11);
+//        mIntakeRollerVoltage = mIntakeRoller.getMotorOutputVoltage();
+//
+//        mData.kSmartDashboard.putDouble("Intake Wrist Angle", mWrist.getCurrentArmAngle());
+//        SmartDashboard.putNumber("Arm kF", 0.3 / ((double)mWristTalon.getSelectedSensorVelocity()));
+//
+//        // TODO put this into each case in IntakeState to prevent unwanted solenoid extension
+//        setSolenoidState(mGamePiece);
+//
+//        switch (mDesiredIntakeState) {
+//            case GROUND:
+//                //if (mWristAngle < SystemSettings.kIntakeWristGroundMinBound) break;
+//                setRollerState(ERollerState.CARGO);
+//                mWrist.setArmAngle(mDesiredIntakeState.kWristAngleDegrees);
+//                break;
+//            case HANDOFF:
+//                setRollerState(ERollerState.HOLD);
+//                mWrist.setArmAngle(mDesiredIntakeState.kWristAngleDegrees);
+//                break;
+//            case STOWED:
+//                setSolenoidState(EGamePiece.HATCH);
+//                setRollerState(ERollerState.STOPPED);
+//                mWrist.setArmAngle(mDesiredIntakeState.kWristAngleDegrees);
+//                break;
+//            case STOPPED:
+//            default:
+//                setRollerState(ERollerState.STOPPED);
+//                mWristTalon.set(ControlMode.PercentOutput, 0d);
+//                break;
+//        }
+//
+//        mWrist.update(pNow);
+//        //mWristTalon.set(ControlMode.PercentOutput, this.power);
     }
 
     /**
@@ -184,7 +184,7 @@ public class Intake extends Module {
 
     @Override
     public void shutdown(double pNow) {
-        mWrist.shutdown(pNow);
+//        mWrist.shutdown(pNow);
     }
 
 
