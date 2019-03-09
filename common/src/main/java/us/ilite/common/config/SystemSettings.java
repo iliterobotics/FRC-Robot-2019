@@ -333,6 +333,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kPowerDistPanelAddress = 21;
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
+    public static int kCargoSpitBeamBreakAddress = -1;
     public static double kCargoSpitRollerPower = 0.40; // 15% seems like adequate power (maybe more?)
     public static double kCargoSpitSPXCurrentRatioLimit = 8.5; // Voltage ~ 1.8
 
