@@ -93,20 +93,22 @@ public class FourBar extends Module {
             mOutput = 0;
         } else {
 
-            if(!mHasPusherActivated) {
-                mPusherSolenoidTimer.reset();
-                mPusherSolenoidTimer.start();
+//            if(!mHasPusherActivated) {
+//                mPusherSolenoidTimer.reset();
+//                mPusherSolenoidTimer.start();
+//                mHasPusherActivated = true;
                 mPusherSolenoid.set(true);
-            }
-
-            if(mPusherSolenoidTimer.hasPeriodPassed(SystemSettings.kFourBarPusherDelay)) {
+//            }
+//
+//            if(mPusherSolenoidTimer.hasPeriodPassed(SystemSettings.kFourBarPusherDelay)) {
                 mOutput = Util.limit(desiredOutput + gravityCompAtPosition(), kMinOutput, kMaxOutput);
-            }
+//            }
         }
     }
 
     public void retractPusher() {
         mPusherSolenoid.set(false);
+        mHasPusherActivated = false;
         mPusherSolenoidTimer.stop();
         mPusherSolenoidTimer.reset();
     }
@@ -158,10 +160,12 @@ public class FourBar extends Module {
      */
     public void updateCodex() {
         updateAngularPosition();
+        mData.fourbar.set( EFourBarData.A_TICKS, mNeos.getEncoder().getPosition() );
         mData.fourbar.set( EFourBarData.A_OUTPUT, mNeos.get() );
         mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeos.getAppliedOutput() * 12.0 );
         mData.fourbar.set( EFourBarData.A_CURRENT, mNeos.getOutputCurrent() );
 
+        mData.fourbar.set( EFourBarData.B_TICKS, mNeo2.getEncoder().getPosition() );
         mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
         mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getAppliedOutput() * 12.0 );
         mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
