@@ -187,10 +187,13 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             } else if (mData.operatorinput.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
                 // Score - release hatch
                 mHatchFlower.pushHatch();
-            } /*else if(mHatchFlower.hasHatch()) {
+            } else if(mHatchFlower.hasHatch()) {
+                // If no buttons are pressed and we have a hatch, auto-grab
                 mHatchFlower.captureHatch();
+            } else {
                 // Do nothing
-            }*/
+            }
+
         }
 
     }

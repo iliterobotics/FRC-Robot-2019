@@ -343,6 +343,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static int kHatchFlowerOpenCloseSolenoidAddress = 5;
     public static int kHatchFlowerExtensionSolenoidAddress = 6;
+    public static int kHatchFlowerUpperHatchSwitchAddress = -1;
+    public static int kHatchFlowerLowerHatchSwitchAddress = -1;
 
     //public static int kHatchIntakeSPXAddress = 11;
     public static int kCargoIntakeSPXLowerAddress = 12;

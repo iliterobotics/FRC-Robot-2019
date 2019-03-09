@@ -6,7 +6,9 @@ import com.flybotix.hfr.util.log.Logger;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
+import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.types.manipulator.EHatchGrabber;
 
 /**
  * Control the Hatch Flower
@@ -20,6 +22,8 @@ public class HatchFlower extends Module {
 
     private ILog mLog = Logger.createLog(HatchFlower.class);
 
+    private Data mData;
+
     private Solenoid mGrabSolenoid;
     private Solenoid mExtendSolenoid;
     private DigitalInput mUpperHatchSwitch, mLowerHatchSwitch;
@@ -27,7 +31,6 @@ public class HatchFlower extends Module {
     private GrabberState mGrabberState;
     private ExtensionState mExtensionState;
     private Timer mHasHatchTimer = new Timer();
-    private boolean mHasHatch = false;
 
 
     /////////////////////////////////////////////////////////////////////////
@@ -56,12 +59,14 @@ public class HatchFlower extends Module {
         }
     }
 
-    public HatchFlower() {
+    public HatchFlower(Data pData) {
+        mData = pData;
+
         // TODO Do we need to pass the CAN Addresses in via the constructor?
         mGrabSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
         mExtendSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerExtensionSolenoidAddress);
-//        mUpperHatchSwitch = new DigitalInput();
-//        mLowerHatchSwitch = new DigitalInput();
+        mUpperHatchSwitch = new DigitalInput(SystemSettings.kHatchFlowerUpperHatchSwitchAddress);
+        mLowerHatchSwitch = new DigitalInput(SystemSettings.kHatchFlowerLowerHatchSwitchAddress);
 
         // Init Hatch Flower to grab state - Per JKnight we will start with a hatch or cargo onboard
         this.mGrabberState = GrabberState.GRAB;
@@ -81,7 +86,11 @@ public class HatchFlower extends Module {
 
     @Override
     public void periodicInput(double pNow) {
-
+        mData.hatchgrabber.set(EHatchGrabber.EXTENDED, (double)mExtensionState.ordinal());
+        mData.hatchgrabber.set(EHatchGrabber.GRABBING, (double)mGrabberState.ordinal());
+        mData.hatchgrabber.set(EHatchGrabber.UPPER_HATCH_SWITCH, isUpperHatchSwitchTriggered() ? 1.0 : 0.0);
+        mData.hatchgrabber.set(EHatchGrabber.LOWER_HATCH_SWITCH, isLowerHatchSwitchTriggered() ? 1.0 : 0.0);
+        mData.hatchgrabber.set(EHatchGrabber.HAS_HATCH, hasHatch() ? 1.0 : 0.0);
     }
 
     @Override
@@ -90,7 +99,7 @@ public class HatchFlower extends Module {
         mGrabSolenoid.set(mGrabberState.grabber);
         mExtendSolenoid.set(mExtensionState.extension);
 
-        if(isHatchSwitchTriggered()) {
+        if(isUpperHatchSwitchTriggered() || isLowerHatchSwitchTriggered()) {
             mHasHatchTimer.reset();
             mHasHatchTimer.start();
         } else {
@@ -143,11 +152,15 @@ public class HatchFlower extends Module {
      * @return Whether the hatch grabber is currently holding a hatch.
      */
     public boolean hasHatch() {
-        return isHatchSwitchTriggered() && mHasHatchTimer.hasPeriodPassed(SystemSettings.kHatchFlowerSwitchPressedTime);
+        return (isUpperHatchSwitchTriggered() && isLowerHatchSwitchTriggered()) && mHasHatchTimer.hasPeriodPassed(SystemSettings.kHatchFlowerSwitchPressedTime);
     }
 
-    private boolean isHatchSwitchTriggered() {
-        return mLowerHatchSwitch.get() || mUpperHatchSwitch.get();
+    private boolean isUpperHatchSwitchTriggered() {
+        return mUpperHatchSwitch.get();
+    }
+
+    private boolean isLowerHatchSwitchTriggered() {
+        return mLowerHatchSwitch.get();
     }
 
 }
