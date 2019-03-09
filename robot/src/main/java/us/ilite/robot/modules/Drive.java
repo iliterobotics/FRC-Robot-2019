@@ -25,6 +25,7 @@ import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.hardware.DriveHardware;
 import us.ilite.robot.hardware.IDriveHardware;
+import us.ilite.robot.hardware.MixedDriveHardware;
 import us.ilite.robot.hardware.SimDriveHardware;
 import us.ilite.robot.loops.Loop;
 
@@ -67,7 +68,7 @@ public class Drive extends Loop {
 			this.mSimClock = pSimClock;
 			this.mDriveHardware = new SimDriveHardware(mSimClock, mDriveController.getRobotProfile());
 		} else {
-			this.mDriveHardware = new DriveHardware();
+			this.mDriveHardware = new MixedDriveHardware();
 		}
 
 		this.mDriveHardware.init();
