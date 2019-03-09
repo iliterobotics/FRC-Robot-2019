@@ -51,7 +51,7 @@ public class Data {
     };
 
     public final Codex[] mLoggedCodexes = new Codex[] {
-        imu, /*drive,*/ driverinput, /*operatorinput,*/ elevator, cargospit,  pdp, intake, limelight, fourbar
+        imu, drive, driverinput, /*operatorinput,*/ elevator, cargospit,  pdp, intake, limelight, fourbar
     };
 
     public final Codex[] mDisplayedCodexes = new Codex[] {

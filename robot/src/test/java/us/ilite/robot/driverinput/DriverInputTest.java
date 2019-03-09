@@ -26,10 +26,10 @@ public class DriverInputTest {
     // We're only testing integration between CommandManager and DriverInput, so we can mock this
     @Mock private Drive mDrive;
     @Mock private HatchFlower mHatchFlower;
-    @Mock private FourBar mFourBar;
     private CommandManager mAutonomousCommandManager;
     // We want to see CommandManager's actual behavior, so we make it a spy
     private CommandManager mTeleopCommandManager;
+    @Mock private FourBar mFourBar;
     @Mock private Elevator mElevator;
     @Mock private Intake mIntake;
     @Mock private CargoSpit mCargospit;
@@ -53,7 +53,6 @@ public class DriverInputTest {
         mData = new Data();
         mClock = new Clock().simulated();
         mModuleList = new ModuleList();
-
         mTeleopCommandManager = spy(new CommandManager());
         mAutonomousCommandManager = spy(new CommandManager());
         mLimelight = new Limelight(mData);

@@ -176,8 +176,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         if (mIsCargo) {
             // Hatch grabber up so we can recieve cargo
             mHatchFlower.setFlowerExtended(HatchFlower.ExtensionState.UP);
-            // Reset hatch grabber
-            mHatchFlower.pushHatch();
+            // Keep hatch grabber open so we can use cargo mode to bring hatch grabber up
+//            mHatchFlower.pushHatch();
         } else {
             // Hatch grabber down
             mHatchFlower.setFlowerExtended(HatchFlower.ExtensionState.DOWN);
@@ -194,16 +194,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 // Do nothing
             }
         }
-    }
 
-    private void updateFourBar() {
-        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_CLIMBER_ALLOW) &&
-                Math.abs(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS)) > 0.02) {
-            mFourBar.setDesiredOutput(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS) * 0.6, false);
-        } else {
-            mFourBar.handleStopType();
-            mFourBar.retractPusher();
-        }
     }
 
     private void updatePneumaticIntake() {
@@ -215,6 +206,15 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             }
         } else {
             mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.STOWED );
+    }
+
+    private void updateFourBar() {
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_CLIMBER_ALLOW) &&
+                Math.abs(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS)) > 0.02) {
+            mFourBar.setDesiredOutput(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS) * 0.6, false);
+        } else {
+            mFourBar.handleStopType();
+            mFourBar.retractPusher();
         }
     }
 
