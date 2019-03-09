@@ -205,7 +205,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.STOWED );
             }
         } else {
-            mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.STOWED );
+            mPneumaticIntake.setDesiredPosition(PneumaticIntake.EPneumaticIntakePosition.STOWED);
+        }
     }
 
     private void updateFourBar() {
