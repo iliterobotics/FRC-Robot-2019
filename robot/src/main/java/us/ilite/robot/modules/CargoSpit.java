@@ -136,7 +136,7 @@ public class CargoSpit extends Module {
 
     public boolean isBeamBroken() {
         // Beam break returns true when not broken
-        return !mBeambreak.get();
+        return mBeambreak.get();
     }
 
     private double convertBoolean(boolean pToConvert) {
