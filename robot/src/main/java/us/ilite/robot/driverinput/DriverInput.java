@@ -198,7 +198,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     private void updateFourBar() {
         if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_CLIMBER_ALLOW)) {
-            mFourBar.setDesiredOutput(mData.driverinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS), false);
+            mFourBar.setDesiredOutput(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS), false);
         } else {
             mFourBar.handleStopType();
             mFourBar.retractPusher();
