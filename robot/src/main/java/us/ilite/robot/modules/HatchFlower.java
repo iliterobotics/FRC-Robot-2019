@@ -26,7 +26,7 @@ public class HatchFlower extends Module {
 
     private Solenoid mGrabSolenoid;
     private Solenoid mExtendSolenoid;
-    private DigitalInput mUpperHatchSwitch, mLowerHatchSwitch;
+    private DigitalInput mUpperHatchSwitch;
 
     private GrabberState mGrabberState;
     private ExtensionState mExtensionState;
@@ -66,7 +66,6 @@ public class HatchFlower extends Module {
         mGrabSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
         mExtendSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerExtensionSolenoidAddress);
         mUpperHatchSwitch = new DigitalInput(SystemSettings.kHatchFlowerUpperHatchSwitchAddress);
-        mLowerHatchSwitch = new DigitalInput(SystemSettings.kHatchFlowerLowerHatchSwitchAddress);
 
         // Init Hatch Flower to grab state - Per JKnight we will start with a hatch or cargo onboard
         this.mGrabberState = GrabberState.GRAB;
@@ -88,8 +87,7 @@ public class HatchFlower extends Module {
     public void periodicInput(double pNow) {
         mData.hatchgrabber.set(EHatchGrabber.EXTENDED, (double)mExtensionState.ordinal());
         mData.hatchgrabber.set(EHatchGrabber.GRABBING, (double)mGrabberState.ordinal());
-        mData.hatchgrabber.set(EHatchGrabber.UPPER_HATCH_SWITCH, isUpperHatchSwitchTriggered() ? 1.0 : 0.0);
-        mData.hatchgrabber.set(EHatchGrabber.LOWER_HATCH_SWITCH, isLowerHatchSwitchTriggered() ? 1.0 : 0.0);
+        mData.hatchgrabber.set(EHatchGrabber.HATCH_SWITCH, isHatchSwitchTriggered() ? 1.0 : 0.0);
         mData.hatchgrabber.set(EHatchGrabber.HAS_HATCH, hasHatch() ? 1.0 : 0.0);
     }
 
@@ -99,7 +97,7 @@ public class HatchFlower extends Module {
         mGrabSolenoid.set(mGrabberState.grabber);
         mExtendSolenoid.set(mExtensionState.extension);
 
-        if(isUpperHatchSwitchTriggered() || isLowerHatchSwitchTriggered()) {
+        if(isHatchSwitchTriggered()) {
             mHasHatchTimer.reset();
             mHasHatchTimer.start();
         } else {
@@ -152,15 +150,12 @@ public class HatchFlower extends Module {
      * @return Whether the hatch grabber is currently holding a hatch.
      */
     public boolean hasHatch() {
-        return (isUpperHatchSwitchTriggered() && isLowerHatchSwitchTriggered()) && mHasHatchTimer.hasPeriodPassed(SystemSettings.kHatchFlowerSwitchPressedTime);
+        return (isHatchSwitchTriggered()) && mHasHatchTimer.hasPeriodPassed(SystemSettings.kHatchFlowerSwitchPressedTime);
     }
 
-    private boolean isUpperHatchSwitchTriggered() {
+    private boolean isHatchSwitchTriggered() {
         return mUpperHatchSwitch.get();
     }
 
-    private boolean isLowerHatchSwitchTriggered() {
-        return mLowerHatchSwitch.get();
-    }
 
 }
