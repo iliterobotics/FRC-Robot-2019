@@ -5,15 +5,18 @@ import com.flybotix.hfr.util.log.Logger;
 import us.ilite.robot.commands.CommandQueue;
 import us.ilite.robot.commands.ICommand;
 
-public class Superstructure extends Module {
+/**
+ * Provides a wrapper for CommandQueue that allows commands to be stopped and started at will.
+ */
+public class CommandManager extends Module {
 
-    private ILog mLog = Logger.createLog(Superstructure.class);
+    private ILog mLog = Logger.createLog(CommandManager.class);
 
     private CommandQueue desiredCommandQueue;
     private boolean lastRunCommandQueue;
     private boolean runCommandQueue;
 
-    public Superstructure() {
+    public CommandManager() {
         this.desiredCommandQueue = new CommandQueue();
     }
 
@@ -45,7 +48,7 @@ public class Superstructure extends Module {
         // Only check if we're done with queue if we're actually running...otherwise we're just spamming stopRunningCommands()
         if(isRunningCommands() && desiredCommandQueue.isDone()) {
             mLog.warn("Command queue has completed execution");
-            stopRunningCommands();
+            stopRunningCommands(pNow);
         }
 
         lastRunCommandQueue = runCommandQueue;
@@ -74,7 +77,7 @@ public class Superstructure extends Module {
     public void startCommands(ICommand ... pCommands) {
         // Only update the command queue if commands aren't already running
         if(!isRunningCommands()) {
-            mLog.warn("Starting superstructure command queue with a size of ", pCommands.length);
+            mLog.warn("Starting command queue with a size of ", pCommands.length);
             runCommandQueue = true;
             desiredCommandQueue.setCommands(pCommands);
         } else {
@@ -82,9 +85,10 @@ public class Superstructure extends Module {
         }
     }
 
-    public void stopRunningCommands() {
+    public void stopRunningCommands(double pNow) {
         mLog.warn("Stopping command queue");
         runCommandQueue = false;
+        desiredCommandQueue.shutdown(pNow);
         desiredCommandQueue.clear();
     }
 

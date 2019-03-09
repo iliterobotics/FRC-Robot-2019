@@ -12,10 +12,13 @@ import us.ilite.common.config.SystemSettings;
 import us.ilite.common.io.CodexNetworkTables;
 import us.ilite.common.io.CodexNetworkTablesParser;
 import us.ilite.common.lib.util.SimpleNetworkTable;
+import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.input.EDriverInputMode;
 import us.ilite.common.types.input.ELogitech310;
+import us.ilite.common.types.manipulator.ECargoSpit;
 import us.ilite.common.types.manipulator.EElevator;
+import us.ilite.common.types.manipulator.EIntake;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.common.types.EFourBarData;
 import us.ilite.common.types.sensor.EPowerDistPanel;
@@ -35,28 +38,31 @@ public class Data {
     public final Codex<Double, ELogitech310> driverinput = Codex.of.thisEnum(ELogitech310.class);
     public final Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
     public final Codex<Double, EElevator> elevator = Codex.of.thisEnum(EElevator.class);
-    public Codex<Double, EFourBarData> fourbar = Codex.of.thisEnum(EFourBarData.class);
+    public final Codex<Double, EFourBarData> fourbar = Codex.of.thisEnum(EFourBarData.class);
+    public final Codex<Double, ECargoSpit> cargospit = Codex.of.thisEnum( ECargoSpit.class );
     public final Codex<Double, EPowerDistPanel> pdp = Codex.of.thisEnum(EPowerDistPanel.class);
-
+    public final Codex<Double, EIntake> intake = Codex.of.thisEnum(EIntake.class);
+    public Codex<Double, ETargetingData> limelight = Codex.of.thisEnum(ETargetingData.class);
 
     private final List<CodexSender> mSenders = new ArrayList<>();
 
     public final Codex[] mAllCodexes = new Codex[] {
-            imu, drive, driverinput, operatorinput, elevator,pdp,fourbar
+            imu, /*drive,*/ driverinput, operatorinput, elevator, cargospit, pdp, intake, limelight, fourbar
     };
 
     public final Codex[] mLoggedCodexes = new Codex[] {
-        imu, drive, driverinput, operatorinput, elevator,pdp,fourbar
+        imu, /*drive,*/ driverinput, /*operatorinput,*/ elevator, cargospit,  pdp, intake, limelight, fourbar
     };
 
     public final Codex[] mDisplayedCodexes = new Codex[] {
-            imu, drive, driverinput, operatorinput, elevator,pdp
+            imu, /*drive,*/ driverinput, operatorinput, elevator, cargospit, pdp
     };
 
     public static NetworkTableInstance kInst = NetworkTableInstance.getDefault();
     public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
     public static SimpleNetworkTable kSmartDashboard = new SimpleNetworkTable("SmartDashboard");
     public static NetworkTable kLimelight = kInst.getTable("limelight");
+    public static NetworkTable kAutonTable = kInst.getTable("AUTON_SELECTION");
     public static SimpleNetworkTable kDriverControlSelection = new SimpleNetworkTable("DriverControlSelection") {
         @Override
         public void initKeys() {
@@ -88,6 +94,8 @@ public class Data {
             new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
             new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR"),
             new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" ),
+            new CodexNetworkTablesParser<ECargoSpit>( cargospit, "CARGOSPIT" ),
+            new CodexNetworkTablesParser<EPowerDistPanel>( pdp, "PDP" ),
             new CodexNetworkTablesParser<EFourBarData>(fourbar, "FOURBAR")
         );
     }
@@ -190,17 +198,20 @@ public class Data {
         }
     }
 
+    public void sendCodicesToNetworkTables() {
+        for(Codex c : mLoggedCodexes) {
+            mCodexNT.send(c);
+        }
+    }
+
     /**
      * @deprecated
      * Do this before sending codices to NetworkTables
      */
     public void registerCodices() {
-        mCodexNT.registerCodex(EGyro.class);
-        mCodexNT.registerCodex(EDriveData.class);
-        mCodexNT.registerCodex(EElevator.class);
-        mCodexNT.registerCodex("DRIVER", ELogitech310.class);
-        mCodexNT.registerCodex("OPERATOR", ELogitech310.class);
-        mCodexNT.registerCodex(EFourBarData.class);
+        for(Codex c : mLoggedCodexes) {
+            mCodexNT.registerCodex(c);
+        }
     }
 
     /**

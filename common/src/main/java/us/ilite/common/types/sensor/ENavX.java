@@ -12,8 +12,8 @@ public enum ENavX implements CodexOf<Double> {
   FUSED_HEADING,
   X_ACCEL,
   Y_ACCEL,
-  Z_ACCEL;
-  
+  Z_ACCEL
+
 //  public static void map(Codex<Double, ENavX> pCodex, AHRS pNavX) {
 //    pCodex.set(YAW, (double)pNavX.getYaw());
 //    pCodex.set(X_DISPLACEMENT, (double)pNavX.getDisplacementX());
