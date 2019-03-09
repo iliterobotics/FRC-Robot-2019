@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.EFourBarData;
+import us.ilite.lib.drivers.SparkMaxFactory;
 
 
 public class FourBar extends Module {
@@ -43,8 +44,8 @@ public class FourBar extends Module {
      */
     public FourBar( Data pData ) {
         // Later: SystemSettings address
-        mNeos = new CANSparkMax( SystemSettings.kFourBarNEO1Address, CANSparkMaxLowLevel.MotorType.kBrushless );
-        mNeo2 = new CANSparkMax( SystemSettings.kFourBarNEO2Address, CANSparkMaxLowLevel.MotorType.kBrushless );
+        mNeos = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kFourBarNEO1Address, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mNeo2 = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kFourBarNEO2Address, CANSparkMaxLowLevel.MotorType.kBrushless);
         mPusherSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kFourBarPusherAddress);
         mNeo2.follow( mNeos, true );
     
@@ -158,11 +159,11 @@ public class FourBar extends Module {
     public void updateCodex() {
         updateAngularPosition();
         mData.fourbar.set( EFourBarData.A_OUTPUT, mNeos.get() );
-        mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeos.getBusVoltage() );
+        mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeos.getAppliedOutput() * 12.0 );
         mData.fourbar.set( EFourBarData.A_CURRENT, mNeos.getOutputCurrent() );
 
         mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
-        mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getBusVoltage() );
+        mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getAppliedOutput() * 12.0 );
         mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
 
         mData.fourbar.set( EFourBarData.ANGLE, mAngularPosition );
