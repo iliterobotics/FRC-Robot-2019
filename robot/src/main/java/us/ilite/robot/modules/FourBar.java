@@ -50,6 +50,8 @@ public class FourBar extends Module {
         // Connect the NEO's to the encoders
         mNeo1Encoder = mNeos.getEncoder();
         mNeo2Encoder = mNeo2.getEncoder();
+        mNeo1Encoder.setPosition(0);
+        mNeo1Encoder.setPosition(0);
 
         updateAngularPosition();
         mData = pData;
