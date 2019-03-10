@@ -212,7 +212,15 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private void updateFourBar() {
         if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_CLIMBER_ALLOW) &&
                 Math.abs(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS)) > 0.02) {
+
+            if(mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_PUSHER_BUTTON)) {
+                mFourBar.extendPusher();
+            } else {
+                mFourBar.retractPusher();
+            }
+
             mFourBar.setDesiredOutput(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS) * 0.6, false);
+
         } else {
             mFourBar.handleStopType();
             mFourBar.retractPusher();

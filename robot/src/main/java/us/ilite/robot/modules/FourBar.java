@@ -53,7 +53,7 @@ public class FourBar extends Module {
         mNeo1Encoder = mNeos.getEncoder();
         mNeo2Encoder = mNeo2.getEncoder();
 
-        mAngularPosition = ( ( mNeo1Encoder.getPosition() / 300 ) + ( mNeo2Encoder.getPosition() / 300 ) ) / 2;
+        updateAngularPosition();
         mData = pData;
     }
 
@@ -97,7 +97,7 @@ public class FourBar extends Module {
 //                mPusherSolenoidTimer.reset();
 //                mPusherSolenoidTimer.start();
 //                mHasPusherActivated = true;
-                mPusherSolenoid.set(true);
+//                mPusherSolenoid.set(true);
 //            }
 //
 //            if(mPusherSolenoidTimer.hasPeriodPassed(SystemSettings.kFourBarPusherDelay)) {
@@ -108,9 +108,13 @@ public class FourBar extends Module {
 
     public void retractPusher() {
         mPusherSolenoid.set(false);
-        mHasPusherActivated = false;
-        mPusherSolenoidTimer.stop();
-        mPusherSolenoidTimer.reset();
+//        mHasPusherActivated = false;
+//        mPusherSolenoidTimer.stop();
+//        mPusherSolenoidTimer.reset();
+    }
+
+    public void extendPusher() {
+        mPusherSolenoid.set(true);
     }
 
     /**
@@ -125,7 +129,7 @@ public class FourBar extends Module {
      * Update angular position based on current rotations
      */
     public void updateAngularPosition() {
-        mAngularPosition = ( ( mNeo1Encoder.getPosition() - mPreviousNeo1Rotations / 300 ) + ( mNeo2Encoder.getPosition() - mPreviousNeo2Rotations / 300 ) ) / 2;
+        mAngularPosition = (-mNeo1Encoder.getPosition() + mNeo2Encoder.getPosition()) / 2;
     }
     
     /**
