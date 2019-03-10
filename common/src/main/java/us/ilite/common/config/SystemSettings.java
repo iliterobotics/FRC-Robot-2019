@@ -166,7 +166,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // TO-DO: Configure torque constant
     // =============================================================================
     public static double kTFourBar = 0;
-    public static double kFourBarPusherDelay = 0.5;
+    public static double kFourBarPusherBottomActivationThreshold = 0;
+    public static double kFourBarPusherUpperActivationThreshold = 0;
 
 
     // =============================================================================

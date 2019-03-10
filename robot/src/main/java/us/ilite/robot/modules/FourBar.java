@@ -75,7 +75,10 @@ public class FourBar extends Module {
 
     @Override
     public void update( double pNow ) {
+
+        updateAngularPosition();
         mNeos.set( mOutput );
+
     }
 
     @Override
@@ -118,7 +121,12 @@ public class FourBar extends Module {
     public void updateAngularPosition() {
         mAngularPosition = (-mNeo1Encoder.getPosition() + mNeo2Encoder.getPosition()) / 2;
     }
-    
+
+    public boolean allowedToPush() {
+        return  mAngularPosition >= SystemSettings.kFourBarPusherBottomActivationThreshold &&
+                mAngularPosition <= SystemSettings.kFourBarPusherUpperActivationThreshold;
+    }
+
     /**
      * Handle stop type based on location
      * Hold if not at 0

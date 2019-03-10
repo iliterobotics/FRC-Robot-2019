@@ -216,7 +216,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 mFourBar.setDesiredOutput(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS) * 0.7, false);
             }
 
-            if(mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_PUSHER_BUTTON)) {
+            if(mFourBar.allowedToPush() && mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_PUSHER_BUTTON)) {
                 mFourBar.extendPusher();
             } else {
                 mFourBar.retractPusher();
@@ -224,7 +224,6 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
         } else {
             mFourBar.handleStopType();
-            mFourBar.retractPusher();
         }
     }
 
