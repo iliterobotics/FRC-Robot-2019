@@ -160,6 +160,13 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static PIDGains kPIDGains = new PIDGains( 0.0, 0.0, 0.0, 0.085 );
     public static double kTurnSensitivity = 0.85;
+   
+    // =============================================================================
+    // Robot constants (configure later)
+    // TO-DO: Configure torque constant
+    // =============================================================================
+    public static double kTFourBar = 0;
+    public static double kFourBarPusherDelay = 0.5;
 
 
     // =============================================================================
@@ -342,6 +349,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static int kFourBarNEO1Address = 9;
     public static int kFourBarNEO2Address = 10;
+    public static int kFourBarPusherAddress = 0;
     // TO-DO: label solenoid as forward/reverse in spreadsheet
     public static int kFourBarDoubleSolenoidForwardAddress = 0;
     public static int kFourBarDoubleSolenoidReverseAddress = 1;
