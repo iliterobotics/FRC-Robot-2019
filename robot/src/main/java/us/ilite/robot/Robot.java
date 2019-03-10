@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
 
         mSettings.writeToNetworkTables();
 
-        new Thread(new DSConnectInitThread()).start();
+//        new Thread(new DSConnectInitThread()).start();
         // Init static variables and get singleton instances first
 
         ICodexTimeProvider provider = new ICodexTimeProvider() {
@@ -185,7 +185,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         commonPeriodic();
 //        mData.sendCodices();
-        mData.sendCodicesToNetworkTables();
+//        mData.sendCodicesToNetworkTables();
     }
 
     @Override
