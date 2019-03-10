@@ -18,7 +18,7 @@ import us.ilite.common.types.sensor.EPowerDistPanel;
 public class CargoSpit extends Module {
 
     private final double kZero = 0.0;
-    private final double kLaunchPower = 0.8;
+    private final double kLaunchPower = 0.7;
 
     private ILog mLog = Logger.createLog(CargoSpit.class);
 
@@ -40,6 +40,11 @@ public class CargoSpit extends Module {
 //        mLeftMotor = new VictorSPX(SystemSettings.kCargoSpitLeftSPXAddress);
         mRightMotor = TalonSRXFactory.createDefaultVictor(SystemSettings.kCargoSpitRightSPXAddress);
 //        mRightMotor = new VictorSPX(SystemSettings.kCargoSpitRightSPXAddress);
+
+        mLeftMotor.enableVoltageCompensation(true);
+        mRightMotor.enableVoltageCompensation(true);
+        mLeftMotor.configVoltageCompSaturation(12.0);
+        mRightMotor.configVoltageCompSaturation(12.0);
 
         mBeambreak = new DigitalInput(SystemSettings.kCargoSpitBeamBreakAddress);
 
