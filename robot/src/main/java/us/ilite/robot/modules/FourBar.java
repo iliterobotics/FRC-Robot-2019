@@ -27,8 +27,6 @@ public class FourBar extends Module {
     private CANSparkMax mNeos;
     private CANSparkMax mNeo2;
     private Solenoid mPusherSolenoid;
-    private boolean mHasPusherActivated = false;
-    private Timer mPusherSolenoidTimer = new Timer();
     private CANEncoder mNeo1Encoder;
     private CANEncoder mNeo2Encoder;
 
@@ -92,25 +90,12 @@ public class FourBar extends Module {
         if ( isIdle ) {
             mOutput = 0;
         } else {
-
-//            if(!mHasPusherActivated) {
-//                mPusherSolenoidTimer.reset();
-//                mPusherSolenoidTimer.start();
-//                mHasPusherActivated = true;
-//                mPusherSolenoid.set(true);
-//            }
-//
-//            if(mPusherSolenoidTimer.hasPeriodPassed(SystemSettings.kFourBarPusherDelay)) {
-                mOutput = Util.limit(desiredOutput + gravityCompAtPosition(), kMinOutput, kMaxOutput);
-//            }
+            mOutput = Util.limit(desiredOutput + gravityCompAtPosition(), kMinOutput, kMaxOutput);
         }
     }
 
     public void retractPusher() {
         mPusherSolenoid.set(false);
-//        mHasPusherActivated = false;
-//        mPusherSolenoidTimer.stop();
-//        mPusherSolenoidTimer.reset();
     }
 
     public void extendPusher() {
