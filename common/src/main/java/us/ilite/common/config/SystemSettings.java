@@ -71,6 +71,9 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 	// These are applied AFTER the normal throttle reduction
     public static double kSnailModePercentThrottleReduction = 0.5;
     public static double kSnailModePercentRotateReduction = 0.4;
+
+    public static double kClimbModePercentThrottleReduction = 0.4;
+    public static double kClimbModePercentRotateReduction = 0.3;
 	
 	// Applied after any scaling
     public static double kDriverInputTurnMaxMagnitude = 0.5;

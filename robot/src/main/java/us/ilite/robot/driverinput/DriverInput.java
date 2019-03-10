@@ -274,6 +274,9 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) && mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
             throttle *= SystemSettings.kSnailModePercentThrottleReduction;
             rotate *= SystemSettings.kSnailModePercentRotateReduction;
+        } else if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_CLIMBER_ALLOW)) {
+            throttle *= SystemSettings.kClimbModePercentThrottleReduction;
+            rotate *= SystemSettings.kClimbModePercentRotateReduction;
         }
 
         DriveMessage driveMessage = DriveMessage.fromThrottleAndTurn(throttle, rotate);
