@@ -63,8 +63,12 @@ public class TrackingSimulation {
 
         double timeDriven = 0.0;
 
-//        timeDriven += mDriveSimulation.driveTrajectory(generate(MiddleToMiddleCargoToSideRocket.kStartToMiddleLeftHatchPath), true);
-        timeDriven += mDriveSimulation.driveTrajectory(generate(MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchToLoadingStationPath), true);
+        mDrive.modeInit(mClock.getCurrentTime());
+
+        timeDriven += mDriveSimulation.driveTrajectory(generate(MiddleToMiddleCargoToSideRocket.kStartToMiddleLeftHatchPath), true);
+        timeDriven += mDriveSimulation.driveTrajectory(generate(true, MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchToLoadingStationPath), true);
+
+        mDrive.shutdown(mClock.getCurrentTime());
 
         System.out.println("Time Driven:" + timeDriven);
 
