@@ -46,11 +46,10 @@ public class DriveSimulation {
     public double driveTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> pTrajectoryToDrive, boolean pResetPoseToTrajectoryStart) {
         double startTime = time;
 
-        mDrive.modeInit(startTime);
         mDrive.setPathFollowing();
         mDrive.setPath(pTrajectoryToDrive, pResetPoseToTrajectoryStart);
 
-        simulate(3.5);
+        simulate();
 
         mDrive.setNormal();
 
@@ -59,9 +58,9 @@ public class DriveSimulation {
         return time - startTime;
     }
 
-    private void simulate(double pDurationSeconds) {
+    private void simulate() {
 
-        for(; time < pDurationSeconds; time += kDt) {
+        while(!mDrive.getDriveController().getDriveMotionPlanner().isDone()) {
             mDrive.getSimClock().setTime(time);
             mDrive.periodicInput(time);
             mDrive.loop(time);
@@ -76,9 +75,10 @@ public class DriveSimulation {
             mOdometryWriter.flush();
 
             mSimulationListeners.forEach(l -> l.update(time, currentPose));
+
+            time += kDt;
         }
         
-        mDrive.shutdown(time);
     }
 
     public void addListener(ISimulationListener pListener) {
