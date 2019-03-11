@@ -177,7 +177,7 @@ public class FieldWindow extends Application implements ISimulationListener {
 
     public void drawLatest() {
         reset();
-        Pose2d correctedPose = new Pose2d(new Translation2d(nextPoseToDraw.getTranslation().x(), Math.abs(nextPoseToDraw.getTranslation().y())), nextPoseToDraw.getRotation().inverse());
+        Pose2d correctedPose = new Pose2d(new Translation2d(nextPoseToDraw.getTranslation().x(), Math.abs(nextPoseToDraw.getTranslation().y())), nextPoseToDraw.getRotation());
         robotOutline.draw(fieldContext, correctedPose, fieldInchesToPixels);
     }
 
