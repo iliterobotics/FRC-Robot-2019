@@ -6,12 +6,14 @@ import com.team254.lib.geometry.Translation2d;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.StrokeLineJoin;
+import us.ilite.robot.auto.paths.RobotDimensions;
 
 public class RobotOutline extends ADrawable {
 
     private Translation2d[] outlinePoints;
-    private DrawablePath leftPath = new DrawablePath(Color.GREEN);
-    private DrawablePath rightPath = new DrawablePath(Color.PURPLE);
+    private DrawablePath leftPath = new DrawablePath(Color.RED);
+    private DrawablePath rightPath = new DrawablePath(Color.RED);
 
     public RobotOutline(Translation2d...outlinePoints) {
         this.outlinePoints = outlinePoints;
@@ -26,6 +28,14 @@ public class RobotOutline extends ADrawable {
             pointsToDraw[pointIndex] = new Translation2d(pointsToDraw[pointIndex].x() * aspectRatio.x(), pointsToDraw[pointIndex].y() * aspectRatio.y());
         }
 
+        // Draw left/right paths first then draw robot on top
+        Translation2d leftSide = outlinePoints[0].translateBy(new Translation2d(RobotDimensions.kSideToCenter, 0)).rotateBy(pose.getRotation()).translateBy(pose.getTranslation());
+        Translation2d rightSide = outlinePoints[1].translateBy(new Translation2d(RobotDimensions.kSideToCenter, 0)).rotateBy(pose.getRotation()).translateBy(pose.getTranslation());
+        leftSide = new Translation2d(leftSide.x() * aspectRatio.x(), leftSide.y() * aspectRatio.y());
+        rightSide = new Translation2d(rightSide.x() * aspectRatio.x(), rightSide.y() * aspectRatio.y());
+        leftPath.draw(gc, new Pose2d(leftSide, Rotation2d.fromDegrees(0.0)));
+        rightPath.draw(gc, new Pose2d(rightSide, Rotation2d.fromDegrees(0.0)));
+
         gc.setStroke(Color.BLACK);
         gc.beginPath();
         gc.moveTo(pointsToDraw[0].x(), pointsToDraw[0].y());
@@ -34,13 +44,6 @@ public class RobotOutline extends ADrawable {
         }
         gc.stroke();
         gc.closePath();
-
-        Translation2d leftSide = outlinePoints[0].translateBy(new Translation2d(33.91 / 2.0, 0)).rotateBy(pose.getRotation()).translateBy(pose.getTranslation());
-        Translation2d rightSide = outlinePoints[1].translateBy(new Translation2d(33.91 / 2.0, 0)).rotateBy(pose.getRotation()).translateBy(pose.getTranslation());
-        leftSide = new Translation2d(leftSide.x() * aspectRatio.x(), leftSide.y() * aspectRatio.y());
-        rightSide = new Translation2d(rightSide.x() * aspectRatio.x(), rightSide.y() * aspectRatio.y());
-        leftPath.draw(gc, new Pose2d(leftSide, Rotation2d.fromDegrees(0.0)));
-        rightPath.draw(gc, new Pose2d(rightSide, Rotation2d.fromDegrees(0.0)));
     }
 
     public void clear() {

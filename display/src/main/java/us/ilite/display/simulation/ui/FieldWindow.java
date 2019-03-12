@@ -86,6 +86,7 @@ public class FieldWindow extends Application implements ISimulationListener {
         fieldCanvas = new Canvas(fieldImage.getWidth(), fieldImage.getHeight());
         fieldInchesToPixels = new Translation2d( fieldCanvas.getWidth() / (27.0 * 12.0), fieldCanvas.getHeight() / (27.0 * 12.0));
         fieldContext = fieldCanvas.getGraphicsContext2D();
+        fieldContext.setLineWidth(2.0);
 
         fieldCanvas.setOnMouseMoved(e -> {
             double mouseXInchesVal = e.getX()/fieldInchesToPixels.x();
