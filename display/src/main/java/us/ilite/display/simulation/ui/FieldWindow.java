@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
 import javafx.application.Application;
@@ -16,8 +17,10 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import us.ilite.display.simulation.SimData;
 import us.ilite.display.simulation.ISimulationListener;
 import us.ilite.display.simulation.TrackingSimulation;
 import us.ilite.robot.auto.paths.RobotDimensions;
@@ -36,11 +39,12 @@ public class FieldWindow extends Application implements ISimulationListener {
                                                          new Translation2d(-RobotDimensions.kBackToCenter, RobotDimensions.kSideToCenter),
                                                          new Translation2d(RobotDimensions.kFrontToCenter, RobotDimensions.kSideToCenter),
                                                          new Translation2d(RobotDimensions.kFrontToCenter, -RobotDimensions.kSideToCenter));
+    private DrawablePath robotPath = new DrawablePath(Color.BLUE);
 
     private final TrackingSimulation mTrackingSimulation;
 
-    private Queue<Pose2d> poseQueue;
-    private Pose2d nextPoseToDraw = new Pose2d();
+    private Queue<SimData> drawQueue;
+    private SimData nextDataToDraw = new SimData(new Pose2d(), new Pose2d());
     private UpdateThread updateThread;
     private boolean mIsPaused = false;
 
@@ -49,7 +53,7 @@ public class FieldWindow extends Application implements ISimulationListener {
     public FieldWindow(TrackingSimulation pTrackingSimulation, double pDt) {
         mTrackingSimulation = pTrackingSimulation;
         kDt = pDt;
-        poseQueue = new LinkedList<>();
+        drawQueue = new LinkedList<>();
     }
 
     public static void main(String[] args) {
@@ -135,18 +139,18 @@ public class FieldWindow extends Application implements ISimulationListener {
                 }
 
                 // If we have to draw this iteration, don't clog up our timing by getting the next pose to draw
-                // Draw @ 45 Hz
+                // Draw @ 30 Hz
                 if(currentTime - lastTimeDrawn > (1.0 / 30.0) * 1000.0) {
                     drawLatest();
                     setRunTime((currentTime - startTime) / 1000.0);
                     lastTimeDrawn = currentTime;
                 } else {
 
-                    if(poseQueue.isEmpty()) break;
+                    if(drawQueue.isEmpty()) break;
 
                     // Update pose to draw @ same rate as simulation ran
                     if(currentTime - lastTimePolled >= (kDt * 1000)) {
-                        nextPoseToDraw = poseQueue.poll();
+                        nextDataToDraw = drawQueue.poll();
                         lastTimePolled = currentTime;
                     }
                 }
@@ -163,12 +167,13 @@ public class FieldWindow extends Application implements ISimulationListener {
 
     public void clear() {
         robotOutline.clear();
+        robotPath.clear();
         reset();
     }
 
-    public void update(double timestamp, Pose2d pose) {
+    public void update(double timestamp, SimData simData) {
         setRunTime(timestamp);
-        poseQueue.add(pose);
+        drawQueue.add(simData);
     }
 
     public void startDrawing() {
@@ -177,8 +182,19 @@ public class FieldWindow extends Application implements ISimulationListener {
 
     public void drawLatest() {
         reset();
-        Pose2d correctedPose = new Pose2d(new Translation2d(nextPoseToDraw.getTranslation().x(), Math.abs(nextPoseToDraw.getTranslation().y())), nextPoseToDraw.getRotation());
-        robotOutline.draw(fieldContext, correctedPose, fieldInchesToPixels);
+
+        Pose2d robotPose = normalizePoseToField(nextDataToDraw.current_pose);
+        Pose2d targetPose = normalizePoseToField(nextDataToDraw.target_pose);
+
+        robotOutline.draw(fieldContext, robotPose, fieldInchesToPixels);
+        robotPath.draw(fieldContext, targetPose, fieldInchesToPixels);
+    }
+
+    private Pose2d normalizePoseToField(Pose2d pose) {
+        Translation2d normalizedTranslation = new Translation2d(pose.getTranslation().x(), Math.abs(pose.getTranslation().y()));
+        Rotation2d normalizedRotation = pose.getRotation();
+
+        return new Pose2d(normalizedTranslation, normalizedRotation);
     }
 
     private void drawFieldImage() {
@@ -190,7 +206,7 @@ public class FieldWindow extends Application implements ISimulationListener {
     }
 
     private void play() {
-        if(poseQueue.isEmpty()) {
+        if(drawQueue.isEmpty()) {
             updateThread = new UpdateThread();
             mTrackingSimulation.simulate();
             clear();

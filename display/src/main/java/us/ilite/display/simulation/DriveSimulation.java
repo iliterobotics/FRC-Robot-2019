@@ -67,6 +67,7 @@ public class DriveSimulation {
             mDrive.periodicOutput(time);
 
             Pose2d currentPose = mDrive.getDriveController().getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose();
+            Pose2d targetPose = mDrive.getDriveController().getDriveMotionPlanner().mSetpoint.state().getPose();
 
             mTrajectoryWriter.add(mDrive.getDriveController().getDriveMotionPlanner());
             mOdometryWriter.add(currentPose);
@@ -74,7 +75,9 @@ public class DriveSimulation {
             mTrajectoryWriter.flush();
             mOdometryWriter.flush();
 
-            mSimulationListeners.forEach(l -> l.update(time, currentPose));
+            SimData data = new SimData(currentPose, targetPose);
+
+            mSimulationListeners.forEach(l -> l.update(time, data));
 
             time += kDt;
         }
