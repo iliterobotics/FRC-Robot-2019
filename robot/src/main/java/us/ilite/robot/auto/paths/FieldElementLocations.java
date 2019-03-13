@@ -31,7 +31,7 @@ public class FieldElementLocations {
     // Naming assumes you are facing the front of the rocket
     public static final Translation2d kRocketLeftHatch = new Translation2d();
     public static final Translation2d kRocketMiddleHatch = new Translation2d();
-    public static final Translation2d kRocketRightHatch = new Translation2d();
+    public static final Translation2d kRocketRightHatch = new Translation2d(245.0, 21.0);
 
 
 }

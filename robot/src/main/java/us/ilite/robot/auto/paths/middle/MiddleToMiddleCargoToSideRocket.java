@@ -12,12 +12,10 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import us.ilite.common.Data;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
-import us.ilite.common.types.ETrackingType;
 import us.ilite.lib.drivers.VisionGyro;
 import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.robot.auto.paths.AutoSequence;
 import us.ilite.robot.auto.paths.FieldElementLocations;
-import us.ilite.robot.auto.paths.RobotDimensions;
 import us.ilite.robot.auto.paths.StartingPoses;
 import us.ilite.robot.commands.*;
 import us.ilite.robot.modules.Drive;
@@ -51,9 +49,8 @@ public class MiddleToMiddleCargoToSideRocket extends AutoSequence {
     // End pose of robot @ loading station from middle left hatch
     public static final Pose2d kLoadingStationFromMiddleLeftHatch = new Pose2d(new Translation2d(50.0, 27.5), Rotation2d.fromDegrees(180.0));
     // End pose of robot @ left rocket hatch from loading station
-    public static final Pose2d kLeftRocketHatchFromLoadingStation = new Pose2d(FieldElementLocations.kRocketLeftHatch, Rotation2d.fromDegrees(-60.0));
-    // Turn towards rocket side
-    public static final Rotation2d kTurnToLeftRocketHatch = Rotation2d.fromDegrees(180.0);
+    public static final Pose2d kLeftRocketHatchSetupFromLoadingStation = new Pose2d(FieldElementLocations.kRocketRightHatch.translateBy(new Translation2d(60.0, 36.0)), Rotation2d.fromDegrees(35.0));
+    public static final Pose2d kLeftRocketHatchFromLeftRocketHatchSetup = new Pose2d(FieldElementLocations.kRocketRightHatch, Rotation2d.fromDegrees(135.0));
 
     // Drive to the middle of the cargo ship's left-hand port
     public static final List<Pose2d> kStartToMiddleLeftHatchPath = Arrays.asList(
@@ -68,9 +65,15 @@ public class MiddleToMiddleCargoToSideRocket extends AutoSequence {
     );
 
     // Drive (also probably in reverse) to the rocket
-    public static final List<Pose2d> kLoadingStationToSideRocketPath = Arrays.asList(
-        new Pose2d(kLoadingStationFromMiddleLeftHatch.getTranslation(), kTurnToLeftRocketHatch),
-        kLeftRocketHatchFromLoadingStation
+    public static final List<Pose2d> kLoadingStationToSideRocketSetupPath = Arrays.asList(
+        new Pose2d(kLoadingStationFromMiddleLeftHatch.getTranslation(), Rotation2d.fromDegrees(0.0)),
+        new Pose2d(228, 50, Rotation2d.fromDegrees(0.0)),
+            kLeftRocketHatchSetupFromLoadingStation
+    );
+
+    public static final List<Pose2d> kSideRocketSetupToSideRocketPath = Arrays.asList(
+        kLeftRocketHatchSetupFromLoadingStation,
+        kLeftRocketHatchFromLeftRocketHatchSetup
     );
 
     public Trajectory<TimedState<Pose2dWithCurvature>> getStartToMiddleLeftHatchTrajectory() {
@@ -81,8 +84,16 @@ public class MiddleToMiddleCargoToSideRocket extends AutoSequence {
         return mTrajectoryGenerator.generateTrajectory(true, kMiddleLeftHatchToLoadingStationPath, AutonomousRoutines.kDefaultTrajectoryConstraints);
     }
 
-    public Trajectory<TimedState<Pose2dWithCurvature>> getLoadingStationToSideRocketPath() {
-        return mTrajectoryGenerator.generateTrajectory(false, kLoadingStationToSideRocketPath, AutonomousRoutines.kDefaultTrajectoryConstraints);
+    public Trajectory<TimedState<Rotation2d>> getRotationToLoadingStation() {
+        return mTrajectoryGenerator.generateTurnInPlaceTrajectory(kLoadingStationFromMiddleLeftHatch.getRotation(), kLoadingStationFromMiddleLeftHatch.getRotation().rotateBy(Rotation2d.fromDegrees(180.0)), 0.0, AutonomousRoutines.kDefaultTrajectoryConstraints);
+    }
+
+    public Trajectory<TimedState<Pose2dWithCurvature>> getLoadingStationToSideRocketSetupPath() {
+        return mTrajectoryGenerator.generateTrajectory(true, kLoadingStationToSideRocketSetupPath, AutonomousRoutines.kDefaultTrajectoryConstraints);
+    }
+
+    public Trajectory<TimedState<Pose2dWithCurvature>> getSideRocketSetupToSideRocketPath() {
+        return mTrajectoryGenerator.generateTrajectory(false, kSideRocketSetupToSideRocketPath, AutonomousRoutines.kDefaultTrajectoryConstraints);
     }
 
     @Override

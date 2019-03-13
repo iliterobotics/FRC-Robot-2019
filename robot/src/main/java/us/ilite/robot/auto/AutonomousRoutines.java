@@ -17,10 +17,10 @@ import java.util.List;
 public class AutonomousRoutines {
 
     public static final TrajectoryConstraints kDefaultTrajectoryConstraints = new TrajectoryConstraints(
-            100.0,
-            40.0,
+            130.0,
+            130.0,
             12.0,
-            new CentripetalAccelerationConstraint(20.0)
+            new CentripetalAccelerationConstraint(100.0)
     );
 
     private TrajectoryGenerator mTrajectoryGenerator;
