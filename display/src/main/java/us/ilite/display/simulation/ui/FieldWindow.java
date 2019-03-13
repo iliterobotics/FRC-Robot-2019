@@ -27,6 +27,8 @@ import us.ilite.robot.auto.paths.RobotDimensions;
 
 public class FieldWindow extends Application implements ISimulationListener {
 
+    public static final double kDrawsPerSecond = 60.0;
+
     private Image fieldImage;
     private Canvas fieldCanvas;
     private GraphicsContext fieldContext;
@@ -141,7 +143,7 @@ public class FieldWindow extends Application implements ISimulationListener {
 
                 // If we have to draw this iteration, don't clog up our timing by getting the next pose to draw
                 // Draw @ 30 Hz
-                if(currentTime - lastTimeDrawn > (1.0 / 30.0) * 1000.0) {
+                if(currentTime - lastTimeDrawn > (1.0 / kDrawsPerSecond) * 1000.0) {
                     drawLatest();
                     setRunTime((currentTime - startTime) / 1000.0);
                     lastTimeDrawn = currentTime;
