@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.ReflectingCSVWriter;
@@ -31,17 +32,18 @@ public class DriveSimulation {
     }
 
     // TODO Drive doesn't support rotations quite yet
-    // public double driveTrajectory(Trajectory<TimedState<Rotation2d>> pTrajectoryToDrive) {
-    //     double startTime = time;
+     public double driveRotationTrajectory(Trajectory<TimedState<Rotation2d>> pTrajectoryToDrive, boolean pResetPoseToTrajectoryStart) {
+         double startTime = time;
 
-    //     mDriveController.setRotationTrajectory(pTrajectoryToDrive);
+         mDrive.setProfilingToHeading();
+         mDrive.setRotationProfile(pTrajectoryToDrive, pResetPoseToTrajectoryStart);
 
-    //     simulate();
+         simulate();
 
-    //     System.out.println("Trajectory time: " + (time - startTime));
+         System.out.println("Trajectory time: " + (time - startTime));
 
-    //     return time - startTime;
-    // }
+         return time - startTime;
+     }
 
     public double driveTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> pTrajectoryToDrive, boolean pResetPoseToTrajectoryStart) {
         double startTime = time;
