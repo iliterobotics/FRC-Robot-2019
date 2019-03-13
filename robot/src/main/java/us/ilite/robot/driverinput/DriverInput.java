@@ -38,6 +38,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     protected final PneumaticIntake mPneumaticIntake;
     protected final CargoSpit mCargoSpit;
     protected final HatchFlower mHatchFlower;
+    protected final FourBar mFourBar;
     private final CommandManager mTeleopCommandManager;
     private final CommandManager mAutonomousCommandManager;
     private final Limelight mLimelight;
@@ -54,7 +55,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     private ETrackingType mLastTrackingType = null;
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar, boolean pSimulated) {
         this.mDrive = pDrivetrain;
         this.mElevator = pElevator;
         this.mIntake = pIntake;
@@ -65,6 +66,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         this.mData = pData;
         this.mTeleopCommandManager = pTeleopCommandManager;
         this.mAutonomousCommandManager = pAutonomousCommandManager;
+        this.mFourBar = pFourBar;
 
         this.mDriverInputCodex = mData.driverinput;
         this.mOperatorInputCodex = mData.operatorinput;
@@ -77,8 +79,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         }
     }
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager) {
-        this(pDrivetrain, pElevator, pHatchFlower, pIntake, pPneumaticIntake, pCargoSpit, pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, false);
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar) {
+        this(pDrivetrain, pElevator, pHatchFlower, pIntake, pPneumaticIntake, pCargoSpit, pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, pFourBar, false);
     }
 
     @Override
@@ -125,6 +127,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             }
 
             updateDriveTrain();
+            updateFourBar();
 //            updateCheesyDrivetrain();
             updateHatchGrabber();
             updateCargoSpit();
@@ -173,8 +176,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         if (mIsCargo) {
             // Hatch grabber up so we can recieve cargo
             mHatchFlower.setFlowerExtended(HatchFlower.ExtensionState.UP);
-            // Reset hatch grabber
-            mHatchFlower.pushHatch();
+            // Keep hatch grabber open so we can use cargo mode to bring hatch grabber up
+//            mHatchFlower.pushHatch();
         } else {
             // Hatch grabber down
             mHatchFlower.setFlowerExtended(HatchFlower.ExtensionState.DOWN);
@@ -202,7 +205,26 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.STOWED );
             }
         } else {
-            mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.STOWED );
+            mPneumaticIntake.setDesiredPosition(PneumaticIntake.EPneumaticIntakePosition.STOWED);
+        }
+    }
+
+    private void updateFourBar() {
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_CLIMBER_ALLOW)) {
+
+            if(Math.abs(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS)) > 0.02) {
+                mFourBar.setDesiredOutput(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS) * 0.7, false);
+            }
+
+            if(mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_PUSHER_BUTTON)) {
+                mFourBar.extendPusher();
+            } else {
+                mFourBar.retractPusher();
+            }
+
+        } else {
+            mFourBar.handleStopType();
+            mFourBar.retractPusher();
         }
     }
 
@@ -298,7 +320,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                     mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_BOTTOM);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_LOW_POSITION_ELEVATOR)) {
                     mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_MIDDLE);
-                } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
+                } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR) ||
+                            mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
                     mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_TOP);
                 } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
                     mElevator.setDesiredPower(manualThrottle);

@@ -30,6 +30,15 @@ import us.ilite.robot.modules.*;
 import us.ilite.common.lib.control.DriveController;
 import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.control.PIDController;
+import us.ilite.robot.modules.Drive;
+import us.ilite.robot.modules.HatchFlower;
+import us.ilite.robot.modules.FourBar;
+import us.ilite.robot.modules.Limelight;
+import us.ilite.robot.modules.Elevator;
+import us.ilite.robot.modules.ModuleList;
+import us.ilite.common.lib.control.DriveController;
+import us.ilite.common.lib.control.PIDGains;
+import us.ilite.common.lib.control.PIDController;
 
 public class Robot extends TimedRobot {
 
@@ -54,6 +63,7 @@ public class Robot extends TimedRobot {
     private DriveController mDriveController = new DriveController(new HenryProfile());
 
     private Drive mDrive = new Drive(mData, mDriveController);
+    private FourBar mFourBar = new FourBar( mData );
     private Elevator mElevator = new Elevator(mData);
     private Intake mIntake = new Intake(mData);
     private CargoSpit mCargoSpit = new CargoSpit(mData);
@@ -62,7 +72,7 @@ public class Robot extends TimedRobot {
     private VisionGyro mVisionGyro = new VisionGyro(mData);
     private PneumaticIntake mPneumaticIntake = new PneumaticIntake( mData );
 
-    private DriverInput mDriverInput = new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, false  );
+    private DriverInput mDriverInput = new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, false  );
 
     private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
     private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator, mIntake, mCargoSpit, mHatchFlower, mLimelight, mVisionGyro, mData);
@@ -81,7 +91,7 @@ public class Robot extends TimedRobot {
 
         mSettings.writeToNetworkTables();
 
-        new Thread(new DSConnectInitThread()).start();
+//        new Thread(new DSConnectInitThread()).start();
         // Init static variables and get singleton instances first
 
         ICodexTimeProvider provider = new ICodexTimeProvider() {
@@ -143,7 +153,7 @@ public class Robot extends TimedRobot {
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
-        mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
+//        mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
 
         mData.registerCodices();
 
@@ -163,7 +173,7 @@ public class Robot extends TimedRobot {
 
         mSettings.loadFromNetworkTables();
 
-        mRunningModules.setModules(mDriverInput, mLimelight, mTeleopCommandManager, mAutonomousCommandManager, mDrive, mElevator, mHatchFlower, /*mIntake,*/ mCargoSpit, mPneumaticIntake);
+        mRunningModules.setModules(mDriverInput, mLimelight, mTeleopCommandManager, mAutonomousCommandManager, mDrive, mElevator, mHatchFlower, /*mIntake,*/ mCargoSpit, mPneumaticIntake, mFourBar);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
@@ -175,7 +185,7 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         commonPeriodic();
 //        mData.sendCodices();
-        mData.sendCodicesToNetworkTables();
+//        mData.sendCodicesToNetworkTables();
     }
 
     @Override

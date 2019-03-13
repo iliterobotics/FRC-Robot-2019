@@ -7,6 +7,7 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
 import com.team254.lib.drivers.talon.TalonSRXFactory;
+import edu.wpi.first.wpilibj.DigitalInput;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.manipulator.ECargoSpit;
@@ -17,11 +18,12 @@ import us.ilite.common.types.sensor.EPowerDistPanel;
 public class CargoSpit extends Module {
 
     private final double kZero = 0.0;
-    private final double kLaunchPower = 0.8;
+    private final double kLaunchPower = 0.7;
 
     private ILog mLog = Logger.createLog(CargoSpit.class);
 
     private VictorSPX mLeftMotor, mRightMotor;
+    private DigitalInput mBeambreak;
     private Data mData;
     private boolean mEmergencyStopped;
     private double mPower = SystemSettings.kCargoSpitRollerPower; //TODO find actual value
@@ -38,6 +40,14 @@ public class CargoSpit extends Module {
 //        mLeftMotor = new VictorSPX(SystemSettings.kCargoSpitLeftSPXAddress);
         mRightMotor = TalonSRXFactory.createDefaultVictor(SystemSettings.kCargoSpitRightSPXAddress);
 //        mRightMotor = new VictorSPX(SystemSettings.kCargoSpitRightSPXAddress);
+
+        mLeftMotor.enableVoltageCompensation(true);
+        mRightMotor.enableVoltageCompensation(true);
+        mLeftMotor.configVoltageCompSaturation(12.0);
+        mRightMotor.configVoltageCompSaturation(12.0);
+
+        mBeambreak = new DigitalInput(SystemSettings.kCargoSpitBeamBreakAddress);
+
         //TODO figure out these values and make them constants
         mRightMotor.configOpenloopRamp( mPower, 5 );
         mLeftMotor.configOpenloopRamp( mPower, 5 );
@@ -66,6 +76,7 @@ public class CargoSpit extends Module {
         mData.cargospit.set( ECargoSpit.STOPPED, convertBoolean( mEmergencyStopped ) );
         mData.cargospit.set( ECargoSpit.LEFT_CURRENT, mLeftCurrent );
         mData.cargospit.set( ECargoSpit.RIGHT_CURRENT, mRightCurrent );
+        mData.cargospit.set( ECargoSpit.BEAM_BROKEN, convertBoolean( isBeamBroken() ));
     }
 
     @Override
@@ -110,7 +121,7 @@ public class CargoSpit extends Module {
         double leftRatio = mLeftCurrent / mLeftMotor.getMotorOutputVoltage();
         double rightRatio = mRightCurrent / mRightMotor.getMotorOutputVoltage();
         double averageRatio = ( leftRatio + rightRatio ) / 2;
-        return averageRatio >= currentLimit;
+        return (averageRatio >= currentLimit) || isBeamBroken();
     }
 
     public boolean isIntaking() {
@@ -126,6 +137,11 @@ public class CargoSpit extends Module {
 
     public void emergencyStop() {
         mEmergencyStopped = true;
+    }
+
+    public boolean isBeamBroken() {
+        // Beam break returns true when not broken
+        return mBeambreak.get();
     }
 
     private double convertBoolean(boolean pToConvert) {
