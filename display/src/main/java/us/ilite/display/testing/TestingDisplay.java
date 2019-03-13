@@ -49,30 +49,48 @@ public class TestingDisplay extends Application {
     private BorderPane mSceneLayout = new BorderPane();
 
     public static void main(String[] args) {
-        Logger.setLevel(ELevel.DEBUG);
-        kNetworkTableInst.startServer();
-        kNetworkTableInst.startClient("localhost");
+        Logger.setLevel(ELevel.WARN);
+        kNetworkTableInst.startClientTeam(1885);
 
-        Thread debugThread = new Thread(new Runnable() {
-            SystemSettings settings = new SystemSettings();
+        Thread connectionThread = new Thread(() -> {
+            while(!Thread.interrupted()) {
 
-            @Override
-            public void run() {
-                settings.writeToNetworkTables();
-                while(!Thread.interrupted()) {
-                    settings.loadFromNetworkTables();
-//                    mLog.debug("kDriveVelocity_kP: ", SystemSettings.kDriveVelocity_kP);
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                if(!kNetworkTableInst.isConnected()) {
+                    mLog.error("Not connected. Retrying...");
+                    kNetworkTableInst.startClientTeam(1885);
+                }
+
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException pE) {
+                    pE.printStackTrace();
                 }
             }
-
         });
 
-        debugThread.start();
+        connectionThread.start();
+
+//        kNetworkTableInst.startServer();
+//        Thread debugThread = new Thread(new Runnable() {
+//            SystemSettings settings = new SystemSettings();
+//
+//            @Override
+//            public void run() {
+//                settings.writeToNetworkTables();
+//                while(!Thread.interrupted()) {
+//                    settings.loadFromNetworkTables();
+////                    mLog.debug("kDriveVelocity_kP: ", SystemSettings.kDriveVelocity_kP);
+//                    try {
+//                        Thread.sleep(500);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//
+//        });
+//
+//        debugThread.start();
 
         launch(args);
     }

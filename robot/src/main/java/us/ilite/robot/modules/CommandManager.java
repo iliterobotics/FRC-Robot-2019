@@ -48,7 +48,7 @@ public class CommandManager extends Module {
         // Only check if we're done with queue if we're actually running...otherwise we're just spamming stopRunningCommands()
         if(isRunningCommands() && desiredCommandQueue.isDone()) {
             mLog.warn("Command queue has completed execution");
-            stopRunningCommands();
+            stopRunningCommands(pNow);
         }
 
         lastRunCommandQueue = runCommandQueue;
@@ -85,9 +85,10 @@ public class CommandManager extends Module {
         }
     }
 
-    public void stopRunningCommands() {
+    public void stopRunningCommands(double pNow) {
         mLog.warn("Stopping command queue");
         runCommandQueue = false;
+        desiredCommandQueue.shutdown(pNow);
         desiredCommandQueue.clear();
     }
 

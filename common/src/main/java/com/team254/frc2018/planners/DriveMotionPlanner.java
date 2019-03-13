@@ -44,7 +44,7 @@ public class DriveMotionPlanner implements CSVWritable {
         FEEDFORWARD_ONLY,
         FEEDBACK,
         FEEDBACK_NO_DYNAMICS,
-        FEEDFORWARD_NO_DYNAMICS;
+        FEEDFORWARD_NO_DYNAMICS
     }
 
     // Trajectory and errors are in inches

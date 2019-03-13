@@ -7,6 +7,7 @@ public enum EDriveData implements CodexOf<Double> {
     // Sensor inputs
     LEFT_POS_INCHES, RIGHT_POS_INCHES,
     LEFT_VEL_IPS, RIGHT_VEL_IPS,
+    LEFT_VEL_TICKS, RIGHT_VEL_TICKS,
     LEFT_CURRENT, RIGHT_CURRENT,
     LEFT_VOLTAGE, RIGHT_VOLTAGE,
 

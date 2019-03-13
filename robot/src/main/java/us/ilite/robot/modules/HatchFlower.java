@@ -29,8 +29,8 @@ public class HatchFlower extends Module {
     // ********************** Solenoid state enums *********************** //
     public enum GrabberState
     {
-        GRAB(true),  // set to solenoid state that corresponds with grabbing the hatch
-        RELEASE(false);
+        GRAB(false),  // set to solenoid state that corresponds with grabbing the hatch
+        RELEASE(true);
 
         private boolean grabber;
 
@@ -41,8 +41,8 @@ public class HatchFlower extends Module {
     }
 
     public enum ExtensionState {
-        UP(true),
-        DOWN(false);
+        UP(false),
+        DOWN(true);
 
         private boolean extension;
 

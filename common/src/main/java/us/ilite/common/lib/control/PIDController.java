@@ -151,7 +151,7 @@ public class PIDController {
     enum EPIDController implements CodexOf<Double> {
 
         ERROR, OUTPUT, CURRENT, GOAL,
-        P_GAIN, I_GAIN, D_GAIN, F_GAIN, DELTA_TIME;
+        P_GAIN, I_GAIN, D_GAIN, F_GAIN, DELTA_TIME
     }
 
     // ####### //

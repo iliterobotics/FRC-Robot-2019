@@ -12,7 +12,7 @@ public class FieldElementLocations {
     //------------------------------
 
     // Two middle hatches
-    public static final Translation2d kCargoShipMiddleLeftHatch = new Translation2d(18.0 * 12.0, 12.5 * 12.0);
+    public static final Translation2d kCargoShipMiddleLeftHatch = new Translation2d((14.5 * 12.0) + 52.0 - RobotDimensions.kFrontToCenter, 155.0);
     public static final Translation2d kCargoShipMiddleRightHatch = new Translation2d();
 
     // Three side hatches - naming assumes you are facing the three hatches

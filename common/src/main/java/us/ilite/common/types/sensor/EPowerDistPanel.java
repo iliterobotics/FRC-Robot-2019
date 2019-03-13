@@ -36,7 +36,7 @@ public enum EPowerDistPanel implements CodexOf<Double> {
 
   public final double BREAKER_VALUE;
   
-  private EPowerDistPanel(double pBreakerValue) {
+  EPowerDistPanel(double pBreakerValue) {
     BREAKER_VALUE = pBreakerValue;
   }
   

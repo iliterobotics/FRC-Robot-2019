@@ -106,7 +106,7 @@ public class LoopManager implements Runnable{
             numLoops++;
             SmartDashboard.putNumber("loop_dt", dt);
             if (dt > SystemSettings.kControlLoopPeriod + 0.01) {
-                mLog.error("Overrun: ", /*loopTimer.get()*/dt, " Input took: "/*, inputTimer.get()*/, " Update took: "/*,updateTimer.get()*/);
+//                mLog.error("Overrun: ", /*loopTimer.get()*/dt, " Input took: "/*, inputTimer.get()*/, " Update took: "/*,updateTimer.get()*/);
                 numOverruns++;
             }
         }
