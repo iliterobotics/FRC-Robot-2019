@@ -70,7 +70,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 	
 	// These are applied AFTER the normal throttle reduction
     public static double kSnailModePercentThrottleReduction = 0.5;
-    public static double kSnailModePercentRotateReduction = 0.5;
+    public static double kSnailModePercentRotateReduction = 0.4;
 	
 	// Applied after any scaling
     public static double kDriverInputTurnMaxMagnitude = 0.5;
@@ -160,6 +160,13 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static PIDGains kPIDGains = new PIDGains( 0.0, 0.0, 0.0, 0.085 );
     public static double kTurnSensitivity = 0.85;
+   
+    // =============================================================================
+    // Robot constants (configure later)
+    // TO-DO: Configure torque constant
+    // =============================================================================
+    public static double kTFourBar = 0;
+    public static double kFourBarPusherDelay = 0.5;
 
 
     // =============================================================================
@@ -237,7 +244,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kIntakeWristHandoffAngle = 48;
     // temp set to 90 to validate angles
     public static double kIntakeWristGroundAngle = 90;
-    public static double kCargoSpitDelay = 5;
+    public static double kCargoSpitDelay = 4;
     // public static double kIntakeWristGroundAngle = 105;
     //The minimum angle where it is safe to continue intake process (engage solenoid/roller)
     public static double kIntakeWristGroundMinBound = 95;
@@ -333,6 +340,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kPowerDistPanelAddress = 21;
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
+    public static int kCargoSpitBeamBreakAddress = 1;
     public static double kCargoSpitRollerPower = 0.40; // 15% seems like adequate power (maybe more?)
     public static double kCargoSpitSPXCurrentRatioLimit = 8.5; // Voltage ~ 1.8
 
@@ -341,6 +349,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static int kFourBarNEO1Address = 9;
     public static int kFourBarNEO2Address = 10;
+    public static int kFourBarPusherAddress = 0;
     // TO-DO: label solenoid as forward/reverse in spreadsheet
     public static int kFourBarDoubleSolenoidForwardAddress = 0;
     public static int kFourBarDoubleSolenoidReverseAddress = 1;

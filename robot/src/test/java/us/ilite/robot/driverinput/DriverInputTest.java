@@ -29,6 +29,7 @@ public class DriverInputTest {
     private CommandManager mAutonomousCommandManager;
     // We want to see CommandManager's actual behavior, so we make it a spy
     private CommandManager mTeleopCommandManager;
+    @Mock private FourBar mFourBar;
     @Mock private Elevator mElevator;
     @Mock private Intake mIntake;
     @Mock private CargoSpit mCargospit;
@@ -36,7 +37,6 @@ public class DriverInputTest {
     @Mock private TalonSRX mTalon;
     @Mock private PneumaticIntake mPneumaticIntake;
     @Mock private CargoSpit mCargoSpit;
-
 
     private DriverInput mDriverInput;
     private Limelight mLimelight;

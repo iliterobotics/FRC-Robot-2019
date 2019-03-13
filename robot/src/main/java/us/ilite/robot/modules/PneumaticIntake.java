@@ -57,8 +57,8 @@ public class PneumaticIntake extends Module{
                     break;
         }
         mRollerVictor.set( ControlMode.PercentOutput, mPower );
-        mData.kLoggingTable.putString( "Pneumatic Desired Position", mDesiredPosition.toString() );
-        mData.kLoggingTable.putDouble( "Pneumatic Desired Roller Power", mPower );
+//        mData.kLoggingTable.putString( "Pneumatic Desired Position", mDesiredPosition.toString() );
+//        mData.kLoggingTable.putDouble( "Pneumatic Desired Roller Power", mPower );
     }
 
     @Override
