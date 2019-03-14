@@ -9,5 +9,6 @@ public enum ECargoSpit implements CodexOf<Double> {
     STOPPED,
     HAS_CARGO,
     LEFT_CURRENT,
-    RIGHT_CURRENT;
+    RIGHT_CURRENT,
+    BEAM_BROKEN
 }

@@ -19,5 +19,5 @@ public enum ETargetingData implements CodexOf<Double> {
     calcDistToTarget,
     calcAngleToTarget,
     calcTargetX,
-    calcTargetY;
+    calcTargetY
 }
