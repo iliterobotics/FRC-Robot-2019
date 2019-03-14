@@ -24,6 +24,7 @@ public class CargoSpitTest {
     private PneumaticIntake mPneumaticIntake;
     private Limelight mLimelight;
     private Arm mArm;
+    private FourBar mFourBar;
     private CommandManager mCommandManager;
     private CommandManager mAutoCommandManager;
 
@@ -39,9 +40,11 @@ public class CargoSpitTest {
         mArm = new MotionMagicArm();
         mLimelight = new Limelight( mData );
         mAutoCommandManager = new CommandManager();
+        mFourBar = new FourBar( mData );
+
         mPneumaticIntake = new PneumaticIntake( mData );
 
-        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mCommandManager, mAutoCommandManager) );
+        mDriverInput = spy(new DriverInput( mDrive,  mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mCommandManager, mAutoCommandManager, mFourBar) );
         mModuleList.setModules( mDriverInput, mDrive );
         mModuleList.modeInit( mClock.getCurrentTime() );
     }
@@ -55,7 +58,7 @@ public class CargoSpitTest {
         mIntake = new Intake( mData );
         mArm = new MotionMagicArm();
 
-        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mCommandManager, mAutoCommandManager, true));
+        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mCommandManager, mAutoCommandManager, mFourBar, true));
         mModuleList.setModules( mDriverInput, mDrive );
         mModuleList.modeInit( mClock.getCurrentTime() );
     }

@@ -2,7 +2,7 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'application'
 apply plugin: 'org.openjfx.javafxplugin'
-mainClassName = 'us.ilite.display.DriverStation'
+mainClassName = 'us.ilite.display.UserInterface.CameraFeedOverlay'
 apply from: 'plot.gradle'
 
 javafx {
