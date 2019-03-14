@@ -17,9 +17,16 @@ public class CodexParser<E extends Enum<E> & CodexOf<Double>> {
         mCodex = pCodex;
         constructKey( mCodex.meta().getEnum() );
     }
+    public CodexParser( Codex<Double, E> pCodex, String pName ) {
+        mCodex = pCodex;
+        constructKey( mCodex.meta().getEnum(), pName );
+    }
 
-    public void constructKey( Class<E> constructFrom ) {
-        mWriterKey = constructFrom.getSimpleName().toUpperCase();
+    public void constructKey( Class<E> pConstructFrom ) {
+        mWriterKey = pConstructFrom.getSimpleName().toUpperCase();
+    }
+    public void constructKey( Class<E> pConstructFrom, String pName ) {
+        mWriterKey = pName.toUpperCase() + "-" + pConstructFrom.getSimpleName().toUpperCase();
     }
 
     public String codexToCSVHeader() {

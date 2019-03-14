@@ -112,11 +112,11 @@ public class Data {
         mCodexParsers = Arrays.asList(
             new CodexParser<EGyro>(imu),
             new CodexParser<EDriveData>(drive),
-            new CodexParser<ELogitech310>(driverinput),
-            new CodexParser<ELogitech310>(operatorinput),
-            new CodexParser<EElevator>(elevator),
-            new CodexParser<ECargoSpit>(cargospit),
-            new CodexParser<EPowerDistPanel>(pdp)
+            new CodexParser<ELogitech310>(driverinput, "DRIVER"),
+            new CodexParser<ELogitech310>(operatorinput, "OPERATOR"),
+            new CodexParser<EElevator>(elevator, "ELEVATOR"),
+            new CodexParser<ECargoSpit>(cargospit, "CARGOSPIT"),
+            new CodexParser<EPowerDistPanel>(pdp, "PDP")
         );
     }
 
@@ -165,18 +165,16 @@ public class Data {
         handleCodexWriterCreation();
         for ( CodexParser parser : mCodexParsers ) {
             
-//                try {
-//                Writer logger = mCodexWriters.get( parser.getWriterKey() );
-//                logger.append(parser.codexToCSVHeader());
-//                logger.flush();
-//                System.out.println("-----------------------------------------------------------------+++++++++====+======" + mHasMadeCodexWriters);
-//            } catch ( IOException e ) {
-//                e.printStackTrace();
-//            }
+               try {
+               Writer logger = mCodexWriters.get( parser.getWriterKey() );
+               logger.append(parser.codexToCSVHeader());
+               logger.flush();
+               System.out.println("-----------------------------------------------------------------+++++++++====+======" + mHasMadeCodexWriters);
+           } catch ( IOException e ) {
+               e.printStackTrace();
+           }
         }
     }
-    
-
     public void logFromCodexToCSVLog() {
         handleCodexWriterCreation();
         for (CodexParser parser : mCodexParsers ) {
@@ -223,7 +221,7 @@ public class Data {
                 }
             }
             mHasMadeCodexWriters = true;
-//        }
+       }
         System.out.println("-----------------------------------------------------------------+++++++++====+======" + mHasMadeCodexWriters);
     }
 
