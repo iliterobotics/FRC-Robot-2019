@@ -73,9 +73,16 @@ public class Limelight extends Module implements ITargetDataProvider {
         LED_OFF,
         LED_BLINK,
         LED_ON;
+
+        public static LedMode fromOrdinal(int pOrdinal) {
+            if(pOrdinal >= 0 && pOrdinal < LedMode.values().length) {
+                return LedMode.values()[pOrdinal];
+            }
+            return LedMode.NO_CHANGE;
+        }
     }
 
-    public enum Stream {
+    public enum Stream {                                                                                                  
         STANDARD,
         PIP_MAIN,
         PIP_SECONDARY;
