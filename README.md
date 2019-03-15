@@ -4,7 +4,7 @@
 This is ILITE's robot, display, and telemetry code for the 2019 FIRST Robotics Competition, featuring the third iteration of our software framework.
 
 ## Credits
-- Team 254 for their 2018 robot code, which can be found [here](https://github.com/Team254/FRC-2018-Public). We make heavy use of `com.team254.lib`, as well as extended versions of their motion planning and odometry code.  
+- Team 254 for their 2018 robot code, which can be found [here](https://github.com/Team254/FRC-2018-Public). We make heavy use of `com.team254.lib`, as well as extended versions of their motion planning and odometry code. Files from `com.team254.lib` are contained in a JAR in `lib/`. Any modified or unmodified files from `com.team254.frc2018` are represented in our project with the same package structure.
 - Jaci for [GradleRIO](https://github.com/wpilibsuite/GradleRIO), as well as the [GNUPlot integration](https://github.com/GrappleRobotics/Pathfinder/blob/master/Pathfinder/plot.gradle)
 - Jesse for the [highfrequencyrobots](https://github.com/flybotix/highfrequencyrobots) project, which allows us to define data structures for robot telemetry as well as internal use.
 - Team 1678 for their excellent README section on contributing code with Git, which can be found [here](https://github.com/frc1678/robot-code-public)
@@ -40,7 +40,7 @@ as common data structures + more.
 ```$xslt
 com.team254.lib - Contains math, modeling, and utility classes from 254
 us.ilite.common.config - Contains constants, etc.
-us.ilite.common.io - Contains extensions of the highfrequencyrobots framework that rely on NetworkTables
+us.ilite.common.io - Contains telemetry and logging code, including extensions of the highfrequencyrobots framework
 us.ilite.lib - Contains utilities, etc. we use from year-to-year
 us.ilite.common.types - Contains enumerations defining common data structures to be used throughout other subprojects
 ```
