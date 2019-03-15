@@ -56,7 +56,7 @@ public class DriverInputTest {
         mTeleopCommandManager = spy(new CommandManager());
         mAutonomousCommandManager = spy(new CommandManager());
         mLimelight = new Limelight(mData);
-        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, true ) );
+        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, true ) );
         
         mModuleList.setModules(mDriverInput, mTeleopCommandManager, mAutonomousCommandManager, mDrive);
         mModuleList.modeInit(mClock.getCurrentTime());
@@ -86,7 +86,7 @@ public class DriverInputTest {
             mData.driverinput.set(overrideButton, 1.0);
             // Update twice to verify that commands aren't reset twice
             updateRobot();
-            verify(mAutonomousCommandManager, times(2)).stopRunningCommands(mClock.getCurrentTime());
+            verify(mAutonomousCommandManager, times(2)).stopRunningCommands(anyDouble());
 
             // Verify that superstructure is actually stopped
             assertFalse(mAutonomousCommandManager.isRunningCommands());
@@ -106,7 +106,7 @@ public class DriverInputTest {
             mData.driverinput.set(commandTrigger, 1.0);
             updateRobot();
 
-            verify(mDriverInput).updateVisionCommands(mClock.getCurrentTime());
+            verify(mDriverInput).updateVisionCommands(anyDouble());
 
             resetSpies();
         }
@@ -120,8 +120,8 @@ public class DriverInputTest {
     public void testAutonDriverCommandHandling() {
 
         for(ELogitech310 commandTrigger : SystemSettings.kTeleopCommandTriggers) {
-            mAutonomousCommandManager.stopRunningCommands();
-            mTeleopCommandManager.stopRunningCommands();
+            mAutonomousCommandManager.stopRunningCommands(mClock.getCurrentTime());
+            mTeleopCommandManager.stopRunningCommands(mClock.getCurrentTime());
             mAutonomousCommandManager.startCommands(new Delay(30));
             // If we press and release a button the command queue should get stopped
             mData.driverinput.set(commandTrigger, 1.0);
