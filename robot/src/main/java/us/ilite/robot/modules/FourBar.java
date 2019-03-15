@@ -8,7 +8,6 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import com.team254.lib.util.Util;
 
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.EFourBarData;
@@ -119,7 +118,15 @@ public class FourBar extends Module {
      * Update angular position based on current rotations
      */
     public void updateAngularPosition() {
-        mAngularPosition = (-mNeo1Encoder.getPosition() + mNeo2Encoder.getPosition()) / 2;
+        double rotations = (-mNeo1Encoder.getPosition() + mNeo2Encoder.getPosition()) / 2;
+
+        // Convert from motor rotations to rotations of output gearbox to degrees
+        mAngularPosition = rotations / SystemSettings.kFourBarGearRatio * 360.0;
+
+    }
+
+    public double getRobotHeight(double pAngularPosition) {
+        return SystemSettings.kFourBarArmLengthInches * Math.sin(180.0 - pAngularPosition);
     }
 
     public boolean allowedToPush() {
@@ -170,5 +177,6 @@ public class FourBar extends Module {
         mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
 
         mData.fourbar.set( EFourBarData.ANGLE, mAngularPosition );
+        mData.fourbar.set( EFourBarData.CALC_ROBOT_HEIGHT, getRobotHeight(mAngularPosition));
     }
 }
