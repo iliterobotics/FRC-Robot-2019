@@ -20,34 +20,26 @@ import us.ilite.robot.auto.paths.FieldElementLocations;
 import us.ilite.robot.auto.paths.RobotDimensions;
 import us.ilite.robot.auto.paths.StartingPoses;
 import us.ilite.robot.commands.*;
-import us.ilite.robot.modules.Drive;
-import us.ilite.robot.modules.Limelight;
+import us.ilite.robot.modules.*;
 
-public class RightToMiddleCargoToSideRocket extends AutoSequence{
-    private final Data mData;
-    private final Drive mDrive;
-    private final Limelight mLimelight;
-    private final VisionGyro mVisionGyro;
+public class RightToRocketToRocket extends AutoSequence{
 
-    public RightToMiddleCargoToSideRocket(TrajectoryGenerator pTrajectoryGenerator, Data mData, Drive mDrive, Limelight mLimelight, VisionGyro mVisionGyro) {
-        super(pTrajectoryGenerator);
-        this.mData = mData;
-        this.mDrive = mDrive;
-        this.mLimelight = mLimelight;
-        this.mVisionGyro = mVisionGyro;
+    public RightToRocketToRocket(TrajectoryGenerator mTrajectoryGenerator, Data mData, Drive mDrive, HatchFlower mHatchFlower, PneumaticIntake mPneumaticIntake, CargoSpit mCargoSpit, Elevator mElevator, Limelight mLimelight, VisionGyro mVisionGyro) {
+        super(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
     }
-      // End pose of robot @ middle right hatch
+
+      // End pose of robot @ midLeft right hatch
       public static final Pose2d kMiddleRightHatchFromStart = new Pose2d(FieldElementLocations.kCargoShipMiddleRightHatch.translateBy(new Translation2d(-RobotDimensions.kFrontToCenter, 0.0)), Rotation2d.fromDegrees(0.0));
       // Turn towards loading station
       public static final Rotation2d kTurnToLoadingStationFromMiddleRightHatch = Rotation2d.fromDegrees(180.0);
-      // End pose of robot @ loading station from middle right hatch
+      // End pose of robot @ loading station from midLeft right hatch
       public static final Pose2d kLoadingStationFromMiddleRightHatch = new Pose2d(FieldElementLocations.kLoadingStation, Rotation2d.fromDegrees(180.0));
       // End pose of robot @ left rocket hatch from loading station
       public static final Pose2d kRightRocketHatchFromLoadingStation = new Pose2d(FieldElementLocations.kRocketRightHatch, Rotation2d.fromDegrees(-60.0));
       // Turn towards rocket side
       public static final Rotation2d kTurnToLeftRocketHatch = Rotation2d.fromDegrees(180.0);
   
-      // Drive to the middle of the cargo ship's left-hand port
+      // Drive to the midLeft of the cargo ship's left-hand port
       public static final List<Pose2d> kStartToMiddleRightHatchPath = Arrays.asList(
           StartingPoses.kSideStart,
           kMiddleRightHatchFromStart
@@ -79,24 +71,12 @@ public class RightToMiddleCargoToSideRocket extends AutoSequence{
   
     @Override
     public ICommand[] generateCargoSequence() {
-        return new ICommand[] {
-            new FollowTrajectoryUntilCommandFinished(getStartToMiddleLeftHatchTrajectory(), mDrive, true,
-                    new WaitForVisionTarget(mData, 3.5)),
-            new TargetLock(mDrive, 2.0, ETrackingType.TARGET_LEFT, mLimelight, () -> 0.0, false).setTargetLockThrottleProvider(() -> 0.5)
-            /*new DriveStraight(mDrive, mData, DriveStraight.EDriveControlMode.PERCENT_OUTPUT,
-                    MidToMidLeftCargoToRocket.kMiddleLeftHatchFromStart.getTranslation().translateBy(StartingPoses.kMiddleStart.getTranslation().inverse()).norm()),
-            new Delay(5),*/
-            /* new FollowTrajectory(getMiddleLeftHatchToLoadingStationPath(), mDrive, true), */
-            /*new Delay(5),
-            new TurnToDegree(mDrive, Rotation2d.fromDegrees(180.0), 10.0, mData)
-            new LimelightTargetLock(mDrive, mLimelight, 3, ETrackingType.TARGET_LEFT, mLimelight, () -> 0.0, true),
-            new DriveStraightVision(mDrive, mVisionGyro, mData, DriveStraight.EDriveControlMode.PERCENT_OUTPUT, 12.0 * 4.0)*/
-    };
+          return null;
     }
 
     @Override
     public ICommand[] generateHatchSequence() {
-        return null;
+          return null;
     }
     
 }

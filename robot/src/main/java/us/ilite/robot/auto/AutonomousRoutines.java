@@ -8,10 +8,12 @@ import us.ilite.common.lib.trajectory.TrajectoryConstraints;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.types.auton.*;
 import us.ilite.robot.auto.paths.AutoSequence;
-import us.ilite.robot.auto.paths.DefaultAuto;
 import us.ilite.lib.drivers.VisionGyro;
-import us.ilite.robot.auto.paths.middle.MidToMidLeftCargoToRocket;
-import us.ilite.robot.auto.paths.middle.MidToMidRightCargoToRocket;
+import us.ilite.robot.auto.paths.DefaultAuto;
+import us.ilite.robot.auto.paths.left.LeftToRocketToRocket;
+import us.ilite.robot.auto.paths.midLeft.MidLeftToFrontLeftToRocket;
+import us.ilite.robot.auto.paths.midRight.MidRightToFrontRightToRocket;
+import us.ilite.robot.auto.paths.right.RightToRocketToRocket;
 import us.ilite.robot.commands.*;
 import us.ilite.robot.modules.*;
 
@@ -35,17 +37,22 @@ public class AutonomousRoutines {
     private VisionGyro mVisionGyro;
     private Data mData;
 
-    private AutoSequence mDefaultAuto;
+    private DefaultAuto mDefaultAuto;
 
-    private AutoSequence mMid_MidLeftCargo_LeftRocket;//TODO these
-    private AutoSequence mMid_MidRightCargo_LeftRocket;//TODO these
-    private AutoSequence mMid_MidRightCargo_LeftCargoShip;//TODO these
-    private AutoSequence mMid_MidLeftCargo_LeftCargoShip;//TODO these
+    private AutoSequence mLeft_FrontLeft_Rocket;//TODO these
+    private AutoSequence mMidLeft_FrontLeft_Rocket;//TODO these
+    private AutoSequence mRight_FrontRight_Rocket;//TODO these
+    private AutoSequence mMidRight_FrontRight_Rocket;//TODO these
 
-    private ICommand[] mMid_MidLeftCargo_LeftRocket_Sequence; //TODO these
-    private ICommand[] mMid_MidLeftCargo_LeftCargoShip_Sequence;//TODO these
-    private ICommand[] mMid_MidRightCargo_LeftRocket_Sequence;//TODO these
-    private ICommand[] mMid_MidRightCargo_LeftCargoShip_Sequence;//TODO these
+    private ICommand[] mLeft_FrontLeft_Rocket_CargoSequence; //TODO these
+    private ICommand[] mMidLeft_FrontLeft_Rocket_CargoSequence;//TODO these
+    private ICommand[] mRight_FrontRight_Rocket_CargoSequence;//TODO these
+    private ICommand[] mMidRight_FrontRight_Rocket_CargoSequence;//TODO these
+
+    private ICommand[] mLeft_FrontLeft_Rocket_HatchSequence; //TODO these
+    private ICommand[] mMidLeft_FrontLeft_Rocket_HatchSequence;//TODO these
+    private ICommand[] mRight_FrontRight_Rocket_HatchSequence;//TODO these
+    private ICommand[] mMidRight_FrontRight_Rocket_HatchSequence;//TODO these
 
     private Gson mGson = new Gson();
 
@@ -60,32 +67,29 @@ public class AutonomousRoutines {
         this.mVisionGyro = mVisionGyro;
         this.mData = mData;
 
-        mMid_MidLeftCargo_LeftRocket = new MidToMidLeftCargoToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro, mCargoSpit);
-        mMid_MidRightCargo_LeftRocket = new MidToMidRightCargoToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mLimelight, mVisionGyro)
+        mLeft_FrontLeft_Rocket = new LeftToRocketToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+        mMidLeft_FrontLeft_Rocket = new MidLeftToFrontLeftToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+        mRight_FrontRight_Rocket = new RightToRocketToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+        mMidRight_FrontRight_Rocket = new MidRightToFrontRightToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+
     }
 
     public void generateTrajectories() {
         //Cargo Sequences
-        mMiddleToMiddleCargoToSideRocketSequence = mMiddleToMiddleCargoToSideRocket.generateCargoSequence();
-        mMiddleToMiddleCargoToSideCargoSequence = mMiddleToMiddleCargoToSideCargo.generateCargoSequence();
-        mMiddleToMiddleCargoMiddleCargoSequence = mMiddleToMiddleCargoToMiddleCargo.generateCargoSequence();
-
-        //---------------------------------------------------------------------------------------------
-        mMid_MidLeftCargo_LeftCargoShip_Sequence = mMid_MidLeftCargo_LeftRocket.generateCargoSequence();
-        mMid_MidLeftCargo_LeftRocket_Sequence = mMid_MidLeftCargo_LeftCargoShip.generateCargoSequence();
-        mMid_MidRightCargo_LeftCargoShip_Sequence = mMid_MidRightCargo_LeftCargoShip.generateCargoSequence();
-        mMid_MidRightCargo_LeftRocket_Sequence = mMid_MidRightCargo_LeftRocket.generateCargoSequence();
-        //---------------------------------------------------------------------------------------------
-
+        mLeft_FrontLeft_Rocket_CargoSequence = mLeft_FrontLeft_Rocket.generateCargoSequence();
+        mMidLeft_FrontLeft_Rocket_CargoSequence = mMidLeft_FrontLeft_Rocket.generateCargoSequence();
+        mRight_FrontRight_Rocket_CargoSequence = mRight_FrontRight_Rocket.generateCargoSequence();
+        mMidRight_FrontRight_Rocket_CargoSequence = mMidRight_FrontRight_Rocket.generateCargoSequence();
 
         //Hatch Sequences
-        mMiddleToMiddleHatchToSideRocketSequence = mMiddleToMiddleCargoToSideRocket.generateHatchSequence();
-        mMiddleToMiddleCargoToSideCargoSequence = mMiddleToMiddleCargoToSideCargo.generateHatchSequence();
-        mMiddleToMiddleCargoMiddleCargoSequence = mMiddleToMiddleCargoToMiddleCargo.generateCargoSequence();
+        mLeft_FrontLeft_Rocket_HatchSequence = mLeft_FrontLeft_Rocket.generateHatchSequence();
+        mMidLeft_FrontLeft_Rocket_HatchSequence = mMidLeft_FrontLeft_Rocket.generateHatchSequence();
+        mRight_FrontRight_Rocket_CargoSequence = mRight_FrontRight_Rocket.generateHatchSequence();
+        mMidRight_FrontRight_Rocket_CargoSequence = mMidRight_FrontRight_Rocket.generateHatchSequence();
     }
 
     public ICommand[] getDefault() {
-        return mMiddleToMiddleCargoToSideRocket.generateCargoSequence();
+        return mDefaultAuto.generateDefaultSequence();
     }
 
     public ICommand[] getSequence() {
@@ -98,126 +102,97 @@ public class AutonomousRoutines {
         
         switch(EStartingPosition.intToEnum( startingPosition )) {
             case LEFT:
-                switch (ECargoShipAction.intToEnum( cargoShipAction )) {
+                switch (EHatchShipAction.intToEnum( hatchShipAction )) {
                     case FRONT_LEFT:
-                        switch (ECargoRocketAction.intToEnum( cargoRocketAction )) {
-                            case FRONT:
-                                break;
+                        switch (EHatchRocketAction.intToEnum( hatchRocketAction )) {
                             case LEFT:
-                                break;
+                                return mLeft_FrontLeft_Rocket_HatchSequence;
                             case RIGHT:
-                                break;
-                            case NONE: // assume we go to the closest side cargo, TBD in future
-                                break;
+                                return mLeft_FrontLeft_Rocket_HatchSequence; // To be changed
                             default:
                                 break;
                         }
                     default:
                         break;
                 }
-//                switch (EHatchShipAction.intToEnum( hatchShipAction )) {
-//                    case FRONT:
-//                        break;
-//                    case LEFT:
-//                        break;
-//                    case RIGHT:
-//                        break;
-//                }
-//                switch (EHatchRocketAction.intToEnum( hatchRocketAction )) {
-//                    case FRONT:
-//                        break;
-//                    case LEFT:
-//                        break;
-//                    case RIGHT:
-//                        break;
-//                }
-//                break;
+                switch (ECargoShipAction.intToEnum( cargoShipAction )) {
+                    case FRONT_LEFT:
+                        switch (ECargoRocketAction.intToEnum( cargoRocketAction )) {
+                            case MID:
+                                return mLeft_FrontLeft_Rocket_CargoSequence;
+                            default:
+                                break;
+                        }
+                }
+            case MID_LEFT:
+                switch (EHatchShipAction.intToEnum( hatchShipAction )) {
+                    case FRONT_LEFT:
+                        switch (EHatchRocketAction.intToEnum( hatchRocketAction )) {
+                            case LEFT:
+                                return mMidLeft_FrontLeft_Rocket_HatchSequence;
+                            case RIGHT:
+                                return mMidLeft_FrontLeft_Rocket_HatchSequence; // To be changed
+                            default:
+                                break;
+                        }
+                    default:
+                        break;
+                }
+                switch (ECargoShipAction.intToEnum( cargoShipAction )) {
+                    case FRONT_LEFT:
+                        switch (ECargoRocketAction.intToEnum( cargoRocketAction )) {
+                            case MID:
+                                return mMidLeft_FrontLeft_Rocket_CargoSequence;
+                            default:
+                                break;
+                        }
+                }
+            case MID_RIGHT:
+                switch (EHatchShipAction.intToEnum( hatchShipAction )) {
+                    case FRONT_RIGHT:
+                        switch (EHatchRocketAction.intToEnum( hatchRocketAction )) {
+                            case LEFT:
+                                return mMidLeft_FrontLeft_Rocket_HatchSequence;
+                            case RIGHT:
+                                return mMidLeft_FrontLeft_Rocket_HatchSequence; // To be changed
+                            default:
+                                break;
+                        }
+                    default:
+                        break;
+                }
+                switch (ECargoShipAction.intToEnum( cargoShipAction )) {
+                    case FRONT_RIGHT:
+                        switch (ECargoRocketAction.intToEnum( cargoRocketAction )) {
+                            case MID:
+                                return mMidLeft_FrontLeft_Rocket_CargoSequence;
+                            default:
+                                break;
+                        }
+                }
             case RIGHT:
-                switch (ECargoShipAction.intToEnum( cargoShipAction )) {
+                switch (EHatchShipAction.intToEnum( hatchShipAction )) {
                     case FRONT_RIGHT:
-                        switch (ECargoRocketAction.intToEnum( cargoRocketAction )) {
-                            case FRONT:
-                                break;
+                        switch (EHatchRocketAction.intToEnum( hatchRocketAction )) {
                             case LEFT:
-                                break;
+                                return mRight_FrontRight_Rocket_HatchSequence;
                             case RIGHT:
-                                break;
-                            case NONE: // assume we go to the closest side cargo, TBD in future
-                                break;
+                                return mRight_FrontRight_Rocket_HatchSequence; // To be changed
                             default:
                                 break;
                         }
                     default:
                         break;
                 }
-//
-//                switch (EHatchShipAction.intToEnum( hatchShipAction )) {
-//                    case FRONT:
-//                        break;
-//                    case LEFT:
-//                        break;
-//                    case RIGHT:
-//                        break;
-//                }
-//                switch (EHatchRocketAction.intToEnum( hatchRocketAction )) {
-//                    case FRONT:
-//                        break;
-//                    case LEFT:
-//                        break;
-//                    case RIGHT:
-//                        break;
-//                }
-//                break;
-
-            case MIDDLE:
                 switch (ECargoShipAction.intToEnum( cargoShipAction )) {
                     case FRONT_LEFT:
                         switch (ECargoRocketAction.intToEnum( cargoRocketAction )) {
-                            case FRONT:
-                                break;
-                            case LEFT:
-                                break;
-                            case RIGHT:
-                                break;
-                            case NONE: // assume we go to the closest side cargo, TBD in future
-                                break;
+                            case MID:
+                                return mRight_FrontRight_Rocket_CargoSequence;
                             default:
                                 break;
                         }
-                    case FRONT_RIGHT:
-                        switch (ECargoRocketAction.intToEnum( cargoRocketAction )) {
-                            case FRONT:
-                                break;
-                            case LEFT:
-                                break;
-                            case RIGHT:
-                                break;
-                            case NONE:
-                                break;
-                            default:
-                                break;
-                        }
-                        default:
-                            break;
                 }
-//
-//                switch (EHatchShipAction.intToEnum( hatchShipAction )) {
-//                    case FRONT:
-//                        break;
-//                    case LEFT:
-//                        break;
-//                    case RIGHT:
-//                        break;
-//                }
-//                switch (EHatchRocketAction.intToEnum( hatchRocketAction )) {
-//                    case FRONT:
-//                        break;
-//                    case LEFT:
-//                        break;
-//                    case RIGHT:
-//                        break;
-//                }
-
             case UNKNOWN:
                 break;
             default:

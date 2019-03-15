@@ -16,7 +16,7 @@ public class FieldElementLocations {
     // Cargo ship scoring locations
     //------------------------------
 
-    // Two middle hatches
+    // Two midLeft hatches
     public static final Translation2d kCargoShipMiddleLeftHatch = new Translation2d((14.5 * 12.0) + 52.0 - RobotDimensions.kFrontToCenter, 155.0);
     public static final Translation2d kCargoShipMiddleRightHatch = new Translation2d();
 

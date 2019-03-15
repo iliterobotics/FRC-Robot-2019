@@ -1,4 +1,4 @@
-package us.ilite.robot.auto.paths.middle;
+package us.ilite.robot.auto.paths.midRight;
 
 import us.ilite.common.Data;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
@@ -7,9 +7,9 @@ import us.ilite.robot.auto.paths.AutoSequence;
 import us.ilite.robot.commands.ICommand;
 import us.ilite.robot.modules.*;
 
-public class MidToMidRightCargoToRocket extends AutoSequence {
+public class MidRightToFrontRightToRocket extends AutoSequence {
 
-    public MidToMidRightCargoToRocket(TrajectoryGenerator mTrajectoryGenerator, Data mData, Drive mDrive, HatchFlower mHatchFlower, PneumaticIntake mPneumaticIntake, CargoSpit mCargoSpit, Elevator mElevator, Limelight mLimelight, VisionGyro mVisionGyro) {
+    public MidRightToFrontRightToRocket(TrajectoryGenerator mTrajectoryGenerator, Data mData, Drive mDrive, HatchFlower mHatchFlower, PneumaticIntake mPneumaticIntake, CargoSpit mCargoSpit, Elevator mElevator, Limelight mLimelight, VisionGyro mVisionGyro) {
         super(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
     }
 
@@ -21,7 +21,7 @@ public class MidToMidRightCargoToRocket extends AutoSequence {
 
     public ICommand[] generateHatchSequence() {
         return new ICommand[] {
-                //TODO Make this
+                //TODO
         };
     }
 }

@@ -65,7 +65,7 @@ public class Robot extends TimedRobot {
     private DriverInput mDriverInput = new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, false  );
 
     private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
-    private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator, mIntake, mCargoSpit, mHatchFlower, mLimelight, mVisionGyro, mData);
+    private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator, mPneumaticIntake, mIntake, mCargoSpit, mHatchFlower, mLimelight, mVisionGyro, mData);
     private MatchMetadata mMatchMeta = null;
 
     private PerfTimer mClockUpdateTimer = new PerfTimer();
