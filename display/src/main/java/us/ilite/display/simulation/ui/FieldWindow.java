@@ -126,7 +126,6 @@ public class FieldWindow extends Application implements ISimulationListener {
             double startTime = System.currentTimeMillis();
             double currentTime = System.currentTimeMillis();
 
-
             while(!Thread.interrupted()) {
 
                 if(mIsPaused) {

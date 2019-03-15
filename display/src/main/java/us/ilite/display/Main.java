@@ -12,12 +12,14 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage pStage) {
+    public void start(Stage pStage) throws InterruptedException {
         TrackingSimulation mTrackingSimulation = new TrackingSimulation(0.01);
 
         FieldWindow mFieldWindow = new FieldWindow(mTrackingSimulation, 0.01);
 
         mFieldWindow.start(pStage);
+        // Sleep for a bit to allow simulation to fill draw queue
+        Thread.sleep(1000);
         mFieldWindow.startDrawing();
     }
 }
