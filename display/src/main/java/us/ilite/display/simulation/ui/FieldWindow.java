@@ -46,7 +46,7 @@ public class FieldWindow extends Application implements ISimulationListener {
     private final TrackingSimulation mTrackingSimulation;
 
     private Queue<SimData> drawQueue;
-    private SimData nextDataToDraw = new SimData(new Pose2d(), new Pose2d());
+    private SimData nextDataToDraw = null;
     private UpdateThread updateThread;
     private boolean mIsPaused = false;
 
@@ -144,7 +144,9 @@ public class FieldWindow extends Application implements ISimulationListener {
                 // If we have to draw this iteration, don't clog up our timing by getting the next pose to draw
                 // Draw @ 30 Hz
                 if(currentTime - lastTimeDrawn > (1.0 / kDrawsPerSecond) * 1000.0) {
-                    drawLatest();
+                    if(nextDataToDraw != null) {
+                        drawData(nextDataToDraw);
+                    }
                     setRunTime((currentTime - startTime) / 1000.0);
                     lastTimeDrawn = currentTime;
                 } else {
@@ -183,11 +185,11 @@ public class FieldWindow extends Application implements ISimulationListener {
         updateThread.start();
     }
 
-    public void drawLatest() {
+    public void drawData(SimData pNextDataToDraw) {
         reset();
 
-        Pose2d robotPose = normalizePoseToField(nextDataToDraw.current_pose);
-        Pose2d targetPose = normalizePoseToField(nextDataToDraw.target_pose);
+        Pose2d robotPose = normalizePoseToField(pNextDataToDraw.current_pose);
+        Pose2d targetPose = normalizePoseToField(pNextDataToDraw.target_pose);
 
         robotOutline.draw(fieldContext, robotPose, fieldInchesToPixels);
         robotPath.draw(fieldContext, targetPose, fieldInchesToPixels);
