@@ -171,6 +171,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kTFourBar = 0;
     public static double kFourBarPusherBottomActivationThreshold = 0;
     public static double kFourBarPusherUpperActivationThreshold = 0;
+    public static double kFourBarPowerReduction = 0.60;
 
 
     // =============================================================================

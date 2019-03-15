@@ -213,10 +213,10 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_CLIMBER_ALLOW)) {
 
             if(Math.abs(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS)) > 0.02) {
-                mFourBar.setDesiredOutput(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS) * 0.7, false);
+                mFourBar.setDesiredOutput(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS) * SystemSettings.kFourBarPowerReduction, false);
             }
 
-            if(mFourBar.allowedToPush() && mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_PUSHER_BUTTON)) {
+            if(/*mFourBar.allowedToPush() &&*/ mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_PUSHER_BUTTON)) {
                 mFourBar.extendPusher();
             } else {
                 mFourBar.retractPusher();
@@ -274,10 +274,10 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) && mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
             throttle *= SystemSettings.kSnailModePercentThrottleReduction;
             rotate *= SystemSettings.kSnailModePercentRotateReduction;
-        } else if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_CLIMBER_ALLOW)) {
+        } /*else if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_CLIMBER_ALLOW)) {
             throttle *= SystemSettings.kClimbModePercentThrottleReduction;
             rotate *= SystemSettings.kClimbModePercentRotateReduction;
-        }
+        }*/
 
         DriveMessage driveMessage = DriveMessage.fromThrottleAndTurn(throttle, rotate);
         driveMessage.setNeutralMode(NeutralMode.Brake);
