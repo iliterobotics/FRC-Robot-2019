@@ -142,8 +142,7 @@ public class FourBar extends Module {
      * Cut power to the motor
      */
     public void stop() {
-        setDesiredOutput( 0, true );
-        mNeos.stopMotor();
+        setDesiredOutput( 0, true );;
     }
 
     /**
@@ -153,12 +152,12 @@ public class FourBar extends Module {
         updateAngularPosition();
         mData.fourbar.set( EFourBarData.A_TICKS, mNeos.getEncoder().getPosition() );
         mData.fourbar.set( EFourBarData.A_OUTPUT, mNeos.get() );
-        mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeos.getAppliedOutput() * 12.0 );
+//        mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeos.getAppliedOutput() * 12.0 );
         mData.fourbar.set( EFourBarData.A_CURRENT, mNeos.getOutputCurrent() );
 
         mData.fourbar.set( EFourBarData.B_TICKS, mNeo2.getEncoder().getPosition() );
         mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
-        mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getAppliedOutput() * 12.0 );
+//        mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getAppliedOutput() * 12.0 );
         mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
 
         mData.fourbar.set( EFourBarData.ANGLE, mAngularPosition );

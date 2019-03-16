@@ -10,6 +10,7 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import us.ilite.common.Data;
 import us.ilite.common.lib.control.DriveController;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
@@ -122,6 +123,7 @@ public class Robot extends TimedRobot {
         }
 
         mData.registerCodices();
+        LiveWindow.disableAllTelemetry();
 
         initTimer.stop();
         mLogger.info("Robot initialization finished. Took: ", initTimer.get(), " seconds");
@@ -153,7 +155,7 @@ public class Robot extends TimedRobot {
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
-//        mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
+        mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
 
         mData.registerCodices();
 
@@ -173,11 +175,11 @@ public class Robot extends TimedRobot {
 
         mSettings.loadFromNetworkTables();
 
-        mRunningModules.setModules(mDriverInput, mLimelight, mTeleopCommandManager, mAutonomousCommandManager, mDrive, mElevator, mHatchFlower, /*mIntake,*/ mCargoSpit, mPneumaticIntake, mFourBar);
+        mRunningModules.setModules(mDriverInput, mLimelight, mTeleopCommandManager, mElevator, mHatchFlower, /*mIntake,*/ mCargoSpit, mPneumaticIntake, mFourBar);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
-        mLoopManager.setRunningLoops();
+        mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
     }
 
