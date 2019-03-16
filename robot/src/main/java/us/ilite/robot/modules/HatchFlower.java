@@ -1,5 +1,6 @@
 package us.ilite.robot.modules;
 
+import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
@@ -8,6 +9,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.manipulator.EHatchGrabber;
 
 /**
@@ -32,6 +34,10 @@ public class HatchFlower extends Module {
     private ExtensionState mExtensionState;
     private Timer mHasHatchTimer = new Timer();
 
+    private Codex<Double, EDriveData> mDriveData;
+    private Codex<Double, EHatchGrabber> mHatchGrabberData;
+
+    private double mRobotPositionWhenReleased = 0.0;
 
     /////////////////////////////////////////////////////////////////////////
     // ********************** Solenoid state enums *********************** //
@@ -61,6 +67,8 @@ public class HatchFlower extends Module {
 
     public HatchFlower(Data pData) {
         mData = pData;
+        mDriveData = mData.drive;
+        mHatchGrabberData = mData.hatchgrabber;
 
         // TODO Do we need to pass the CAN Addresses in via the constructor?
         mGrabSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
@@ -127,6 +135,19 @@ public class HatchFlower extends Module {
      */
     public void pushHatch() {
         mGrabberState = GrabberState.RELEASE;
+        mRobotPositionWhenReleased = getAverageRobotDistanceTraveled();
+    }
+
+    /**
+     *
+     * @return Whether the robot has backed up far enough to allow the elevator to come down.
+     */
+    public boolean isHatchGrabberSafeToRetract() {
+        return mRobotPositionWhenReleased - getAverageRobotDistanceTraveled() >= SystemSettings.kHatchFlowerBackupDistanceInches;
+    }
+
+    private double getAverageRobotDistanceTraveled() {
+        return (mDriveData.get(EDriveData.LEFT_POS_INCHES) + mDriveData.get(EDriveData.RIGHT_POS_INCHES)) / 2.0;
     }
 
     /**

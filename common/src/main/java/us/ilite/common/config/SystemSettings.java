@@ -324,6 +324,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kHatchFlowerGrabToPushTransitionTimeSec = 0.250;
     public static double kHatchFlowerExtendStatusTimerDuration = 0.5;
     public static double kHatchFlowerSwitchPressedTime = 0.1;
+    public static double kHatchFlowerBackupDistanceInches = 12.0;
 
 
     // =============================================================================
