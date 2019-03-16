@@ -1,6 +1,5 @@
 package us.ilite.robot;
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.flybotix.hfr.codex.Codex;
@@ -9,12 +8,6 @@ import com.flybotix.hfr.codex.ICodexTimeProvider;
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.TrajectoryUtil;
-import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
-import com.team254.lib.trajectory.timing.TimedState;
-import com.team254.lib.trajectory.timing.TimingConstraint;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -30,47 +23,59 @@ import us.ilite.common.types.MatchMetadata;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.lib.drivers.GetLocalIP;
-import us.ilite.robot.auto.paths.TestAuto;
-import us.ilite.robot.commands.CommandQueue;
-import us.ilite.robot.commands.FollowTrajectory;
+import us.ilite.lib.drivers.VisionGyro;
+import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
+import us.ilite.robot.modules.CargoSpit;
+import us.ilite.robot.modules.CommandManager;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.Elevator;
+import us.ilite.robot.modules.FourBar;
 import us.ilite.robot.modules.HatchFlower;
+import us.ilite.robot.modules.Intake;
 import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.ModuleList;
-import us.ilite.robot.modules.Superstructure;
+import us.ilite.robot.modules.PneumaticIntake;
 
 public class Robot extends TimedRobot {
 
     private ILog mLogger = Logger.createLog(this.getClass());
 
-    // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
     private LoopManager mLoopManager = new LoopManager(SystemSettings.kControlLoopPeriod);
+    // It sure would be convenient if we could reduce this to just a LoopManager...Will have to test timing of Codex first
+    private LoopManager mLoopManagerx = new LoopManager(SystemSettings.kControlLoopPeriod);
     private ModuleList mRunningModules = new ModuleList();
-    private CommandQueue mCommandQueue = new CommandQueue();
 
     private Clock mClock = new Clock();
     private Data mData = new Data();
     private Timer initTimer = new Timer();
     private final SystemSettings mSettings = new SystemSettings();
 
-    private PowerDistributionPanel pdp = new PowerDistributionPanel();
+    private PowerDistributionPanel pdp = new PowerDistributionPanel(SystemSettings.kPowerDistPanelAddress);
 
 
     // Module declarations here
-    private Superstructure mSuperstructure = new Superstructure();
-    private DriveController mDriveController = new DriveController(new StrongholdProfile());
+    private CommandManager mAutonomousCommandManager = new CommandManager();
+    private CommandManager mTeleopCommandManager = new CommandManager();
+    private DriveController mDriveController = new DriveController(new HenryProfile());
+
     private Drive mDrive = new Drive(mData, mDriveController);
+    private FourBar mFourBar = new FourBar( mData );
     private Elevator mElevator = new Elevator(mData);
+    private Intake mIntake = new Intake(mData);
+    private CargoSpit mCargoSpit = new CargoSpit(mData);
     private HatchFlower mHatchFlower = new HatchFlower();
+    private Limelight mLimelight = new Limelight(mData);
+    private VisionGyro mVisionGyro = new VisionGyro(mData);
+    private PneumaticIntake mPneumaticIntake = new PneumaticIntake(mData);
 
-    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mSuperstructure, mData);
-    private Limelight mLimelight = new Limelight();
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake,
+            mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, false);
 
-    private Trajectory<TimedState<Pose2dWithCurvature>> trajectory;
-
+    private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
+    private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator,
+            mIntake, mCargoSpit, mHatchFlower, mLimelight, mVisionGyro, mData);
     private MatchMetadata mMatchMeta = null;
 
     private PerfTimer mClockUpdateTimer = new PerfTimer();
@@ -83,10 +88,12 @@ public class Robot extends TimedRobot {
         // Init the actual robot
         initTimer.reset();
         initTimer.start();
-        Logger.setLevel(ELevel.INFO);
+        Logger.setLevel(ELevel.WARN);
         mLogger.info("Starting Robot Initialization...");
 
-        new Thread(new DSConnectInitThread()).start();
+        mSettings.writeToNetworkTables();
+
+//        new Thread(new DSConnectInitThread()).start();
         // Init static variables and get singleton instances first
 
         ICodexTimeProvider provider = new ICodexTimeProvider() {
@@ -96,13 +103,27 @@ public class Robot extends TimedRobot {
         };
         CodexMetadata.overrideTimeProvider(provider);
 
+        // // Init the actual robot
+        // initTimer.reset();
+        // initTimer.start();
+
+        // mSettings.writeToNetworkTables();
+
+        // // Logger.setLevel(ELevel.INFO);
+        // Logger.setLevel(ELevel.ERROR);
+        // mLogger.info("Starting Robot Initialization...");
+
+        // mSettings.writeToNetworkTables();
+
         mRunningModules.setModules();
 
-        TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
-        List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(40.0));
-        trajectory = mTrajectoryGenerator.generateTrajectory(false, TestAuto.kPath, kTrajectoryConstraints, 100.0, 40.0, 12.0);
-        trajectory = TrajectoryUtil.mirrorTimed(trajectory);
+        try {
+            mAutonomousRoutines.generateTrajectories();
+        } catch(Exception e) {
+            mLogger.exception(e);
+        }
 
+        mData.registerCodices();
 
         initTimer.stop();
         mLogger.info("Robot initialization finished. Took: ", initTimer.get(), " seconds");
@@ -126,16 +147,17 @@ public class Robot extends TimedRobot {
 
         mSettings.loadFromNetworkTables();
 
-        // Init modules after commands are set
-        mRunningModules.setModules(mSuperstructure);
-        mRunningModules.modeInit(mClock.getCurrentTime());
-        mRunningModules.periodicInput(mClock.getCurrentTime());
-
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
 
-//        mSuperstructure.startCommands(new CharacterizeDrive(mDrive, false, false));
-        mSuperstructure.startCommands(new FollowTrajectory(trajectory, mDrive, true));
+        // Init modules after commands are set
+        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mTeleopCommandManager, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight);
+        mRunningModules.modeInit(mClock.getCurrentTime());
+        mRunningModules.periodicInput(mClock.getCurrentTime());
+
+//        mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
+
+        mData.registerCodices();
 
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");
@@ -144,24 +166,28 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         commonPeriodic();
+        mData.sendCodicesToNetworkTables();
     }
 
     @Override
     public void teleopInit() {
         initMatchMetadata();
-        mRunningModules.setModules(mDriverInput, mLimelight, mHatchFlower, mElevator);
+
+        mSettings.loadFromNetworkTables();
+
+        mRunningModules.setModules(mDriverInput, mLimelight, mTeleopCommandManager, mAutonomousCommandManager, mDrive, mElevator, mHatchFlower, /*mIntake,*/ mCargoSpit, mPneumaticIntake, mFourBar);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
-        mLoopManager.setRunningLoops(mDrive);
+        mLoopManager.setRunningLoops();
         mLoopManager.start();
     }
 
     @Override
     public void teleopPeriodic() {
         commonPeriodic();
-        EPowerDistPanel.map(mData.pdp, pdp);
-        mData.sendCodices();
+//        mData.sendCodices();
+//        mData.sendCodicesToNetworkTables();
     }
 
     @Override
@@ -195,6 +221,7 @@ public class Robot extends TimedRobot {
         for(Codex c : mData.mAllCodexes) {
             c.reset();
         }
+        EPowerDistPanel.map(mData.pdp, pdp);
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
     }

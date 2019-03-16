@@ -4,17 +4,19 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import java.util.Objects;
+
 public class DriveMessage {
 
   public static final DriveMessage kNeutral = new DriveMessage(0.0, 0.0, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake);
 
   public final double leftOutput, rightOutput;
-  public ControlMode leftControlMode, rightControlMode;
+  public ControlMode leftControlMode = ControlMode.PercentOutput, rightControlMode = ControlMode.PercentOutput;
 
   public DemandType leftDemandType = DemandType.ArbitraryFeedForward;
   public DemandType rightDemandType = DemandType.ArbitraryFeedForward;
-  public double leftDemand, rightDemand;
-  public NeutralMode leftNeutralMode, rightNeutralMode;
+  public double leftDemand = 0.0, rightDemand = 0.0;
+  public NeutralMode leftNeutralMode = NeutralMode.Brake, rightNeutralMode = NeutralMode.Brake;
 
   public DriveMessage(double leftOutput, double rightOutput, ControlMode pControlMode) {
     this(leftOutput, rightOutput, pControlMode, pControlMode);
@@ -25,8 +27,6 @@ public class DriveMessage {
     this.rightOutput = rightOutput;
     this.leftControlMode = leftControlMode;
     this.rightControlMode = rightControlMode;
-    this.leftNeutralMode = NeutralMode.Brake;
-    this.rightNeutralMode = NeutralMode.Brake;
   }
 
   /**
@@ -62,6 +62,28 @@ public class DriveMessage {
   public DriveMessage setControlMode(ControlMode pControlMode) {
     this.leftControlMode = this.rightControlMode = pControlMode;
     return this;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    DriveMessage that = (DriveMessage) o;
+    return Double.compare(that.leftOutput, leftOutput) == 0 &&
+            Double.compare(that.rightOutput, rightOutput) == 0 &&
+            Double.compare(that.leftDemand, leftDemand) == 0 &&
+            Double.compare(that.rightDemand, rightDemand) == 0 &&
+            leftControlMode == that.leftControlMode &&
+            rightControlMode == that.rightControlMode &&
+            leftDemandType == that.leftDemandType &&
+            rightDemandType == that.rightDemandType &&
+            leftNeutralMode == that.leftNeutralMode &&
+            rightNeutralMode == that.rightNeutralMode;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(leftOutput, rightOutput, leftControlMode, rightControlMode, leftDemandType, rightDemandType, leftDemand, rightDemand, leftNeutralMode, rightNeutralMode);
   }
 
 }

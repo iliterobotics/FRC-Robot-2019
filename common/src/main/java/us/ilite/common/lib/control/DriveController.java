@@ -11,6 +11,7 @@ import com.team254.lib.physics.DriveOutput;
 import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
+import com.team254.lib.trajectory.TrajectoryUtil;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.frc2018.Kinematics;
 import us.ilite.common.lib.odometry.RobotStateEstimator;

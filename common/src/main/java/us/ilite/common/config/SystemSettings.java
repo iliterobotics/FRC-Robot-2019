@@ -2,11 +2,11 @@ package us.ilite.common.config;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
+
+import com.team254.lib.util.CheesyDriveGains;
 
 import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.util.NetworkTablesConstantsBase;
-import us.ilite.common.lib.util.SimpleNetworkTable;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.ELogitech310;
 
@@ -15,15 +15,9 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static double kControlLoopPeriod = 0.01; // seconds
 
-    public static double NETWORK_TABLE_UPDATE_RATE = 0.01;
+    public static double kNetworkTableUpdateRate = 0.01;
 
-    public static final int sCODEX_COMMS_PORT = 5805;
-
-    //==============================================================================
-    // Comms
-    // =============================================================================
-    public static SimpleNetworkTable AUTON_TABLE = new SimpleNetworkTable("AUTON_TABLE");
-    public static SimpleNetworkTable kLoggingTable = new SimpleNetworkTable("LoggingTable");
+    public static int sCODEX_COMMS_PORT = 5805;
 
     // ===========================
     // System ID's
@@ -33,20 +27,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     //==============================================================================
     // Logging
     // =============================================================================
-    public static String kLoggingTimestampKey = "TIME";
-
-    // =============================================================================
-    // Talon Addresses
-    // =============================================================================
-    // Encoders are on the rear Talons, so ID's are temporarily flipped around
-    public static  int kDriveLeftMasterTalonId = 1;
-    public static int kDriveLeftMiddleTalonId = 3;
-    public static  int kDriveLeftRearTalonId = 5;
-    public static  int kDriveRightMasterTalonId = 2;
-    public static int kDriveRightMiddleTalonId = 4;
-    public static  int kDriveRightRearTalonId = 6;
-
-    public static int kPigeonId = 3;
 
     public static int kCANTimeoutMs = 10; //use for on the fly updates
     public static int kLongCANTimeoutMs = 100; //use for constructors
@@ -59,15 +39,16 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kDriveCurrentLimitAmps = 40;
     public static int kDriveCurrentLimitTriggerDurationMs = 100;
     public static double kDriveWheelDiameterInches = 6.0;
-    public static double  DRIVETRAIN_WHEEL_DIAMETER_FEET = kDriveWheelDiameterInches / 12.0;
+    public static double kDrivetrainWheelDiameterFeet = kDriveWheelDiameterInches / 12.0;
     public static double kDriveWheelCircumference = kDriveWheelDiameterInches * Math.PI;
-    public static double  DRIVETRAIN_DEFAULT_RAMP_RATE = 120.0; // in V/sec
-    public static double  DRIVETRAIN_HIGH_GEAR_RAMP_RATE = 120.0; // in V/sec
+    public static double kDrivetrainDefaultRampRate = 120.0; // in V/sec
     public static double kDriveTicksPerRotation = 1024;
-    public static double kDriveEffectiveWheelbase = 23.75 * 1.025;
-    public static double 	DRIVETRAIN_TURN_CIRCUMFERENCE = kDriveEffectiveWheelbase * Math.PI;
-    public static double	DRIVETRAIN_INCHES_PER_DEGREE = DRIVETRAIN_TURN_CIRCUMFERENCE / 360.0;
-    public static double	DRIVETRAIN_WHEEL_TURNS_PER_DEGREE = DRIVETRAIN_INCHES_PER_DEGREE / kDriveWheelDiameterInches;
+    public static double kDriveEffectiveWheelbase = 23.0;
+    public static double kDrivetrainTurnCircumference = kDriveEffectiveWheelbase * Math.PI;
+    public static double kDrivetrainInchesPerDegree = kDrivetrainTurnCircumference / 360.0;
+    public static double kDrivetrainWheelTurnsPerDegree = kDrivetrainInchesPerDegree / kDriveWheelDiameterInches;
+
+    public static CheesyDriveGains kCheesyDriveGains = new CheesyDriveGains();
 
     // =============================================================================
     // IMU Constants
@@ -76,21 +57,36 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kGyroUpdateRate = 200;
 
     // =============================================================================
+    // Heading Gains
+    // =============================================================================
+    public static PIDGains kDriveHeadingGains = new PIDGains(0.03, 0.0, 0.0);
+    public static double kDriveLinearPercentOutputLimit = 0.5;
+
+    // =============================================================================
     // Input Constants
     // =============================================================================
-    public static double kSnailModePercentThrottleReduction = .5;
-    public static double kSnailModePercentRotateReduction = .4;
+	public static double kNormalPercentThrottleReduction = 1.0;
+	
+	// These are applied AFTER the normal throttle reduction
+    public static double kSnailModePercentThrottleReduction = 0.5;
+    public static double kSnailModePercentRotateReduction = 0.4;
+	
+	// Applied after any scaling
     public static double kDriverInputTurnMaxMagnitude = 0.5;
-    public static double  INPUT_DEADBAND_F310_JOYSTICK = 0.05;
-    public static double  INPUT_DEADBAND_F310_TRIGGER = 0.5;
-    public static int     JOYSTICK_PORT_DRIVER = 0;
-    public static int     JOYSTICK_PORT_OPERATOR = 1;
-    public static int     JOYSTICK_PORT_TESTER = 2;
+    
+	public static double kInputDeadbandF310Joystick = 0.05;
+    public static double kInputDeadbandF310Trigger = 0.5;
+    public static int kJoystickPortDriver = 0;
+    public static int kJoystickPortOperator = 1;
+    public static int kJoystickPortTester = 2;
 
     public static int kLimelightDefaultPipeline = ETrackingType.TARGET_LEFT.getPipeline();
     public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN, 
                                                                             DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN,
-                                                                            DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN);
+                                                                            DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN,
+                                                                            DriveTeamInputMap.DRIVER_NUDGE_SEEK_LEFT,
+                                                                            DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT);
+
     public static List<ELogitech310> kAutonOverrideTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_THROTTLE_AXIS,
                                                                             DriveTeamInputMap.DRIVER_TURN_AXIS);
     public static double kAutonOverrideAxisThreshold = 0.3;
@@ -99,7 +95,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Motion Magic Constants
     // =============================================================================
     public static int kDriveMotionMagicLoopSlot = 0;
-    public static int kDriveMotionMagicVelocityFeedforward = 0;
+    public static int kDriveMotionMagicCruiseVelocity = 0;
     public static int kDriveMotionMagicAccelFeedforward = 0;
 
     // =============================================================================
@@ -116,26 +112,36 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Elevator Constants
     // =============================================================================
 
-    //All these values will be changed once we have a better idea of what the
-    //elevator's properties will be like
-    public static int kTopEncoderTicks = 0;
+    public static double kElevatorClosedLoopMinPower = -1.0;
+    public static double kElevatorClosedLoopMaxPower = 1.0;
 
-    public static double kElevatorP = 0.1;
-    public static double kElevatorI = 0; 
-    public static double kElevatorD = 0;
-    public static double kElevatorF = 0;
-    public static double kELevatorControlLoopPeriod = 0.01;
-    // public static int kUpperElevatorEncoderThreshold = 0; //Will be calculated on the regular
-    // public static int kLowerElevatorEncoderThreshold = 0;
-    public static double kElevatorMinPower = -1.0;
-    public static double kElevatorMaxPower = 1.0;
-    public static int kElevatorCurrentLimit = 10;
+    public static double kElevatorAllowableError = 1.0;
+    public static int kElevatorNEOAddress = 15;
 
-    // public static int kCansparkMasterId = 0;
-    // public static int kTalonId = 0;
+    public static int kElevatorSmartMotionSlot = 0;
+    public static double kElevatorOpenLoopMinPower = -1.0;
+    public static double kElevatorOpenLoopMaxPower = 1.0;
 
-    //This is the value that it was last year. It will most likely change. 
-    public static int kELEVATOR_ENCODER_DEADBAND = 20;
+    public static double kElevatorOpenLoopRampRate = 0.1;
+    public static int kElevatorSmartCurrentLimit = 80;
+    public static int kElevatorSecondaryCurrentLimit = 100;
+
+    /*
+    Smart Motion Constants
+
+    Units are RPM
+     */
+    public static double kElevatorMotionP = 2.5e-4;
+    public static double kElevatorMotionI = 0.0;
+    public static double kElevatorMotionD = 0.0;
+    public static double kElevatorMotionFF = 0.000391419;
+    public static double kElevatorFrictionVoltage = 0.02 * 12.0;
+
+    public static double kMaxElevatorVelocity = 4000;
+    public static double kMinElevatorVelocity = 0;
+    public static double kMaxElevatorAcceleration = 4000;
+    public static double kElevatorClosedLoopAllowableError = 0; //The allowed deficit in rotations
+
 
     // =============================================================================
     // Closed-Loop Velocity Constants
@@ -145,17 +151,107 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveVelocity_kP = 1.0;
     public static double kDriveVelocity_kI = 0.0;
     public static double kDriveVelocity_kD = 0.0;
-//    public static double kDriveVelocity_kF = (1023.0 / 1155.0); // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
+//    public static double kDriveVelocity_kF = (1023.0 / 1155.0);
     public static double kDriveVelocity_kF = 0.0; // We don't care about this feedforward because we inject our own with ArbitraryFeedforward
-    public static int ULTRASONIC_PORT = 2;
 
     // =============================================================================
     // Turn-To PID constants
     // =============================================================================
     public static PIDGains kPIDGains = new PIDGains( 0.0, 0.0, 0.0, 0.085 );
+    public static double kTurnSensitivity = 0.85;
+   
+    // =============================================================================
+    // Robot constants (configure later)
+    // TO-DO: Configure torque constant
+    // =============================================================================
+    public static double kTFourBar = 0;
+    public static double kFourBarPusherDelay = 0.5;
 
 
+    // =============================================================================
+    // Arm Constants
+    // =============================================================================
 
+    // Predefined arm  positions
+    public enum ArmPosition {
+        FULLY_OUT(90.0),
+        FULLY_UP(135.0),
+        FULLY_DOWN(0.0);
+
+        private final double angle;
+
+        ArmPosition( double angle ) {
+            this.angle = angle;
+        }
+
+        public double getAngle() {
+            return this.angle;
+        }
+    }
+
+    //public static int kArmPositionEncoderTicksPerRotation = 3552;
+    public static int kArmPositionEncoderTicksPerRotation = 4096;
+    public static double kArmMinAngle = 0.0;
+    public static double kArmMaxAngle = 135.0;
+    public static double kArmMaxCurrentVoltRatio = 20; //tune - overcurrent ratio for arm motor
+    public static double kArmMotorOffTimeSec = 0.5; // seconds
+    public static double kArmMaxStallTimeSec = 0.1; // seconds
+    public static double kArmMinMotorStallVoltage = 0.1;
+
+
+    //////// BasicArm Constants /////////
+    // TODO We may need to increase kD for stability
+    // PID Gains                                        kP,    kI,    kD
+    public static PIDGains kArmPIDGains = new PIDGains( 0.01, 0.000, 0.0008 );
+    // Dampen as we get close to our target
+    public static PIDGains kArmLandingPIDGains = new PIDGains( 0.02, 0.003, 0.001 );
+    // public static PIDGains kArmLandingPIDGains = kArmPIDGains;
+    // Range +/- of target angle where we apply the landing PID Gains
+    public static double kArmLandingRangeAngle = 10.0;
+
+    // We measured .7 volts on the motor to hold the arm horizontal
+    // For gravity compensation Kg = % power to hold arm horizontal, which is
+    // the measured voltage / 12 volts
+    public static double kArmKg = 1.1;
+
+    // Control power clamping limits
+    public static double kArmPIDOutputMaxLimit = 1.0; // max 1.0
+    public static double kArmPIDOutputMinLimit = -1.0; // min -1.0
+    /////////////////////////////////////
+
+
+    ///// MotionMagicArm Constants //////
+    // PID Gains
+    public static double kArmPidP = 0.1;
+    public static double kArmPidI = 0.020;
+    public static double kArmPidD = 0.0;
+    public static double kArmPidF = 0.1;
+
+    public static double kIntakeWristPidP = 0.0;
+    public static double kIntakeWristPidI = 0.0;
+    public static double kIntakeWristPidD = 0.0;
+    public static double kIntakeWristPidF = 0.008903875;
+    public static int kIntakeWristAcceleration = 1000;
+    // ticks per 100 ms, or N * 10 = ticks / sec
+    public static int kIntakeWristCruise = 200;
+
+
+    public static double kIntakeRollerHatchPower = .25;
+    public static double kIntakeRollerCargoPower = .25;
+    public static double kIntakeRollerHoldPower = .25;
+    public static double kIntakeWristStowedAngle = 0;
+    public static double kIntakeWristHandoffAngle = 48;
+    // temp set to 90 to validate angles
+    public static double kIntakeWristGroundAngle = 90;
+    public static double kCargoSpitDelay = 4;
+    // public static double kIntakeWristGroundAngle = 105;
+    //The minimum angle where it is safe to continue intake process (engage solenoid/roller)
+    public static double kIntakeWristGroundMinBound = 95;
+
+
+    public static int kArmAcceleration = 5;
+    public static int kArmCruise = 30;
+    
     // =============================================================================
     // LimeLight Camera Constants
     // Note: These constants need to be recalculted for a specific robot geometry
@@ -180,7 +276,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double llRightBCoeff = -4.53956454545558;
     public static double llRightCCoeff = -0.0437470770400814;
 
-
+    // =============================================================================
+    // PID TargetLock constants
+    // =============================================================================
+    public static PIDGains kTargetAngleLockGains = new PIDGains(0.05, 0.000, 0.0);
+    public static PIDGains kTargetDistanceLockGains = new PIDGains( 0.1, 0.0, 0.0);
 
     // =============================================================================
     // Target Constants
@@ -192,18 +292,13 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public enum VisionTarget {
         HatchPort(25.6875), // height of the bottom of the reflective tape in inches for the hatch port
         CargoPort(33.3125), // height of the bottom of the reflective tape in inches for the cargo port
-        Ground(0.0,"Ground_Tape_Tracking.vpr"), //The ground
-        CargoHeight(6.5d,"Cargo_Ball_Tracking.vpr");//This may change, not sure what the correct value
+        Ground(0.0), //The ground
+        CargoHeight(6.5d);//This may change, not sure what the correct value
 
         private final double height;
-        private final Optional<String> pipelineName;
 
-        VisionTarget(double height) {
-            this(height, null);
-        }
-        VisionTarget( double height, String pipelineName)  {
+        VisionTarget( double height)  {
             this.height = height;
-            this.pipelineName = Optional.ofNullable(pipelineName);
         }
 
         /**
@@ -215,10 +310,6 @@ public class SystemSettings extends NetworkTablesConstantsBase {
         /**
          * @return the pipelineName
          */
-        public Optional<String> getPipelineName() {
-            return pipelineName;
-        }
-
     }
 
     // =============================================================================
@@ -230,22 +321,34 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // kHatchFlowerGrabToPushTransitionTimeSec is the time between releasing the 
     // grab solenoid and engaging the push solenoid.
     public static double kHatchFlowerGrabToPushTransitionTimeSec = 0.250;
+    public static double kHatchFlowerExtendStatusTimerDuration = 0.5;
 
 
     // =============================================================================
     // 2019 Module Addresses
     // =============================================================================
+    public static int kPigeonId = 30;
+
+    public static  int kDriveLeftMasterTalonId = 1;
+    public static int kDriveLeftMiddleTalonId = 3;
+    public static  int kDriveLeftRearTalonId = 5;
+    public static  int kDriveRightMasterTalonId = 2;
+    public static int kDriveRightMiddleTalonId = 4;
+    public static  int kDriveRightRearTalonId = 6;
+
+    public static int kPowerDistPanelAddress = 21;
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
-    public static double kCargoSpitSPXCurrentLimit = -1.0;
+    public static int kCargoSpitBeamBreakAddress = 1;
+    public static double kCargoSpitRollerPower = 0.40; // 15% seems like adequate power (maybe more?)
+    public static double kCargoSpitSPXCurrentRatioLimit = 8.5; // Voltage ~ 1.8
 
-    public static int kElevatorNEOAddress = -15;
     // TO-DO: Elevator encoder address?
-    public static int kElevatorNEOEncoderAddress = -1;
     // public static int kElevatorRedundantEncoderAddress = -1;
 
     public static int kFourBarNEO1Address = 9;
     public static int kFourBarNEO2Address = 10;
+    public static int kFourBarPusherAddress = 0;
     // TO-DO: label solenoid as forward/reverse in spreadsheet
     public static int kFourBarDoubleSolenoidForwardAddress = 0;
     public static int kFourBarDoubleSolenoidReverseAddress = 1;
@@ -254,21 +357,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kHatchFlowerOpenCloseSolenoidAddress = 5;
     public static int kHatchFlowerExtensionSolenoidAddress = 6;
 
-    public static int kHatchIntakeSPXAddress = 11;
+    //public static int kHatchIntakeSPXAddress = 11;
     public static int kCargoIntakeSPXLowerAddress = 12;
-    // TO-DO DIO spreadsheet empty
-    public static int kIntakeBeamBreakAddress = -1;
+    // TO-DO DO spreadsheet empty
 
     public static int kIntakeWristSRXAddress = 16;
-    // TO-DO Writs encoder addresses?
-    public static int kIntakeWristEncoderA_Address = -1;
-    public static int kIntakeWristEncoderB_Address = -1;
-    public static double kIntakeWristCurrentLimit = -1.0;
+    public static int kIntakeSolenoidAddress = 1;
 
-    public static int kDriveTrainRightSRX1Address = 2;
-    public static int kDriveTrainRightSPX2Address = 4;
-    public static int kDriveTrainRightSPX3Address = 6;
-    public static int kDriveTrainLeftSRX1Address = 1;
-    public static int kDriveTrainLeftSPX2Address = 3;
-    public static int kDriveTrainLeftSPX3Address = 5;
 }

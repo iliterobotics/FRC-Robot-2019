@@ -14,7 +14,8 @@ public class RockwellUltrasonic implements IAbsoluteDistanceProvider
 
     public RockwellUltrasonic()
     {
-        mUltrasonicSensor = new AnalogInput(SystemSettings.ULTRASONIC_PORT);
+        // Change AnalogInput to SystemSettings.ULTRASONIC_PORT
+        mUltrasonicSensor = new AnalogInput(2);
     }
 
     /**

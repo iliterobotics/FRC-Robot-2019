@@ -5,6 +5,7 @@ import com.flybotix.hfr.util.log.Logger;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,8 +37,13 @@ public class SettingsTable implements IDisplayComponent {
 
         mSettingsNetworkTable.addEntryListener((table, key, entry, value, flags) -> {
             mLog.debug("Change");
-            mSettingsTableView.refresh();
+            refresh();
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate | EntryListenerFlags.kLocal);
+
+        NetworkTableInstance.getDefault().addConnectionListener((pConnectionNotification) -> {
+            refresh();
+            mLog.error("Reconnected to NT");
+        }, true);
 
         mEntryNameColumn.setCellValueFactory(cellDataFeatures -> new SimpleStringProperty(NetworkTable.basenameKey(cellDataFeatures.getValue().getName())));
 //        mEntryValueColumn.setCellValueFactory(cellDataFeatures -> new ObservableEntryStringValue(cellDataFeatures.getValue()).getValue());
@@ -49,7 +55,7 @@ public class SettingsTable implements IDisplayComponent {
             int valueRow = networkTableEntryStringCellEditEvent.getTablePosition().getRow();
             String entryKey = mEntryNameColumn.getCellData(valueRow);
             String newValue = networkTableEntryStringCellEditEvent.getNewValue();
-            mLog.debug("Edit commit for entry: ", entryKey, " with value: ", newValue);
+            mLog.warn("Edit commit for entry: ", entryKey, " with value: ", newValue);
 
             set(entryKey, newValue);
         });
@@ -112,6 +118,10 @@ public class SettingsTable implements IDisplayComponent {
 
     public void clearSelection() {
         mSettingsTableView.getSelectionModel().clearSelection();
+    }
+
+    public void refresh() {
+        mSettingsTableView.refresh();
     }
 
 }
