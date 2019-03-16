@@ -48,7 +48,7 @@ public class AutonomousRoutines {
         this.mVisionGyro = mVisionGyro;
         this.mData = mData;
 
-        this.mMiddleToMiddleCargoToSideRocket = new MiddleToMiddleCargoToSideRocket(mTrajectoryGenerator, mData, mDrive, mLimelight, mVisionGyro);
+        this.mMiddleToMiddleCargoToSideRocket = new MiddleToMiddleCargoToSideRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mLimelight, mVisionGyro);
     }
 
     public void generateTrajectories() {

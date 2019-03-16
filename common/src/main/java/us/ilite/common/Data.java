@@ -21,6 +21,7 @@ import us.ilite.common.types.manipulator.EElevator;
 import us.ilite.common.types.manipulator.EHatchGrabber;
 import us.ilite.common.types.manipulator.EIntake;
 import us.ilite.common.types.sensor.EGyro;
+import us.ilite.common.types.EFourBarData;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 
 import java.io.*;
@@ -38,6 +39,7 @@ public class Data {
     public final Codex<Double, ELogitech310> driverinput = Codex.of.thisEnum(ELogitech310.class);
     public final Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
     public final Codex<Double, EElevator> elevator = Codex.of.thisEnum(EElevator.class);
+    public final Codex<Double, EFourBarData> fourbar = Codex.of.thisEnum(EFourBarData.class);
     public final Codex<Double, ECargoSpit> cargospit = Codex.of.thisEnum( ECargoSpit.class );
     public final Codex<Double, EHatchGrabber> hatchgrabber = Codex.of.thisEnum(EHatchGrabber.class);
   
@@ -48,11 +50,11 @@ public class Data {
     private final List<CodexSender> mSenders = new ArrayList<>();
 
     public final Codex[] mAllCodexes = new Codex[] {
-            imu, /*drive,*/ driverinput, operatorinput, elevator, cargospit, pdp, intake, limelight, hatchgrabber
+            imu, /*drive,*/ driverinput, operatorinput, elevator, cargospit, pdp, intake, limelight, fourbar, hatchgrabber
     };
 
     public final Codex[] mLoggedCodexes = new Codex[] {
-        imu, drive, driverinput, /*operatorinput,*/ elevator, cargospit,  pdp, intake, limelight, hatchgrabber
+        imu, drive, driverinput, /*operatorinput,*/ elevator, cargospit,  pdp, intake, limelight, fourbar, hatchgrabber
     };
 
     public final Codex[] mDisplayedCodexes = new Codex[] {
@@ -94,9 +96,10 @@ public class Data {
             new CodexNetworkTablesParser<EDriveData>(drive),
             new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
             new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR"),
-                new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" ),
-                new CodexNetworkTablesParser<ECargoSpit>( cargospit, "CARGOSPIT" ),
-            new CodexNetworkTablesParser<EPowerDistPanel>( pdp, "PDP" )
+            new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" ),
+            new CodexNetworkTablesParser<ECargoSpit>( cargospit, "CARGOSPIT" ),
+            new CodexNetworkTablesParser<EPowerDistPanel>( pdp, "PDP" ),
+            new CodexNetworkTablesParser<EFourBarData>(fourbar, "FOURBAR")
         );
     }
 

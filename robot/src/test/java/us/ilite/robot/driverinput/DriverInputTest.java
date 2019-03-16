@@ -29,6 +29,7 @@ public class DriverInputTest {
     private CommandManager mAutonomousCommandManager;
     // We want to see CommandManager's actual behavior, so we make it a spy
     private CommandManager mTeleopCommandManager;
+    @Mock private FourBar mFourBar;
     @Mock private Elevator mElevator;
     @Mock private Intake mIntake;
     @Mock private CargoSpit mCargospit;
@@ -36,7 +37,6 @@ public class DriverInputTest {
     @Mock private TalonSRX mTalon;
     @Mock private PneumaticIntake mPneumaticIntake;
     @Mock private CargoSpit mCargoSpit;
-
 
     private DriverInput mDriverInput;
     private Limelight mLimelight;
@@ -56,13 +56,13 @@ public class DriverInputTest {
         mTeleopCommandManager = spy(new CommandManager());
         mAutonomousCommandManager = spy(new CommandManager());
         mLimelight = new Limelight(mData);
-        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, true ) );
+        mDriverInput = spy(new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, true ) );
         
         mModuleList.setModules(mDriverInput, mTeleopCommandManager, mAutonomousCommandManager, mDrive);
         mModuleList.modeInit(mClock.getCurrentTime());
 
-        TestingUtils.fillNonButtons(mData.driverinput, 0.0);
-        TestingUtils.fillNonButtons(mData.operatorinput, 0.0);
+        TestingUtils.fillNonButtons(mData.driverinput, mClock.getCurrentTime());
+        TestingUtils.fillNonButtons(mData.operatorinput, mClock.getCurrentTime());
     }
 
     /**
@@ -73,7 +73,7 @@ public class DriverInputTest {
         for(ELogitech310 overrideButton : SystemSettings.kAutonOverrideTriggers) {
             mData.driverinput.reset();
             // Reset superstructure with new command
-            mAutonomousCommandManager.stopRunningCommands();
+            mAutonomousCommandManager.stopRunningCommands(mClock.getCurrentTime());
             mAutonomousCommandManager.startCommands(new Delay(30000.0));
 
             assertTrue(mAutonomousCommandManager.isRunningCommands());
@@ -86,7 +86,7 @@ public class DriverInputTest {
             mData.driverinput.set(overrideButton, 1.0);
             // Update twice to verify that commands aren't reset twice
             updateRobot();
-            verify(mAutonomousCommandManager, times(2)).stopRunningCommands();
+            verify(mAutonomousCommandManager, times(2)).stopRunningCommands(anyDouble());
 
             // Verify that superstructure is actually stopped
             assertFalse(mAutonomousCommandManager.isRunningCommands());
@@ -102,11 +102,11 @@ public class DriverInputTest {
     @Test
     public void testTeleopDriverCommandHandling() {
         for(ELogitech310 commandTrigger : SystemSettings.kTeleopCommandTriggers) {
-            mTeleopCommandManager.stopRunningCommands();
+            mTeleopCommandManager.stopRunningCommands(mClock.getCurrentTime());
             mData.driverinput.set(commandTrigger, 1.0);
             updateRobot();
 
-            verify(mDriverInput).updateVisionCommands();
+            verify(mDriverInput).updateVisionCommands(anyDouble());
 
             resetSpies();
         }
@@ -120,8 +120,8 @@ public class DriverInputTest {
     public void testAutonDriverCommandHandling() {
 
         for(ELogitech310 commandTrigger : SystemSettings.kTeleopCommandTriggers) {
-            mAutonomousCommandManager.stopRunningCommands();
-            mTeleopCommandManager.stopRunningCommands();
+            mAutonomousCommandManager.stopRunningCommands(mClock.getCurrentTime());
+            mTeleopCommandManager.stopRunningCommands(mClock.getCurrentTime());
             mAutonomousCommandManager.startCommands(new Delay(30));
             // If we press and release a button the command queue should get stopped
             mData.driverinput.set(commandTrigger, 1.0);

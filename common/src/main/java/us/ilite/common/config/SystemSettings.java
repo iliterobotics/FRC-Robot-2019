@@ -3,6 +3,9 @@ package us.ilite.common.config;
 import java.util.Arrays;
 import java.util.List;
 
+import com.team254.lib.util.CheesyDriveGains;
+import us.ilite.common.lib.util.SimpleNetworkTable;
+
 import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.util.NetworkTablesConstantsBase;
 import us.ilite.common.types.ETrackingType;
@@ -41,10 +44,12 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveWheelCircumference = kDriveWheelDiameterInches * Math.PI;
     public static double kDrivetrainDefaultRampRate = 120.0; // in V/sec
     public static double kDriveTicksPerRotation = 1024;
-    public static double kDriveEffectiveWheelbase = 23.75 * 1.025;
+    public static double kDriveEffectiveWheelbase = 23.0;
     public static double kDrivetrainTurnCircumference = kDriveEffectiveWheelbase * Math.PI;
     public static double kDrivetrainInchesPerDegree = kDrivetrainTurnCircumference / 360.0;
     public static double kDrivetrainWheelTurnsPerDegree = kDrivetrainInchesPerDegree / kDriveWheelDiameterInches;
+
+    public static CheesyDriveGains kCheesyDriveGains = new CheesyDriveGains();
 
     // =============================================================================
     // IMU Constants
@@ -61,11 +66,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Input Constants
     // =============================================================================
-	public static double kNormalPercentThrottleReduction = 0.5;
+	public static double kNormalPercentThrottleReduction = 1.0;
 	
 	// These are applied AFTER the normal throttle reduction
-    public static double kSnailModePercentThrottleReduction = .5;
-    public static double kSnailModePercentRotateReduction = .5;
+    public static double kSnailModePercentThrottleReduction = 0.5;
+    public static double kSnailModePercentRotateReduction = 0.4;
 	
 	// Applied after any scaling
     public static double kDriverInputTurnMaxMagnitude = 0.5;
@@ -111,7 +116,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kElevatorClosedLoopMinPower = -1.0;
     public static double kElevatorClosedLoopMaxPower = 1.0;
 
-    public static double kElevatorAllowableError = 5;
+    public static double kElevatorAllowableError = 1.0;
     public static int kElevatorNEOAddress = 15;
 
     public static int kElevatorSmartMotionSlot = 0;
@@ -154,6 +159,14 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Turn-To PID constants
     // =============================================================================
     public static PIDGains kPIDGains = new PIDGains( 0.0, 0.0, 0.0, 0.085 );
+    public static double kTurnSensitivity = 0.85;
+   
+    // =============================================================================
+    // Robot constants (configure later)
+    // TO-DO: Configure torque constant
+    // =============================================================================
+    public static double kTFourBar = 0;
+    public static double kFourBarPusherDelay = 0.5;
 
 
     // =============================================================================
@@ -231,7 +244,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kIntakeWristHandoffAngle = 48;
     // temp set to 90 to validate angles
     public static double kIntakeWristGroundAngle = 90;
-    public static double kCargoSpitDelay = 5;
+    public static double kCargoSpitDelay = 4;
     // public static double kIntakeWristGroundAngle = 105;
     //The minimum angle where it is safe to continue intake process (engage solenoid/roller)
     public static double kIntakeWristGroundMinBound = 95;
@@ -267,7 +280,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // PID TargetLock constants
     // =============================================================================
-    public static PIDGains kTargetAngleLockGains = new PIDGains(0.004, 0.000, 0.0);
+    public static PIDGains kTargetAngleLockGains = new PIDGains(0.05, 0.000, 0.0);
     public static PIDGains kTargetDistanceLockGains = new PIDGains( 0.1, 0.0, 0.0);
 
     // =============================================================================
@@ -328,6 +341,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kPowerDistPanelAddress = 21;
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
+    public static int kCargoSpitBeamBreakAddress = 1;
     public static double kCargoSpitRollerPower = 0.40; // 15% seems like adequate power (maybe more?)
     public static double kCargoSpitSPXCurrentRatioLimit = 8.5; // Voltage ~ 1.8
 
@@ -336,6 +350,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static int kFourBarNEO1Address = 9;
     public static int kFourBarNEO2Address = 10;
+    public static int kFourBarPusherAddress = 0;
     // TO-DO: label solenoid as forward/reverse in spreadsheet
     public static int kFourBarDoubleSolenoidForwardAddress = 0;
     public static int kFourBarDoubleSolenoidReverseAddress = 1;
