@@ -39,6 +39,9 @@ public class HatchFlower extends Module {
 
     private double mRobotPositionWhenReleased = 0.0;
 
+    // We only want to reset the timer once when a hatch is detected
+    private boolean mHatchDetected = false;
+
     /////////////////////////////////////////////////////////////////////////
     // ********************** Solenoid state enums *********************** //
     public enum GrabberState
@@ -89,6 +92,7 @@ public class HatchFlower extends Module {
     @Override
     public void modeInit(double pNow) {
         mLog.error("MODE INIT");
+        mHatchDetected = false;
     }
 
     @Override
@@ -106,10 +110,14 @@ public class HatchFlower extends Module {
         mExtendSolenoid.set(mExtensionState.extension);
 
         if(isHatchSwitchTriggered()) {
-            mHasHatchTimer.reset();
-            mHasHatchTimer.start();
+            if (!mHatchDetected) {
+                mHasHatchTimer.reset();
+                mHasHatchTimer.start();
+                mHatchDetected = true;
+            }
         } else {
             mHasHatchTimer.stop();
+            mHatchDetected = false;
         }
 
     }
