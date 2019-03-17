@@ -19,7 +19,7 @@ import us.ilite.robot.modules.DriveMessage;
  */
 public class SimDriveHardware implements IDriveHardware {
 
-    private final ILog mLogger = Logger.createLog(DriveHardware.class);
+    private final ILog mLogger = Logger.createLog(SrxDriveHardware.class);
 
     private RobotStateEstimator mEncoderStateEstimator;
     

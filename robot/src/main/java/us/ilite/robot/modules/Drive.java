@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.LogOutput;
 import com.flybotix.hfr.util.log.Logger;
-import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
@@ -19,18 +18,16 @@ import us.ilite.common.lib.control.DriveController;
 import com.team254.frc2018.planners.DriveMotionPlanner;
 import com.team254.lib.physics.DriveOutput;
 import us.ilite.common.lib.util.Conversions;
-import us.ilite.common.lib.util.PerfTimer;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.hardware.DriveHardware;
+import us.ilite.robot.hardware.SrxDriveHardware;
 import us.ilite.robot.hardware.IDriveHardware;
 import us.ilite.robot.hardware.SimDriveHardware;
 import us.ilite.robot.loops.Loop;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Class for running all drive train control operations from both autonomous and
@@ -67,7 +64,7 @@ public class Drive extends Loop {
 			this.mSimClock = pSimClock;
 			this.mDriveHardware = new SimDriveHardware(mSimClock, mDriveController.getRobotProfile());
 		} else {
-			this.mDriveHardware = new DriveHardware();
+			this.mDriveHardware = new SrxDriveHardware();
 		}
 
 		this.mDriveHardware.init();

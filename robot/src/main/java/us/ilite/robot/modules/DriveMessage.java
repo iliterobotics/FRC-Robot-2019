@@ -3,26 +3,30 @@ package us.ilite.robot.modules;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import us.ilite.common.types.drive.ENeutralMode;
+import us.ilite.lib.drivers.ECommonControlMode;
+import us.ilite.lib.drivers.ECommonNeutralMode;
 
 import java.util.Objects;
 
 public class DriveMessage {
 
-  public static final DriveMessage kNeutral = new DriveMessage(0.0, 0.0, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake);
+  public static final DriveMessage kNeutral = new DriveMessage(0.0, 0.0,
+          ECommonControlMode.PERCENT_OUTPUT)
+          .setNeutralMode(ECommonNeutralMode.BRAKE);
 
   public final double leftOutput, rightOutput;
-  public ControlMode leftControlMode = ControlMode.PercentOutput, rightControlMode = ControlMode.PercentOutput;
+  public ECommonControlMode leftControlMode = ECommonControlMode.PERCENT_OUTPUT;
+  public ECommonControlMode rightControlMode = ECommonControlMode.PERCENT_OUTPUT;
 
-  public DemandType leftDemandType = DemandType.ArbitraryFeedForward;
-  public DemandType rightDemandType = DemandType.ArbitraryFeedForward;
   public double leftDemand = 0.0, rightDemand = 0.0;
-  public NeutralMode leftNeutralMode = NeutralMode.Brake, rightNeutralMode = NeutralMode.Brake;
+  public ECommonNeutralMode leftNeutralMode = ECommonNeutralMode.BRAKE, rightNeutralMode = ECommonNeutralMode.BRAKE;
 
-  public DriveMessage(double leftOutput, double rightOutput, ControlMode pControlMode) {
+  public DriveMessage(double leftOutput, double rightOutput, ECommonControlMode pControlMode) {
     this(leftOutput, rightOutput, pControlMode, pControlMode);
   }
 
-  public DriveMessage(double leftOutput, double rightOutput, ControlMode leftControlMode, ControlMode rightControlMode) {
+  public DriveMessage(double leftOutput, double rightOutput, ECommonControlMode leftControlMode, ECommonControlMode rightControlMode) {
     this.leftOutput = leftOutput;
     this.rightOutput = rightOutput;
     this.leftControlMode = leftControlMode;
@@ -36,30 +40,28 @@ public class DriveMessage {
    * @return an open loop drivetrain message
    */
   public static DriveMessage fromThrottleAndTurn(double pThrottle, double pTurn) {
-    return new DriveMessage(pThrottle + pTurn, pThrottle - pTurn, ControlMode.PercentOutput);
+    return new DriveMessage(pThrottle + pTurn, pThrottle - pTurn, ECommonControlMode.PERCENT_OUTPUT);
   }
 
-  public DriveMessage setDemand(DemandType pDemandType, double pLeftDemand, double pRightDemand) {
-    this.leftDemandType = pDemandType;
-    this.rightDemandType = pDemandType;
+  public DriveMessage setDemand(double pLeftDemand, double pRightDemand) {
     this.leftDemand = pLeftDemand;
     this.rightDemand = pRightDemand;
     return this;
   }
 
-  public DriveMessage setNeutralMode(NeutralMode pLeftMode, NeutralMode pRightMode) {
+  public DriveMessage setNeutralMode(ECommonNeutralMode pLeftMode, ECommonNeutralMode pRightMode) {
     this.leftNeutralMode = pLeftMode;
     this.rightNeutralMode = pRightMode;
     return this;
   }
 
-  public DriveMessage setNeutralMode(NeutralMode pMode) {
+  public DriveMessage setNeutralMode(ECommonNeutralMode pMode) {
     this.leftNeutralMode = pMode;
     this.rightNeutralMode = pMode;
     return this;
   }
 
-  public DriveMessage setControlMode(ControlMode pControlMode) {
+  public DriveMessage setControlMode(ECommonControlMode pControlMode) {
     this.leftControlMode = this.rightControlMode = pControlMode;
     return this;
   }
@@ -75,15 +77,13 @@ public class DriveMessage {
             Double.compare(that.rightDemand, rightDemand) == 0 &&
             leftControlMode == that.leftControlMode &&
             rightControlMode == that.rightControlMode &&
-            leftDemandType == that.leftDemandType &&
-            rightDemandType == that.rightDemandType &&
             leftNeutralMode == that.leftNeutralMode &&
             rightNeutralMode == that.rightNeutralMode;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(leftOutput, rightOutput, leftControlMode, rightControlMode, leftDemandType, rightDemandType, leftDemand, rightDemand, leftNeutralMode, rightNeutralMode);
+    return Objects.hash(leftOutput, rightOutput, leftControlMode, rightControlMode, leftDemand, rightDemand, leftNeutralMode, rightNeutralMode);
   }
 
 }

@@ -97,7 +97,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static int kDriveMotionMagicLoopSlot = 0;
     public static int kDriveMotionMagicCruiseVelocity = 0;
-    public static int kDriveMotionMagicAccelFeedforward = 0;
+    public static int kDriveMotionMagicMaxAccel = 0;
 
     // =============================================================================
     // Closed-Loop Position Constants

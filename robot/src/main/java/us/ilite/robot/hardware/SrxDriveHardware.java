@@ -27,9 +27,9 @@ import us.ilite.robot.modules.DriveMessage;
  * it would make a ton of sense, and we could just call setVelocity() or
  * setAcceleration in Drive
  */
-public class DriveHardware implements IDriveHardware {
+public class SrxDriveHardware implements IDriveHardware {
 
-    private final ILog mLogger = Logger.createLog(DriveHardware.class);
+    private final ILog mLogger = Logger.createLog(SrxDriveHardware.class);
 
     private IMU mGyro;
 
@@ -38,7 +38,7 @@ public class DriveHardware implements IDriveHardware {
     private ControlMode mLeftControlMode, mRightControlMode;
     private NeutralMode mLeftNeutralMode, mRightNeutralMode;
 
-    public DriveHardware() {
+    public SrxDriveHardware() {
         mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kGyroCollisionThreshold);
         // mGyro = new NavX(SerialPort.Port.kMXP);
 
@@ -237,7 +237,7 @@ public class DriveHardware implements IDriveHardware {
         configTalonForVelocity(talon);
 
         talon.configMotionCruiseVelocity(SystemSettings.kDriveMotionMagicCruiseVelocity, SystemSettings.kLongCANTimeoutMs);
-        talon.configMotionAcceleration(SystemSettings.kDriveMotionMagicAccelFeedforward, SystemSettings.kLongCANTimeoutMs);
+        talon.configMotionAcceleration(SystemSettings.kDriveMotionMagicMaxAccel, SystemSettings.kLongCANTimeoutMs);
     }
 
     public Rotation2d getHeading() {
