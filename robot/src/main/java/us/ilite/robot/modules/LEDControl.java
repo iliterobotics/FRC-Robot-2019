@@ -1,19 +1,63 @@
 package us.ilite.robot.modules;
 
 import com.ctre.phoenix.CANifier;
+
+import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.types.ETrackingType;
 
-public class LEDControl {
+public class LEDControl extends Module {
 
     private CANifier mCanifier;
-    private long blinkStartTime;
-    private boolean isOn;
+    private Timer mBlinkTimer;
+    private boolean mLedOn;
     private Message mCurrentMessage;
     private Elevator mElevator;
     private Intake mIntake;
     private HatchFlower mHatchFlower;
     private CargoSpit mCargoSpit;
     private Limelight mLimelight;
+
+    
+    static class RGB {
+        private int mR;
+        private int mG;
+        private int mB;
+
+        RGB(int pR, int pG, int pB) {
+            // Value range for each color is 0-255, we'll enforce this with a modulo divide
+            this.mR = pR % 256;
+            this.mG = pG % 256;
+            this.mB = pB % 256;
+        }
+
+        // getters for integer RGB
+        public int getR() {
+			return this.mR;
+		}
+
+        public int getG() {
+			return this.mG;
+		}
+
+        public int getB() {
+			return this.mB;
+		}
+
+        // getters for double RGB
+        public double getRPercent() {
+			return ((double) this.mR) / 256.0;
+		}
+
+        public double getGPercent() {
+			return ((double) this.mG) / 256.0;
+		}
+
+        public double getBPercent() {
+			return ((double) this.mB) / 256.0;
+		}
+
+    }
+
 
     public enum LEDColor {
         PURPLE( 255, 0, 200 ),
@@ -30,30 +74,33 @@ public class LEDControl {
         ORANGE( 255, 165, 0 ),
         NONE( 0, 0, 0 );
 
-        final int mR, mG, mB;
+        private RGB rgb;
 
         LEDColor( int pR, int pG, int pB ) {
-            this.mR = pR;
-            this.mG = pG;
-            this.mB = pB;
+            this.rgb = new RGB(pR, pG, pB);
+        }
+
+        public RGB getColor() {
+            return this.rgb;
         }
     }
 
-    //pulse speed = 100, slow flash = 300, solid = 0
+
+    // pulse speed in milliseconds, 0 = on solid
     public enum Message {
         HAS_HATCH( LEDColor.YELLOW, 0 ),
         HAS_CARGO( LEDColor.ORANGE, 0 ),
-        CURRENT_LIMITING( LEDColor.RED, 100 ),
+        CURRENT_LIMITING( LEDColor.RED, 300 ),
         VISION_TRACKING( LEDColor.GREEN, 0 ),
         KICKING_HATCH( LEDColor.BLUE, 0 ),
         NONE( LEDColor.NONE, 0 );
 
         final LEDColor color;
-        final int delay;
+        final int pulse; // milliseconds
 
-        Message( LEDColor color, int delay ) {
+        Message( LEDColor color, int pulse ) {
             this.color = color;
-            this.delay = delay;
+            this.pulse = pulse;
         }
     }
 
@@ -65,78 +112,102 @@ public class LEDControl {
         mHatchFlower = pHatchFlower;
         mCargoSpit = pCargoSpit;
         mLimelight = pLimelight;
-        this.isOn = true;
+        this.mCurrentMessage = Message.NONE;
+        this.mLedOn = true;
+
+        this.mBlinkTimer = new Timer();
+        this.mBlinkTimer.reset();
+
     }
-    public void initialize(double pNow) {
-        mCurrentMessage = Message.NONE;
-        blinkStartTime = System.currentTimeMillis();
+
+
+    @Override
+    public void modeInit(double pNow) {
+        this.turnOffLED();
+        this.mCurrentMessage = Message.NONE;
+        this.mLedOn = true;
+        this.mBlinkTimer.stop();
+        this.mBlinkTimer.reset();
     }
+
 
     /**
      * Updates LED strip based on mechanism states. We check mechanisms in order of lowest to highest priority.
      */
-    public boolean update(double pNow) {
-        mCurrentMessage = Message.NONE;
+    public void update(double pNow) {
+        Message lastMsg = this.mCurrentMessage;
+        this.mCurrentMessage = Message.NONE;
         if(mHatchFlower.hasHatch()) mCurrentMessage = Message.HAS_HATCH;
         if(mCargoSpit.hasCargo()) mCurrentMessage = Message.HAS_CARGO;
         if(mLimelight.getTracking() != ETrackingType.NONE) mCurrentMessage = Message.VISION_TRACKING;
-        setLED(mCurrentMessage);
-        return false;
+
+        // Did the message change?
+        if ( lastMsg != this.mCurrentMessage ) {
+            // The message changed, reset the timer and on state
+            this.mLedOn = true;
+            this.mBlinkTimer.stop();
+            this.mBlinkTimer.reset();
+            this.mBlinkTimer.start();
+        }
+
+        controlLED(mCurrentMessage);
     }
 
 
-    // A = Green B = Red C = Blue
-    private double[] colorCreator(LEDColor color)
+    public void controlLED(Message m)
     {
-        //order = grb
-        double[] rgb = new double[3];
-        rgb[0] = (double)color.mG / 256;
-        rgb[1] = (double)color.mR / 256;
-        rgb[2] = (double)color.mB / 256;
-        return rgb;
-    }
+        // Timer wants elapsed time in double seconds, pulse period specified in ms.
+        double blinkPeriod = ((double) m.pulse) / 1000.0;
 
-    //will be obsolete
-    public void setLED(double r, double g, double b)
-    {
-        setLED(new double[] {g, r, b});
-    } //TODO order?
-
-    public void setLED(Message m)
-    {
-        setLED(colorCreator(m.color), m.delay);
-    }
-    private void setLED(double[] rgb)
-    {
-        mCanifier.setLEDOutput(rgb[0], CANifier.LEDChannel.LEDChannelA);
-        mCanifier.setLEDOutput(rgb[1], CANifier.LEDChannel.LEDChannelB);
-        mCanifier.setLEDOutput(rgb[2], CANifier.LEDChannel.LEDChannelC);
-    }
-
-    private void setLED(double[] rgb, long blinkDelay)
-    {
-        if(blinkDelay == 0)
+        if(m.pulse == 0)
         {
-            isOn = true;
+            mLedOn = true;
         }
-        else if(System.currentTimeMillis() - blinkStartTime > blinkDelay) {
-            isOn = !isOn;
-            blinkStartTime = System.currentTimeMillis();
+        else if( this.mBlinkTimer.hasPeriodPassed(blinkPeriod) ) {
+            mLedOn = !mLedOn;
+            this.mBlinkTimer.stop();
+            this.mBlinkTimer.reset();
+            this.mBlinkTimer.start();
         }
-        if(isOn) {
-            setLED(rgb);
+
+        if(mLedOn) {
+            setLED(m.color);
         } else {
             turnOffLED();
         }
+
     }
+
+
+    private void setLED(LEDColor color) {
+        setLED(color.getColor());
+    }
+
+    // LED Channels: A = Green B = Red C = Blue
+    private void setLED(RGB rgb)
+    {
+        mCanifier.setLEDOutput(rgb.getRPercent(), CANifier.LEDChannel.LEDChannelB); // Red
+        mCanifier.setLEDOutput(rgb.getGPercent(), CANifier.LEDChannel.LEDChannelA); // Green
+        mCanifier.setLEDOutput(rgb.getBPercent(), CANifier.LEDChannel.LEDChannelC); // Blue
+    }
+
 
     public void turnOffLED()
     {
-        setLED(new double[] {0, 0, 0});
+        setLED(LEDColor.NONE);
     }
+
 
     public void shutdown(double pNow) {
         // TODO Auto-generated method stub
+        this.turnOffLED();
+        this.mBlinkTimer.stop();
+        this.mBlinkTimer.reset();
+    }
+
+
+    @Override
+    public void periodicInput(double pNow) {
 
     }
 
