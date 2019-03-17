@@ -179,7 +179,6 @@ public class Data {
         for (CodexParser parser : mCodexParsers ) {
             try {
                 Writer logger = mCodexWriters.get(parser.getWriterKey());
-                System.out.println(parser.getWriterKey() + "__-_-_-__-__--_-_-_" + mCodexWriters.get(parser.getWriterKey()));
                 logger.append(parser.codexToCSVLog());
                 logger.flush();
             } catch (IOException e) {
@@ -209,7 +208,6 @@ public class Data {
             try {
                 File file = parser.file();
                 handleCreation( file );
-                System.out.println("_____________________________________" + parser.getWriterKey());
                 mCodexWriters.put( parser.getWriterKey(), new BufferedWriter( new FileWriter( parser.file() ) ) );
             } catch ( IOException e ) {
                 e.printStackTrace();
