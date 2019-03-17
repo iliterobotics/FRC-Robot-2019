@@ -22,6 +22,7 @@ import us.ilite.robot.modules.DriveMessage;
 public class NeoDriveHardware implements IDriveHardware {
 
     private final ILog mLogger = Logger.createLog(SrxDriveHardware.class);
+    private final double kGearRatio;
 
     private IMU mGyro;
 
@@ -30,7 +31,8 @@ public class NeoDriveHardware implements IDriveHardware {
     private CANSparkMax.IdleMode mLeftNeutralMode, mRightNeutralMode;
     private int mPidSlot = SystemSettings.kDriveVelocityLoopSlot;
 
-    public NeoDriveHardware() {
+    public NeoDriveHardware(double pGearRatio) {
+        kGearRatio = pGearRatio;
         mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kGyroCollisionThreshold);
         // mGyro = new NavX(SerialPort.Port.kMXP);
 
@@ -61,11 +63,11 @@ public class NeoDriveHardware implements IDriveHardware {
         mRightRear.setInverted(false);
 
         // Invert sensor readings by multiplying by 1 or -1
-        mLeftMaster.getEncoder().setPositionConversionFactor(1.0);
-        mLeftMaster.getEncoder().setVelocityConversionFactor(1.0);
+        mLeftMaster.getEncoder().setPositionConversionFactor(1.0 * kGearRatio);
+        mLeftMaster.getEncoder().setVelocityConversionFactor(1.0 * kGearRatio);
 
-        mRightMaster.getEncoder().setPositionConversionFactor(1.0);
-        mRightMaster.getEncoder().setVelocityConversionFactor(1.0);
+        mRightMaster.getEncoder().setPositionConversionFactor(1.0 * kGearRatio);
+        mRightMaster.getEncoder().setVelocityConversionFactor(1.0 * kGearRatio);
 
 
         reloadVelocityGains(mLeftMaster);
@@ -184,7 +186,11 @@ public class NeoDriveHardware implements IDriveHardware {
     }
 
     private void configureMotor(CANSparkMax motorController) {
-        motorController.enableVoltageCompensation(12.0);
+        /*
+        TODO Disabled voltage comp for now because of:
+        https://www.chiefdelphi.com/t/sparkmax-voltage-compensation/350540/5
+         */
+//        motorController.enableVoltageCompensation(12.0);
         // No velocity measurement filter
         motorController.setOpenLoopRampRate(SystemSettings.kDriveOpenLoopVoltageRampRate);
         motorController.setClosedLoopRampRate(SystemSettings.kDriveClosedLoopVoltageRampRate);

@@ -35,6 +35,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Drive Train Constants
     // =============================================================================
+    public static double kDriveGearboxRatio = (12.0 / 80.0) / (38.0 / 80.0);
     public static double kDriveClosedLoopVoltageRampRate = 0.0;
     public static double kDriveOpenLoopVoltageRampRate = 0.1;
     public static int kDriveCurrentLimitAmps = 40;
