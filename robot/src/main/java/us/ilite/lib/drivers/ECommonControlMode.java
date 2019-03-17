@@ -14,8 +14,8 @@ public enum ECommonControlMode {
     POSITION(ControlMode.Position, ControlType.kPosition),
     MOTION_MAGIC(ControlMode.MotionMagic, ControlType.kSmartMotion);
 
-    private final ControlMode kCtreControlMode;
-    private final ControlType kRevControlType;
+    public final ControlMode kCtreControlMode;
+    public final ControlType kRevControlType;
 
     ECommonControlMode(ControlMode pKCtreControlMode, ControlType pKRevControlType) {
         kCtreControlMode = pKCtreControlMode;

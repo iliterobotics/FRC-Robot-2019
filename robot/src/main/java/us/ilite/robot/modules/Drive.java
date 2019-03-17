@@ -21,6 +21,8 @@ import us.ilite.common.lib.util.Conversions;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.drivers.Clock;
+import us.ilite.lib.drivers.ECommonControlMode;
+import us.ilite.lib.drivers.ECommonNeutralMode;
 import us.ilite.robot.hardware.SrxDriveHardware;
 import us.ilite.robot.hardware.IDriveHardware;
 import us.ilite.robot.hardware.SimDriveHardware;
@@ -120,12 +122,10 @@ public class Drive extends Loop {
 //
 		mData.drive.set(EDriveData.LEFT_MESSAGE_OUTPUT, mDriveMessage.leftOutput);
 		mData.drive.set(EDriveData.RIGHT_MESSAGE_OUTPUT, mDriveMessage.rightOutput);
-		mData.drive.set(EDriveData.LEFT_MESSAGE_CONTROL_MODE, (double)mDriveMessage.leftControlMode.value);
-		mData.drive.set(EDriveData.RIGHT_MESSAGE_CONTROL_MODE, (double)mDriveMessage.rightControlMode.value);
-		mData.drive.set(EDriveData.LEFT_MESSAGE_NEUTRAL_MODE, (double)mDriveMessage.leftNeutralMode.value);
-		mData.drive.set(EDriveData.RIGHT_MESSAGE_NEUTRAL_MODE, (double)mDriveMessage.rightNeutralMode.value);
-		mData.drive.set(EDriveData.LEFT_MESSAGE_DEMAND_TYPE, (double)mDriveMessage.leftDemandType.value);
-		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND_TYPE, (double)mDriveMessage.rightDemandType.value);
+		mData.drive.set(EDriveData.LEFT_MESSAGE_CONTROL_MODE, (double)mDriveMessage.leftControlMode.ordinal());
+		mData.drive.set(EDriveData.RIGHT_MESSAGE_CONTROL_MODE, (double)mDriveMessage.rightControlMode.ordinal());
+		mData.drive.set(EDriveData.LEFT_MESSAGE_NEUTRAL_MODE, (double)mDriveMessage.leftNeutralMode.ordinal());
+		mData.drive.set(EDriveData.RIGHT_MESSAGE_NEUTRAL_MODE, (double)mDriveMessage.rightNeutralMode.ordinal());
 		mData.drive.set(EDriveData.LEFT_MESSAGE_DEMAND, mDriveMessage.leftDemand);
 		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND, mDriveMessage.rightDemand);
 //
@@ -168,7 +168,7 @@ public class Drive extends Loop {
 				DriveMessage driveMessage = new DriveMessage(
 						Conversions.radiansPerSecondToTicksPer100ms(output.left_velocity),
 						Conversions.radiansPerSecondToTicksPer100ms(output.right_velocity),
-						ControlMode.Velocity);
+						ECommonControlMode.VELOCITY);
 
 				double leftAccel = Conversions.radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
 				double rightAccel = Conversions.radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
@@ -185,8 +185,8 @@ public class Drive extends Loop {
 				double rightDemand = (output.right_feedforward_voltage / 12.0) + SystemSettings.kDriveVelocity_kD * rightAccel / 1023.0;
 
 				// Add in the feedforward we've calculated and set motors to Brake mode
-				driveMessage.setDemand(DemandType.ArbitraryFeedForward, leftDemand, rightDemand);
-				driveMessage.setNeutralMode(NeutralMode.Brake);
+				driveMessage.setDemand(leftDemand, rightDemand);
+				driveMessage.setNeutralMode(ECommonNeutralMode.BRAKE);
 
 				mDriveMessage = driveMessage;
 //				mCalculateTimer.stop();
@@ -209,8 +209,8 @@ public class Drive extends Loop {
 
 	public void setPathFollowing() {
 		mDriveState = EDriveState.PATH_FOLLOWING;
-		mDriveHardware.configureMode(ControlMode.Velocity);
-		mDriveHardware.set(new DriveMessage(0.0, 0.0, ControlMode.Velocity));
+		mDriveHardware.configureMode(ECommonControlMode.VELOCITY);
+		mDriveHardware.set(new DriveMessage(0.0, 0.0, ECommonControlMode.VELOCITY));
 	}
 
 	public void setNormal() {

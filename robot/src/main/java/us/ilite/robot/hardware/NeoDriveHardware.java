@@ -13,6 +13,7 @@ import com.revrobotics.ControlType;
 import com.team254.lib.geometry.Rotation2d;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.util.Conversions;
+import us.ilite.lib.drivers.ECommonControlMode;
 import us.ilite.lib.drivers.IMU;
 import us.ilite.lib.drivers.Pigeon;
 import us.ilite.lib.drivers.SparkMaxFactory;
@@ -25,8 +26,9 @@ public class NeoDriveHardware implements IDriveHardware {
     private IMU mGyro;
 
     private final CANSparkMax mLeftMaster, mRightMaster, mLeftMiddle, mRightMiddle, mLeftRear, mRightRear;
-    private ControlMode mLeftControlMode, mRightControlMode;
-    private NeutralMode mLeftNeutralMode, mRightNeutralMode;
+    private ControlType mLeftControlMode, mRightControlMode;
+    private CANSparkMax.IdleMode mLeftNeutralMode, mRightNeutralMode;
+    private int mPidSlot = SystemSettings.kDriveVelocityLoopSlot;
 
     public NeoDriveHardware() {
         mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kGyroCollisionThreshold);
@@ -74,8 +76,8 @@ public class NeoDriveHardware implements IDriveHardware {
     @Override
     public void init() {
         zero();
-        mLeftControlMode = mRightControlMode = ControlMode.PercentOutput;
-        mLeftNeutralMode = mRightNeutralMode = NeutralMode.Brake;
+        mLeftControlMode = mRightControlMode = ControlType.kDutyCycle;
+        mLeftNeutralMode = mRightNeutralMode = CANSparkMax.IdleMode.kBrake;
 
         set(DriveMessage.kNeutral);
     }
@@ -99,25 +101,24 @@ public class NeoDriveHardware implements IDriveHardware {
 
     public void set(DriveMessage pDriveMessage) {
 
-        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pDriveMessage.leftControlMode);
-        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pDriveMessage.rightControlMode);
+        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pDriveMessage.leftControlMode.kRevControlType);
+        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pDriveMessage.rightControlMode.kRevControlType);
 
-        mLeftNeutralMode = configForNeutralMode(mLeftNeutralMode, pDriveMessage.leftNeutralMode, mLeftMaster, mLeftMiddle, mLeftRear);
-        mRightNeutralMode = configForNeutralMode(mRightNeutralMode, pDriveMessage.rightNeutralMode, mRightMaster, mRightMiddle, mRightRear);
+        mLeftNeutralMode = configForNeutralMode(mLeftNeutralMode, pDriveMessage.leftNeutralMode.kRevIdleMode, mLeftMaster, mLeftMiddle, mLeftRear);
+        mRightNeutralMode = configForNeutralMode(mRightNeutralMode, pDriveMessage.rightNeutralMode.kRevIdleMode, mRightMaster, mRightMiddle, mRightRear);
 
-        mLeftMaster.set(mLeftControlMode, pDriveMessage.leftOutput, pDriveMessage.leftDemand);
-        mRightMaster.set(mRightControlMode, pDriveMessage.rightOutput, pDriveMessage.rightDemand);
+        mLeftMaster.getPIDController().setReference(pDriveMessage.leftOutput, mLeftControlMode, mPidSlot, pDriveMessage.leftDemand);
+        mRightMaster.getPIDController().setReference(pDriveMessage.rightOutput, mRightControlMode, mPidSlot, pDriveMessage.rightDemand);
 
-        mLeftMaster.getPIDController().
     }
 
     /**
      * Allows external users to request that our control mode be pre-configured instead of configuring on the fly.
      * @param pControlMode
      */
-    public void configureMode(ControlMode pControlMode) {
-        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pControlMode);
-        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pControlMode);
+    public void configureMode(ECommonControlMode pControlMode) {
+        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pControlMode.kRevControlType);
+        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pControlMode.kRevControlType);
     }
 
     @Override
@@ -148,7 +149,7 @@ public class NeoDriveHardware implements IDriveHardware {
                     break;
                 default:
                     mLogger.error("Unimplemented control mode - defaulting to PercentOutput.");
-                    controlMode = ControlType.kDutyCycle
+                    controlMode = ControlType.kDutyCycle;
                     break;
             }
         }
@@ -195,6 +196,7 @@ public class NeoDriveHardware implements IDriveHardware {
     }
 
     private void configSparkForVelocity(CANSparkMax pSparkMax) {
+        mPidSlot = SystemSettings.kDriveVelocityLoopSlot;
         mLogger.info("Configuring Spark ID ", pSparkMax.getDeviceId(), " for velocity mode");
     }
 
@@ -222,35 +224,43 @@ public class NeoDriveHardware implements IDriveHardware {
     }
 
     public double getLeftInches() {
-        return Conversions.ticksToInches(mLeftMaster.getSelectedSensorPosition(0));
+        return Conversions.ticksToInches(mLeftMaster.getEncoder().getPosition());
     }
 
     public double getRightInches() {
-        return Conversions.ticksToInches(mRightMaster.getSelectedSensorPosition(0));
+        return Conversions.ticksToInches(mRightMaster.getEncoder().getPosition());
     }
 
-    public int getLeftVelTicks() {
-        return mLeftMaster.getSelectedSensorVelocity(0);
+    public double getLeftVelTicks() {
+        return mLeftMaster.getEncoder().getVelocity();
     }
 
-    public int getRightVelTicks() {
-        return mRightMaster.getSelectedSensorVelocity(0);
+    public double getRightVelTicks() {
+        return mRightMaster.getEncoder().getVelocity();
     }
 
+    /**
+     * TODO Not available with current API
+     * @return
+     */
     public double getLeftTarget() {
-        return mLeftMaster.getClosedLoopTarget();
+        return 0.0;
     }
 
+    /**
+     * TODO Not available with current API
+     * @return
+     */
     public double getRightTarget() {
-        return mRightMaster.getClosedLoopTarget();
+        return 0.0;
     }
 
     public double getLeftVelInches() {
-        return Conversions.ticksPer100msToRadiansPerSecond(mLeftMaster.getSelectedSensorVelocity());
+        return Conversions.ticksPer100msToRadiansPerSecond(getLeftVelTicks());
     }
 
     public double getRightVelInches() {
-        return Conversions.ticksPer100msToRadiansPerSecond(mRightMaster.getSelectedSensorVelocity());
+        return Conversions.ticksPer100msToRadiansPerSecond(getRightVelTicks());
     }
 
     @Override
@@ -265,12 +275,12 @@ public class NeoDriveHardware implements IDriveHardware {
 
     @Override
     public double getLeftVoltage() {
-        return mLeftMaster.getMotorOutputVoltage();
+        return mLeftMaster.getAppliedOutput() * 12.0;
     }
 
     @Override
     public double getRightVoltage() {
-        return mRightMaster.getMotorOutputVoltage();
+        return mRightMaster.getAppliedOutput() * 12.0;
     }
 
     @Override
