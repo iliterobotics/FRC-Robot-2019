@@ -103,6 +103,10 @@ public class Limelight extends Module implements ITargetDataProvider {
         mTrackingType = pTrackingType;
         // TODO - reconcile pipeline
     }
+    
+    public ETrackingType getTracking() {
+        return this.mTrackingType;
+    }
 
     public void setCamMode(boolean pMode) {
         mTable.getEntry("camMode").setBoolean(pMode);
