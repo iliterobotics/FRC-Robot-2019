@@ -8,8 +8,7 @@ import com.flybotix.hfr.codex.CodexOf;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class CodexParser<E extends Enum<E> & CodexOf<Double>> {
-    private static final String LOG_PATH_FORMAT = "C:\\Users\\jjohn\\Documents\\logging\\%1$s\\%2$s-%3$s.csv";
-    // private static final String LOG_PATH_FORMAT = "/u/logs/%s/%s-%s.csv";
+    private static final String LOG_PATH_FORMAT = "/u/logs/%s/%s-%s.csv";
     private Codex<Double, E> mCodex;
     private String mWriterKey;
 
@@ -30,7 +29,7 @@ public class CodexParser<E extends Enum<E> & CodexOf<Double>> {
     }
 
     public String codexToCSVHeader() {
-        return "String";
+        return mCodex.getCSVHeader();
     }
 
     public String codexToCSVLog() {

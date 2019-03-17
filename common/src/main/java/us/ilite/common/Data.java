@@ -85,10 +85,16 @@ public class Data {
     private List<CodexNetworkTablesParser> mParsers;
     private List<CodexParser> mCodexParsers;
 
-    public Data(boolean pInitParsers) {
+    /**
+     * Create a Data object based on whether or not it is being used for logging
+     * @param pLogging
+     */
+    public Data(boolean pLogging) {
         mHasMadeCodexWriters = false;
-        if(pInitParsers) {
+        if(pLogging) {
             initParsers();
+            handleCodexWriterCreation();
+            handleNetworkTableWriterCreation();
         }
     }
 
@@ -132,7 +138,6 @@ public class Data {
      * -- This should be called once before csv logging --
      */
     public void networkTablesCodexToCSVHeader() {
-        handleNetworkTableWriterCreation();
         for (CodexNetworkTablesParser parser : mParsers) {
             try {
                 Writer logger = mWriters.get(parser.getCSVIdentifier());
@@ -148,7 +153,6 @@ public class Data {
      * Logs codex values to its corresponding csv using network tables
      */
     public void networkTablesCodexToCSVLog() {
-        handleNetworkTableWriterCreation();
         for (CodexNetworkTablesParser parser : mParsers) {
             try {
                 Writer logger = mWriters.get(parser.getCSVIdentifier());
@@ -162,21 +166,18 @@ public class Data {
     }
 
     public void logFromCodexToCSVHeader() {
-        handleCodexWriterCreation();
         for ( CodexParser parser : mCodexParsers ) {
             
                try {
                Writer logger = mCodexWriters.get( parser.getWriterKey() );
                logger.append(parser.codexToCSVHeader());
                logger.flush();
-               System.out.println("-----------------------------------------------------------------+++++++++====+======" + mHasMadeCodexWriters);
-           } catch ( IOException e ) {
+               } catch ( IOException e ) {
                e.printStackTrace();
            }
         }
     }
     public void logFromCodexToCSVLog() {
-        handleCodexWriterCreation();
         for (CodexParser parser : mCodexParsers ) {
             try {
                 Writer logger = mCodexWriters.get(parser.getWriterKey());
@@ -192,37 +193,28 @@ public class Data {
      * Creates writers if they don't already exist
      */
     public void handleNetworkTableWriterCreation() {
-        if(!mHasMadeNetworkTableWriters) {
-            //This loop makes a Writer for each parser and sticks it into mWriters
-            for (CodexNetworkTablesParser parser : mParsers) {
-                try {
-                    File file = parser.file();
-                    handleCreation(file);
-                    mWriters.put(parser.getCSVIdentifier(), new BufferedWriter(new FileWriter(parser.file())));
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
+        for (CodexNetworkTablesParser parser : mParsers) {
+            try {
+                File file = parser.file();
+                handleCreation(file);
+                mWriters.put(parser.getCSVIdentifier(), new BufferedWriter(new FileWriter(parser.file())));
             }
-            mHasMadeNetworkTableWriters = true;
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public void handleCodexWriterCreation() {
-        System.out.println("-----------------------------------------------------------------+++++++++====+======" + mHasMadeCodexWriters);
-        if ( !mHasMadeCodexWriters ) {
-            for ( CodexParser parser : mCodexParsers ) {
-                try {
-                    File file = parser.file();
-                    handleCreation( file );
-                    mCodexWriters.put( parser.getWriterKey(), new BufferedWriter( new FileWriter( parser.file() ) ) );
-                } catch ( IOException e ) {
-                    e.printStackTrace();
-                }
+        for ( CodexParser parser : mCodexParsers ) {
+            try {
+                File file = parser.file();
+                handleCreation( file );
+                mCodexWriters.put( parser.getWriterKey(), new BufferedWriter( new FileWriter( parser.file() ) ) );
+            } catch ( IOException e ) {
+                e.printStackTrace();
             }
-            mHasMadeCodexWriters = true;
-       }
-        System.out.println("-----------------------------------------------------------------+++++++++====+======" + mHasMadeCodexWriters);
+        }
     }
 
     /**
