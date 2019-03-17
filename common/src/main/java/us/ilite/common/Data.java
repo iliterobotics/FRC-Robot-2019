@@ -116,13 +116,13 @@ public class Data {
         );
         
         mCodexParsers = Arrays.asList(
-            new CodexParser<EGyro>(imu),
-            new CodexParser<EDriveData>(drive),
-            new CodexParser<ELogitech310>(driverinput, "DRIVER"),
-            new CodexParser<ELogitech310>(operatorinput, "OPERATOR"),
-            new CodexParser<EElevator>(elevator, "ELEVATOR"),
-            new CodexParser<ECargoSpit>(cargospit, "CARGOSPIT"),
-            new CodexParser<EPowerDistPanel>(pdp, "PDP")
+            new CodexParser(imu),
+            new CodexParser(drive),
+            new CodexParser(driverinput),
+            new CodexParser(operatorinput),
+            new CodexParser(elevator),
+            new CodexParser(cargospit),
+            new CodexParser(pdp)
         );
     }
 
@@ -138,7 +138,7 @@ public class Data {
      * -- This should be called once before csv logging --
      */
     public void networkTablesCodexToCSVHeader() {
-        for (CodexNetworkTablesParser parser : mParsers) {
+        for (CodexNetworkTablesParser<?> parser : mParsers) {
             try {
                 Writer logger = mWriters.get(parser.getCSVIdentifier());
                 logger.append(parser.codexToCSVHeader());
@@ -153,7 +153,7 @@ public class Data {
      * Logs codex values to its corresponding csv using network tables
      */
     public void networkTablesCodexToCSVLog() {
-        for (CodexNetworkTablesParser parser : mParsers) {
+        for (CodexNetworkTablesParser<?> parser : mParsers) {
             try {
                 Writer logger = mWriters.get(parser.getCSVIdentifier());
                 logger.append(parser.codexToCSVLog());
@@ -193,7 +193,7 @@ public class Data {
      * Creates writers if they don't already exist
      */
     public void handleNetworkTableWriterCreation() {
-        for (CodexNetworkTablesParser parser : mParsers) {
+        for (CodexNetworkTablesParser<?> parser : mParsers) {
             try {
                 File file = parser.file();
                 handleCreation(file);
@@ -264,14 +264,14 @@ public class Data {
      */
     public void sendCodices() {
         for(CodexSender cs : mSenders) {
-            for(Codex c : mDisplayedCodexes) {
+            for(Codex<?, ?> c : mDisplayedCodexes) {
                 cs.sendIfChanged(c);
             }
         }
     }
 
     public void sendCodicesToNetworkTables() {
-        for(Codex c : mLoggedCodexes) {
+        for(Codex<?, ?> c : mLoggedCodexes) {
             mCodexNT.send(c);
         }
     }
@@ -281,7 +281,7 @@ public class Data {
      * Do this before sending codices to NetworkTables
      */
     public void registerCodices() {
-        for(Codex c : mLoggedCodexes) {
+        for(Codex<?, ?> c : mLoggedCodexes) {
             mCodexNT.registerCodex(c);
         }
     }

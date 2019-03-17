@@ -3,28 +3,25 @@ package us.ilite.common.io;
 import java.io.File;
 
 import com.flybotix.hfr.codex.Codex;
-import com.flybotix.hfr.codex.CodexOf;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
-public class CodexParser<E extends Enum<E> & CodexOf<Double>> {
+public class CodexParser {
     private static final String LOG_PATH_FORMAT = "/u/logs/%s/%s-%s.csv";
-    private Codex<Double, E> mCodex;
+    private Codex<?, ?> mCodex;
     private String mWriterKey;
 
-    public CodexParser( Codex<Double, E> pCodex ) {
+    public CodexParser( Codex<?, ?> pCodex ) {
         mCodex = pCodex;
         constructKey( mCodex.meta().getEnum() );
     }
-    public CodexParser( Codex<Double, E> pCodex, String pName ) {
         mCodex = pCodex;
         constructKey( mCodex.meta().getEnum(), pName );
     }
 
-    public void constructKey( Class<E> pConstructFrom ) {
+    public void constructKey( Codex<?, ?> constructFrom ) {
         mWriterKey = pConstructFrom.getSimpleName().toUpperCase();
     }
-    public void constructKey( Class<E> pConstructFrom, String pName ) {
         mWriterKey = pName.toUpperCase() + "-" + pConstructFrom.getSimpleName().toUpperCase();
     }
 
