@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
 
     // private static final String LOG_PATH_FORMAT = System.getProperty("user.dir")+"\\logs\\%s\\%s.csv";
-    private static final String LOG_PATH_FORMAT = "/u/logs/%s/%s-%s.csv";
+    private static final String LOG_PATH_FORMAT = "/u/logs/%s/%s-%s-%s.csv";
 
     private final NetworkTableInstance kNetworkTablesInstance = NetworkTableInstance.getDefault();
     private final NetworkTable kNetworkTable;
@@ -104,7 +104,9 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
         return new File( String.format( LOG_PATH_FORMAT, 
                          eventName,
                          DriverStation.getInstance().getMatchType().name(),
-                         DriverStation.getInstance().getMatchNumber() ) );
+                         DriverStation.getInstance().getMatchNumber()),
+                         mCodex.meta().getEnum().getSimpleName()
+                         );
     }
 
     /**
