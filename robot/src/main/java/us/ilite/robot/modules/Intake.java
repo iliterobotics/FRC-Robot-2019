@@ -177,6 +177,8 @@ public class Intake extends Module {
     //     return true;
     // }
 
+    public boolean isCurrentLimiting() { return mWrist.isCurrentLimiting(); }
+
     @Override
     public boolean checkModule(double pNow) {
         return mWrist.checkModule(pNow);

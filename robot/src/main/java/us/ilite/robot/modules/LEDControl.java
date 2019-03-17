@@ -137,9 +137,14 @@ public class LEDControl extends Module {
     public void update(double pNow) {
         Message lastMsg = this.mCurrentMessage;
         this.mCurrentMessage = Message.NONE;
-        if(mHatchFlower.hasHatch()) mCurrentMessage = Message.HAS_HATCH;
         if(mCargoSpit.hasCargo()) mCurrentMessage = Message.HAS_CARGO;
+        if(mHatchFlower.hasHatch()) mCurrentMessage = Message.HAS_HATCH;
         if(mLimelight.getTracking() != ETrackingType.NONE) mCurrentMessage = Message.VISION_TRACKING;
+        if(mHatchFlower.getExtensionState().equals( HatchFlower.ExtensionState.DOWN ) &&
+                mHatchFlower.getGrabberState().equals( HatchFlower.GrabberState.RELEASE ))
+                mCurrentMessage = Message.KICKING_HATCH;
+        if(mIntake.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
+
 
         // Did the message change?
         if ( lastMsg != this.mCurrentMessage ) {
