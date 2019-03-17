@@ -13,6 +13,7 @@ import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.EFourBarData;
 import us.ilite.lib.drivers.SparkMaxFactory;
+import us.ilite.robot.hardware.SolenoidWrapper;
 
 
 public class FourBar extends Module {
@@ -26,13 +27,14 @@ public class FourBar extends Module {
 
     private CANSparkMax mNeos;
     private CANSparkMax mNeo2;
-    private Solenoid mPusherSolenoid;
+
+    private Solenoid mPusher;
+    private SolenoidWrapper mPusherSolenoid;
+
     private CANEncoder mNeo1Encoder;
     private CANEncoder mNeo2Encoder;
 
     private double mAngularPosition;
-    private double mPreviousNeo1Rotations;
-    private double mPreviousNeo2Rotations;
 
     private double mOutput;
 
@@ -44,9 +46,11 @@ public class FourBar extends Module {
         // Later: SystemSettings address
         mNeos = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kFourBarNEO1Address, CANSparkMaxLowLevel.MotorType.kBrushless);
         mNeo2 = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kFourBarNEO2Address, CANSparkMaxLowLevel.MotorType.kBrushless);
-        mPusherSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kFourBarPusherAddress);
         mNeo2.follow( mNeos, true );
     
+        mPusher = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kFourBarPusherAddress);
+        mPusherSolenoid = new SolenoidWrapper( mPusher );
+        
         // Connect the NEO's to the encoders
         mNeo1Encoder = mNeos.getEncoder();
         mNeo2Encoder = mNeo2.getEncoder();
@@ -62,8 +66,6 @@ public class FourBar extends Module {
     public void modeInit( double pNow ) {
         mLog.error( "FourBar Initialized..." );
         mOutput = 0;
-        mPreviousNeo1Rotations = mNeo1Encoder.getPosition();
-        mPreviousNeo2Rotations = mNeo2Encoder.getPosition();
 
         mNeos.setSmartCurrentLimit( 80 );
     }
