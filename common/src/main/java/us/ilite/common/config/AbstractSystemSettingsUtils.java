@@ -83,6 +83,10 @@ public abstract class AbstractSystemSettingsUtils {
             }));
     }
 
+    public static boolean isPracticeBot() {
+        return PRACTICE_BOT_FILE.exists();
+    }
+
     /**
      * Private constructor to prevent instantiation
      */

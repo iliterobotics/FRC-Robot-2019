@@ -13,6 +13,7 @@ import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.ReflectingCSVWriter;
 
 import us.ilite.common.Data;
+import us.ilite.common.config.AbstractSystemSettingsUtils;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.DriveController;
 import com.team254.frc2018.planners.DriveMotionPlanner;
@@ -23,6 +24,7 @@ import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.lib.drivers.ECommonControlMode;
 import us.ilite.lib.drivers.ECommonNeutralMode;
+import us.ilite.robot.hardware.NeoDriveHardware;
 import us.ilite.robot.hardware.SrxDriveHardware;
 import us.ilite.robot.hardware.IDriveHardware;
 import us.ilite.robot.hardware.SimDriveHardware;
@@ -66,7 +68,11 @@ public class Drive extends Loop {
 			this.mSimClock = pSimClock;
 			this.mDriveHardware = new SimDriveHardware(mSimClock, mDriveController.getRobotProfile());
 		} else {
-			this.mDriveHardware = new SrxDriveHardware();
+			if(AbstractSystemSettingsUtils.isPracticeBot()) {
+				this.mDriveHardware = new SrxDriveHardware();
+			} else {
+				this.mDriveHardware = new NeoDriveHardware(SystemSettings.kDriveGearboxRatio);
+			}
 		}
 
 		this.mDriveHardware.init();
