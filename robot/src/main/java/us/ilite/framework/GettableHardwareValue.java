@@ -1,5 +1,10 @@
 package us.ilite.framework;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 public class GettableHardwareValue<T> implements IHardwareValue<T> {
 
     private final HardwareGetter<T> mHardwareGetter;
@@ -7,6 +12,12 @@ public class GettableHardwareValue<T> implements IHardwareValue<T> {
 
     public interface HardwareGetter<V> {
         V get();
+    }
+
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface GettableHardware{
+
     }
 
     public GettableHardwareValue(HardwareGetter<T> pHardwareGetter, T pValue) {

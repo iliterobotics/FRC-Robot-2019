@@ -1,5 +1,10 @@
 package us.ilite.framework;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * Binds a codex value to a function call
  */
@@ -10,6 +15,12 @@ public class SettableHardwareValue<T> implements IHardwareValue<T> {
 
     public interface HardwareSetter<V> {
         void set(V value);
+    }
+
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface SettableHardware{
+
     }
 
     public SettableHardwareValue(HardwareSetter<T> pHardwareSetter, T pValue) {
