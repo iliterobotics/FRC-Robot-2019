@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.team254.lib.util.CheesyDriveGains;
-import us.ilite.common.lib.util.SimpleNetworkTable;
 
 import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.util.NetworkTablesConstantsBase;
