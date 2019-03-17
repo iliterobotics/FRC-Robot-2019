@@ -79,10 +79,8 @@ public class Data {
     //Stores writers per codex needed for CSV logging
     private Map<String, Writer> mWriters = new HashMap<String, Writer>();
     private Map<String, Writer> mCodexWriters = new HashMap<String, Writer>();
-    private boolean mHasMadeNetworkTableWriters = false;
-    private boolean mHasMadeCodexWriters;
 
-    private List<CodexNetworkTablesParser> mParsers;
+    private List<CodexNetworkTablesParser<?>> mParsers;
     private List<CodexParser> mCodexParsers;
 
     /**
@@ -90,7 +88,6 @@ public class Data {
      * @param pLogging
      */
     public Data(boolean pLogging) {
-        mHasMadeCodexWriters = false;
         if(pLogging) {
             initParsers();
             handleCodexWriterCreation();
@@ -243,7 +240,6 @@ public class Data {
      * Makes the log file if it doesn't already exist
      */
     private void handleCreation(File pFile) {
-        initParsers();
         //Makes every folder before the file if the CSV's parent folder doesn't exist
         if(Files.notExists(pFile.toPath())) {
             pFile.getAbsoluteFile().getParentFile().mkdirs();
