@@ -93,6 +93,7 @@ public class LEDControl extends Module {
         CURRENT_LIMITING( LEDColor.RED, 300 ),
         VISION_TRACKING( LEDColor.GREEN, 0 ),
         KICKING_HATCH( LEDColor.BLUE, 0 ),
+        SPITTING_CARGO( LEDColor.WHITE, 0 ),
         NONE( LEDColor.NONE, 0 );
 
         final LEDColor color;
@@ -140,6 +141,7 @@ public class LEDControl extends Module {
         if(mCargoSpit.hasCargo()) mCurrentMessage = Message.HAS_CARGO;
         if(mHatchFlower.hasHatch()) mCurrentMessage = Message.HAS_HATCH;
         if(mLimelight.getTracking() != ETrackingType.NONE) mCurrentMessage = Message.VISION_TRACKING;
+        if(mCargoSpit.isOuttaking()) mCurrentMessage = Message.SPITTING_CARGO;
         if(mHatchFlower.getExtensionState().equals( HatchFlower.ExtensionState.DOWN ) &&
                 mHatchFlower.getGrabberState().equals( HatchFlower.GrabberState.RELEASE ))
                 mCurrentMessage = Message.KICKING_HATCH;
