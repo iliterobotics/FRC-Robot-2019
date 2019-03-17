@@ -7,22 +7,17 @@ import com.flybotix.hfr.codex.Codex;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class CodexParser {
-    private static final String LOG_PATH_FORMAT = "/u/logs/%s/%s-%s.csv";
+    private static final String LOG_PATH_FORMAT = "/u/logs/%s/%s-%s-%s.csv";
     private Codex<?, ?> mCodex;
     private String mWriterKey;
 
     public CodexParser( Codex<?, ?> pCodex ) {
         mCodex = pCodex;
-        constructKey( mCodex.meta().getEnum() );
-    }
-        mCodex = pCodex;
-        constructKey( mCodex.meta().getEnum(), pName );
+        constructKey( mCodex );
     }
 
     public void constructKey( Codex<?, ?> constructFrom ) {
-        mWriterKey = pConstructFrom.getSimpleName().toUpperCase();
-    }
-        mWriterKey = pName.toUpperCase() + "-" + pConstructFrom.getSimpleName().toUpperCase();
+        mWriterKey = constructFrom.meta().getEnum().getSimpleName();
     }
 
     public String codexToCSVHeader() {
@@ -41,7 +36,9 @@ public class CodexParser {
         return new File(String.format( LOG_PATH_FORMAT, 
                         eventName,
                         DriverStation.getInstance().getMatchType().name(),
-                        Integer.toString(DriverStation.getInstance().getMatchNumber())));
+                        Integer.toString(DriverStation.getInstance().getMatchNumber()),
+                        mCodex.meta().getEnum().getSimpleName()
+                        ));
     }
 
     public String getWriterKey() {
