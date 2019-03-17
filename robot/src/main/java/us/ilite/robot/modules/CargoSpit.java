@@ -120,13 +120,16 @@ public class CargoSpit extends Module {
         if ( mOuttaking ) {
             return false;
         }
-        /*
+
         double currentLimit = SystemSettings.kCargoSpitSPXCurrentRatioLimit;
         // Ratio being current over voltage
-        double leftRatio = mLeftCurrent / mLeftMotor.getMotorOutputVoltage();
-        double rightRatio = mRightCurrent / mRightMotor.getMotorOutputVoltage();
-        double averageRatio = ( leftRatio + rightRatio ) / 2;
-        return (averageRatio >= currentLimit) || */return isBeamBroken();
+        // Voltage will be assumed to be 12 to avoid polling CAN so much
+        // This *should* be okay since we enabled voltage comp
+        double leftRatio = mLeftCurrent / 12.0;
+        double rightRatio = mRightCurrent / 12.0;
+        double averageRatio = ( leftRatio + rightRatio ) / 2.0;
+
+        return (averageRatio >= currentLimit) || isBeamBroken();
     }
 
     public boolean hasCargo() {
