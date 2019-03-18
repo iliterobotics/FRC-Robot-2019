@@ -14,6 +14,7 @@ public class SolenoidWrapper {
     public void set(Boolean desiredState) {
         if (desiredState != mCurrentState) {
             mSolenoid.set(desiredState);
+            mCurrentState = desiredState;
         }
     }
 }
