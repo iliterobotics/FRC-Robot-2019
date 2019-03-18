@@ -1,4 +1,4 @@
-package us.ilite.framework;
+package us.ilite.common.framework;
 
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;

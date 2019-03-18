@@ -9,6 +9,7 @@ import com.flybotix.hfr.util.log.Logger;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.framework.BindableCodex;
 import us.ilite.common.io.CodexNetworkTables;
 import us.ilite.common.io.CodexNetworkTablesParser;
 import us.ilite.common.lib.util.SimpleNetworkTable;

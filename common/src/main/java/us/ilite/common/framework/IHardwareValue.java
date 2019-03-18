@@ -1,4 +1,4 @@
-package us.ilite.framework;
+package us.ilite.common.framework;
 
 public interface IHardwareValue<T> {
 

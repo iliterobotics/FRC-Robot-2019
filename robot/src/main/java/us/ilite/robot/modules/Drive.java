@@ -3,6 +3,7 @@ package us.ilite.robot.modules;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.LogOutput;
 import com.flybotix.hfr.util.log.Logger;
@@ -15,6 +16,7 @@ import com.team254.lib.util.ReflectingCSVWriter;
 
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.framework.BindableCodex;
 import us.ilite.common.lib.control.DriveController;
 import com.team254.frc2018.planners.DriveMotionPlanner;
 import com.team254.lib.physics.DriveOutput;
@@ -55,6 +57,8 @@ public class Drive extends Loop {
 	ReflectingCSVWriter<DebugOutput> mDebugLogger = null;
 	DebugOutput debugOutput = new DebugOutput();
 
+	private BindableCodex<Drive, Double, EDriveData> mBoundCodex = new BindableCodex<>(EDriveData.class);
+
 //	PerfTimer mUpdateTimer = new PerfTimer().alwayLog();
 //	PerfTimer mCalculateTimer = new PerfTimer().alwayLog().setLogMessage("Calculate: %s");
 //	PerfTimer mMotionPlannerTimer = new PerfTimer().alwayLog().setLogMessage("Planner: %s");
@@ -69,6 +73,9 @@ public class Drive extends Loop {
 		} else {
 			this.mDriveHardware = new DriveHardware();
 		}
+
+		mBoundCodex.bind(EDriveData.LEFT_VEL_IPS, mDriveHardware::getLeftInches, System.out::println);
+
 
 		this.mDriveHardware.init();
 	}

@@ -1,4 +1,4 @@
-package us.ilite.framework;
+package us.ilite.common.framework;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
