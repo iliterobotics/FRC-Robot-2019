@@ -11,6 +11,8 @@ import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.Data;
 import us.ilite.common.lib.control.DriveController;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
@@ -166,7 +168,6 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         commonPeriodic();
-        mData.sendCodicesToNetworkTables();
     }
 
     @Override
@@ -187,7 +188,6 @@ public class Robot extends TimedRobot {
     public void teleopPeriodic() {
         commonPeriodic();
 //        mData.sendCodices();
-//        mData.sendCodicesToNetworkTables();
     }
 
     @Override
@@ -218,12 +218,15 @@ public class Robot extends TimedRobot {
     }
 
     private void commonPeriodic() {
-        for(Codex c : mData.mAllCodexes) {
-            c.reset();
-        }
+        double start = Timer.getFPGATimestamp();
+//        for(Codex c : mData.mAllCodexes) {
+//            c.reset();
+//        }
         EPowerDistPanel.map(mData.pdp, pdp);
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
+//        mData.sendCodicesToNetworkTables();
+        SmartDashboard.putNumber("common_periodic_dt", Timer.getFPGATimestamp() - start);
     }
 
     private void initMatchMetadata() {
