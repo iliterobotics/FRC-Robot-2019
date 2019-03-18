@@ -5,6 +5,7 @@ import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.robot.hardware.SolenoidWrapper;
 
 /**
  * Control the Hatch Flower
@@ -18,8 +19,10 @@ public class HatchFlower extends Module {
 
     private ILog mLog = Logger.createLog(HatchFlower.class);
 
-    private Solenoid mGrabSolenoid;
-    private Solenoid mExtendSolenoid;
+    private Solenoid mGrab;
+    private Solenoid mExtend;
+    private SolenoidWrapper mGrabSolenoid;
+    private SolenoidWrapper mExtendSolenoid;
 
     private GrabberState mGrabberState;
     private ExtensionState mExtensionState;
@@ -53,8 +56,10 @@ public class HatchFlower extends Module {
 
     public HatchFlower() {
         // TODO Do we need to pass the CAN Addresses in via the constructor?
-        mGrabSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
-        mExtendSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerExtensionSolenoidAddress);
+        mGrab = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
+        mExtend = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerExtensionSolenoidAddress);
+        mGrabSolenoid = new SolenoidWrapper(mGrab);
+        mExtendSolenoid = new SolenoidWrapper(mExtend);
 
         // Init Hatch Flower to grab state - Per JKnight we will start with a hatch or cargo onboard
         this.mGrabberState = GrabberState.GRAB;

@@ -14,6 +14,7 @@ import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.manipulator.EIntake;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.robot.driverinput.DriverInput.EGamePiece;
+import us.ilite.robot.hardware.SolenoidWrapper;
 
 
 public class Intake extends Module {
@@ -36,7 +37,8 @@ public class Intake extends Module {
     private TalonSRX mWristTalon;
 
     // Pneumatic/Solenoid for hatch/cargo roller mode toggle
-    private Solenoid mSolenoid;
+    private Solenoid mSolenoidPreWrapper;
+    private SolenoidWrapper mSolenoid;
 
     // Present intake states
     private EIntakeState mDesiredIntakeState;
@@ -52,7 +54,8 @@ public class Intake extends Module {
 //        mWrist = new MotionMagicArm(mWristTalon);
 //
 //        // Solenoid for changing between cargo and hatch mode
-//        mSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kIntakeSolenoidAddress);
+//        mSolenoidPreWrapper = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kIntakeSolenoidAddress);
+//        mSolenoid = new SolenoidWrapper(mSolenoidPreWrapper);
 //        mDesiredIntakeState = EIntakeState.STOWED;
     }
 
