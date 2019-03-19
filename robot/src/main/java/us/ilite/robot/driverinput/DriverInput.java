@@ -17,6 +17,8 @@ import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
+import us.ilite.lib.drivers.ECommonControlMode;
+import us.ilite.lib.drivers.ECommonNeutralMode;
 import us.ilite.robot.commands.LimelightTargetLock;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
@@ -278,8 +280,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         }
 
         DriveMessage driveMessage = DriveMessage.fromThrottleAndTurn(throttle, rotate);
-        driveMessage.setNeutralMode(NeutralMode.Brake);
-        driveMessage.setControlMode(ControlMode.PercentOutput);
+        driveMessage.setNeutralMode(ECommonNeutralMode.BRAKE);
+        driveMessage.setControlMode(ECommonControlMode.PERCENT_OUTPUT);
 
         mDrive.setDriveMessage(driveMessage);
     }
@@ -287,7 +289,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private void updateCheesyDrivetrain() {
         boolean isQuickTurn = mData.driverinput.get(ELogitech310.RIGHT_TRIGGER_AXIS) > 0.5;
         DriveSignal cheesySignal = mCheesyDriveHelper.cheesyDrive(getThrottle(), getTurn() * 0.5, isQuickTurn);
-        DriveMessage driveMessage = new DriveMessage(cheesySignal.getLeft(), cheesySignal.getRight(), ControlMode.PercentOutput);
+        DriveMessage driveMessage = new DriveMessage(cheesySignal.getLeft(), cheesySignal.getRight(), ECommonControlMode.PERCENT_OUTPUT);
         mDrive.setDriveMessage(driveMessage);
     }
 
@@ -358,8 +360,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 		
         DriveMessage driveMessage = DriveMessage.fromThrottleAndTurn(throttle, rotate);
 
-        driveMessage.setNeutralMode(NeutralMode.Brake);
-        driveMessage.setControlMode(ControlMode.PercentOutput);
+        driveMessage.setNeutralMode(ECommonNeutralMode.BRAKE);
+        driveMessage.setControlMode(ECommonControlMode.PERCENT_OUTPUT);
 
         mDrive.setDriveMessage(driveMessage);
 

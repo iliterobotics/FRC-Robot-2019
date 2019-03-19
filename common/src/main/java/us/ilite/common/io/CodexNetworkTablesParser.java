@@ -1,6 +1,7 @@
 package us.ilite.common.io;
 
 import java.io.File;
+import java.nio.file.Files;
 
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.codex.CodexOf;
@@ -12,8 +13,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
 
-    // private static final String LOG_PATH_FORMAT = System.getProperty("user.dir")+"\\logs\\%s\\%s.csv";
-    private static final String LOG_PATH_FORMAT = "/u/logs/%s/%s-%s-%s.csv";
+    private static final String ROBOT_DIR = "/u";
+    private static final String USER_DIR = System.getProperty("user.dir");
+    private static final String LOG_PATH_FORMAT = "/logs/%s/%s-%s-%s.csv";
 
     private final NetworkTableInstance kNetworkTablesInstance = NetworkTableInstance.getDefault();
     private final NetworkTable kNetworkTable;
@@ -96,17 +98,24 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
      * @return File path of a certain enumeration
      */
     public File file() {
-        // return new File(String.format(LOG_PATH_FORMAT, new SimpleDateFormat("MM-dd-YYYY_HH-mm").format(Calendar.getInstance().getTime()), csvIdentifier));
+
+        String dir = "";
+        if(Files.notExists(new File("/u").toPath())) {
+            dir = USER_DIR;
+        } else {
+            dir = ROBOT_DIR;
+        }
+
         String eventName = DriverStation.getInstance().getEventName();
         if ( eventName.length() <= 0 ) {
             eventName = "Default-Event";
         }
-        return new File( String.format( LOG_PATH_FORMAT, 
-                         eventName,
-                         DriverStation.getInstance().getMatchType().name(),
-                         DriverStation.getInstance().getMatchNumber()),
-                         mCodex.meta().getEnum().getSimpleName()
-                         );
+        return new File(String.format( dir + LOG_PATH_FORMAT,
+                eventName,
+                DriverStation.getInstance().getMatchType().name(),
+                Integer.toString(DriverStation.getInstance().getMatchNumber()),
+                mCodex.meta().getEnum().getSimpleName()
+        ));
     }
 
     /**

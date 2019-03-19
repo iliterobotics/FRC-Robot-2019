@@ -12,6 +12,8 @@ import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.PIDController;
 import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.ETrackingType;
+import us.ilite.lib.drivers.ECommonControlMode;
+import us.ilite.lib.drivers.ECommonNeutralMode;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.robot.modules.IThrottleProvider;
@@ -108,8 +110,8 @@ public class TargetLock implements ICommand {
                 new DriveMessage(
                     mTargetSearchThrottleProvider.getThrottle() + mTrackingType.getTurnScalar() * kTURN_POWER,
                     mTargetSearchThrottleProvider.getThrottle() + mTrackingType.getTurnScalar() * -kTURN_POWER,
-                    ControlMode.PercentOutput
-                ).setNeutralMode(NeutralMode.Brake)
+                    ECommonControlMode.PERCENT_OUTPUT
+                ).setNeutralMode(ECommonNeutralMode.BRAKE)
             );
 
         }
@@ -135,7 +137,7 @@ public class TargetLock implements ICommand {
         boolean isQuickTurn = Math.abs(throttle) < Util.kEpsilon;
 
         DriveSignal cheesyOutput = mCheesyDriveHelper.cheesyDrive(throttle, turn, false);
-        return new DriveMessage(cheesyOutput.getLeft(), cheesyOutput.getRight(), ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake);
+        return new DriveMessage(cheesyOutput.getLeft(), cheesyOutput.getRight(), ECommonControlMode.PERCENT_OUTPUT).setNeutralMode(ECommonNeutralMode.BRAKE);
     }
 
     /*
@@ -162,7 +164,7 @@ public class TargetLock implements ICommand {
             rightPwm = -1.0;
         }
 
-        return new DriveMessage(leftPwm, rightPwm, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake);
+        return new DriveMessage(leftPwm, rightPwm, ECommonControlMode.PERCENT_OUTPUT).setNeutralMode(ECommonNeutralMode.BRAKE);
     }
 
     /*
@@ -172,12 +174,12 @@ public class TargetLock implements ICommand {
     private DriveMessage getCurvatureDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
         double adjustedTurn = Math.abs(throttle) * turn * SystemSettings.kTurnSensitivity;
 
-        return DriveMessage.fromThrottleAndTurn(throttle, adjustedTurn).setNeutralMode(NeutralMode.Brake);
+        return DriveMessage.fromThrottleAndTurn(throttle, adjustedTurn).setNeutralMode(ECommonNeutralMode.BRAKE);
     }
 
     private DriveMessage getArcadeDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
 //        mOutput *= targetData.get(ETargetingData.ta) * kTargetAreaScalar;
-        return DriveMessage.fromThrottleAndTurn(throttle, turn).setNeutralMode(NeutralMode.Brake);
+        return DriveMessage.fromThrottleAndTurn(throttle, turn).setNeutralMode(ECommonNeutralMode.BRAKE);
     }
 
     public TargetLock setTargetLockThrottleProvider(IThrottleProvider pThrottleProvider) {

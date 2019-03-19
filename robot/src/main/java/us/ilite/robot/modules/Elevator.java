@@ -22,7 +22,6 @@ public class Elevator extends Module {
     private CANPIDController mCanController;
     private Data mData;
 
-    private double mCurrentEncoderTicks;
     private double mSetPoint = 0;
     private double mDesiredPower = 0;
     private boolean mRequestedStop = false;
@@ -106,7 +105,6 @@ public class Elevator extends Module {
         // Make sure the elevator is stopped upon initialization
         mDesiredPosition = EElevatorPosition.HATCH_BOTTOM;
         mCurrentState = EElevatorState.STOP;
-        mCurrentEncoderTicks = 0;
     }
 
     public void shutdown(double pNow) {
@@ -119,19 +117,17 @@ public class Elevator extends Module {
     public void periodicInput(double pNow) {
 
         mData.elevator.set(EElevator.DESIRED_POWER, mDesiredPower);
-        mData.elevator.set(EElevator.OUTPUT_POWER, mMasterElevator.getAppliedOutput());
+//        mData.elevator.set(EElevator.OUTPUT_POWER, mMasterElevator.getAppliedOutput());
         mData.elevator.set(EElevator.DESIRED_ENCODER_TICKS, mSetPoint);
         mData.elevator.set(EElevator.CURRENT_ENCODER_TICKS, getEncoderPosition());
         mData.elevator.set(EElevator.CURRENT, mMasterElevator.getOutputCurrent());
-        mData.elevator.set(EElevator.BUS_VOLTAGE, mMasterElevator.getBusVoltage());
+//        mData.elevator.set(EElevator.BUS_VOLTAGE, mMasterElevator.getBusVoltage());
         mData.elevator.set(EElevator.DESIRED_POSITION_TYPE, (double) mDesiredPosition.ordinal());
         mData.elevator.set(EElevator.CURRENT_STATE, (double) mCurrentState.ordinal());
 
     }
 
     public void update(double pNow) {
-
-        mCurrentEncoderTicks = getEncoderPosition();
 
         switch (mCurrentState) {
             case NORMAL:
@@ -142,8 +138,7 @@ public class Elevator extends Module {
                 mDesiredPower = 0;
                 break;
             case SET_POSITION:
-                mSetPoint = mRequestedStop ? mCurrentEncoderTicks : mDesiredPosition.getEncoderRotations();
-                mDesiredPower = 0;
+                mSetPoint = mRequestedStop ? mData.elevator.get(EElevator.CURRENT_ENCODER_TICKS) : mDesiredPosition.getEncoderRotations();
                 mCanController.setReference(mSetPoint, ControlType.kSmartMotion, 0, SystemSettings.kElevatorFrictionVoltage);
                 break;
             default:
@@ -163,7 +158,6 @@ public class Elevator extends Module {
      */
     public void zeroEncoder() {
         mMasterElevator.getEncoder().setPosition(0);
-        mCurrentEncoderTicks = 0;
     }
 
 
@@ -194,11 +188,12 @@ public class Elevator extends Module {
     }
 
     public boolean isAtPosition(EElevatorPosition pPosition) {
-        return mCurrentState == EElevatorState.SET_POSITION && (Math.abs(pPosition.getEncoderRotations() - getEncoderPosition()) <= SystemSettings.kElevatorAllowableError);
+        return mCurrentState == EElevatorState.SET_POSITION && (Math.abs(pPosition.getEncoderRotations() - mData.elevator.get(EElevator.CURRENT_ENCODER_TICKS)) <= SystemSettings.kElevatorAllowableError);
     }
 
     public void stop() {
         mRequestedStop = true;
+        mCurrentState = EElevatorState.STOP;
     }
 
 }

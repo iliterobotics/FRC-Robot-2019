@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.team254.lib.util.CheesyDriveGains;
-import us.ilite.common.lib.util.SimpleNetworkTable;
 
 import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.util.NetworkTablesConstantsBase;
@@ -36,6 +35,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Drive Train Constants
     // =============================================================================
+    public static double kDriveGearboxRatio = (12.0 / 80.0) / (38.0 / 80.0);
     public static double kDriveClosedLoopVoltageRampRate = 0.0;
     public static double kDriveOpenLoopVoltageRampRate = 0.1;
     public static int kDriveCurrentLimitAmps = 40;
@@ -98,7 +98,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static int kDriveMotionMagicLoopSlot = 0;
     public static int kDriveMotionMagicCruiseVelocity = 0;
-    public static int kDriveMotionMagicAccelFeedforward = 0;
+    public static int kDriveMotionMagicMaxAccel = 0;
 
     // =============================================================================
     // Closed-Loop Position Constants

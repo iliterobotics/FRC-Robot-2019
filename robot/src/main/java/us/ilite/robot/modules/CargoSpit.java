@@ -1,7 +1,7 @@
 package us.ilite.robot.modules;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.manipulator.ECargoSpit;
-import us.ilite.common.types.manipulator.EElevator;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 
 
@@ -30,6 +29,7 @@ public class CargoSpit extends Module {
     private double mLeftCurrent, mRightCurrent;
     private boolean mIntaking = false;
     private boolean mOuttaking = false;
+    private boolean mHasCargo = false;
 
 
     public CargoSpit(Data pData) {
@@ -45,6 +45,9 @@ public class CargoSpit extends Module {
         mRightMotor.enableVoltageCompensation(true);
         mLeftMotor.configVoltageCompSaturation(12.0);
         mRightMotor.configVoltageCompSaturation(12.0);
+
+        mLeftMotor.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 5);
+        mRightMotor.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 5);
 
         mBeambreak = new DigitalInput(SystemSettings.kCargoSpitBeamBreakAddress);
 
@@ -70,7 +73,7 @@ public class CargoSpit extends Module {
     @Override
     public void periodicInput(double pNow) {
         // TODO Read the PDP for current limiting check and compare to SystemSettings cargo spit current limit
-        mData.cargospit.set( ECargoSpit.HAS_CARGO, convertBoolean( hasCargo() ) );
+        mData.cargospit.set( ECargoSpit.HAS_CARGO, mHasCargo ? 1.0 : 0.0);
         mData.cargospit.set( ECargoSpit.INTAKING, convertBoolean( mIntaking ) );
         mData.cargospit.set( ECargoSpit.OUTTAKING, convertBoolean( mOuttaking ) );
         mData.cargospit.set( ECargoSpit.STOPPED, convertBoolean( mEmergencyStopped ) );
@@ -83,18 +86,19 @@ public class CargoSpit extends Module {
     public void update(double pNow) {
         mLeftCurrent = mData.pdp.get(EPowerDistPanel.CURRENT10);
         mRightCurrent = mData.pdp.get(EPowerDistPanel.CURRENT5);
-        if ( hasCargo() ) {
+        mHasCargo = shouldStop();
+        if ( mHasCargo ) {
             stop();
         }
     }
 
     public void setIntaking() {
-        if ( !mEmergencyStopped || !hasCargo() ) {
+        if ( !mEmergencyStopped || !shouldStop() ) {
             mIntaking = true;
             mOuttaking = false;
             mLeftMotor.set( ControlMode.PercentOutput, mPower );
             mRightMotor.set( ControlMode.PercentOutput, mPower );
-            if ( hasCargo() ) {
+            if ( shouldStop() ) {
                 mLeftMotor.set( ControlMode.PercentOutput, kZero );
                 mRightMotor.set( ControlMode.PercentOutput, kZero );
             }
@@ -112,16 +116,24 @@ public class CargoSpit extends Module {
         mEmergencyStopped = false;
     }
 
-    public boolean hasCargo() {
+    private boolean shouldStop() {
         if ( mOuttaking ) {
             return false;
         }
+
         double currentLimit = SystemSettings.kCargoSpitSPXCurrentRatioLimit;
         // Ratio being current over voltage
-        double leftRatio = mLeftCurrent / mLeftMotor.getMotorOutputVoltage();
-        double rightRatio = mRightCurrent / mRightMotor.getMotorOutputVoltage();
-        double averageRatio = ( leftRatio + rightRatio ) / 2;
+        // Voltage will be assumed to be 12 to avoid polling CAN so much
+        // This *should* be okay since we enabled voltage comp
+        double leftRatio = mLeftCurrent / 12.0;
+        double rightRatio = mRightCurrent / 12.0;
+        double averageRatio = ( leftRatio + rightRatio ) / 2.0;
+
         return (averageRatio >= currentLimit) || isBeamBroken();
+    }
+
+    public boolean hasCargo() {
+        return mHasCargo;
     }
 
     public boolean isIntaking() {
