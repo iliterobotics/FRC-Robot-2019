@@ -5,5 +5,5 @@ package us.ilite.common.config;
 public class TestObj {
     public static double kControlLoopPeriod = 500; // seconds
 
-    public static double NETWORK_TABLE_UPDATE_RATE = 500;
+    public static double kNetworkTableUpdateRate = 500;
 }

@@ -55,6 +55,7 @@ public class Robot extends TimedRobot {
     private Data mData = new Data();
     private Timer initTimer = new Timer();
     private final SystemSettings mSettings = new SystemSettings();
+    private CSVLogger mCSVLogger = new CSVLogger(mData);
 
     private PowerDistributionPanel pdp = new PowerDistributionPanel(SystemSettings.kPowerDistPanelAddress);
 
@@ -163,6 +164,7 @@ public class Robot extends TimedRobot {
         mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
 
         mData.registerCodices();
+        mCSVLogger.start(); // Start csv logging
 
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");
@@ -185,6 +187,8 @@ public class Robot extends TimedRobot {
 
         mLoopManager.setRunningLoops(mDrive);
         mLoopManager.start();
+
+        mCSVLogger.start(); // start csv logging
     }
 
     @Override
@@ -198,6 +202,7 @@ public class Robot extends TimedRobot {
         mLogger.info("Disabled Initialization");
         mRunningModules.shutdown(mClock.getCurrentTime());
         mLoopManager.stop();
+        mCSVLogger.stop(); // stop csv logging
     }
 
     @Override
