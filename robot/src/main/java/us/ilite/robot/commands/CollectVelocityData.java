@@ -8,6 +8,8 @@ import us.ilite.common.lib.physics.DriveCharacterization;
 import com.team254.lib.util.ReflectingCSVWriter;
 
 import us.ilite.common.lib.util.Conversions;
+import us.ilite.lib.drivers.ECommonControlMode;
+import us.ilite.lib.drivers.ECommonNeutralMode;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
@@ -57,9 +59,9 @@ public class CollectVelocityData implements ICommand {
         DriveMessage driveMessage = new DriveMessage(
                 (mReverse ? -1.0 : 1.0) * percentPower,
                 (mReverse ? -1.0 : 1.0) * (mTurn ? -1.0 : 1.0) * percentPower,
-                ControlMode.PercentOutput,
-                ControlMode.PercentOutput);
-        driveMessage.setNeutralMode(NeutralMode.Coast);
+                ECommonControlMode.PERCENT_OUTPUT,
+                ECommonControlMode.PERCENT_OUTPUT);
+        driveMessage.setNeutralMode(ECommonNeutralMode.COAST);
         mDriveTrain.setDriveMessage(driveMessage);
 
         updateData(mLeftVelocityData, mLeftCSVWriter, percentPower, mDriveTrain.getDriveHardware().getLeftVelTicks());
@@ -78,7 +80,7 @@ public class CollectVelocityData implements ICommand {
 
     @Override
     public void shutdown(double pNow) {
-        mDriveTrain.setDriveMessage(new DriveMessage(0.0, 0.0, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Coast));
+        mDriveTrain.setDriveMessage(new DriveMessage(0.0, 0.0, ECommonControlMode.PERCENT_OUTPUT).setNeutralMode(ECommonNeutralMode.COAST));
         mLeftCSVWriter.flush();
         mRightCSVWriter.flush();
     }

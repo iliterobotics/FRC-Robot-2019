@@ -13,35 +13,34 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.Data;
+import us.ilite.common.config.AbstractSystemSettingsUtils;
+import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.DriveController;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.lib.util.PerfTimer;
-import us.ilite.common.types.drive.EDriveData;
-import us.ilite.common.types.ETrackingType;
+import us.ilite.common.types.MatchMetadata;
 import us.ilite.common.types.sensor.EPowerDistPanel;
+import us.ilite.lib.drivers.Clock;
 import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.lib.drivers.VisionGyro;
 import us.ilite.robot.auto.AutonomousRoutines;
-import us.ilite.common.config.SystemSettings;
-import us.ilite.common.types.MatchMetadata;
-import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.commands.*;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
-import us.ilite.robot.modules.*;
-import us.ilite.common.lib.control.DriveController;
-import us.ilite.common.lib.control.PIDGains;
-import us.ilite.common.lib.control.PIDController;
+import us.ilite.robot.modules.CargoSpit;
+import us.ilite.robot.modules.CommandManager;
 import us.ilite.robot.modules.Drive;
-import us.ilite.robot.modules.HatchFlower;
-import us.ilite.robot.modules.FourBar;
-import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.Elevator;
+import us.ilite.robot.modules.FourBar;
+import us.ilite.robot.modules.HatchFlower;
+import us.ilite.robot.modules.Intake;
+import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.ModuleList;
-import us.ilite.common.lib.control.DriveController;
-import us.ilite.common.lib.control.PIDGains;
-import us.ilite.common.lib.control.PIDController;
+import us.ilite.robot.modules.PneumaticIntake;
 
 public class Robot extends TimedRobot {
 
@@ -55,7 +54,7 @@ public class Robot extends TimedRobot {
     private Clock mClock = new Clock();
     private Data mData = new Data();
     private Timer initTimer = new Timer();
-    private SystemSettings mSettings = new SystemSettings();
+    private final SystemSettings mSettings = new SystemSettings();
 
     private PowerDistributionPanel pdp = new PowerDistributionPanel(SystemSettings.kPowerDistPanelAddress);
 
@@ -73,18 +72,22 @@ public class Robot extends TimedRobot {
     private HatchFlower mHatchFlower = new HatchFlower();
     private Limelight mLimelight = new Limelight(mData);
     private VisionGyro mVisionGyro = new VisionGyro(mData);
-    private PneumaticIntake mPneumaticIntake = new PneumaticIntake( mData );
+    private PneumaticIntake mPneumaticIntake = new PneumaticIntake(mData);
 
-    private DriverInput mDriverInput = new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, false  );
+    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake,
+            mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, false);
 
     private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
-    private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator, mIntake, mCargoSpit, mHatchFlower, mLimelight, mVisionGyro, mData);
+    private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator,
+            mIntake, mCargoSpit, mHatchFlower, mLimelight, mVisionGyro, mData);
     private MatchMetadata mMatchMeta = null;
 
     private PerfTimer mClockUpdateTimer = new PerfTimer();
 
     @Override
     public void robotInit() {
+        //look for practice robot config:
+        AbstractSystemSettingsUtils.loadPracticeSettings(mSettings);
 
         // Init the actual robot
         initTimer.reset();
