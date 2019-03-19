@@ -13,6 +13,7 @@ import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.EFourBarData;
 import us.ilite.lib.drivers.SparkMaxFactory;
+import us.ilite.robot.hardware.SolenoidWrapper;
 
 
 public class FourBar extends Module {
@@ -26,14 +27,16 @@ public class FourBar extends Module {
 
     private CANSparkMax mNeos;
     private CANSparkMax mNeo2;
-    private Solenoid mPusherSolenoid;
+
+    private Solenoid mPusher;
+    private SolenoidWrapper mPusherSolenoid;
+
     private CANEncoder mNeo1Encoder;
     private CANEncoder mNeo2Encoder;
 
     private double mAngularPosition;
-    private double mPreviousNeo1Rotations;
-    private double mPreviousNeo2Rotations;
-
+    private double mNeoARotations = 0;
+    private double mNeoBRotations = 0;
     private double mOutput;
 
     /**
@@ -44,9 +47,11 @@ public class FourBar extends Module {
         // Later: SystemSettings address
         mNeos = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kFourBarNEO1Address, CANSparkMaxLowLevel.MotorType.kBrushless);
         mNeo2 = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kFourBarNEO2Address, CANSparkMaxLowLevel.MotorType.kBrushless);
-        mPusherSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kFourBarPusherAddress);
         mNeo2.follow( mNeos, true );
     
+        mPusher = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kFourBarPusherAddress);
+        mPusherSolenoid = new SolenoidWrapper( mPusher );
+        
         // Connect the NEO's to the encoders
         mNeo1Encoder = mNeos.getEncoder();
         mNeo2Encoder = mNeo2.getEncoder();
@@ -62,8 +67,6 @@ public class FourBar extends Module {
     public void modeInit( double pNow ) {
         mLog.error( "FourBar Initialized..." );
         mOutput = 0;
-        mPreviousNeo1Rotations = mNeo1Encoder.getPosition();
-        mPreviousNeo2Rotations = mNeo2Encoder.getPosition();
 
         mNeos.setSmartCurrentLimit( 80 );
     }
@@ -116,7 +119,9 @@ public class FourBar extends Module {
      * Update angular position based on current rotations
      */
     public void updateAngularPosition() {
-        mAngularPosition = (-mNeo1Encoder.getPosition() + mNeo2Encoder.getPosition()) / 2;
+        mNeoARotations = -mNeo1Encoder.getPosition() + mNeo1Encoder.getPosition();
+        mNeoBRotations = mNeo2Encoder.getPosition();
+        mAngularPosition = (mNeoARotations + mNeoBRotations) / 2;
     }
     
     /**
@@ -142,8 +147,7 @@ public class FourBar extends Module {
      * Cut power to the motor
      */
     public void stop() {
-        setDesiredOutput( 0, true );
-        mNeos.stopMotor();
+        setDesiredOutput( 0, true );;
     }
 
     /**
@@ -151,14 +155,15 @@ public class FourBar extends Module {
      */
     public void updateCodex() {
         updateAngularPosition();
-        mData.fourbar.set( EFourBarData.A_TICKS, mNeos.getEncoder().getPosition() );
-        mData.fourbar.set( EFourBarData.A_OUTPUT, mNeos.get() );
-        mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeos.getAppliedOutput() * 12.0 );
+        mData.fourbar.set( EFourBarData.DESIRED_OUTPUT, mOutput );
+        mData.fourbar.set( EFourBarData.A_TICKS, mNeoARotations );
+//        mData.fourbar.set( EFourBarData.A_OUTPUT, mNeos.get() );
+//        mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeos.getAppliedOutput() * 12.0 );
         mData.fourbar.set( EFourBarData.A_CURRENT, mNeos.getOutputCurrent() );
 
-        mData.fourbar.set( EFourBarData.B_TICKS, mNeo2.getEncoder().getPosition() );
-        mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
-        mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getAppliedOutput() * 12.0 );
+        mData.fourbar.set( EFourBarData.B_TICKS, mNeoBRotations);
+//        mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
+//        mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getAppliedOutput() * 12.0 );
         mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
 
         mData.fourbar.set( EFourBarData.ANGLE, mAngularPosition );
