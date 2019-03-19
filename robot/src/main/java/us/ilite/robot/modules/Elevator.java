@@ -138,6 +138,7 @@ public class Elevator extends Module {
                 mDesiredPower = 0;
                 break;
             case SET_POSITION:
+                mSetPoint = mRequestedStop ? mData.elevator.get(EElevator.CURRENT_ENCODER_TICKS) : mDesiredPosition.getEncoderRotations();
                 mCanController.setReference(mSetPoint, ControlType.kSmartMotion, 0, SystemSettings.kElevatorFrictionVoltage);
                 break;
             default:
@@ -191,6 +192,7 @@ public class Elevator extends Module {
     }
 
     public void stop() {
+        mRequestedStop = true;
         mCurrentState = EElevatorState.STOP;
     }
 
