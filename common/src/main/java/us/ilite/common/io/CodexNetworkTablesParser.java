@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
 
     private static final String ROBOT_DIR = "/u";
-    private static final String USER_DIR = System.getProperty("user.dir");
+    private static final String USER_DIR = System.getProperty("user.home");
     private static final String LOG_PATH_FORMAT = "/logs/%s/%s-%s-%s.csv";
 
     private final NetworkTableInstance kNetworkTablesInstance = NetworkTableInstance.getDefault();
