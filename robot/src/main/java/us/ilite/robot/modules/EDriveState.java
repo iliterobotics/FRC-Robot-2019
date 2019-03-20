@@ -8,6 +8,6 @@ public enum EDriveState {
 
     NORMAL,
     PATH_FOLLOWING,
-    TARGET_TRACKING
+    TARGET_ANGLE_LOCK
 
 }

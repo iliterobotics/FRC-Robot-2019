@@ -8,10 +8,8 @@ import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
-import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.ReflectingCSVWriter;
 
-import com.team254.lib.util.Util;
 import us.ilite.common.Data;
 import us.ilite.common.config.AbstractSystemSettingsUtils;
 import us.ilite.common.config.SystemSettings;
@@ -19,7 +17,6 @@ import us.ilite.common.lib.control.DriveController;
 import com.team254.frc2018.planners.DriveMotionPlanner;
 import com.team254.lib.physics.DriveOutput;
 import us.ilite.common.lib.control.PIDController;
-import us.ilite.common.lib.util.CheesyDriveHelper;
 import us.ilite.common.lib.util.Conversions;
 import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.drive.EDriveData;
@@ -217,7 +214,7 @@ public class Drive extends Loop {
 				}
 
 				break;
-			case TARGET_TRACKING:
+			case TARGET_ANGLE_LOCK:
 
 				Codex<Double, ETargetingData> targetData = mData.limelight;
 				double pidOutput;
@@ -243,31 +240,37 @@ public class Drive extends Loop {
 //		mUpdateTimer.stop();
 	}
 
-	public void setTargetTracking() {
-		mDriveState = EDriveState.TARGET_TRACKING;
+	public synchronized void setTargetAngleLock() {
+		mDriveState = EDriveState.TARGET_ANGLE_LOCK;
 		mDriveHardware.configureMode(ECommonControlMode.PERCENT_OUTPUT);
 		mDriveHardware.set(DriveMessage.kNeutral);
 	}
 
-	public void setPathFollowing() {
+	public synchronized void setPathFollowing() {
 		mDriveState = EDriveState.PATH_FOLLOWING;
 		mDriveHardware.configureMode(ECommonControlMode.VELOCITY);
 		mDriveHardware.set(new DriveMessage(0.0, 0.0, ECommonControlMode.VELOCITY));
 	}
 
-	public void setNormal() {
+	public synchronized void setNormal() {
 		mDriveState = EDriveState.NORMAL;
 	}
 
-	public void setPath(Trajectory<TimedState<Pose2dWithCurvature>> pPath, boolean pResetPoseToStart) {
+	public synchronized void setPath(Trajectory<TimedState<Pose2dWithCurvature>> pPath, boolean pResetPoseToStart) {
 		mDriveController.setTrajectory(pPath, pResetPoseToStart);
 		if(pResetPoseToStart) {
 			mDriveHardware.zero();
 		}
 	}
 
-	public void setTargetTrackingThrottle(double pTargetTrackingThrottle) {
+	public synchronized void setTargetTrackingThrottle(double pTargetTrackingThrottle) {
 		mTargetTrackingThrottle = pTargetTrackingThrottle;
+	}
+
+	public synchronized void flushTelemetry() {
+		if(mDebugLogger != null) {
+			mDebugLogger.write();
+		}
 	}
 
 	@Override
@@ -275,18 +278,13 @@ public class Drive extends Loop {
         return mDriveHardware.checkHardware();
 	}
 
-	private void setDriveState(EDriveState pDriveState) {
-		this.mDriveState = pDriveState;
-	}
 
 	public synchronized void zero() {
 		mDriveHardware.zero();
 	}
 
-	public synchronized void flushTelemetry() {
-		if(mDebugLogger != null) {
-			mDebugLogger.write();
-		}
+	private void setDriveState(EDriveState pDriveState) {
+		this.mDriveState = pDriveState;
 	}
 
 	public synchronized void setDriveMessage(DriveMessage pDriveMessage) {
@@ -311,11 +309,6 @@ public class Drive extends Loop {
 
 	public synchronized void setHeading(Rotation2d pHeading) {
 		mGyroOffset = pHeading.rotateBy(mDriveHardware.getHeading().inverse());
-	}
-
-    public Drive simulated() {
-//		this.mDriveHardware = new SimDriveHardware(mDriveController, mClock);
-		return this;
 	}
 
 	public Clock getSimClock() {

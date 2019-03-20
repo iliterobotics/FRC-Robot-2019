@@ -2,12 +2,7 @@ package us.ilite.robot.commands;
 
 import com.flybotix.hfr.codex.Codex;
 
-import us.ilite.common.lib.util.CheesyDriveHelper;
-import com.team254.lib.util.DriveSignal;
-import com.team254.lib.util.Util;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.lib.control.PIDController;
 import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.lib.drivers.ECommonControlMode;
@@ -56,7 +51,7 @@ public class TargetLock implements ICommand {
         mHasAcquiredTarget = false;
         mAlignedCount = 0;
 
-        mDrive.setTargetTracking();
+        mDrive.setTargetAngleLock();
         mDrive.setTargetTrackingThrottle(0);
 
         this.mPreviousTime = pNow;
