@@ -1,8 +1,6 @@
 package us.ilite.robot.modules;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.LogOutput;
 import com.flybotix.hfr.util.log.Logger;
@@ -10,15 +8,20 @@ import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.ReflectingCSVWriter;
 
+import com.team254.lib.util.Util;
 import us.ilite.common.Data;
 import us.ilite.common.config.AbstractSystemSettingsUtils;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.DriveController;
 import com.team254.frc2018.planners.DriveMotionPlanner;
 import com.team254.lib.physics.DriveOutput;
+import us.ilite.common.lib.control.PIDController;
+import us.ilite.common.lib.util.CheesyDriveHelper;
 import us.ilite.common.lib.util.Conversions;
+import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.drivers.Clock;
@@ -49,9 +52,14 @@ public class Drive extends Loop {
 
 	private EDriveState mDriveState;
 	private DriveMessage mDriveMessage;
+	private double mTargetTrackingThrottle = 0;
 
+	private CheesyDriveHelper mCheesyDriveHelper = new CheesyDriveHelper(SystemSettings.kCheesyDriveGains);
+	private PIDController mTargetAngleLockPid;
 	private DriveController mDriveController;
+
 	private Clock mSimClock = null;
+	private double mPreviousTime = 0;
 
 	ReflectingCSVWriter<DebugOutput> mDebugLogger = null;
 	DebugOutput debugOutput = new DebugOutput();
@@ -97,6 +105,11 @@ public class Drive extends Loop {
 
 	@Override
 	public void modeInit(double pNow) {
+		mTargetAngleLockPid = new PIDController(SystemSettings.kTargetAngleLockGains, SystemSettings.kTargetAngleLockMinInput, SystemSettings.kTargetAngleLockMaxInput, SystemSettings.kControlLoopPeriod);
+		mTargetAngleLockPid.setOutputRange(SystemSettings.kTargetAngleLockMinPower, SystemSettings.kTargetAngleLockMaxPower);
+		mTargetAngleLockPid.setSetpoint(0);
+		mTargetAngleLockPid.reset();
+
 		mDriveController.setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
         // Other gains to try: (2.0, 0.7), (0.65, 0.175), (0.0, 0.0)
 		mDriveController.getController().setGains(2.0, 0.7);
@@ -148,6 +161,8 @@ public class Drive extends Loop {
 		} else {
 			mDriveHardware.set(mDriveMessage);
 		}
+
+		mPreviousTime = pNow;
 	}
 	
 	@Override
@@ -203,6 +218,21 @@ public class Drive extends Loop {
 				}
 
 				break;
+			case TARGET_TRACKING:
+
+				Codex<Double, ETargetingData> targetData = mData.limelight;
+				double pidOutput;
+				if(mTargetAngleLockPid != null && targetData != null && targetData.isSet(ETargetingData.tv) && targetData.get(ETargetingData.tx) != null) {
+
+					//if there is a target in the limelight's fov, lock onto target using feedback loop
+					pidOutput = mTargetAngleLockPid.calculate(-1.0 * targetData.get(ETargetingData.tx), pNow - mPreviousTime);
+					pidOutput = pidOutput + (Math.signum(pidOutput) * SystemSettings.kTargetAngleLockFrictionFeedforward);
+
+					mDriveMessage = getClampedTurnDrive(mTargetTrackingThrottle, pidOutput, targetData);
+					// If we've already seen the target and lose tracking, exit.
+				}
+
+				break;
 			case NORMAL:
 				break;
 			default:
@@ -210,7 +240,14 @@ public class Drive extends Loop {
 				break;
 		}
 		mDriveHardware.set(mDriveMessage);
+		mPreviousTime = pNow;
 //		mUpdateTimer.stop();
+	}
+
+	public void setTargetTracking() {
+		mDriveState = EDriveState.TARGET_TRACKING;
+		mDriveHardware.configureMode(ECommonControlMode.PERCENT_OUTPUT);
+		mDriveHardware.set(DriveMessage.kNeutral);
 	}
 
 	public void setPathFollowing() {
@@ -230,8 +267,63 @@ public class Drive extends Loop {
 		}
 	}
 
-	public void openLoop() {
-		if(mDriveState != EDriveState.NORMAL) mDriveState = EDriveState.NORMAL;
+	/*
+    Uses CheesyDrive to generate steering and throttle commands.
+    This has the advantage of having derivative control (through "negative inertia")
+    Clamps the maximum curvature of the drivetrain (wheel sensitivity), allowing the PID to be overagressive and compensate better for large lateral offsets
+    Scales PID output by throttle, giving us better performance at low speeds
+     */
+	private DriveMessage getCheesyDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
+		boolean isQuickTurn = Math.abs(throttle) < Util.kEpsilon;
+
+		DriveSignal cheesyOutput = mCheesyDriveHelper.cheesyDrive(throttle, turn, false);
+		return new DriveMessage(cheesyOutput.getLeft(), cheesyOutput.getRight(), ECommonControlMode.PERCENT_OUTPUT).setNeutralMode(ECommonNeutralMode.BRAKE);
+	}
+
+	/*
+    Implements the same clamping function as CheesyDrive.
+    If throttle + turn saturates the output, the turn power being lost is applied to the other side of the drivetrain.
+    This should be better when tracking targets at high speeds.
+     */
+	private DriveMessage getClampedTurnDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
+
+		double leftPwm = throttle + turn;
+		double rightPwm = throttle - turn;
+
+		if (leftPwm > 1.0) {
+			rightPwm -=  (leftPwm - 1.0);
+			leftPwm = 1.0;
+		} else if (rightPwm > 1.0) {
+			leftPwm -=  (rightPwm - 1.0);
+			rightPwm = 1.0;
+		} else if (leftPwm < -1.0) {
+			rightPwm +=  (-1.0 - leftPwm);
+			leftPwm = -1.0;
+		} else if (rightPwm < -1.0) {
+			leftPwm +=  (-1.0 - rightPwm);
+			rightPwm = -1.0;
+		}
+
+		return new DriveMessage(leftPwm, rightPwm, ECommonControlMode.PERCENT_OUTPUT).setNeutralMode(ECommonNeutralMode.BRAKE);
+	}
+
+	/*
+    Implements the same scaling function as CheesyDrive, where turn is scaled by throttle.
+    This *should* give us better performance at low speeds + the benefits of "clamped turn" drive.
+     */
+	private DriveMessage getCurvatureDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
+		double adjustedTurn = Math.abs(throttle) * turn * SystemSettings.kTurnSensitivity;
+
+		return DriveMessage.fromThrottleAndTurn(throttle, adjustedTurn).setNeutralMode(ECommonNeutralMode.BRAKE);
+	}
+
+	private DriveMessage getArcadeDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
+//        mOutput *= targetData.get(ETargetingData.ta) * kTargetAreaScalar;
+		return DriveMessage.fromThrottleAndTurn(throttle, turn).setNeutralMode(ECommonNeutralMode.BRAKE);
+	}
+
+	public void setTargetTrackingThrottle(double pTargetTrackingThrottle) {
+		mTargetTrackingThrottle = pTargetTrackingThrottle;
 	}
 
 	@Override

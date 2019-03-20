@@ -12,7 +12,6 @@ import us.ilite.common.types.input.ELogitech310;
 
 public class SystemSettings extends NetworkTablesConstantsBase {
 
-
     public static double kControlLoopPeriod = 0.01; // seconds
     public static double kCSVLoggingPeriod = 0.02;  // seconds
 
@@ -283,6 +282,12 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     public static PIDGains kTargetAngleLockGains = new PIDGains(0.05, 0.000, 0.0);
     public static PIDGains kTargetDistanceLockGains = new PIDGains( 0.1, 0.0, 0.0);
+
+    public static final double kTargetAngleLockMinPower = -1.0;
+    public static final double kTargetAngleLockMaxPower = 1.0;
+    public static final double kTargetAngleLockMinInput = -27;
+    public static final double kTargetAngleLockMaxInput = 27;
+    public static final double kTargetAngleLockFrictionFeedforward = 0.44 / 12;
 
     // =============================================================================
     // Target Constants
