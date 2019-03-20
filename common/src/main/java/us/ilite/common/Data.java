@@ -11,7 +11,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.io.CodexNetworkTables;
 import us.ilite.common.io.CodexNetworkTablesParser;
-import us.ilite.common.io.CodexParser;
+import us.ilite.common.io.CodexCsvLogger;
 import us.ilite.common.lib.util.SimpleNetworkTable;
 import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.drive.EDriveData;
@@ -76,7 +76,7 @@ public class Data {
     private Map<String, Writer> mNetworkTableWriters = new HashMap<>();
 
     private List<CodexNetworkTablesParser<?>> mNetworkTableParsers;
-    private List<CodexParser> mCodexParsers;
+    private List<CodexCsvLogger> mCodexCsvLoggers;
 
     /**
      * Create a Data object based on whether or not it is being used for logging
@@ -106,8 +106,8 @@ public class Data {
 //            new CodexNetworkTablesParser<EFourBarData>(fourbar, "FOURBAR")
 //        );
         
-        mCodexParsers = new ArrayList<>();
-        for(Codex c : mLoggedCodexes) mCodexParsers.add(new CodexParser(c));
+        mCodexCsvLoggers = new ArrayList<>();
+        for(Codex c : mLoggedCodexes) mCodexCsvLoggers.add(new CodexCsvLogger(c));
     }
 
     /**
@@ -150,10 +150,10 @@ public class Data {
     }
 
     public void logFromCodexToCSVHeader() {
-        mCodexParsers.forEach(c -> c.writeHeader());
+        mCodexCsvLoggers.forEach(c -> c.writeHeader());
     }
     public void logFromCodexToCSVLog() {
-        mCodexParsers.forEach(c -> c.writeLine());
+        mCodexCsvLoggers.forEach(c -> c.writeLine());
     }
 
     /**
@@ -186,7 +186,7 @@ public class Data {
             }
         }
 
-        mCodexParsers.forEach(c -> c.closeWriter());
+        mCodexCsvLoggers.forEach(c -> c.closeWriter());
     }
 
     /**

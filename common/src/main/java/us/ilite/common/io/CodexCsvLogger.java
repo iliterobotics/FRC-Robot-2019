@@ -13,16 +13,16 @@ import com.flybotix.hfr.util.log.Logger;
 import edu.wpi.first.wpilibj.DriverStation;
 import us.ilite.common.Data;
 
-public class CodexParser {
+public class CodexCsvLogger {
 
-    private final ILog mLog = Logger.createLog(CodexParser.class);
+    private final ILog mLog = Logger.createLog(CodexCsvLogger.class);
     private static final String ROBOT_DIR = "/u";
     private static final String USER_DIR = System.getProperty("user.home");
     private static final String LOG_PATH_FORMAT = "/logs/%s/%s-%s-%s.csv";
     private Codex<?, ?> mCodex;
     private BufferedWriter writer;
 
-    public CodexParser( Codex<?, ?> pCodex ) {
+    public CodexCsvLogger(Codex<?, ?> pCodex ) {
         mCodex = pCodex;
 
         File file = file();
