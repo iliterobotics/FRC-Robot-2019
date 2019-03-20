@@ -26,6 +26,7 @@ public class CSVLogger implements Runnable {
      */
     public void stop() {
         mLoggingNotifier.stop();
+        mData.closeWriters();
     }
 
     public void run() {

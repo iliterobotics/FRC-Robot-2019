@@ -167,8 +167,8 @@ public class Data {
             
             try {
                 Writer logger = mCodexWriters.get( parser.getWriterKey() );
-                logger.append(parser.codexToCSVHeader());
-                logger.flush();
+                logger.append(parser.codexToCSVHeader() + "\n");
+//                logger.flush();
             } catch ( IOException e ) {
                 e.printStackTrace();
             }
@@ -179,8 +179,8 @@ public class Data {
         for (CodexParser parser : mCodexParsers ) {
             try {
                 Writer logger = mCodexWriters.get(parser.getWriterKey());
-                logger.append(parser.codexToCSVLog());
-                logger.flush();
+                logger.append(parser.codexToCSVLog() + "\n");
+//                logger.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
