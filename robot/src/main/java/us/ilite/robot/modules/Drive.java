@@ -54,7 +54,6 @@ public class Drive extends Loop {
 	private DriveMessage mDriveMessage;
 	private double mTargetTrackingThrottle = 0;
 
-	private CheesyDriveHelper mCheesyDriveHelper = new CheesyDriveHelper(SystemSettings.kCheesyDriveGains);
 	private PIDController mTargetAngleLockPid;
 	private DriveController mDriveController;
 
@@ -228,7 +227,7 @@ public class Drive extends Loop {
 					pidOutput = mTargetAngleLockPid.calculate(-1.0 * targetData.get(ETargetingData.tx), pNow - mPreviousTime);
 					pidOutput = pidOutput + (Math.signum(pidOutput) * SystemSettings.kTargetAngleLockFrictionFeedforward);
 
-					mDriveMessage = getClampedTurnDrive(mTargetTrackingThrottle, pidOutput, targetData);
+					mDriveMessage = DriveMessage.getClampedTurnDrive(mTargetTrackingThrottle, pidOutput);
 					// If we've already seen the target and lose tracking, exit.
 				}
 
@@ -265,61 +264,6 @@ public class Drive extends Loop {
 		if(pResetPoseToStart) {
 			mDriveHardware.zero();
 		}
-	}
-
-	/*
-    Uses CheesyDrive to generate steering and throttle commands.
-    This has the advantage of having derivative control (through "negative inertia")
-    Clamps the maximum curvature of the drivetrain (wheel sensitivity), allowing the PID to be overagressive and compensate better for large lateral offsets
-    Scales PID output by throttle, giving us better performance at low speeds
-     */
-	private DriveMessage getCheesyDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
-		boolean isQuickTurn = Math.abs(throttle) < Util.kEpsilon;
-
-		DriveSignal cheesyOutput = mCheesyDriveHelper.cheesyDrive(throttle, turn, false);
-		return new DriveMessage(cheesyOutput.getLeft(), cheesyOutput.getRight(), ECommonControlMode.PERCENT_OUTPUT).setNeutralMode(ECommonNeutralMode.BRAKE);
-	}
-
-	/*
-    Implements the same clamping function as CheesyDrive.
-    If throttle + turn saturates the output, the turn power being lost is applied to the other side of the drivetrain.
-    This should be better when tracking targets at high speeds.
-     */
-	private DriveMessage getClampedTurnDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
-
-		double leftPwm = throttle + turn;
-		double rightPwm = throttle - turn;
-
-		if (leftPwm > 1.0) {
-			rightPwm -=  (leftPwm - 1.0);
-			leftPwm = 1.0;
-		} else if (rightPwm > 1.0) {
-			leftPwm -=  (rightPwm - 1.0);
-			rightPwm = 1.0;
-		} else if (leftPwm < -1.0) {
-			rightPwm +=  (-1.0 - leftPwm);
-			leftPwm = -1.0;
-		} else if (rightPwm < -1.0) {
-			leftPwm +=  (-1.0 - rightPwm);
-			rightPwm = -1.0;
-		}
-
-		return new DriveMessage(leftPwm, rightPwm, ECommonControlMode.PERCENT_OUTPUT).setNeutralMode(ECommonNeutralMode.BRAKE);
-	}
-
-	/*
-    Implements the same scaling function as CheesyDrive, where turn is scaled by throttle.
-    This *should* give us better performance at low speeds + the benefits of "clamped turn" drive.
-     */
-	private DriveMessage getCurvatureDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
-		double adjustedTurn = Math.abs(throttle) * turn * SystemSettings.kTurnSensitivity;
-
-		return DriveMessage.fromThrottleAndTurn(throttle, adjustedTurn).setNeutralMode(ECommonNeutralMode.BRAKE);
-	}
-
-	private DriveMessage getArcadeDrive(double throttle, double turn, Codex<Double, ETargetingData> targetData) {
-//        mOutput *= targetData.get(ETargetingData.ta) * kTargetAreaScalar;
-		return DriveMessage.fromThrottleAndTurn(throttle, turn).setNeutralMode(ECommonNeutralMode.BRAKE);
 	}
 
 	public void setTargetTrackingThrottle(double pTargetTrackingThrottle) {
