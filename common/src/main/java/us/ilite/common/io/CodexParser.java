@@ -1,6 +1,9 @@
 package us.ilite.common.io;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 
 import com.flybotix.hfr.codex.Codex;
@@ -8,6 +11,7 @@ import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import edu.wpi.first.wpilibj.DriverStation;
+import us.ilite.common.Data;
 
 public class CodexParser {
 
@@ -16,23 +20,37 @@ public class CodexParser {
     private static final String USER_DIR = System.getProperty("user.home");
     private static final String LOG_PATH_FORMAT = "/logs/%s/%s-%s-%s.csv";
     private Codex<?, ?> mCodex;
-    private String mWriterKey;
+    private BufferedWriter writer;
 
     public CodexParser( Codex<?, ?> pCodex ) {
         mCodex = pCodex;
-        constructKey( mCodex );
+
+        File file = file();
+        Data.handleCreation( file );
+        try {
+            writer = new BufferedWriter( new FileWriter( file ) );
+        } catch (IOException pE) {
+            pE.printStackTrace();
+        }
+
     }
 
-    public void constructKey( Codex<?, ?> constructFrom ) {
-        mWriterKey = constructFrom.meta().getEnum().getSimpleName();
+    public void writeHeader() {
+        try {
+            writer.append(mCodex.getCSVHeader());
+            writer.newLine();
+        } catch (IOException pE) {
+            pE.printStackTrace();
+        }
     }
 
-    public String codexToCSVHeader() {
-        return mCodex.getCSVHeader();
-    }
-
-    public String codexToCSVLog() {
-        return mCodex.toCSV() + " : " + System.currentTimeMillis() / 1000;
+    public void writeLine() {
+        try {
+            writer.append(mCodex.toCSV());
+            writer.newLine();
+        } catch (IOException pE) {
+            pE.printStackTrace();
+        }
     }
 
     public File file() {
@@ -48,11 +66,12 @@ public class CodexParser {
         if ( eventName.length() <= 0 ) {
             eventName = "Default-Event";
         }
+
         File file = new File(String.format( dir + LOG_PATH_FORMAT,
+                            mCodex.meta().getEnum().getSimpleName(),
                             eventName,
                             DriverStation.getInstance().getMatchType().name(),
-                            Integer.toString(DriverStation.getInstance().getMatchNumber()),
-                            mCodex.meta().getEnum().getSimpleName()
+                            Integer.toString(DriverStation.getInstance().getMatchNumber())
                             ));
 
         mLog.error("Creating log file at ", file.toPath());
@@ -60,7 +79,13 @@ public class CodexParser {
         return file;
     }
 
-    public String getWriterKey() {
-        return mWriterKey;
+    public void closeWriter() {
+        try {
+            writer.flush();
+            writer.close();
+        } catch (IOException pE) {
+            pE.printStackTrace();
+        }
     }
+
 }

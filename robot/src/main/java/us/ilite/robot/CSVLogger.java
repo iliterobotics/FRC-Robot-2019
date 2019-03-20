@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.Notifier;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 
+import java.nio.file.Files;
+
 public class CSVLogger implements Runnable {
     private Notifier mLoggingNotifier;
     private Data mData;
@@ -26,7 +28,6 @@ public class CSVLogger implements Runnable {
      */
     public void stop() {
         mLoggingNotifier.stop();
-        mData.closeWriters();
     }
 
     public void run() {
