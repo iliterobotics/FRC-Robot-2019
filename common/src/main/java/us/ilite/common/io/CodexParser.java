@@ -5,11 +5,15 @@ import java.nio.file.Files;
 
 import com.flybotix.hfr.codex.Codex;
 
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class CodexParser {
+
+    private final ILog mLog = Logger.createLog(CodexParser.class);
     private static final String ROBOT_DIR = "/u";
-    private static final String USER_DIR = System.getProperty("user.dir");
+    private static final String USER_DIR = System.getProperty("user.home");
     private static final String LOG_PATH_FORMAT = "/logs/%s/%s-%s-%s.csv";
     private Codex<?, ?> mCodex;
     private String mWriterKey;
@@ -44,12 +48,16 @@ public class CodexParser {
         if ( eventName.length() <= 0 ) {
             eventName = "Default-Event";
         }
-        return new File(String.format( dir + LOG_PATH_FORMAT,
-                        eventName,
-                        DriverStation.getInstance().getMatchType().name(),
-                        Integer.toString(DriverStation.getInstance().getMatchNumber()),
-                        mCodex.meta().getEnum().getSimpleName()
-                        ));
+        File file = new File(String.format( dir + LOG_PATH_FORMAT,
+                            eventName,
+                            DriverStation.getInstance().getMatchType().name(),
+                            Integer.toString(DriverStation.getInstance().getMatchNumber()),
+                            mCodex.meta().getEnum().getSimpleName()
+                            ));
+
+        mLog.error("Creating log file at ", file.toPath());
+
+        return file;
     }
 
     public String getWriterKey() {
