@@ -14,11 +14,11 @@ public class AbstractSystemSettingsUtilsTest {
     public void testClassLoadingType() {
         TestObj testObj = new TestObj();
         assertEquals(500, TestObj.kControlLoopPeriod,0);
-        assertEquals(500, TestObj.NETWORK_TABLE_UPDATE_RATE,0);
+        assertEquals(500, TestObj.kNetworkTableUpdateRate,0);
         AbstractSystemSettingsUtils.copyOverValues(PracticeBotSystemSettings.getInstance(), testObj);
 
         assertEquals(0.01, TestObj.kControlLoopPeriod,0);
-        assertEquals(0.01, TestObj.NETWORK_TABLE_UPDATE_RATE,0);
+        assertEquals(0.01, TestObj.kNetworkTableUpdateRate,0);
     }
     @Test
     public void testPrintObject() {
@@ -26,12 +26,12 @@ public class AbstractSystemSettingsUtilsTest {
         Map<String, String> allPropsAndVals = AbstractSystemSettingsUtils.getAllCurrentPropsAndValues(testObj);
         
         assertTrue(allPropsAndVals.containsKey("kControlLoopPeriod"));
-        assertTrue(allPropsAndVals.containsKey("NETWORK_TABLE_UPDATE_RATE"));
+        assertTrue(allPropsAndVals.containsKey("kNetworkTableUpdateRate"));
 
         String kControl = allPropsAndVals.remove("kControlLoopPeriod");
         assertEquals(Double.toString(TestObj.kControlLoopPeriod), kControl);
 
-        String network = allPropsAndVals.remove("NETWORK_TABLE_UPDATE_RATE");
+        String network = allPropsAndVals.remove("kNetworkTableUpdateRate");
         assertEquals(Double.toString(TestObj.kControlLoopPeriod), network);
         assertTrue(allPropsAndVals.isEmpty());
     }

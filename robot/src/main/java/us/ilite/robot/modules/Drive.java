@@ -106,7 +106,7 @@ public class Drive extends Loop {
 	  	setDriveMessage(DriveMessage.kNeutral);
 	  	setDriveState(EDriveState.NORMAL);
 
-	  	startCsvLogging();
+//	  	startCsvLogging();
 	}
 
 	@Override

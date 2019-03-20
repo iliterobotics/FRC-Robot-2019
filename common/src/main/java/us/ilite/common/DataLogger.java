@@ -15,7 +15,7 @@ public class DataLogger extends Thread {
                     while(running) {
                         loggedData.logFromNetworkTables();
                         // System.out.println(System.currentTimeMillis() + " " + loggedData.imu);
-                        loggedData.logFromCodexToCSVLog();
+                        loggedData.networkTablesCodexToCSVLog();
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
