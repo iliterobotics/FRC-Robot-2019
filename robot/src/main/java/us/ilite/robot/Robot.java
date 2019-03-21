@@ -153,13 +153,13 @@ public class Robot extends TimedRobot {
 
         mSettings.loadFromNetworkTables();
 
-        mLoopManager.setRunningLoops(mDrive);
-        mLoopManager.start();
-
         // Init modules after commands are set
-        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mTeleopCommandManager, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight);
+        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mTeleopCommandManager, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
+
+        mLoopManager.setRunningLoops(mLimelight, mDrive);
+        mLoopManager.start();
 
         mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
 
@@ -181,11 +181,11 @@ public class Robot extends TimedRobot {
 
         mSettings.loadFromNetworkTables();
 
-        mRunningModules.setModules(mDriverInput, mLimelight, mTeleopCommandManager, mElevator, mHatchFlower, /*mIntake,*/ mCargoSpit, mPneumaticIntake, mFourBar);
+        mRunningModules.setModules(mDriverInput, mTeleopCommandManager, mElevator, mHatchFlower, /*mIntake,*/ mCargoSpit, mPneumaticIntake, mFourBar);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
-        mLoopManager.setRunningLoops(mDrive);
+        mLoopManager.setRunningLoops(mLimelight, mDrive);
         mLoopManager.start();
 
         mCSVLogger.start(); // start csv logging

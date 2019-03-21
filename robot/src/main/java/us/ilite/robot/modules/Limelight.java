@@ -15,9 +15,11 @@ import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.ETrackingType;
 
 import static us.ilite.common.types.ETargetingData.*;
+
+import us.ilite.robot.loops.Loop;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
 
-public class Limelight extends Module implements ITargetDataProvider {
+public class Limelight extends Loop implements ITargetDataProvider {
 
     private final NetworkTable mTable = NetworkTableInstance.getDefault().getTable("limelight");
 
@@ -74,6 +76,10 @@ public class Limelight extends Module implements ITargetDataProvider {
         } else {
             setTracking(ETrackingType.NONE);
         }
+    }
+
+    public void loop(double pNow) {
+        update(pNow);
     }
 
     @Override
