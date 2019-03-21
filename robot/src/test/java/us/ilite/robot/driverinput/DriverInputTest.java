@@ -69,7 +69,7 @@ public class DriverInputTest {
      * Verify that the driver can stop autonomous and take manual control of the robot.
      */
     @Test
-    public void testAutonomousOverride() {
+    public void testLeft_FrontLeft_Rocket_HatchSequence() {
         for(ELogitech310 overrideButton : SystemSettings.kAutonOverrideTriggers) {
             mData.driverinput.reset();
             // Reset superstructure with new command
@@ -106,7 +106,7 @@ public class DriverInputTest {
             mData.driverinput.set(commandTrigger, 1.0);
             updateRobot();
 
-            verify(mDriverInput).updateVisionCommands(mClock.getCurrentTime());
+            verify(mDriverInput).updateVisionCommands(anyDouble());
 
             resetSpies();
         }
@@ -120,8 +120,8 @@ public class DriverInputTest {
     public void testAutonDriverCommandHandling() {
 
         for(ELogitech310 commandTrigger : SystemSettings.kTeleopCommandTriggers) {
-            mAutonomousCommandManager.stopRunningCommands();
-            mTeleopCommandManager.stopRunningCommands();
+            mAutonomousCommandManager.stopRunningCommands(0.0);
+            mTeleopCommandManager.stopRunningCommands(0.0);
             mAutonomousCommandManager.startCommands(new Delay(30));
             // If we press and release a button the command queue should get stopped
             mData.driverinput.set(commandTrigger, 1.0);

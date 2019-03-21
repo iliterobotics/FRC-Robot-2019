@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import us.ilite.common.AutonSelectionData;
 import us.ilite.common.Data;
+import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.trajectory.TrajectoryConstraints;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.types.auton.*;
@@ -93,18 +94,14 @@ public class AutonomousRoutines {
     }
 
     public ICommand[] getSequence() {
-        Integer cargoShipAction = (int)Data.kAutonTable.getEntry( ECargoShipAction.class.getSimpleName() ).getDouble(99);
-        Integer hatchShipAction = (int)Data.kAutonTable.getEntry( EHatchShipAction.class.getSimpleName() ).getDouble(99);;
-        Integer cargoRocketAction = (int)Data.kAutonTable.getEntry( ECargoRocketAction.class.getSimpleName() ).getDouble( 99 );
-        Integer hatchRocketAction = (int)Data.kAutonTable.getEntry( EHatchRocketAction.class.getSimpleName() ).getDouble( 99 );
-        Integer startingPosition = (int)Data.kAutonTable.getEntry( EStartingPosition.class.getSimpleName() ).getDouble( 99 );
-        AutonSelectionData data = mGson.fromJson("", AutonSelectionData.class);
+        String jsonData = Data.kAutonTable.getEntry(SystemSettings.kAutonSelectionDataKey).getString("");
+        AutonSelectionData data = mGson.fromJson(jsonData, AutonSelectionData.class);
         
-        switch(EStartingPosition.intToEnum( startingPosition )) {
+        switch(data.mStartingPosition) {
             case LEFT:
-                switch (EHatchShipAction.intToEnum( hatchShipAction )) {
+                switch (data.mHatchShipAction) {
                     case FRONT_LEFT:
-                        switch (EHatchRocketAction.intToEnum( hatchRocketAction )) {
+                        switch (data.mHatchRocketAction) {
                             case LEFT:
                                 return mLeft_FrontLeft_Rocket_HatchSequence;
                             case RIGHT:
@@ -115,9 +112,9 @@ public class AutonomousRoutines {
                     default:
                         break;
                 }
-                switch (ECargoShipAction.intToEnum( cargoShipAction )) {
+                switch (data.mCargoShipAction) {
                     case FRONT_LEFT:
-                        switch (ECargoRocketAction.intToEnum( cargoRocketAction )) {
+                        switch (data.mCargoRocketAction) {
                             case MID:
                                 return mLeft_FrontLeft_Rocket_CargoSequence;
                             default:
@@ -125,9 +122,9 @@ public class AutonomousRoutines {
                         }
                 }
             case MID_LEFT:
-                switch (EHatchShipAction.intToEnum( hatchShipAction )) {
+                switch (data.mHatchShipAction) {
                     case FRONT_LEFT:
-                        switch (EHatchRocketAction.intToEnum( hatchRocketAction )) {
+                        switch (data.mHatchRocketAction) {
                             case LEFT:
                                 return mMidLeft_FrontLeft_Rocket_HatchSequence;
                             case RIGHT:
@@ -138,9 +135,9 @@ public class AutonomousRoutines {
                     default:
                         break;
                 }
-                switch (ECargoShipAction.intToEnum( cargoShipAction )) {
+                switch (data.mCargoShipAction) {
                     case FRONT_LEFT:
-                        switch (ECargoRocketAction.intToEnum( cargoRocketAction )) {
+                        switch (data.mCargoRocketAction) {
                             case MID:
                                 return mMidLeft_FrontLeft_Rocket_CargoSequence;
                             default:
@@ -148,9 +145,9 @@ public class AutonomousRoutines {
                         }
                 }
             case MID_RIGHT:
-                switch (EHatchShipAction.intToEnum( hatchShipAction )) {
-                    case FRONT_RIGHT:
-                        switch (EHatchRocketAction.intToEnum( hatchRocketAction )) {
+                switch (data.mHatchShipAction) {
+                    case FRONT_LEFT:
+                        switch (data.mHatchRocketAction) {
                             case LEFT:
                                 return mMidLeft_FrontLeft_Rocket_HatchSequence;
                             case RIGHT:
@@ -161,9 +158,9 @@ public class AutonomousRoutines {
                     default:
                         break;
                 }
-                switch (ECargoShipAction.intToEnum( cargoShipAction )) {
-                    case FRONT_RIGHT:
-                        switch (ECargoRocketAction.intToEnum( cargoRocketAction )) {
+                switch (data.mCargoShipAction) {
+                    case FRONT_LEFT:
+                        switch (data.mCargoRocketAction) {
                             case MID:
                                 return mMidLeft_FrontLeft_Rocket_CargoSequence;
                             default:
@@ -171,9 +168,9 @@ public class AutonomousRoutines {
                         }
                 }
             case RIGHT:
-                switch (EHatchShipAction.intToEnum( hatchShipAction )) {
-                    case FRONT_RIGHT:
-                        switch (EHatchRocketAction.intToEnum( hatchRocketAction )) {
+                switch (data.mHatchShipAction) {
+                    case FRONT_LEFT:
+                        switch (data.mHatchRocketAction) {
                             case LEFT:
                                 return mRight_FrontRight_Rocket_HatchSequence;
                             case RIGHT:
@@ -184,9 +181,9 @@ public class AutonomousRoutines {
                     default:
                         break;
                 }
-                switch (ECargoShipAction.intToEnum( cargoShipAction )) {
+                switch (data.mCargoShipAction) {
                     case FRONT_LEFT:
-                        switch (ECargoRocketAction.intToEnum( cargoRocketAction )) {
+                        switch (data.mCargoRocketAction) {
                             case MID:
                                 return mRight_FrontRight_Rocket_CargoSequence;
                             default:
@@ -201,6 +198,22 @@ public class AutonomousRoutines {
 
         return null;
 
+    }
+
+    public AutoSequence getmLeft_FrontLeft_Rocket() {
+        return mLeft_FrontLeft_Rocket;
+    }
+
+    public AutoSequence getmMidLeft_FrontLeft_Rocket() {
+        return mMidLeft_FrontLeft_Rocket;
+    }
+
+    public AutoSequence getmRight_FrontRight_Rocket() {
+        return mRight_FrontRight_Rocket;
+    }
+
+    public AutoSequence getmMidRight_FrontRight_Rocket() {
+        return mMidRight_FrontRight_Rocket;
     }
 
 }

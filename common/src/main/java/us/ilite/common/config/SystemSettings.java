@@ -19,6 +19,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kNetworkTableUpdateRate = 0.01;
 
     public static int sCODEX_COMMS_PORT = 5805;
+    public static String kAutonSelectionDataKey = "AUTON_DATA";
 
     // ===========================
     // System ID's

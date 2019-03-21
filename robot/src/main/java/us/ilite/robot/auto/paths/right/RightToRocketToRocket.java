@@ -71,12 +71,12 @@ public class RightToRocketToRocket extends AutoSequence{
   
     @Override
     public ICommand[] generateCargoSequence() {
-          return null;
+          return new ICommand[]{};
     }
 
     @Override
     public ICommand[] generateHatchSequence() {
-          return null;
+          return new ICommand[]{};
     }
     
 }
