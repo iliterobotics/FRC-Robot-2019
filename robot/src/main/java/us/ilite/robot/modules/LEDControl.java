@@ -18,12 +18,12 @@ public class LEDControl extends Module {
     private Limelight mLimelight;
 
     
-    static class RGB {
+    public static class RGB {
         private int mR;
         private int mG;
         private int mB;
 
-        RGB(int pR, int pG, int pB) {
+        public RGB(int pR, int pG, int pB) {
             // Value range for each color is 0-255, we'll enforce this with a modulo divide
             this.mR = pR % 256;
             this.mG = pG % 256;
