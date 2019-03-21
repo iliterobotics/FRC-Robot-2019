@@ -72,6 +72,8 @@ public class Robot extends TimedRobot {
     private VisionGyro mVisionGyro = new VisionGyro(mData);
     private PneumaticIntake mPneumaticIntake = new PneumaticIntake( mData );
 
+    private LEDControl mLEDControl = new LEDControl( mIntake, mElevator, mHatchFlower, mCargoSpit, mLimelight);
+
     private DriverInput mDriverInput = new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, false  );
 
     private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
@@ -149,7 +151,7 @@ public class Robot extends TimedRobot {
         mLoopManager.start();
 
         // Init modules after commands are set
-        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mTeleopCommandManager, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight);
+        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mTeleopCommandManager, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mLEDControl);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
