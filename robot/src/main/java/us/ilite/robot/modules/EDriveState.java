@@ -7,6 +7,7 @@ package us.ilite.robot.modules;
 public enum EDriveState {
 
     NORMAL,
-    PATH_FOLLOWING
+    PATH_FOLLOWING,
+    TARGET_ANGLE_LOCK
 
 }

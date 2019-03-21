@@ -49,7 +49,7 @@ public class Data {
     private final List<CodexSender> mSenders = new ArrayList<>();
 
     public final Codex[] mAllCodexes = new Codex[] {
-            imu, /*drive,*/ driverinput, operatorinput, elevator, cargospit, pdp, intake, limelight, fourbar
+            imu, /*drive,*/ driverinput, operatorinput, elevator, cargospit, pdp, intake, /*limelight,*/ fourbar
     };
 
     public final Codex[] mLoggedCodexes = new Codex[] {
