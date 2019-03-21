@@ -130,6 +130,9 @@ public class Limelight extends Loop implements ITargetDataProvider {
         mTable.getEntry("stream").setNumber(stream.ordinal());
     }
 
+    public VisionTarget getVisionTarget() {
+        return mVisionTarget;
+    }
 
     @Override
     public String toString() {

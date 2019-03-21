@@ -1,7 +1,5 @@
 package us.ilite.robot.driverinput;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -377,13 +375,13 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         SystemSettings.VisionTarget visionTarget = null;
 
         // Switch the limelight to a pipeline and track
-        if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN)) {
+        if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_HATCH_TARGET_BTN)) {
             trackingType = ETrackingType.TARGET_LEFT;
             // TODO Determine which target height we're using
             visionTarget = SystemSettings.VisionTarget.HatchPort;
-        } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN)) {
-            trackingType = ETrackingType.CARGO_LEFT;
-            visionTarget = SystemSettings.VisionTarget.CargoHeight;
+        } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_CARGO_TARGET_BTN)) {
+            trackingType = ETrackingType.TARGET_LEFT;
+            visionTarget = SystemSettings.VisionTarget.CargoPort;
         } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN)) {
             trackingType = ETrackingType.LINE_LEFT;
             visionTarget = SystemSettings.VisionTarget.Ground;
@@ -407,9 +405,10 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             mLog.warn(
                     "Requesting command start");
             mTeleopCommandManager.stopRunningCommands(pNow);
-            mTeleopCommandManager.startCommands(new LimelightTargetLock(mDrive, mLimelight, 3, trackingType, this, false));
+            mTeleopCommandManager.startCommands(new LimelightTargetLock(mDrive, mLimelight, 3, trackingType, this, false).setVisionTarget(visionTarget));
             SmartDashboard.putString("Last Tracking Type", mLastTrackingType == null ? "Null" : mLastTrackingType.name());
             SmartDashboard.putString("Tracking Type", trackingType.name());
+            SmartDashboard.putString("Vision Target", mLimelight.getVisionTarget().name());
         }
 
         mLastTrackingType = trackingType;

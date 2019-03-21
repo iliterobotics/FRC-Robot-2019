@@ -1,5 +1,6 @@
 package us.ilite.robot.commands;
 
+import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.IThrottleProvider;
@@ -21,6 +22,12 @@ public class LimelightTargetLock extends TargetLock {
 
         this.mLimelight = pLimelight;
         mLimelight.setTracking(pTrackingType);
+    }
+
+    public LimelightTargetLock setVisionTarget(SystemSettings.VisionTarget pVisionTarget) {
+        mLimelight.setVisionTarget(pVisionTarget);
+
+        return this;
     }
 
     public void shutdown(double pNow) {
