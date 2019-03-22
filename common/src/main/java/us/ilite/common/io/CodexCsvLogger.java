@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import com.flybotix.hfr.codex.Codex;
 
@@ -64,7 +66,8 @@ public class CodexCsvLogger {
 
         String eventName = DriverStation.getInstance().getEventName();
         if ( eventName.length() <= 0 ) {
-            eventName = "Default-Event";
+            // event name format: MM-DD-YYYY_HH-MM-SS
+            eventName =  new SimpleDateFormat("MM-dd-YYYY_HH-mm-ss").format(Calendar.getInstance().getTime());
         }
 
         File file = new File(String.format( dir + LOG_PATH_FORMAT,
