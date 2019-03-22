@@ -124,8 +124,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kElevatorOpenLoopMaxPower = 1.0;
 
     public static double kElevatorOpenLoopRampRate = 0.1;
-    public static int kElevatorSmartCurrentLimit = 80;
-    public static int kElevatorSecondaryCurrentLimit = 100;
+    public static int kElevatorSmartCurrentLimit = 40;
+    public static int kElevatorSecondaryCurrentLimit = 50;
 
     /*
     Smart Motion Constants
