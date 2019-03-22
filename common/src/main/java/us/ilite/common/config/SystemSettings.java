@@ -280,7 +280,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // PID TargetLock constants
     // =============================================================================
-    public static PIDGains kTargetAngleLockGains = new PIDGains(0.05, 0.000, 0.0);
+    public static PIDGains kTargetAngleLockGains = new PIDGains(0.0005, 0.000, 0.0);
     public static PIDGains kTargetDistanceLockGains = new PIDGains( 0.1, 0.0, 0.0);
 
     public static final double kTargetAngleLockMinPower = -1.0;
