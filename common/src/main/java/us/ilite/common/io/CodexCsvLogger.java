@@ -71,8 +71,8 @@ public class CodexCsvLogger {
         }
 
         File file = new File(String.format( dir + LOG_PATH_FORMAT,
-                            mCodex.meta().getEnum().getSimpleName(),
                             eventName,
+                            mCodex.meta().getEnum().getSimpleName(),
                             DriverStation.getInstance().getMatchType().name(),
                             Integer.toString(DriverStation.getInstance().getMatchNumber())
                             ));

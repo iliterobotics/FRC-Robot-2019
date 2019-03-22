@@ -227,9 +227,9 @@ public class Robot extends TimedRobot {
 
     private void commonPeriodic() {
         double start = Timer.getFPGATimestamp();
-//        for(Codex c : mData.mAllCodexes) {
-//            c.reset();
-//        }
+        for(Codex c : mData.mAllCodexes) {
+            c.reset();
+        }
         EPowerDistPanel.map(mData.pdp, pdp);
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
