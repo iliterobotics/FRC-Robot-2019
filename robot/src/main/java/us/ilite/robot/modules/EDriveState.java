@@ -8,6 +8,7 @@ public enum EDriveState {
 
     NORMAL,
     PATH_FOLLOWING,
-    TARGET_ANGLE_LOCK
+    TARGET_ANGLE_LOCK,
+    PLAN_TO_TARGET
 
 }

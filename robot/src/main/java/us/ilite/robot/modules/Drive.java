@@ -4,8 +4,10 @@ import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.LogOutput;
 import com.flybotix.hfr.util.log.Logger;
+import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.ReflectingCSVWriter;
@@ -17,6 +19,8 @@ import us.ilite.common.lib.control.DriveController;
 import com.team254.frc2018.planners.DriveMotionPlanner;
 import com.team254.lib.physics.DriveOutput;
 import us.ilite.common.lib.control.PIDController;
+import us.ilite.common.lib.trajectory.TrajectoryConstraints;
+import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.lib.util.Conversions;
 import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.drive.EDriveData;
@@ -24,6 +28,7 @@ import us.ilite.common.types.sensor.EGyro;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.lib.drivers.ECommonControlMode;
 import us.ilite.lib.drivers.ECommonNeutralMode;
+import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.robot.hardware.NeoDriveHardware;
 import us.ilite.robot.hardware.SrxDriveHardware;
 import us.ilite.robot.hardware.IDriveHardware;
@@ -40,6 +45,8 @@ import java.util.List;
  * TODO Turn-to-heading with Motion Magic
  */
 public class Drive extends Loop {
+
+	private static final TrajectoryConstraints kTrajectoryToTargetConstraints = AutonomousRoutines.kDefaultTrajectoryConstraints;
 	private final ILog mLogger = Logger.createLog(Drive.class);
 
 	private Data mData;
@@ -51,6 +58,7 @@ public class Drive extends Loop {
 	private DriveMessage mDriveMessage;
 	private double mTargetTrackingThrottle = 0;
 
+	private TrajectoryGenerator mRealTimeTrajectoryGenerator;
 	private PIDController mTargetAngleLockPid;
 	private DriveController mDriveController;
 
@@ -60,14 +68,11 @@ public class Drive extends Loop {
 	ReflectingCSVWriter<DebugOutput> mDebugLogger = null;
 	DebugOutput debugOutput = new DebugOutput();
 
-//	PerfTimer mUpdateTimer = new PerfTimer().alwayLog();
-//	PerfTimer mCalculateTimer = new PerfTimer().alwayLog().setLogMessage("Calculate: %s");
-//	PerfTimer mMotionPlannerTimer = new PerfTimer().alwayLog().setLogMessage("Planner: %s");
-
 	public Drive(Data data, DriveController pDriveController, Clock pSimClock, boolean pSimulated)
 	{
 		this.mData = data;
 		this.mDriveController = pDriveController;
+		this.mRealTimeTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
 		if(pSimulated) {
 			this.mSimClock = pSimClock;
 			this.mDriveHardware = new SimDriveHardware(mSimClock, mDriveController.getRobotProfile());
@@ -169,44 +174,12 @@ public class Drive extends Loop {
 
 	@Override
 	public void loop(double pNow) {
-//		mUpdateTimer.start();
+
+		Codex<Double, ETargetingData> targetData = mData.limelight;
+
 		switch(mDriveState) {
 			case PATH_FOLLOWING:
-//				mCalculateTimer.start();
-//				mMotionPlannerTimer.start();
-				// Update controller - calculates new robot position and retrieves motion planner output
-				DriveOutput output = mDriveController.update(
-						pNow,
-						mData.drive.get(EDriveData.LEFT_POS_INCHES),
-						mData.drive.get(EDriveData.RIGHT_POS_INCHES),
-						Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES)).inverse());
-//				mMotionPlannerTimer.stop();
-				// Convert controller output into something compatible with Talons
-				DriveMessage driveMessage = new DriveMessage(
-						Conversions.radiansPerSecondToTicksPer100ms(output.left_velocity),
-						Conversions.radiansPerSecondToTicksPer100ms(output.right_velocity),
-						ECommonControlMode.VELOCITY);
-
-				double leftAccel = Conversions.radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
-				double rightAccel = Conversions.radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
-
-				/*
-				 * SP = setpoint, PV = process variable
-				 * CTRE only uses -kD * dPV/dt for derivative output, not kD * de/dt.
-				 * This is because SP (provided by robot @ x Hz) gets updated less frequently than PV (updated by Talon at 1000Hz),
-				 * which means that the derivative of error would be highly inaccurate and cause oscillation.
-				 * Since kD * de/dt = kD * (SP - PV)/dt = ((kD * SP) - (kD * PV)) / dt, and dt = 1 for the Talon, we can add the
-				 * setpoint derivative calculation back in.
-					*/
-				double leftDemand = (output.left_feedforward_voltage / 12.0) + SystemSettings.kDriveVelocity_kD * leftAccel / 1023.0;
-				double rightDemand = (output.right_feedforward_voltage / 12.0) + SystemSettings.kDriveVelocity_kD * rightAccel / 1023.0;
-
-				// Add in the feedforward we've calculated and set motors to Brake mode
-				driveMessage.setDemand(leftDemand, rightDemand);
-				driveMessage.setNeutralMode(ECommonNeutralMode.BRAKE);
-
-				mDriveMessage = driveMessage;
-//				mCalculateTimer.stop();
+				mDriveMessage = getPathFollowingOutput(pNow);
 
 				if(mDebugLogger != null) {
 					debugOutput.update(pNow, mDriveMessage);
@@ -216,7 +189,6 @@ public class Drive extends Loop {
 				break;
 			case TARGET_ANGLE_LOCK:
 
-				Codex<Double, ETargetingData> targetData = mData.limelight;
 				double pidOutput;
 				if(mTargetAngleLockPid != null && targetData != null && targetData.isSet(ETargetingData.tv) && targetData.get(ETargetingData.tx) != null) {
 
@@ -227,6 +199,24 @@ public class Drive extends Loop {
 					mDriveMessage = DriveMessage.getClampedTurnDrive(mTargetTrackingThrottle, pidOutput);
 					// If we've already seen the target and lose tracking, exit.
 				}
+
+				break;
+			case PLAN_TO_TARGET:
+
+				Pose2d targetPose = new Pose2d(targetData.get(
+						ETargetingData.calcTargetX),
+						targetData.get(ETargetingData.calcTargetY),
+						Rotation2d.fromDegrees(targetData.get(ETargetingData.ts)
+				));
+
+				List<Pose2d> waypoints = new ArrayList<>();
+				waypoints.add(new Pose2d());
+				waypoints.add(targetPose);
+
+				Trajectory<TimedState<Pose2dWithCurvature>> trajectory = mRealTimeTrajectoryGenerator.generateTrajectory(false, waypoints, kTrajectoryToTargetConstraints);
+				mDriveController.setTrajectory(trajectory, true);
+
+				mDriveMessage = getPathFollowingOutput(pNow);
 
 				break;
 			case NORMAL:
@@ -246,10 +236,16 @@ public class Drive extends Loop {
 		mDriveHardware.set(DriveMessage.kNeutral);
 	}
 
+	public synchronized void setPlanningToTarget() {
+		mDriveState = EDriveState.PLAN_TO_TARGET;
+		mDriveHardware.configureMode(ECommonControlMode.VELOCITY);
+		mDriveHardware.set(DriveMessage.kNeutral.setControlMode(ECommonControlMode.VELOCITY));
+	}
+
 	public synchronized void setPathFollowing() {
 		mDriveState = EDriveState.PATH_FOLLOWING;
 		mDriveHardware.configureMode(ECommonControlMode.VELOCITY);
-		mDriveHardware.set(new DriveMessage(0.0, 0.0, ECommonControlMode.VELOCITY));
+		mDriveHardware.set(DriveMessage.kNeutral.setControlMode(ECommonControlMode.VELOCITY));
 	}
 
 	public synchronized void setNormal() {
@@ -271,6 +267,40 @@ public class Drive extends Loop {
 		if(mDebugLogger != null) {
 			mDebugLogger.write();
 		}
+	}
+
+	private DriveMessage getPathFollowingOutput(double pNow) {
+		// Update controller - calculates new robot position and retrieves motion planner output
+		DriveOutput output = mDriveController.update(
+				pNow,
+				mData.drive.get(EDriveData.LEFT_POS_INCHES),
+				mData.drive.get(EDriveData.RIGHT_POS_INCHES),
+				Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES)).inverse());
+		// Convert controller output into something compatible with Talons
+		DriveMessage driveMessage = new DriveMessage(
+				Conversions.radiansPerSecondToTicksPer100ms(output.left_velocity),
+				Conversions.radiansPerSecondToTicksPer100ms(output.right_velocity),
+				ECommonControlMode.VELOCITY);
+
+		double leftAccel = Conversions.radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
+		double rightAccel = Conversions.radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
+
+		/*
+		 * SP = setpoint, PV = process variable
+		 * CTRE only uses -kD * dPV/dt for derivative output, not kD * de/dt.
+		 * This is because SP (provided by robot @ x Hz) gets updated less frequently than PV (updated by Talon at 1000Hz),
+		 * which means that the derivative of error would be highly inaccurate and cause oscillation.
+		 * Since kD * de/dt = kD * (SP - PV)/dt = ((kD * SP) - (kD * PV)) / dt, and dt = 1 for the Talon, we can add the
+		 * setpoint derivative calculation back in.
+		 */
+		double leftDemand = (output.left_feedforward_voltage / 12.0) + SystemSettings.kDriveVelocity_kD * leftAccel / 1023.0;
+		double rightDemand = (output.right_feedforward_voltage / 12.0) + SystemSettings.kDriveVelocity_kD * rightAccel / 1023.0;
+
+		// Add in the feedforward we've calculated and set motors to Brake mode
+		driveMessage.setDemand(leftDemand, rightDemand);
+		driveMessage.setNeutralMode(ECommonNeutralMode.BRAKE);
+
+		return driveMessage;
 	}
 
 	@Override
