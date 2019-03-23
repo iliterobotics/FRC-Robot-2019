@@ -97,6 +97,9 @@ public class FourBar extends Module {
     public void update( double pNow ) {
         if(Math.abs(mOutput) < 0.02) {
             mCanController.setReference(mNeo1Encoder.getPosition(), ControlType.kPosition);
+            /*if ( -35 < mAngularPosition && mAngularPosition < 25) {
+                mNeos.set( someOutput );
+            }*/
         } else {
             mNeos.set( mOutput );
         }

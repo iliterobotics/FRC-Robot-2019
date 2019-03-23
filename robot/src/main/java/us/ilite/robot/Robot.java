@@ -173,7 +173,7 @@ public class Robot extends TimedRobot {
 
         mSettings.loadFromNetworkTables();
 
-        mRunningModules.setModules(mDriverInput, mTeleopCommandManager, mElevator, mHatchFlower, /*mIntake,*/ mCargoSpit, mPneumaticIntake, mFourBar/*, mLEDControl*/);
+        mRunningModules.setModules(mDriverInput, mTeleopCommandManager, mElevator, mHatchFlower, /*mIntake,*/ mCargoSpit, mPneumaticIntake, mFourBar, mLEDControl);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
@@ -225,7 +225,7 @@ public class Robot extends TimedRobot {
         EPowerDistPanel.map(mData.pdp, pdp);
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
-//        mData.sendCodicesToNetworkTables();
+        mData.sendCodicesToNetworkTables();
         SmartDashboard.putNumber("common_periodic_dt", Timer.getFPGATimestamp() - start);
     }
 
