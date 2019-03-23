@@ -62,6 +62,10 @@ public class FourBar extends Module {
         mNeo2Encoder.setPositionConversionFactor(-1.0);
         mCanController = mNeos.getPIDController();
 
+        mNeos.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        mNeo2.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        mNeos.burnFlash();
+        mNeo2.burnFlash();
 
 
         updateAngularPosition();
