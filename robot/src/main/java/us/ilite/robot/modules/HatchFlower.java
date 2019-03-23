@@ -99,7 +99,7 @@ public class HatchFlower extends Module {
         mGrabSolenoid.set(mGrabberState.grabber);
         mExtendSolenoid.set(mExtensionState.extension);
 
-        if(hasGrabberStateChanged() && mGrabberState == GrabberState.RELEASE) {
+        if(hasGrabberStateChanged() && mGrabberState == GrabberState.RELEASE && mExtensionState == ExtensionState.DOWN) {
             mReleaseDistance = getAverageDistanceTraveled();
             mBackupTimer.reset();
             mBackupTimer.start();
@@ -135,13 +135,12 @@ public class HatchFlower extends Module {
 
         double distanceDelta = mReleaseDistance - getAverageDistanceTraveled();
 
-//        return
-//            mGrabberState == GrabberState.RELEASE &&
-//            hasGrabberStateChanged() &&
-//            mExtensionState == ExtensionState.DOWN &&
-//            distanceDelta >= SystemSettings.kHatchFlowerReleaseDistance;
+        return
+            mGrabberState == GrabberState.RELEASE &&
+            mExtensionState == ExtensionState.DOWN &&
+            distanceDelta <= SystemSettings.kHatchFlowerReleaseDistance;
 
-        return mBackupTimer.get() <= SystemSettings.kHatchFlowerReleaseTime;
+//        return mBackupTimer.get() <= SystemSettings.kHatchFlowerReleaseTime;
     }
 
     public boolean hasGrabberStateChanged() {

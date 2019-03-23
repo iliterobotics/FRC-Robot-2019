@@ -35,7 +35,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Drive Train Constants
     // =============================================================================
-    public static double kDriveGearboxRatio = (12.0 / 80.0) / (38.0 / 80.0);
+    public static double kDriveGearboxRatio = (12.0 / 80.0) * (42.0 / 80.0);
     public static double kDriveClosedLoopVoltageRampRate = 0.0;
     public static double kDriveOpenLoopVoltageRampRate = 0.1;
     public static int kDriveCurrentLimitAmps = 50;
@@ -44,8 +44,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDrivetrainWheelDiameterFeet = kDriveWheelDiameterInches / 12.0;
     public static double kDriveWheelCircumference = kDriveWheelDiameterInches * Math.PI;
     public static double kDrivetrainDefaultRampRate = 120.0; // in V/sec
-    public static double kDriveTicksPerRotation = 1024;
-    public static double kDriveEffectiveWheelbase = 23.0;
+    public static double kDriveTicksPerRotation = 1.0;
+    public static double kDriveEffectiveWheelbase = 23.25;
     public static double kDrivetrainTurnCircumference = kDriveEffectiveWheelbase * Math.PI;
     public static double kDrivetrainInchesPerDegree = kDrivetrainTurnCircumference / 360.0;
     public static double kDrivetrainWheelTurnsPerDegree = kDrivetrainInchesPerDegree / kDriveWheelDiameterInches;
