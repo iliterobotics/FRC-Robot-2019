@@ -5,10 +5,10 @@ import javafx.geometry.HPos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -16,58 +16,30 @@ import javafx.stage.Stage;
 
 public class CameraFeedOverlay extends Application {
 
-    private Scene mScene;
-
     @Override
-    public void start( Stage pStage ) {
-        // create the scene
-        pStage.setTitle( "Web View" );
-        mScene = new Scene( new Browser());
-        pStage.setScene( mScene );
-        mScene.getStylesheets().add( "webviewsample/BrowserToolbar.css" );
-        pStage.show();
+    public void start(Stage stage) {
+
+        WebView webView = new WebView();
+        WebEngine engine = webView.getEngine();
+        Button btn = new Button("Load Site");
+
+        Canvas canvas = new Canvas( 800, 500 );
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        canvas.setOnMouseDragged( e -> gc.fillOval( e.getX(), e.getY(), 5,5 ) );
+
+        StackPane root = new StackPane();
+        root.getChildren().addAll ( webView, canvas);
+
+        Scene scene = new Scene(root, 800, 500);
+        engine.load("http://10.18.85.11:5800" );
+        stage.setScene(scene);
+        stage.show();
     }
 
     public static void main( String[] args ) {
         launch( args );
     }
 }
-     class Browser extends Region {
 
-        final WebView browser = new WebView();
-        final WebEngine webEngine = browser.getEngine();
 
-        public Browser() {
-            //apply the styles
-            getStyleClass().add( "Browser" );
-            // load the web page
-            webEngine.load( "http://www.oracle.com/products/index.html" );
-            //add the web view to the scene
-            getChildren().add( browser );
-
-        }
-
-        private Node createSpacer() {
-            Region spacer = new Region();
-            HBox.setHgrow( spacer, Priority.ALWAYS );
-            return spacer;
-        }
-
-        @Override
-        protected void layoutChildren() {
-            double w = getWidth();
-            double h = getHeight();
-            layoutInArea( browser, 0, 0, w, h, 0, HPos.CENTER, VPos.CENTER );
-        }
-
-        @Override
-        protected double computePrefWidth( double height ) {
-            return 750;
-        }
-
-        @Override
-        protected double computePrefHeight( double width ) {
-            return 500;
-        }
-    }
 

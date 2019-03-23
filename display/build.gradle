@@ -6,7 +6,7 @@ mainClassName = 'us.ilite.display.UserInterface.CameraFeedOverlay'
 apply from: 'plot.gradle'
 
 javafx {
-    modules = [ 'javafx.base', 'javafx.controls', 'javafx.media', 'javafx.graphics', 'javafx.fxml' ]
+    modules = [ 'javafx.base', 'javafx.controls', 'javafx.media', 'javafx.graphics', 'javafx.fxml', 'javafx.web' ]
     version = "11.0.+"
 }
 
