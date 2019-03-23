@@ -2,6 +2,7 @@ package us.ilite.robot.commands;
 
 import com.flybotix.hfr.codex.Codex;
 
+import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.ETrackingType;
@@ -60,6 +61,7 @@ public class TargetLock implements ICommand {
     @Override
     public boolean update(double pNow) {
         Codex<Double, ETargetingData> currentData = mCamera.getTargetingData();
+        Data.kSmartDashboard.getEntry("Has Acquired Target").setBoolean(mHasAcquiredTarget);
 
         if(currentData != null && currentData.isSet(ETargetingData.tv) && currentData.get(ETargetingData.tx) != null) {
             mHasAcquiredTarget = true;
@@ -83,8 +85,8 @@ public class TargetLock implements ICommand {
             //if there is no target in the limelight's pov, continue turning in direction specified by SearchDirection
             mDrive.setDriveMessage(
                 new DriveMessage(
-                    mTargetSearchThrottleProvider.getThrottle() + mTrackingType.getTurnScalar() * kTURN_POWER,
-                    mTargetSearchThrottleProvider.getThrottle() + mTrackingType.getTurnScalar() * -kTURN_POWER,
+                    mTargetSearchThrottleProvider.getThrottle() + (mTrackingType.getTurnScalar() * kTURN_POWER),
+                    mTargetSearchThrottleProvider.getThrottle() + (mTrackingType.getTurnScalar() * -kTURN_POWER),
                     ECommonControlMode.PERCENT_OUTPUT
                 ).setNeutralMode(ECommonNeutralMode.BRAKE)
             );

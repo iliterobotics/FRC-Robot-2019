@@ -389,6 +389,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN)) {
             trackingType = ETrackingType.LINE_LEFT;
             visionTarget = SystemSettings.VisionTarget.Ground;
+        } else {
+            trackingType = null;
         }
 
         // If the driver selected a tracking enum and we won't go out of bounds
@@ -400,9 +402,11 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             } else if (mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT)) {
                 // If driver wants to seek right, switch from "_LEFT" enum to "_RIGHT" enum
                 trackingType = ETrackingType.values()[trackingTypeOrdinal + 1];
-            } else {
+            } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN)){
                 // Default to no search
                 trackingType = ETrackingType.values()[trackingTypeOrdinal + 2];
+            } else {
+                trackingType = null;
             }
         }
 
