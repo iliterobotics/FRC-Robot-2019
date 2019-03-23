@@ -151,15 +151,15 @@ public class Data {
 
     public void logFromCodexToCSVHeader() {
         // Check that the USB drive is still plugged in
-        if(Files.exists(new File(CodexCsvLogger.USB_DIR).toPath())) {
+//        if(Files.exists(new File(CodexCsvLogger.USB_DIR).toPath())) {
             mCodexCsvLoggers.forEach(c -> c.writeHeader());
-        }
+//        }
     }
     public void logFromCodexToCSVLog() {
         // Check that the USB drive is still plugged in
-        if(Files.exists(new File(CodexCsvLogger.USB_DIR).toPath())) {
+//        if(Files.exists(new File(CodexCsvLogger.USB_DIR).toPath())) {
             mCodexCsvLoggers.forEach(c -> c.writeLine());
-        }
+//        }
     }
 
     /**
