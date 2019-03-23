@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -17,10 +16,12 @@ import us.ilite.common.Data;
 
 public class CodexCsvLogger {
 
-    private final ILog mLog = Logger.createLog(CodexCsvLogger.class);
-    private static final String ROBOT_DIR = "/u";
-    private static final String USER_DIR = System.getProperty("user.home");
+    public static final String USB_DIR = "/u";
+    public static final String USER_DIR = System.getProperty("user.home");
     private static final String LOG_PATH_FORMAT = "/logs/%s/%s-%s-%s.csv";
+
+    private final ILog mLog = Logger.createLog(CodexCsvLogger.class);
+
     private Codex<?, ?> mCodex;
     private BufferedWriter writer;
 
@@ -57,12 +58,15 @@ public class CodexCsvLogger {
 
     public File file() {
 
-        String dir = "";
-        if(Files.notExists(new File("/u").toPath())) {
-            dir = USER_DIR;
-        } else {
-            dir = ROBOT_DIR;
-        }
+        // Don't default to home dir to avoid filling up memory
+//        String dir = "";
+//        if(Files.notExists(new File(USB_DIR).toPath())) {
+//            dir = USER_DIR;
+//        } else {
+//            dir = USB_DIR;
+//        }
+
+        String dir = USB_DIR;
 
         String eventName = DriverStation.getInstance().getEventName();
         if ( eventName.length() <= 0 ) {
