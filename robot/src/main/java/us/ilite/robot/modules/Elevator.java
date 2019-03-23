@@ -59,7 +59,7 @@ public class Elevator extends Module {
         CARGO_LOADING_STATION(17),
         CARGO_CARGO_SHIP(16.5),
         CARGO_MIDDLE(26),
-        CARGO_TOP(42.5);
+        CARGO_TOP(43.5);
 
         private double kEncoderRotations;
 
