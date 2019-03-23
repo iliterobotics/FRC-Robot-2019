@@ -126,7 +126,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kElevatorOpenLoopMaxPower = 1.0;
 
     public static double kElevatorOpenLoopRampRate = 0.1;
-    public static int kElevatorSmartCurrentLimit = 50;
+    public static int kElevatorSmartCurrentLimit = 60;
     public static int kElevatorSecondaryCurrentLimit = 80;
 
     // If the elevator's PDP slot draws more than this much current we flash the LEDs
