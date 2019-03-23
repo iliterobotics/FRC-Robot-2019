@@ -216,6 +216,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
             if(Math.abs(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS)) > 0.02) {
                 mFourBar.setDesiredOutput(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CLIMBER_AXIS) * 0.7, false);
+            } else {
+                mFourBar.setDesiredOutput(0.0, true);
             }
 
             if(mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_PUSHER_BUTTON)) {
