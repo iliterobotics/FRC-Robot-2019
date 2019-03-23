@@ -100,7 +100,7 @@ public class Elevator extends Module {
         mCanController.setSmartMotionMinOutputVelocity(0, SystemSettings.kElevatorSmartMotionSlot);
         mCanController.setSmartMotionAllowedClosedLoopError(SystemSettings.kElevatorClosedLoopAllowableError, SystemSettings.kElevatorSmartMotionSlot);
 
-        mMasterElevator.getEncoder().setPosition(0);
+        zeroEncoder();
 
         // Make sure the elevator is stopped upon initialization
         mDesiredPosition = EElevatorPosition.HATCH_BOTTOM;
@@ -159,6 +159,7 @@ public class Elevator extends Module {
      */
     public void zeroEncoder() {
         mMasterElevator.getEncoder().setPosition(0);
+        mData.elevator.set(EElevator.CURRENT_ENCODER_TICKS, 0.0);
     }
 
 
