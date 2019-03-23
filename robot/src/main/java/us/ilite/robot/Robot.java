@@ -31,16 +31,7 @@ import us.ilite.lib.drivers.VisionGyro;
 import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
-import us.ilite.robot.modules.CargoSpit;
-import us.ilite.robot.modules.CommandManager;
-import us.ilite.robot.modules.Drive;
-import us.ilite.robot.modules.Elevator;
-import us.ilite.robot.modules.FourBar;
-import us.ilite.robot.modules.HatchFlower;
-import us.ilite.robot.modules.Intake;
-import us.ilite.robot.modules.Limelight;
-import us.ilite.robot.modules.ModuleList;
-import us.ilite.robot.modules.PneumaticIntake;
+import us.ilite.robot.modules.*;
 
 public class Robot extends TimedRobot {
 
@@ -75,8 +66,9 @@ public class Robot extends TimedRobot {
     private VisionGyro mVisionGyro = new VisionGyro(mData);
     private PneumaticIntake mPneumaticIntake = new PneumaticIntake(mData);
 
-    private DriverInput mDriverInput = new DriverInput(mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake,
-            mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, false);
+    private LEDControl mLEDControl = new LEDControl( mIntake, mElevator, mHatchFlower, mCargoSpit, mLimelight);
+
+    private DriverInput mDriverInput = new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, false  );
 
     private TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
     private AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator,
@@ -154,7 +146,7 @@ public class Robot extends TimedRobot {
         mSettings.loadFromNetworkTables();
 
         // Init modules after commands are set
-        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mTeleopCommandManager, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator);
+        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mTeleopCommandManager, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mLEDControl);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 

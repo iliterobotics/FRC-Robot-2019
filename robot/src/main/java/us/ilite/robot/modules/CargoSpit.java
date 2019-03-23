@@ -139,6 +139,7 @@ public class CargoSpit extends Module {
     public boolean isIntaking() {
         return mIntaking;
     }
+    public boolean isOuttaking() { return mOuttaking; }
     
     public void stop() {
         mLeftMotor.set( ControlMode.PercentOutput, kZero );
