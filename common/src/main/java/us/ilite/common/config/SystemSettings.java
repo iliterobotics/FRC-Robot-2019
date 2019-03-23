@@ -9,6 +9,7 @@ import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.util.NetworkTablesConstantsBase;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.ELogitech310;
+import us.ilite.common.types.sensor.EPowerDistPanel;
 
 public class SystemSettings extends NetworkTablesConstantsBase {
 
@@ -37,7 +38,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveGearboxRatio = (12.0 / 80.0) / (38.0 / 80.0);
     public static double kDriveClosedLoopVoltageRampRate = 0.0;
     public static double kDriveOpenLoopVoltageRampRate = 0.1;
-    public static int kDriveCurrentLimitAmps = 40;
+    public static int kDriveCurrentLimitAmps = 50;
     public static int kDriveCurrentLimitTriggerDurationMs = 100;
     public static double kDriveWheelDiameterInches = 6.0;
     public static double kDrivetrainWheelDiameterFeet = kDriveWheelDiameterInches / 12.0;
@@ -48,6 +49,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDrivetrainTurnCircumference = kDriveEffectiveWheelbase * Math.PI;
     public static double kDrivetrainInchesPerDegree = kDrivetrainTurnCircumference / 360.0;
     public static double kDrivetrainWheelTurnsPerDegree = kDrivetrainInchesPerDegree / kDriveWheelDiameterInches;
+
 
     public static CheesyDriveGains kCheesyDriveGains = new CheesyDriveGains();
 
@@ -126,6 +128,9 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kElevatorOpenLoopRampRate = 0.1;
     public static int kElevatorSmartCurrentLimit = 50;
     public static int kElevatorSecondaryCurrentLimit = 60;
+
+    // If the elevator's PDP slot draws more than this much current we flash the LEDs
+    public static int kElevatorWarnCurrentLimitThreshold = 30;
 
     /*
     Smart Motion Constants
@@ -335,6 +340,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // 2019 Module Addresses
     // =============================================================================
     public static int kPigeonId = 30;
+    public static int kCanifierAddress = 40;
 
     public static  int kDriveLeftMasterTalonId = 1;
     public static int kDriveLeftMiddleTalonId = 3;
@@ -342,6 +348,17 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static  int kDriveRightMasterTalonId = 2;
     public static int kDriveRightMiddleTalonId = 4;
     public static  int kDriveRightRearTalonId = 6;
+
+    public static EPowerDistPanel[] kDrivePdpSlots = new EPowerDistPanel[]{
+            /* Left */
+            EPowerDistPanel.CURRENT1,
+            EPowerDistPanel.CURRENT2,
+
+            /* Right */
+            EPowerDistPanel.CURRENT13,
+            EPowerDistPanel.CURRENT14,
+
+    };
 
     public static int kPowerDistPanelAddress = 21;
     public static int kCargoSpitLeftSPXAddress = 13;
@@ -356,10 +373,28 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kFourBarNEO1Address = 9;
     public static int kFourBarNEO2Address = 10;
     public static int kFourBarPusherAddress = 0;
+
     // TO-DO: label solenoid as forward/reverse in spreadsheet
     public static int kFourBarDoubleSolenoidForwardAddress = 0;
     public static int kFourBarDoubleSolenoidReverseAddress = 1;
     public static int kFourBarTBDSensorAddress = -1;
+
+    public static double kFourBarP = 4.0e-4;
+    public static double kFourBarI = 0.0;
+    public static double kFourBarD = 0.0;
+    public static double kFourBarF = 0.0;
+
+    public static double kFourBarWarnCurrentLimitThreshold = 40;
+
+    public static EPowerDistPanel[] kFourBarPdpSlots = new EPowerDistPanel[] {
+            EPowerDistPanel.CURRENT0,
+            EPowerDistPanel.CURRENT15
+    };
+
+    public static double kMaxFourBarVelocity = 2000;
+    public static double kMinFourBarVelocity = 0;
+    public static double kMaxFourBarAcceleration = 2000;
+    public static double kFourBarClosedLoopAllowableError = 0;
 
     public static int kHatchFlowerOpenCloseSolenoidAddress = 5;
     public static int kHatchFlowerExtensionSolenoidAddress = 6;

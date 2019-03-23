@@ -10,10 +10,13 @@ public enum ETrackingType {
     */
     TARGET_LEFT(0, -1, true),
     TARGET_RIGHT(1, 1, true),
+    TARGET(1, 0, true),
     CARGO_LEFT(2, -1, false),
     CARGO_RIGHT(3, 1, false),
+    CARGO(3, 0, true),
     LINE_LEFT(4, -1, false),
     LINE_RIGHT(5, 1, false),
+    LINE(5, 0, false),
     NONE(6, 0, false);
 
     private final int kPipelineNum;

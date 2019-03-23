@@ -12,6 +12,7 @@ import com.team254.lib.util.Util;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.manipulator.EElevator;
+import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.SparkMaxFactory;
 
 
@@ -191,6 +192,10 @@ public class Elevator extends Module {
 
     public boolean isAtPosition(EElevatorPosition pPosition) {
         return mCurrentState == EElevatorState.SET_POSITION && (Math.abs(pPosition.getEncoderRotations() - mData.elevator.get(EElevator.CURRENT_ENCODER_TICKS)) <= SystemSettings.kElevatorAllowableError);
+    }
+
+    public boolean isCurrentLimiting() {
+        return mData.pdp.get(EPowerDistPanel.CURRENT9) > SystemSettings.kElevatorWarnCurrentLimitThreshold;
     }
 
     public void stop() {

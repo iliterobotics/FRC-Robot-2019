@@ -66,7 +66,7 @@ public class Robot extends TimedRobot {
     private VisionGyro mVisionGyro = new VisionGyro(mData);
     private PneumaticIntake mPneumaticIntake = new PneumaticIntake(mData);
 
-    private LEDControl mLEDControl = new LEDControl( mIntake, mElevator, mHatchFlower, mCargoSpit, mLimelight);
+    private LEDControl mLEDControl = new LEDControl(mDrive, mElevator, mPneumaticIntake, mCargoSpit, mHatchFlower, mFourBar, mLimelight, mData);
 
     private DriverInput mDriverInput = new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, false  );
 
@@ -146,7 +146,7 @@ public class Robot extends TimedRobot {
         mSettings.loadFromNetworkTables();
 
         // Init modules after commands are set
-        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mTeleopCommandManager, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLEDControl);
+        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mElevator, mHatchFlower, /*mIntake,*/ mCargoSpit, mPneumaticIntake, mFourBar/*, mLEDControl*/);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
@@ -173,7 +173,7 @@ public class Robot extends TimedRobot {
 
         mSettings.loadFromNetworkTables();
 
-        mRunningModules.setModules(mDriverInput, mTeleopCommandManager, mElevator, mHatchFlower, /*mIntake,*/ mCargoSpit, mPneumaticIntake, mFourBar);
+        mRunningModules.setModules(mDriverInput, mTeleopCommandManager, mElevator, mHatchFlower, /*mIntake,*/ mCargoSpit, mPneumaticIntake, mFourBar/*, mLEDControl*/);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 

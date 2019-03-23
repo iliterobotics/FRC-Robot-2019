@@ -87,5 +87,14 @@ public enum EPowerDistPanel implements CodexOf<Double> {
     pCodex.set(VOLTAGE, pPDP.getVoltage());
     pCodex.set(TEMPERATURE, pPDP.getTemperature());
   }
+
+  public static boolean isAboveCurrentThreshold(double pCurrentThreshold, Codex<Double, EPowerDistPanel> pPdpCodex, EPowerDistPanel ... pPdpSlots) {
+      boolean isCurrentLimiting = false;
+      for(EPowerDistPanel slot : pPdpSlots) {
+        if(pPdpCodex.get(slot) >= pCurrentThreshold) isCurrentLimiting = true;
+      }
+
+      return isCurrentLimiting;
+  }
   
 }

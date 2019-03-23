@@ -401,7 +401,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 // If driver wants to seek right, switch from "_LEFT" enum to "_RIGHT" enum
                 trackingType = ETrackingType.values()[trackingTypeOrdinal + 1];
             } else {
-                trackingType = null;
+                // Default to no search
+                trackingType = ETrackingType.values()[trackingTypeOrdinal + 2];
             }
         }
 

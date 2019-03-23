@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.EFourBarData;
+import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.SparkMaxFactory;
 import us.ilite.robot.hardware.SolenoidWrapper;
 
@@ -187,6 +188,10 @@ public class FourBar extends Module {
         mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
 
         mData.fourbar.set( EFourBarData.ANGLE, mAngularPosition );
+    }
+
+    public boolean isCurrentLimiting() {
+        return EPowerDistPanel.isAboveCurrentThreshold(SystemSettings.kFourBarWarnCurrentLimitThreshold, mData.pdp, SystemSettings.kFourBarPdpSlots);
     }
 
 

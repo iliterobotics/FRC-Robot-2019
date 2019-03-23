@@ -107,7 +107,7 @@ public class Data {
 //        );
         
         mCodexCsvLoggers = new ArrayList<>();
-        for(Codex c : mLoggedCodexes) mCodexCsvLoggers.add(new CodexCsvLogger(c));
+//        for(Codex c : mLoggedCodexes) mCodexCsvLoggers.add(new CodexCsvLogger(c));
     }
 
     /**

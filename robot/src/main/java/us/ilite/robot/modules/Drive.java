@@ -21,6 +21,7 @@ import us.ilite.common.lib.util.Conversions;
 import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
+import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.lib.drivers.ECommonControlMode;
 import us.ilite.lib.drivers.ECommonNeutralMode;
@@ -309,6 +310,10 @@ public class Drive extends Loop {
 
 	public synchronized void setHeading(Rotation2d pHeading) {
 		mGyroOffset = pHeading.rotateBy(mDriveHardware.getHeading().inverse());
+	}
+
+	public boolean isCurrentLimiting() {
+		return EPowerDistPanel.isAboveCurrentThreshold(SystemSettings.kDriveCurrentLimitAmps, mData.pdp, SystemSettings.kDrivePdpSlots);
 	}
 
 	public Clock getSimClock() {

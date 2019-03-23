@@ -3,6 +3,8 @@ package us.ilite.robot.modules;
 import com.ctre.phoenix.CANifier;
 
 import edu.wpi.first.wpilibj.Timer;
+import us.ilite.common.Data;
+import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.ETrackingType;
 
 public class LEDControl extends Module {
@@ -11,11 +13,15 @@ public class LEDControl extends Module {
     private Timer mBlinkTimer;
     private boolean mLedOn;
     private Message mCurrentMessage;
-    private Elevator mElevator;
-    private Intake mIntake;
-    private HatchFlower mHatchFlower;
-    private CargoSpit mCargoSpit;
-    private Limelight mLimelight;
+    
+    private final Drive mDrive;
+    private final Elevator mElevator;
+    private final PneumaticIntake mPneumaticIntake;
+    private final CargoSpit mCargoSpit;
+    private final HatchFlower mHatchFlower;
+    private final FourBar mFourBar;
+    private final Limelight mLimelight;
+    private final Data mData;
 
     
     public static class RGB {
@@ -105,20 +111,22 @@ public class LEDControl extends Module {
         }
     }
 
+    public LEDControl(Drive mDrive, Elevator mElevator, PneumaticIntake mPneumaticIntake, CargoSpit mCargoSpit, HatchFlower mHatchFlower, FourBar mFourBar, Limelight mLimelight, Data mData) {
+        this.mDrive = mDrive;
+        this.mElevator = mElevator;
+        this.mPneumaticIntake = mPneumaticIntake;
+        this.mCargoSpit = mCargoSpit;
+        this.mHatchFlower = mHatchFlower;
+        this.mFourBar = mFourBar;
+        this.mLimelight = mLimelight;
+        this.mData = mData;
 
-    public LEDControl(Intake pIntake, Elevator pElevator, HatchFlower pHatchFlower, CargoSpit pCargoSpit, Limelight pLimelight)
-    {
-        mIntake = pIntake;
-        mElevator = pElevator;
-        mHatchFlower = pHatchFlower;
-        mCargoSpit = pCargoSpit;
-        mLimelight = pLimelight;
+        mCanifier = new CANifier(SystemSettings.kCanifierAddress);
         this.mCurrentMessage = Message.NONE;
         this.mLedOn = true;
 
         this.mBlinkTimer = new Timer();
         this.mBlinkTimer.reset();
-
     }
 
 
@@ -138,14 +146,21 @@ public class LEDControl extends Module {
     public void update(double pNow) {
         Message lastMsg = this.mCurrentMessage;
         this.mCurrentMessage = Message.NONE;
+        
+        if(mCargoSpit.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
+        if(mElevator.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
+        if(mDrive.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
+        if(mFourBar.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
+        
         if(mCargoSpit.hasCargo()) mCurrentMessage = Message.HAS_CARGO;
         if(mHatchFlower.hasHatch()) mCurrentMessage = Message.HAS_HATCH;
+        
         if(mLimelight.getTracking() != ETrackingType.NONE) mCurrentMessage = Message.VISION_TRACKING;
+        
         if(mCargoSpit.isOuttaking()) mCurrentMessage = Message.SPITTING_CARGO;
         if(mHatchFlower.getExtensionState().equals( HatchFlower.ExtensionState.DOWN ) &&
                 mHatchFlower.getGrabberState().equals( HatchFlower.GrabberState.RELEASE ))
                 mCurrentMessage = Message.KICKING_HATCH;
-        if(mIntake.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
 
 
         // Did the message change?

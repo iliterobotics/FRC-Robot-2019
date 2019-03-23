@@ -135,7 +135,7 @@ public class HatchFlower extends Module {
      * @return Whether the hatch grabber is currently holding a hatch.
      */
     public boolean hasHatch() {
-        return true;
+        return false;
     }
 
 }
