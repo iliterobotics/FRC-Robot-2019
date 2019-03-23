@@ -2,9 +2,7 @@ package us.ilite.robot.modules;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.*;
 import com.team254.lib.util.Util;
 
 import edu.wpi.first.wpilibj.Solenoid;
@@ -34,6 +32,8 @@ public class FourBar extends Module {
     private CANEncoder mNeo1Encoder;
     private CANEncoder mNeo2Encoder;
 
+    private CANPIDController mCanController;
+
     private double mAngularPosition;
     private double mNeoARotations = 0;
     private double mNeoBRotations = 0;
@@ -57,6 +57,11 @@ public class FourBar extends Module {
         mNeo2Encoder = mNeo2.getEncoder();
         mNeo1Encoder.setPosition(0);
         mNeo1Encoder.setPosition(0);
+        mNeo1Encoder.setPositionConversionFactor(-1.0);
+        mNeo2Encoder.setPositionConversionFactor(-1.0);
+        mCanController = mNeos.getPIDController();
+
+
 
         updateAngularPosition();
         mData = pData;
@@ -69,6 +74,17 @@ public class FourBar extends Module {
         mOutput = 0;
 
         mNeos.setSmartCurrentLimit( 80 );
+
+        mCanController.setP(SystemSettings.kFourBarP);
+        mCanController.setI(SystemSettings.kFourBarI);
+        mCanController.setD(SystemSettings.kFourBarD);
+        mCanController.setFF(SystemSettings.kFourBarF);
+
+//        mCanController.setSmartMotionMaxAccel(SystemSettings.kMaxElevatorAcceleration, 0);
+//        mCanController.setSmartMotionMinOutputVelocity(SystemSettings.kMinElevatorVelocity, 0);
+//        mCanController.setSmartMotionMaxVelocity(SystemSettings.kMaxElevatorVelocity, 0);
+//        mCanController.setSmartMotionMinOutputVelocity(0, 0);
+//        mCanController.setSmartMotionAllowedClosedLoopError(SystemSettings.kFourBarClosedLoopAllowableError, 0);
     }
 
     @Override
@@ -78,7 +94,11 @@ public class FourBar extends Module {
 
     @Override
     public void update( double pNow ) {
-        mNeos.set( mOutput );
+        if(Math.abs(mOutput) < 0.02) {
+            mCanController.setReference(mNeo1Encoder.getPosition(), ControlType.kPosition);
+        } else {
+            mNeos.set( mOutput );
+        }
     }
 
     @Override
@@ -168,4 +188,8 @@ public class FourBar extends Module {
 
         mData.fourbar.set( EFourBarData.ANGLE, mAngularPosition );
     }
+
+
 }
+
+
