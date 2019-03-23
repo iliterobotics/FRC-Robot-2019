@@ -61,7 +61,7 @@ public class Robot extends TimedRobot {
     private Elevator mElevator = new Elevator(mData);
     private Intake mIntake = new Intake(mData);
     private CargoSpit mCargoSpit = new CargoSpit(mData);
-    private HatchFlower mHatchFlower = new HatchFlower();
+    private HatchFlower mHatchFlower = new HatchFlower(mData);
     private Limelight mLimelight = new Limelight(mData);
     private VisionGyro mVisionGyro = new VisionGyro(mData);
     private PneumaticIntake mPneumaticIntake = new PneumaticIntake(mData);

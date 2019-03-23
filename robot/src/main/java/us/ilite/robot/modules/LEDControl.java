@@ -158,9 +158,7 @@ public class LEDControl extends Module {
         if(mLimelight.getTracking() != ETrackingType.NONE) mCurrentMessage = Message.VISION_TRACKING;
         
         if(mCargoSpit.isOuttaking()) mCurrentMessage = Message.SPITTING_CARGO;
-        if(mHatchFlower.getExtensionState().equals( HatchFlower.ExtensionState.DOWN ) &&
-                mHatchFlower.getGrabberState().equals( HatchFlower.GrabberState.RELEASE ))
-                mCurrentMessage = Message.KICKING_HATCH;
+        if(mHatchFlower.shouldBackUp()) mCurrentMessage = Message.KICKING_HATCH;
 
 
         // Did the message change?
