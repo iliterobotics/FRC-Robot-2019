@@ -1,8 +1,5 @@
 package us.ilite.robot.hardware;
 
-import com.ctre.phoenix.motorcontrol.*;
-import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -13,11 +10,13 @@ import com.revrobotics.ControlType;
 import com.team254.lib.geometry.Rotation2d;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.util.Conversions;
+import us.ilite.common.lib.util.RangeScale;
 import us.ilite.lib.drivers.ECommonControlMode;
 import us.ilite.lib.drivers.IMU;
 import us.ilite.lib.drivers.Pigeon;
 import us.ilite.lib.drivers.SparkMaxFactory;
 import us.ilite.robot.modules.DriveMessage;
+import us.ilite.robot.modules.Elevator;
 
 public class NeoDriveHardware implements IDriveHardware {
 
@@ -30,6 +29,8 @@ public class NeoDriveHardware implements IDriveHardware {
     private ControlType mLeftControlMode, mRightControlMode;
     private CANSparkMax.IdleMode mLeftNeutralMode, mRightNeutralMode;
     private int mPidSlot = SystemSettings.kDriveVelocityLoopSlot;
+    private double mCurrentOpenLoopRampRate = SystemSettings.kDriveBottomOpenLoopVoltageRampRate;
+    private RangeScale mRangeScale;
 
     public NeoDriveHardware(double pGearRatio) {
         kGearRatio = pGearRatio;
@@ -73,6 +74,10 @@ public class NeoDriveHardware implements IDriveHardware {
         reloadVelocityGains(mLeftMaster);
         reloadVelocityGains(mRightMaster);
 
+        mRangeScale = new RangeScale(SystemSettings.kDriveBottomOpenLoopVoltageRampRate,
+                SystemSettings.kDriveTopOpenLoopVoltageRampRate,
+                Elevator.EElevatorPosition.CARGO_BOTTOM.getEncoderRotations(),
+                Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
     }
 
     @Override
@@ -192,7 +197,7 @@ public class NeoDriveHardware implements IDriveHardware {
          */
 //        motorController.enableVoltageCompensation(12.0);
         // No velocity measurement filter
-        motorController.setOpenLoopRampRate(SystemSettings.kDriveOpenLoopVoltageRampRate);
+        motorController.setOpenLoopRampRate(SystemSettings.kDriveTopOpenLoopVoltageRampRate);
         motorController.setClosedLoopRampRate(SystemSettings.kDriveClosedLoopVoltageRampRate);
         // motorController.configNeutralDeadband(0.04, 0);
     }
@@ -205,6 +210,7 @@ public class NeoDriveHardware implements IDriveHardware {
         mPidSlot = SystemSettings.kDriveVelocityLoopSlot;
         mLogger.info("Configuring Spark ID ", pSparkMax.getDeviceId(), " for velocity mode");
     }
+
 
     private void reloadVelocityGains(CANSparkMax pSparkMax) {
         mLogger.info("Reloading gains for Talon ID ", pSparkMax.getDeviceId());
@@ -287,6 +293,12 @@ public class NeoDriveHardware implements IDriveHardware {
     @Override
     public double getRightVoltage() {
         return mRightMaster.getAppliedOutput() * 12.0;
+    }
+
+    @Override
+    public void setOpenLoopRampRate(double pOpenLoopRampRate) {
+        mLeftMaster.setOpenLoopRampRate(pOpenLoopRampRate);
+        mRightMaster.setOpenLoopRampRate(pOpenLoopRampRate);
     }
 
     @Override

@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import us.ilite.common.Data;
 import us.ilite.common.config.DriveTeamInputMap;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.lib.util.RangeScale;
 import us.ilite.common.types.ETrackingType;
 import us.ilite.common.types.input.EInputScale;
 import us.ilite.common.types.input.ELogitech310;
@@ -46,6 +47,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private final Limelight mLimelight;
     private final Data mData;
     private Timer mGroundCargoTimer = new Timer();
+    private RangeScale mRangeScale;
 
     private boolean mIsCargo = false;
     private Joystick mDriverJoystick;
@@ -80,6 +82,11 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             this.mDriverJoystick = new Joystick(0);
             this.mOperatorJoystick = new Joystick(1);
         }
+
+        this.mRangeScale = new RangeScale(SystemSettings.kDriveBottomOpenLoopVoltageRampRate,
+                SystemSettings.kDriveTopOpenLoopVoltageRampRate,
+                0.0,
+                Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
     }
 
     public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar) {
@@ -88,7 +95,10 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     @Override
     public void modeInit(double pNow) {
-
+        mRangeScale = new RangeScale(SystemSettings.kDriveBottomOpenLoopVoltageRampRate,
+                SystemSettings.kDriveTopOpenLoopVoltageRampRate,
+                0.0,
+                Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
     }
 
     @Override
@@ -261,9 +271,16 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         mGroundCargoTimer.reset();
     }
 
+    private void scaleRampRate() {
+        double value = mRangeScale.scaleBtoA(mElevator.getEncoderPosition());
+        SmartDashboard.putNumber("Current Ramp Rate", value);
+        mDrive.setRampRate(value);
+    }
+
     private void updateDriveTrain() {
         double rotate = getTurn();
         double throttle = getThrottle();
+        scaleRampRate();
 
         //		    throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
         rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
