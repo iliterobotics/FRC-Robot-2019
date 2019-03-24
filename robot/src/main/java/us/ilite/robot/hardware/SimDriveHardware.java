@@ -159,6 +159,11 @@ public class SimDriveHardware implements IDriveHardware {
     }
 
     @Override
+    public void setOpenLoopRampRate(double pOpenLoopRampRate) {
+
+    }
+
+    @Override
     public boolean checkHardware() {
         return false;
     }

@@ -194,7 +194,7 @@ public class SrxDriveHardware implements IDriveHardware {
         motorController.configVoltageCompSaturation(12.0, SystemSettings.kLongCANTimeoutMs);
         motorController.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, SystemSettings.kLongCANTimeoutMs);
         motorController.configVelocityMeasurementWindow(64, SystemSettings.kLongCANTimeoutMs);
-        motorController.configOpenloopRamp(SystemSettings.kDriveOpenLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
+        motorController.configOpenloopRamp(SystemSettings.kDriveBottomOpenLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
         motorController.configClosedloopRamp(SystemSettings.kDriveClosedLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
         // motorController.configNeutralDeadband(0.04, 0);
     }
@@ -291,6 +291,12 @@ public class SrxDriveHardware implements IDriveHardware {
     @Override
     public double getRightVoltage() {
         return mRightMaster.getMotorOutputVoltage();
+    }
+
+    @Override
+    public void setOpenLoopRampRate(double pOpenLoopRampRate) {
+        mLeftMaster.configOpenloopRamp(pOpenLoopRampRate);
+        mRightMaster.configOpenloopRamp(pOpenLoopRampRate);
     }
 
     @Override

@@ -365,6 +365,10 @@ public class Drive extends Loop {
 
 	}
 
+	public void setRampRate(double pOpenLoopRampRate) {
+		mDriveHardware.setOpenLoopRampRate(pOpenLoopRampRate);
+	}
+
 }
 	
 	
