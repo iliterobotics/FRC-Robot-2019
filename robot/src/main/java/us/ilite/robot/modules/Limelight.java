@@ -72,8 +72,6 @@ public class Limelight extends Loop implements ITargetDataProvider {
 
     @Override
     public void update(double pNow) {
-
-        mLog.error("Current Tracking Type: " + (mTrackingType == null ? "Null" : mTrackingType.name()));
         if(mTrackingType != null) {
             setLedMode(mTrackingType.getLedOn() ? LedMode.LED_ON : LedMode.LED_OFF);
             setPipeline(mTrackingType.getPipeline());
