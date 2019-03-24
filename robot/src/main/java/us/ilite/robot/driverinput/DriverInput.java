@@ -103,7 +103,9 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         set the superstructure command queue based off of buttons
         */
         if(isDriverAllowingCommandsInTeleop()) {
+            mLog.error("DRIVER ALLOWING COMMANDS: STOPPING AUTON");
             mAutonomousCommandManager.stopRunningCommands(pNow);
+            mLog.error("UPDATING VISION COMMANDS");
             updateVisionCommands(pNow);
         /*
         If the driver started the commands that the superstructure is running and then released the button,
@@ -126,7 +128,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 mIsCargo = true;
             } else if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_HATCH_SELECT)) {
                 mIsCargo = false;
-            }
+        }
 
             updateDriveTrain();
             updateFourBar();
@@ -380,44 +382,45 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
         // Switch the limelight to a pipeline and track
         if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN)) {
-            trackingType = ETrackingType.TARGET_LEFT;
+            mLog.error("TARGET LOCK BUTTON PRESSED");
+            trackingType = ETrackingType.TARGET;
             // TODO Determine which target height we're using
             visionTarget = SystemSettings.VisionTarget.HatchPort;
-        } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN)) {
-            trackingType = ETrackingType.CARGO_LEFT;
-            visionTarget = SystemSettings.VisionTarget.CargoHeight;
-        } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN)) {
-            trackingType = ETrackingType.LINE_LEFT;
-            visionTarget = SystemSettings.VisionTarget.Ground;
+//        } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN)) {
+//            trackingType = ETrackingType.CARGO;
+//            visionTarget = SystemSettings.VisionTarget.CargoHeight;
+//        } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN)) {
+//            trackingType = ETrackingType.LINE;
+//            visionTarget = SystemSettings.VisionTarget.Ground;
+
+            if(!trackingType.equals(mLastTrackingType)) {
+                mLog.error("Requesting command start");
+                mLog.error("Stopping teleop command queue");
+                mTeleopCommandManager.stopRunningCommands(pNow);
+                mTeleopCommandManager.startCommands(new LimelightTargetLock(mDrive, mLimelight, 2, trackingType, this, false));
+                SmartDashboard.putString("Last Tracking Type", mLastTrackingType == null ? "Null" : mLastTrackingType.name());
+                SmartDashboard.putString("Tracking Type", trackingType.name());
+            }
         } else {
             trackingType = null;
         }
 
-        // If the driver selected a tracking enum and we won't go out of bounds
-        if(trackingType != null && trackingType.ordinal() < ETrackingType.values().length - 1) {
-            int trackingTypeOrdinal = trackingType.ordinal();
-            if (mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_LEFT)) {
-                // If driver wants to seek left, we don't need to change anything
-                trackingType = ETrackingType.values()[trackingTypeOrdinal];
-            } else if (mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT)) {
-                // If driver wants to seek right, switch from "_LEFT" enum to "_RIGHT" enum
-                trackingType = ETrackingType.values()[trackingTypeOrdinal + 1];
-            } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN)){
-                // Default to no search
-                trackingType = ETrackingType.values()[trackingTypeOrdinal + 2];
-            } else {
-                trackingType = null;
-            }
-        }
-
-        if(trackingType != null && trackingType != mLastTrackingType) {
-            mLog.warn(
-                    "Requesting command start");
-            mTeleopCommandManager.stopRunningCommands(pNow);
-            mTeleopCommandManager.startCommands(new LimelightTargetLock(mDrive, mLimelight, 3, trackingType, this, false));
-            SmartDashboard.putString("Last Tracking Type", mLastTrackingType == null ? "Null" : mLastTrackingType.name());
-            SmartDashboard.putString("Tracking Type", trackingType.name());
-        }
+//        // If the driver selected a tracking enum and we won't go out of bounds
+//        if(trackingType != null && trackingType.ordinal() < ETrackingType.values().length - 1) {
+//            int trackingTypeOrdinal = trackingType.ordinal();
+//            if (mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_LEFT)) {
+//                // If driver wants to seek left, we don't need to change anything
+//                trackingType = ETrackingType.values()[trackingTypeOrdinal];
+//            } else if (mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT)) {
+//                // If driver wants to seek right, switch from "_LEFT" enum to "_RIGHT" enum
+//                trackingType = ETrackingType.values()[trackingTypeOrdinal + 1];
+//            } else if(mDriverInputCodex.isSet(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN)){
+//                // Default to no search
+//                trackingType = ETrackingType.values()[trackingTypeOrdinal + 2];
+//            } else {
+//                trackingType = null;
+//            }
+//        }
 
         mLastTrackingType = trackingType;
     }

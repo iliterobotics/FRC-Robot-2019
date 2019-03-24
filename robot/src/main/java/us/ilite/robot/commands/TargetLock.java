@@ -65,7 +65,7 @@ public class TargetLock implements ICommand {
 
         if(currentData != null && currentData.isSet(ETargetingData.tv) && currentData.get(ETargetingData.tx) != null) {
             mHasAcquiredTarget = true;
-
+            System.out.println("");
             mDrive.setTargetTrackingThrottle(mTargetLockThrottleProvider.getThrottle() * SystemSettings.kSnailModePercentThrottleReduction);
 
             mAlignedCount++;

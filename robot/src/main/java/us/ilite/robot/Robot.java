@@ -52,8 +52,8 @@ public class Robot extends TimedRobot {
 
 
     // Module declarations here
-    private CommandManager mAutonomousCommandManager = new CommandManager();
-    private CommandManager mTeleopCommandManager = new CommandManager();
+    private CommandManager mAutonomousCommandManager = new CommandManager().setManagerTag("Autonomous Manager");
+    private CommandManager mTeleopCommandManager = new CommandManager().setManagerTag("Teleop Manager");
     private DriveController mDriveController = new DriveController(new HenryProfile());
 
     private Drive mDrive = new Drive(mData, mDriveController);

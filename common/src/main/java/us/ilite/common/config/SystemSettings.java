@@ -83,12 +83,10 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kJoystickPortOperator = 1;
     public static int kJoystickPortTester = 2;
 
-    public static int kLimelightDefaultPipeline = ETrackingType.TARGET_LEFT.getPipeline();
+    public static int kLimelightDefaultPipeline = ETrackingType.TARGET.getPipeline();
     public static List<ELogitech310> kTeleopCommandTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN, 
                                                                             DriveTeamInputMap.DRIVER_TRACK_CARGO_BTN,
-                                                                            DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN,
-                                                                            DriveTeamInputMap.DRIVER_NUDGE_SEEK_LEFT,
-                                                                            DriveTeamInputMap.DRIVER_NUDGE_SEEK_RIGHT);
+                                                                            DriveTeamInputMap.DRIVER_TRACK_HATCH_BTN);
 
     public static List<ELogitech310> kAutonOverrideTriggers = Arrays.asList(DriveTeamInputMap.DRIVER_THROTTLE_AXIS,
                                                                             DriveTeamInputMap.DRIVER_TURN_AXIS);
@@ -381,7 +379,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kFourBarDoubleSolenoidReverseAddress = 1;
     public static int kFourBarTBDSensorAddress = -1;
 
-    public static double kFourBarP = 4.0e-4;
+    public static double kFourBarP = 8.0e-4;
     public static double kFourBarI = 0.0;
     public static double kFourBarD = 0.0;
     public static double kFourBarF = 0.0;
