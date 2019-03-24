@@ -29,6 +29,7 @@ public class TargetLock implements ICommand {
 
     private boolean mEndOnAlignment = true;
     private int mAlignedCount = 0;
+    private int mNoTargetCount = 0;
     private boolean mHasAcquiredTarget = false;
 
     public TargetLock(Drive pDrive, double pAllowableError, ETrackingType pTrackingType, ITargetDataProvider pCamera, IThrottleProvider pThrottleProvider) {
@@ -63,10 +64,10 @@ public class TargetLock implements ICommand {
         Codex<Double, ETargetingData> currentData = mCamera.getTargetingData();
         Data.kSmartDashboard.getEntry("Has Acquired Target").setBoolean(mHasAcquiredTarget);
 
+        mDrive.setTargetTrackingThrottle(mTargetLockThrottleProvider.getThrottle() * SystemSettings.kSnailModePercentThrottleReduction);
+
         if(currentData != null && currentData.isSet(ETargetingData.tv) && currentData.get(ETargetingData.tx) != null) {
             mHasAcquiredTarget = true;
-
-            mDrive.setTargetTrackingThrottle(mTargetLockThrottleProvider.getThrottle() * SystemSettings.kSnailModePercentThrottleReduction);
 
             mAlignedCount++;
             if(mEndOnAlignment && Math.abs(currentData.get(ETargetingData.tx)) < mAllowableError && mAlignedCount > kAlignCount) {
@@ -76,22 +77,25 @@ public class TargetLock implements ICommand {
             }
 
         // If we've already seen the target and lose tracking, exit.
-        } else if(mHasAcquiredTarget && !currentData.isSet(ETargetingData.tv)) {
-            mDrive.setDriveMessage(DriveMessage.kNeutral);
-            return true;
-        } if(!mHasAcquiredTarget){
-            System.out.println("OPEN LOOP");
-            mAlignedCount = 0;
-            //if there is no target in the limelight's pov, continue turning in direction specified by SearchDirection
-            mDrive.setDriveMessage(
-                new DriveMessage(
-                    mTargetSearchThrottleProvider.getThrottle() + (mTrackingType.getTurnScalar() * kTURN_POWER),
-                    mTargetSearchThrottleProvider.getThrottle() + (mTrackingType.getTurnScalar() * -kTURN_POWER),
-                    ECommonControlMode.PERCENT_OUTPUT
-                ).setNeutralMode(ECommonNeutralMode.BRAKE)
-            );
-
+        } else if(!currentData.isSet(ETargetingData.tv)) {
+            mNoTargetCount++;
+            if(mNoTargetCount >= SystemSettings.kTargetAngleLockLostTargetThreshold) {
+                return true;
+            }
         }
+//        if(!mHasAcquiredTarget){
+//            System.out.println("OPEN LOOP");
+//            mAlignedCount = 0;
+//            //if there is no target in the limelight's pov, continue turning in direction specified by SearchDirection
+//            mDrive.setDriveMessage(
+//                new DriveMessage(
+//                    mTargetSearchThrottleProvider.getThrottle() + (mTrackingType.getTurnScalar() * kTURN_POWER),
+//                    mTargetSearchThrottleProvider.getThrottle() + (mTrackingType.getTurnScalar() * -kTURN_POWER),
+//                    ECommonControlMode.PERCENT_OUTPUT
+//                ).setNeutralMode(ECommonNeutralMode.BRAKE)
+//            );
+//
+//        }
 
         mPreviousTime = pNow;
         
