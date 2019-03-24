@@ -288,11 +288,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static PIDGains kTargetAngleLockGains = new PIDGains(0.0005, 0.000, 0.0);
     public static PIDGains kTargetDistanceLockGains = new PIDGains( 0.1, 0.0, 0.0);
 
-    public static final double kTargetAngleLockMinPower = -1.0;
-    public static final double kTargetAngleLockMaxPower = 1.0;
-    public static final double kTargetAngleLockMinInput = -27;
-    public static final double kTargetAngleLockMaxInput = 27;
-    public static final double kTargetAngleLockFrictionFeedforward = 0.44 / 12;
+    public static double kTargetAngleLockMinPower = -1.0;
+    public static double kTargetAngleLockMaxPower = 1.0;
+    public static double kTargetAngleLockMinInput = -27;
+    public static double kTargetAngleLockMaxInput = 27;
+    public static double kTargetAngleLockFrictionFeedforward = 0.44 / 12;
 
     // =============================================================================
     // Target Constants
@@ -334,7 +334,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // grab solenoid and engaging the push solenoid.
     public static double kHatchFlowerGrabToPushTransitionTimeSec = 0.250;
     public static double kHatchFlowerExtendStatusTimerDuration = 0.5;
-    public static double kHatchFlowerReleaseDistance = 12.0;
+    public static double kHatchFlowerReleaseDistance = 6.0;
     public static double kHatchFlowerReleaseTime = 1.0;
 
 
