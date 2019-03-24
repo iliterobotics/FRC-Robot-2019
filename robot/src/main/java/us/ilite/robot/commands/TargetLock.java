@@ -29,6 +29,7 @@ public class TargetLock implements ICommand {
 
     private boolean mEndOnAlignment = true;
     private int mAlignedCount = 0;
+    private int mNoTargetCount = 0;
     private boolean mHasAcquiredTarget = false;
 
     public TargetLock(Drive pDrive, double pAllowableError, ETrackingType pTrackingType, ITargetDataProvider pCamera, IThrottleProvider pThrottleProvider) {
@@ -76,8 +77,11 @@ public class TargetLock implements ICommand {
             }
 
         // If we've already seen the target and lose tracking, exit.
-        } else if(mHasAcquiredTarget && !currentData.isSet(ETargetingData.tv)) {
-            return true;
+        } else if(!currentData.isSet(ETargetingData.tv)) {
+            mNoTargetCount++;
+            if(mNoTargetCount >= SystemSettings.kTargetAngleLockLostTargetThreshold) {
+                return true;
+            }
         }
 //        if(!mHasAcquiredTarget){
 //            System.out.println("OPEN LOOP");

@@ -291,6 +291,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static final double kTargetAngleLockMinInput = -27;
     public static final double kTargetAngleLockMaxInput = 27;
     public static final double kTargetAngleLockFrictionFeedforward = 0.44 / 12;
+    public static double kTargetAngleLockLostTargetThreshold = 10;
 
     // =============================================================================
     // Target Constants
