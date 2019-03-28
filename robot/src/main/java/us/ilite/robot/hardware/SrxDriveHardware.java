@@ -194,7 +194,7 @@ public class SrxDriveHardware implements IDriveHardware {
         motorController.configVoltageCompSaturation(12.0, SystemSettings.kLongCANTimeoutMs);
         motorController.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, SystemSettings.kLongCANTimeoutMs);
         motorController.configVelocityMeasurementWindow(64, SystemSettings.kLongCANTimeoutMs);
-        motorController.configOpenloopRamp(SystemSettings.kDriveBottomOpenLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
+        motorController.configOpenloopRamp(SystemSettings.kDriveMinOpenLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
         motorController.configClosedloopRamp(SystemSettings.kDriveClosedLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
         // motorController.configNeutralDeadband(0.04, 0);
     }

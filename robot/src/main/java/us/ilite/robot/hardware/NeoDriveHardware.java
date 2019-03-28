@@ -29,7 +29,7 @@ public class NeoDriveHardware implements IDriveHardware {
     private ControlType mLeftControlMode, mRightControlMode;
     private CANSparkMax.IdleMode mLeftNeutralMode, mRightNeutralMode;
     private int mPidSlot = SystemSettings.kDriveVelocityLoopSlot;
-    private double mCurrentOpenLoopRampRate = SystemSettings.kDriveBottomOpenLoopVoltageRampRate;
+    private double mCurrentOpenLoopRampRate = SystemSettings.kDriveMinOpenLoopVoltageRampRate;
     private RangeScale mRangeScale;
 
     public NeoDriveHardware(double pGearRatio) {
@@ -74,8 +74,8 @@ public class NeoDriveHardware implements IDriveHardware {
         reloadVelocityGains(mLeftMaster);
         reloadVelocityGains(mRightMaster);
 
-        mRangeScale = new RangeScale(SystemSettings.kDriveBottomOpenLoopVoltageRampRate,
-                SystemSettings.kDriveTopOpenLoopVoltageRampRate,
+        mRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
+                SystemSettings.kDriveMaxOpenLoopVoltageRampRate,
                 Elevator.EElevatorPosition.CARGO_BOTTOM.getEncoderRotations(),
                 Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
     }
@@ -197,7 +197,7 @@ public class NeoDriveHardware implements IDriveHardware {
          */
 //        motorController.enableVoltageCompensation(12.0);
         // No velocity measurement filter
-        motorController.setOpenLoopRampRate(SystemSettings.kDriveTopOpenLoopVoltageRampRate);
+        motorController.setOpenLoopRampRate(SystemSettings.kDriveMaxOpenLoopVoltageRampRate);
         motorController.setClosedLoopRampRate(SystemSettings.kDriveClosedLoopVoltageRampRate);
         // motorController.configNeutralDeadband(0.04, 0);
     }
