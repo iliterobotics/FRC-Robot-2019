@@ -1,58 +1,58 @@
 package us.ilite.robot.commands;
 
-import java.util.Optional;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.codex.Codex;
 
 import us.ilite.common.config.SystemSettings;
-import us.ilite.common.lib.control.PIDController;
-import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.types.ETargetingData;
+import us.ilite.common.types.ETrackingType;
+import us.ilite.lib.drivers.ECommonControlMode;
+import us.ilite.lib.drivers.ECommonNeutralMode;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
+import us.ilite.robot.modules.IThrottleProvider;
 import us.ilite.robot.modules.targetData.ITargetDataProvider;
-import us.ilite.common.lib.control.PIDGains;
 
 public class TargetLock implements ICommand {
+
+    private static final double kTURN_POWER = 0.2;
+    private static final int kAlignCount = 10;
+    private static final double kTargetAreaScalar = 1.0;
+
     private Drive mDrive;
     private ITargetDataProvider mCamera;
-    private PIDController mPID;
-    private SearchDirection mCubeSearchType;
-
-    private static final double kMIN_POWER = -1;
-    private static final double kMAX_POWER = 1;
-    private static final double kMIN_INPUT = -27;
-    private static final double kMAX_INPUT = 27;
-    private static final double kP = 0.017;
-    private static final double kI = 0;
-    private static final double kD = 0;
-    private static final double kTURN_POWER = 0.4;
+    // Different throttle providers give us some control over behavior in autonomous
+    private IThrottleProvider mTargetSearchThrottleProvider, mTargetLockThrottleProvider;
+    private ETrackingType mTrackingType;
 
     private double mAllowableError, mPreviousTime, mOutput = 0.0;
 
-    public enum SearchDirection {
-		LEFT(-1), RIGHT(1);
-		int turnScalar;
-		private SearchDirection(int turnScalar) {
-			this.turnScalar = turnScalar;
-		}
-	}
+    private boolean mEndOnAlignment = true;
+    private int mAlignedCount = 0;
+    private boolean mHasAcquiredTarget = false;
 
-    public TargetLock(Drive pDrive, double pAllowableError, SearchDirection pCubeSearchType, ITargetDataProvider pCamera) {
+    public TargetLock(Drive pDrive, double pAllowableError, ETrackingType pTrackingType, ITargetDataProvider pCamera, IThrottleProvider pThrottleProvider) {
+        this(pDrive, pAllowableError, pTrackingType, pCamera, pThrottleProvider, true);
+    }
+
+    public TargetLock(Drive pDrive, double pAllowableError, ETrackingType pTrackingType, ITargetDataProvider pCamera, IThrottleProvider pThrottleProvider, boolean pEndOnAlignment) {
         this.mDrive = pDrive;
         this.mAllowableError = pAllowableError;
-        this.mCubeSearchType = pCubeSearchType;
+        this.mTrackingType = pTrackingType;
         this.mCamera = pCamera;
+        this.mTargetSearchThrottleProvider = pThrottleProvider;
+        this.mTargetLockThrottleProvider = pThrottleProvider;
+        this.mEndOnAlignment = pEndOnAlignment;
     }
 
     @Override
     public void init(double pNow) {
-        mPID = new PIDController( new PIDGains( kP, kI, kD ), SystemSettings.kControlLoopPeriod );
-        mPID.setOutputRange(kMIN_POWER, kMAX_POWER);
-        mPID.setInputRange(kMIN_INPUT, kMAX_INPUT);
-        mPID.setSetpoint(0);
+        System.out.println("++++++++++++++++++++++++++TARGET LOCKING++++++++++++++++++++++++++++++++++++\n\n\n\n");
+
+        mHasAcquiredTarget = false;
+        mAlignedCount = 0;
+
+        mDrive.setTargetAngleLock();
+        mDrive.setTargetTrackingThrottle(0);
 
         this.mPreviousTime = pNow;
     }
@@ -61,29 +61,35 @@ public class TargetLock implements ICommand {
     public boolean update(double pNow) {
         Codex<Double, ETargetingData> currentData = mCamera.getTargetingData();
 
-        // If one data element is set in the codex, they all are
-        if(currentData.isSet(ETargetingData.tx)) {
-            if(Math.abs(currentData.get(ETargetingData.tx)) < mAllowableError) {
-                //if x offset from crosshair is within acceptable error, command TargetLock is completed
+        if(currentData != null && currentData.isSet(ETargetingData.tv) && currentData.get(ETargetingData.tx) != null) {
+            mHasAcquiredTarget = true;
+
+            mDrive.setTargetTrackingThrottle(mTargetLockThrottleProvider.getThrottle() * SystemSettings.kSnailModePercentThrottleReduction);
+
+            mAlignedCount++;
+            if(mEndOnAlignment && Math.abs(currentData.get(ETargetingData.tx)) < mAllowableError && mAlignedCount > kAlignCount) {
+                System.out.println("FINISHED");
+                // Zero drive outputs in shutdown()
                 return true;
             }
 
-            if(currentData.isSet(ETargetingData.tv)) {
-                //if there is a target in the limelight's pov, lock onto target using feedback loop
-                mOutput = mPID.calculate(currentData.get(ETargetingData.tx), pNow - mPreviousTime);
-                mDrive.setDriveMessage(new DriveMessage(mOutput, -mOutput, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Brake));
-            } else {
-                //if there is no target in the limelight's pov, continue turning in direction specified by SearchDirection
-                mDrive.setDriveMessage(
-                    new DriveMessage(
-                        mCubeSearchType.turnScalar * kTURN_POWER, 
-                        mCubeSearchType.turnScalar * kTURN_POWER, 
-                        ControlMode.PercentOutput
-                    ).setNeutralMode(NeutralMode.Brake)
-                );
-            }
-        }
+        // If we've already seen the target and lose tracking, exit.
+        } else if(mHasAcquiredTarget && !currentData.isSet(ETargetingData.tv)) {
+            mDrive.setDriveMessage(DriveMessage.kNeutral);
+            return true;
+        } if(!mHasAcquiredTarget){
+            System.out.println("OPEN LOOP");
+            mAlignedCount = 0;
+            //if there is no target in the limelight's pov, continue turning in direction specified by SearchDirection
+            mDrive.setDriveMessage(
+                new DriveMessage(
+                    mTargetSearchThrottleProvider.getThrottle() + mTrackingType.getTurnScalar() * kTURN_POWER,
+                    mTargetSearchThrottleProvider.getThrottle() + mTrackingType.getTurnScalar() * -kTURN_POWER,
+                    ECommonControlMode.PERCENT_OUTPUT
+                ).setNeutralMode(ECommonNeutralMode.BRAKE)
+            );
 
+        }
 
         mPreviousTime = pNow;
         
@@ -93,6 +99,18 @@ public class TargetLock implements ICommand {
 
     @Override
     public void shutdown(double pNow) {
-
+        mDrive.setNormal();
+        mDrive.setDriveMessage(DriveMessage.kNeutral);
     }
+
+    public TargetLock setTargetLockThrottleProvider(IThrottleProvider pThrottleProvider) {
+        this.mTargetLockThrottleProvider = pThrottleProvider;
+        return this;
+    }
+
+    public TargetLock setTargetSearchThrottleProvider(IThrottleProvider pThrottleProvider) {
+        this.mTargetSearchThrottleProvider = pThrottleProvider;
+        return this;
+    }
+
 }

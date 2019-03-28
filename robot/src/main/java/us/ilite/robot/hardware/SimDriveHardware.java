@@ -10,6 +10,8 @@ import com.team254.frc2018.Kinematics;
 import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.util.Conversions;
 import us.ilite.lib.drivers.Clock;
+import us.ilite.lib.drivers.ECommonControlMode;
+import us.ilite.lib.drivers.IMU;
 import us.ilite.robot.modules.DriveMessage;
 
 /**
@@ -18,7 +20,7 @@ import us.ilite.robot.modules.DriveMessage;
  */
 public class SimDriveHardware implements IDriveHardware {
 
-    private final ILog mLogger = Logger.createLog(DriveHardware.class);
+    private final ILog mLogger = Logger.createLog(SrxDriveHardware.class);
 
     private RobotStateEstimator mEncoderStateEstimator;
     
@@ -52,14 +54,24 @@ public class SimDriveHardware implements IDriveHardware {
         update(mClock.getCurrentTime());
     }
 
-    public void configureMode(ControlMode pControlMode) {
+    public void configureMode(ECommonControlMode pControlMode) {
         
     }
-    
+
+    @Override
+    public void setImu(IMU pImu) {
+
+    }
+
+    @Override
+    public IMU getImu() {
+        return null;
+    }
+
     public void update(double pNow) {
         double dt = pNow - mLastTime;
         mLogger.debug("Updating");
-        if(mDriveMessage.leftControlMode == ControlMode.Velocity && mDriveMessage.rightControlMode == ControlMode.Velocity) {
+        if(mDriveMessage.leftControlMode.kCtreControlMode == ControlMode.Velocity && mDriveMessage.rightControlMode.kCtreControlMode == ControlMode.Velocity) {
             mLeftEncoder.update(dt, mDriveMessage.leftOutput);
             mRightEncoder.update(dt, mDriveMessage.rightOutput);
             mLogger.debug(String.format(
@@ -96,11 +108,11 @@ public class SimDriveHardware implements IDriveHardware {
         return Conversions.ticksToInches((int)mRightEncoder.getPosition());
     }
 
-    public int getLeftVelTicks() {
+    public double getLeftVelTicks() {
         return (int)mLeftEncoder.getVelocity();
     }
 
-    public int getRightVelTicks() {
+    public double getRightVelTicks() {
         return (int)mRightEncoder.getVelocity();
     }
 

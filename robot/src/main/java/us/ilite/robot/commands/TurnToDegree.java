@@ -1,5 +1,7 @@
 package us.ilite.robot.commands;
 
+import us.ilite.lib.drivers.ECommonControlMode;
+import us.ilite.lib.drivers.ECommonNeutralMode;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 import us.ilite.common.types.sensor.EGyro;
@@ -12,7 +14,6 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.geometry.Rotation2d;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 
 public class TurnToDegree implements ICommand {
 
@@ -20,7 +21,7 @@ public class TurnToDegree implements ICommand {
 
   private static final double kTIMEOUT = 9999.9;
   private static final double kMIN_POWER = 0.0;
-  private static final double kMAX_POWER = 1.0;
+  private static final double kMAX_POWER = 0.5;
   private static final int kMIN_ALIGNED_COUNT = 25;
   private final double mAllowableError;
 
@@ -49,10 +50,9 @@ public class TurnToDegree implements ICommand {
     mTargetYaw = mInitialYaw.rotateBy( mTurnAngle );
 
     // PIDController configuration
-    pid = new PIDController( SystemSettings.kPIDGains, SystemSettings.kControlLoopPeriod );
+    pid = new PIDController( SystemSettings.kPIDGains, -180, 180, SystemSettings.kControlLoopPeriod );
     pid.setContinuous( true );
     pid.setOutputRange( kMIN_POWER, kMAX_POWER );
-    pid.setInputRange( -180, 180 );
     pid.setSetpoint( mTargetYaw.getDegrees() );
 
     mAlignedCount = 0;
@@ -71,13 +71,13 @@ public class TurnToDegree implements ICommand {
 
     // End if on target for 25 counts
     if ( mAlignedCount >= kMIN_ALIGNED_COUNT || pNow - mStartTime > kTIMEOUT ) {
-      mDrive.setDriveMessage( new DriveMessage( 0.0, 0.0, ControlMode.PercentOutput ).setNeutralMode( NeutralMode.Brake ) );
+      mDrive.setDriveMessage( new DriveMessage( 0.0, 0.0, ECommonControlMode.PERCENT_OUTPUT ).setNeutralMode( ECommonNeutralMode.BRAKE ) );
       mLogger.info( "Turn finished" );
       return true;
     }
 
     // Apply output, log, and return false for unfinished
-    mDrive.setDriveMessage( new DriveMessage( mOutput, -mOutput, ControlMode.PercentOutput ).setNeutralMode( NeutralMode.Brake ) );
+    mDrive.setDriveMessage( new DriveMessage( mOutput, -mOutput, ECommonControlMode.PERCENT_OUTPUT ).setNeutralMode( ECommonNeutralMode.BRAKE ) );
     Data.kSmartDashboard.putDouble( "turn_error", pid.getError() );
     mLogger.info( "Target: " + mTargetYaw + " Yaw: " + getYaw() + "\n" );
     return false;

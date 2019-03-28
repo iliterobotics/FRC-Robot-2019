@@ -22,20 +22,13 @@ import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.StrongholdProfile;
+import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideRocket;
 import us.ilite.robot.modules.Drive;
 
 public class TrackingSimulation {
 
     private final double kDt;
-
-    // in / s
-    private final double kMaxLinearVel = 130.0; // 10 ft/s -> 120 in / s
-    private final double kMaxLinearAccel = 130.0;
-    private final double kMaxCentripetalAccel = /*100.0*/70.0;
-    private final double kMaxVoltage = 9.0;
-
-    private final List<TimingConstraint<Pose2dWithCurvature>> kTrajectoryConstraints = Arrays.asList(new CentripetalAccelerationConstraint(kMaxCentripetalAccel));
 
     private ReflectingCSVWriter<Pose2d> csvPoseWriter;
     private ReflectingCSVWriter<DriveMotionPlanner> csvDrivePlanner;
@@ -86,15 +79,15 @@ public class TrackingSimulation {
     }
 
     public Trajectory<TimedState<Pose2dWithCurvature>> generate(boolean reversed, List<Pose2d> waypoints) {
-        return mTrajectoryGenerator.generateTrajectory(reversed, waypoints, kTrajectoryConstraints, kMaxLinearVel, kMaxLinearAccel, kMaxVoltage);
+        return mTrajectoryGenerator.generateTrajectory(reversed, waypoints, AutonomousRoutines.kDefaultTrajectoryConstraints);
     }
 
     public Trajectory<TimedState<Rotation2d>> generate(double initialHeading, double finalHeading ) {
-        return mTrajectoryGenerator.generateTurnInPlaceTrajectory(initialHeading, finalHeading, kTrajectoryConstraints,0.0, kMaxLinearVel, kMaxLinearAccel, kMaxVoltage);
+        return mTrajectoryGenerator.generateTurnInPlaceTrajectory(initialHeading, finalHeading,0.0, AutonomousRoutines.kDefaultTrajectoryConstraints);
     }
 
     public Trajectory<TimedState<Rotation2d>> generate(Rotation2d initialHeading, Rotation2d finalHeading ) {
-        return mTrajectoryGenerator.generateTurnInPlaceTrajectory(initialHeading, finalHeading, kTrajectoryConstraints,0.0, kMaxLinearVel, kMaxLinearAccel, kMaxVoltage);
+        return mTrajectoryGenerator.generateTurnInPlaceTrajectory(initialHeading, finalHeading,0.0,  AutonomousRoutines.kDefaultTrajectoryConstraints);
     }
 
     public DriveSimulation getDriveSimulation() {

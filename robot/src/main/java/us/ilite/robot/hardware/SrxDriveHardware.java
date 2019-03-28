@@ -1,33 +1,21 @@
 package us.ilite.robot.hardware;
 
-import java.util.Arrays;
-
 import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
+import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.PigeonIMU;
-import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import com.team254.lib.drivers.talon.TalonSRXChecker;
-import com.team254.lib.drivers.talon.TalonSRXChecker.CheckerConfigBuilder;
 import com.team254.lib.drivers.talon.TalonSRXFactory;
 import com.team254.lib.geometry.Rotation2d;
 
-import edu.wpi.first.wpilibj.SerialPort;
-import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.util.Conversions;
+import us.ilite.lib.drivers.ECommonControlMode;
 import us.ilite.lib.drivers.IMU;
-import us.ilite.lib.drivers.NavX;
 import us.ilite.lib.drivers.Pigeon;
-import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
 /**
@@ -36,19 +24,19 @@ import us.ilite.robot.modules.DriveMessage;
  * it would make a ton of sense, and we could just call setVelocity() or
  * setAcceleration in Drive
  */
-public class DriveHardware implements IDriveHardware {
+public class SrxDriveHardware implements IDriveHardware {
 
-    private final ILog mLogger = Logger.createLog(DriveHardware.class);
+    private final ILog mLogger = Logger.createLog(SrxDriveHardware.class);
 
-    private final IMU mGyro;
+    private IMU mGyro;
 
     private final TalonSRX mLeftMaster, mRightMaster;
     private final VictorSPX mLeftMiddle, mRightMiddle, mLeftRear, mRightRear;
     private ControlMode mLeftControlMode, mRightControlMode;
     private NeutralMode mLeftNeutralMode, mRightNeutralMode;
 
-    public DriveHardware() {
-        mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kDriveCollisionThreshold);
+    public SrxDriveHardware() {
+        mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kGyroCollisionThreshold);
         // mGyro = new NavX(SerialPort.Port.kMXP);
 
         mLeftMaster = TalonSRXFactory.createDefaultTalon(SystemSettings.kDriveLeftMasterTalonId);
@@ -113,23 +101,32 @@ public class DriveHardware implements IDriveHardware {
 
     public void set(DriveMessage pDriveMessage) {
 
-        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pDriveMessage.leftControlMode);
-        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pDriveMessage.rightControlMode);
+        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pDriveMessage.leftControlMode.kCtreControlMode);
+        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pDriveMessage.rightControlMode.kCtreControlMode);
 
-        mLeftNeutralMode = configForNeutralMode(mLeftNeutralMode, pDriveMessage.leftNeutralMode, mLeftMaster, mLeftMiddle, mLeftRear);
-        mRightNeutralMode = configForNeutralMode(mRightNeutralMode, pDriveMessage.rightNeutralMode, mRightMaster, mRightMiddle, mRightRear);
+        mLeftNeutralMode = configForNeutralMode(mLeftNeutralMode, pDriveMessage.leftNeutralMode.kCtreNeutralMode, mLeftMaster, mLeftMiddle, mLeftRear);
+        mRightNeutralMode = configForNeutralMode(mRightNeutralMode, pDriveMessage.rightNeutralMode.kCtreNeutralMode, mRightMaster, mRightMiddle, mRightRear);
 
-        mLeftMaster.set(mLeftControlMode, pDriveMessage.leftOutput, pDriveMessage.leftDemandType, pDriveMessage.leftDemand);
-        mRightMaster.set(mRightControlMode, pDriveMessage.rightOutput, pDriveMessage.rightDemandType, pDriveMessage.rightDemand);
+        mLeftMaster.set(mLeftControlMode, pDriveMessage.leftOutput, DemandType.ArbitraryFeedForward, pDriveMessage.leftDemand);
+        mRightMaster.set(mRightControlMode, pDriveMessage.rightOutput, DemandType.ArbitraryFeedForward, pDriveMessage.rightDemand);
     }
 
     /**
      * Allows external users to request that our control mode be pre-configured instead of configuring on the fly.
      * @param pControlMode
      */
-    public void configureMode(ControlMode pControlMode) {
-        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pControlMode);
-        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pControlMode);
+    public void configureMode(ECommonControlMode pControlMode) {
+        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pControlMode.kCtreControlMode);
+        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pControlMode.kCtreControlMode);
+    }
+
+    @Override
+    public void setImu(IMU pImu) {
+        mGyro = pImu;
+    }
+
+    public IMU getImu() {
+        return mGyro;
     }
 
     private ControlMode configForControlMode(TalonSRX pTalon, ControlMode pCurrentControlMode, ControlMode pDesiredControlMode) {
@@ -236,8 +233,8 @@ public class DriveHardware implements IDriveHardware {
     private void configTalonForMotionMagic(TalonSRX talon) {
         configTalonForVelocity(talon);
 
-        talon.configMotionCruiseVelocity(SystemSettings.kDriveMotionMagicVelocityFeedforward, SystemSettings.kLongCANTimeoutMs);
-        talon.configMotionAcceleration(SystemSettings.kDriveMotionMagicAccelFeedforward, SystemSettings.kLongCANTimeoutMs);
+        talon.configMotionCruiseVelocity(SystemSettings.kDriveMotionMagicCruiseVelocity, SystemSettings.kLongCANTimeoutMs);
+        talon.configMotionAcceleration(SystemSettings.kDriveMotionMagicMaxAccel, SystemSettings.kLongCANTimeoutMs);
     }
 
     public Rotation2d getHeading() {
@@ -252,11 +249,11 @@ public class DriveHardware implements IDriveHardware {
         return Conversions.ticksToInches(mRightMaster.getSelectedSensorPosition(0));
     }
 
-    public int getLeftVelTicks() {
+    public double getLeftVelTicks() {
         return mLeftMaster.getSelectedSensorVelocity(0);
     }
 
-    public int getRightVelTicks() {
+    public double getRightVelTicks() {
         return mRightMaster.getSelectedSensorVelocity(0);
     }
 

@@ -24,23 +24,27 @@ public class Conversions {
         return rad_s / (Math.PI * 2.0) * SystemSettings.kDriveTicksPerRotation / 10.0;
     }
 
-    public static double ticksToRotations(int ticks) {
+    public static double ticksToRotations(double ticks) {
         return ticks / SystemSettings.kDriveTicksPerRotation;
     }
 
-    public static double ticksToInches(int ticks) {
+    public static double ticksToInches(double ticks) {
         return ticksToRotations(ticks) * SystemSettings.kDriveWheelCircumference;
     }
 
-    public static double ticksPer100msToRotationsPerSecond(int ticks) {
+    public static int inchesToTicks(double inches) {
+        return (int)(inchesToRotations(inches) * SystemSettings.kDriveTicksPerRotation);
+    }
+
+    public static double ticksPer100msToRotationsPerSecond(double ticks) {
         return ticks / SystemSettings.kDriveTicksPerRotation * 10.0;
     }
 
-    public static double ticksPer100msToInchesPerSecond(int ticks) {
+    public static double ticksPer100msToInchesPerSecond(double ticks) {
         return ticksPer100msToRotationsPerSecond(ticks) * SystemSettings.kDriveWheelCircumference;
     }
 
-    public static double ticksPer100msToRadiansPerSecond(int ticks) {
+    public static double ticksPer100msToRadiansPerSecond(double ticks) {
         return ticksPer100msToRotationsPerSecond(ticks) * (Math.PI * 2.0);
     }
     

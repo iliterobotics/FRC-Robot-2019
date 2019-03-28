@@ -44,7 +44,7 @@ public class DriveMotionPlanner implements CSVWritable {
         FEEDFORWARD_ONLY,
         FEEDBACK,
         FEEDBACK_NO_DYNAMICS,
-        FEEDFORWARD_NO_DYNAMICS;
+        FEEDFORWARD_NO_DYNAMICS
     }
 
     // Trajectory and errors are in inches
@@ -198,6 +198,7 @@ public class DriveMotionPlanner implements CSVWritable {
 
     public boolean isDone() {
         return mCurrentTrajectory != null && mCurrentTrajectory.isDone();
+//        return (mError.getTranslation().x() < 3.0 && mError.getTranslation().y() < 3.0);
     }
 
     public Pose2d error() {

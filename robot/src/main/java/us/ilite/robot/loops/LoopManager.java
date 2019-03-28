@@ -104,9 +104,9 @@ public class LoopManager implements Runnable{
 //            loopTimer.stop();
             double dt = Timer.getFPGATimestamp() - start;
             numLoops++;
-            SmartDashboard.putNumber("loop_dt", dt);
-            if (dt > SystemSettings.kControlLoopPeriod + 0.01) {
-                mLog.error("Overrun: ", /*loopTimer.get()*/dt, " Input took: "/*, inputTimer.get()*/, " Update took: "/*,updateTimer.get()*/);
+            SmartDashboard.putNumber("highfreq_loop_dt", dt);
+            if (dt > SystemSettings.kControlLoopPeriod) {
+//                mLog.error("Overrun: ", /*loopTimer.get()*/dt, " Input took: "/*, inputTimer.get()*/, " Update took: "/*,updateTimer.get()*/);
                 numOverruns++;
             }
         }

@@ -1,6 +1,7 @@
 package us.ilite.lib.drivers;
 
 import com.revrobotics.CANEncoder;
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ExternalFollower;
 import com.revrobotics.CANSparkMax.IdleMode;
@@ -42,23 +43,23 @@ public class SparkMaxFactory {
         return createSparkMax(pId, pMotorType, kDefaultConfiguration);
     }
 
-    public static CANSparkMax createPermanentSlaveSparkMax(int pId, int pFollowerId, MotorType pMotorType, ExternalFollower pExternalFollower) {
+    public static CANSparkMax createPermanentSlaveSparkMax(int pId, CANSparkMax pMaster, MotorType pMotorType) {
         CANSparkMax spark = createSparkMax(pId, pMotorType, kSlaveConfiguration);
-        spark.follow(ExternalFollower.kFollowerSparkMax, pFollowerId);
+        spark.follow(pMaster);
         return spark;
     }
 
     public static CANSparkMax createSparkMax(int pId, MotorType pMotorType, Configuration pConfiguration) {
         CANSparkMax spark = new CANSparkMax(pId, pMotorType);
-
+        spark.restoreFactoryDefaults();
         spark.setCANTimeout(pConfiguration.CAN_TIMEOUT);
-        spark.setControlFramePeriod(pConfiguration.CONTROL_FRAME_PERIOD);
+//        spark.setControlFramePeriod(pConfiguration.CONTROL_FRAME_PERIOD);
         spark.setIdleMode(pConfiguration.IDLE_MODE);
         spark.setInverted(pConfiguration.IS_INVERTED);
         spark.setPeriodicFramePeriod(PeriodicFrame.kStatus0, pConfiguration.STATUS_0_PERIOD_MS);
         spark.setPeriodicFramePeriod(PeriodicFrame.kStatus1, pConfiguration.STATUS_1_PERIOD_MS);
         spark.setPeriodicFramePeriod(PeriodicFrame.kStatus2, pConfiguration.STATUS_2_PERIOD_MS);
-        spark.setRampRate(pConfiguration.RAMP_RATE);
+//        spark.setRampRate(pConfiguration.RAMP_RATE);
         spark.setSecondaryCurrentLimit(pConfiguration.SECONDARY_CURRENT_LIMIT);
         spark.setSmartCurrentLimit(pConfiguration.SMART_CURRENT_LIMIT);
 
