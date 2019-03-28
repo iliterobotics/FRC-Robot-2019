@@ -27,7 +27,7 @@ public class CodexCsvLogger {
     public CodexCsvLogger(Codex<?, ?> pCodex ) {
         mCodex = pCodex;
 
-        File file = file();
+        File file = file(false);
         Data.handleCreation( file );
         try {
             writer = new BufferedWriter( new FileWriter( file ) );
@@ -55,14 +55,16 @@ public class CodexCsvLogger {
         }
     }
 
-    public File file() {
+    public File file(boolean handleUSBConnection) {
 
         String dir = "";
+        if(!handleUSBConnection) {
         if(Files.notExists(new File("/u").toPath())) {
             dir = USER_DIR;
         } else {
             dir = ROBOT_DIR;
         }
+        } else {
 
         String eventName = DriverStation.getInstance().getEventName();
         if ( eventName.length() <= 0 ) {
@@ -80,6 +82,14 @@ public class CodexCsvLogger {
         mLog.error("Creating log file at ", file.toPath());
 
         return file;
+    }
+
+    public void toDriverStation() {
+        try {
+            writer = new BufferedWriter(new FileWriter(file(true)));
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void closeWriter() {
