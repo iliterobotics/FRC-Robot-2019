@@ -208,6 +208,10 @@ public class Data {
         }
     }
 
+    public void loggersToDriverStation() {
+        mCodexCsvLoggers.forEach(logger -> logger.toDriverStation());
+    }
+
     /**
      * Sends the codexes across the network to the IP's found when the DS connected.
      */
