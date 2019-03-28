@@ -1,10 +1,11 @@
 package us.ilite.robot;
 
+import java.io.File;
+import java.nio.file.Files;
+
 import edu.wpi.first.wpilibj.Notifier;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
-
-import java.nio.file.Files;
 
 public class CSVLogger implements Runnable {
     private Notifier mLoggingNotifier;
@@ -20,8 +21,8 @@ public class CSVLogger implements Runnable {
      */
     public void start() {
         try {
-        mData.logFromCodexToCSVHeader();
-        mLoggingNotifier.startPeriodic( SystemSettings.kCSVLoggingPeriod );
+            mData.logFromCodexToCSVHeader();
+            mLoggingNotifier.startPeriodic( SystemSettings.kCSVLoggingPeriod );
         } catch (Exception e) {
             System.out.println(e);
             stop();
@@ -36,6 +37,9 @@ public class CSVLogger implements Runnable {
     }
 
     public void run() {
+        if (Files.notExists(new File("/u").toPath())) {
+            mData.loggersToDriverStation();
+        }
         mData.logFromCodexToCSVLog();
     }
 

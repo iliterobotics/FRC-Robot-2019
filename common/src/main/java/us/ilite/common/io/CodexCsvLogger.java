@@ -59,12 +59,14 @@ public class CodexCsvLogger {
 
         String dir = "";
         if(!handleUSBConnection) {
-        if(Files.notExists(new File("/u").toPath())) {
+            if(Files.notExists(new File("/u").toPath())) {
+                dir = USER_DIR;
+            } else {
+                dir = ROBOT_DIR;
+            }
+        } else {
             dir = USER_DIR;
-        } else {
-            dir = ROBOT_DIR;
         }
-        } else {
 
         String eventName = DriverStation.getInstance().getEventName();
         if ( eventName.length() <= 0 ) {
