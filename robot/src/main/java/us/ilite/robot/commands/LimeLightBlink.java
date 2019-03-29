@@ -3,10 +3,11 @@ package us.ilite.robot.commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import us.ilite.common.config.SystemSettings;
 import us.ilite.robot.modules.Limelight;
 import us.ilite.robot.modules.Limelight.LedMode;
 
-public class LimeLightBlink implements ICommand{
+public class LimelightBlink implements ICommand{
     private final NetworkTable mTable = NetworkTableInstance.getDefault().getTable("limelight");
 
     private Limelight mLimelight;
@@ -14,11 +15,10 @@ public class LimeLightBlink implements ICommand{
     
 
     private double mPreviousTime;
-    private double mTime;
+    private double mTime = SystemSettings.kLimelightBlinkPeriod;
 
-    public LimeLightBlink(Limelight pLimelight, double pTime) {
+    public LimelightBlink(Limelight pLimelight) {
         this.mLimelight = pLimelight;
-        this.mTime = pTime;
     }
 
     @Override
