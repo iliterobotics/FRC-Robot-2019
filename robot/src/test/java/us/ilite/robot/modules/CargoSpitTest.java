@@ -41,10 +41,10 @@ public class CargoSpitTest {
         mData = new Data();
         mClock = new Clock().simulated();
         mModuleList = new ModuleList();
-        mCargoSpit = new CargoSpit( mData );
         mIntake = new Intake( mData );
         mArm = new MotionMagicArm();
         mLimelight = new Limelight( mData );
+        mCargoSpit = new CargoSpit( mData, mLimelight );
         mAutonomousCommandManager = new CommandManager();
         mPneumaticIntake = new PneumaticIntake( mData );
 
@@ -58,7 +58,7 @@ public class CargoSpitTest {
         mData = new Data();
         mClock = new Clock().simulated();
         mModuleList = new ModuleList();
-        mCargoSpit = new CargoSpit( mData );
+        mCargoSpit = new CargoSpit( mData, mLimelight );
         mIntake = new Intake( mData );
         mArm = new MotionMagicArm();
 

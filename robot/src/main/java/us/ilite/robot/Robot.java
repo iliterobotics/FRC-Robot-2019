@@ -69,9 +69,9 @@ public class Robot extends TimedRobot {
     private FourBar mFourBar = new FourBar( mData );
     private Elevator mElevator = new Elevator(mData);
     private Intake mIntake = new Intake(mData);
-    private CargoSpit mCargoSpit = new CargoSpit(mData);
-    private HatchFlower mHatchFlower = new HatchFlower();
     private Limelight mLimelight = new Limelight(mData);
+    private HatchFlower mHatchFlower = new HatchFlower(mLimelight);
+    private CargoSpit mCargoSpit = new CargoSpit(mData, mLimelight);
     private VisionGyro mVisionGyro = new VisionGyro(mData);
     private PneumaticIntake mPneumaticIntake = new PneumaticIntake(mData);
 
