@@ -5,6 +5,7 @@ import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.robot.commands.LimelightBlink;
 import us.ilite.robot.hardware.SolenoidWrapper;
 
 /**
@@ -23,6 +24,7 @@ public class HatchFlower extends Module {
     private Solenoid mExtend;
     private SolenoidWrapper mGrabSolenoid;
     private SolenoidWrapper mExtendSolenoid;
+    private LimelightBlink mBlinker;
 
     private GrabberState mGrabberState;
     private ExtensionState mExtensionState;
@@ -54,7 +56,7 @@ public class HatchFlower extends Module {
         }
     }
 
-    public HatchFlower() {
+    public HatchFlower(Limelight pLimelight) {
         // TODO Do we need to pass the CAN Addresses in via the constructor?
         mGrab = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
         mExtend = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerExtensionSolenoidAddress);
@@ -67,6 +69,8 @@ public class HatchFlower extends Module {
 
         this.mGrabSolenoid.set(GrabberState.GRAB.grabber);
         this.mExtendSolenoid.set(ExtensionState.DOWN.extension);
+
+        mBlinker = new LimelightBlink(pLimelight);
 
     }
 
@@ -85,7 +89,6 @@ public class HatchFlower extends Module {
 
     @Override
     public void update(double pNow) {
-
         mGrabSolenoid.set(mGrabberState.grabber);
         mExtendSolenoid.set(mExtensionState.extension);
 
@@ -103,6 +106,11 @@ public class HatchFlower extends Module {
     /**
      * Configure the solenoids to capture a hatch
      */
+    public void captureHatch(double pNow) {
+        mGrabberState = GrabberState.GRAB;
+        mBlinker.update(pNow);
+    }
+
     public void captureHatch() {
         mGrabberState = GrabberState.GRAB;
     }
