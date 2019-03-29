@@ -131,13 +131,13 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             updateDriveTrain();
             updateFourBar();
 //            updateCheesyDrivetrain();
-            updateHatchGrabber();
+            updateHatchGrabber(pNow);
             updateCargoSpit();
             updateElevator();
 //            updateIntake();
             updatePneumaticIntake();
         }
-
+periodicInput(pNow);
     }
 
     private void updateIntake() {
@@ -173,7 +173,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     }
 
-    private void updateHatchGrabber() {
+    private void updateHatchGrabber(double pNow) {
 
         if (mIsCargo) {
             // Hatch grabber up so we can recieve cargo
@@ -186,7 +186,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
             if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_INTAKE_LOADING_STATION)) {
                 // Intake from loading station - grab hatch
-                mHatchFlower.captureHatch();
+                mHatchFlower.captureHatch(pNow);
             } else if (mData.operatorinput.get(DriveTeamInputMap.OPERATOR_INTAKE_GROUND) > 0.5) {
                 // Grabbing is handled automagically
             } else if (mData.operatorinput.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
