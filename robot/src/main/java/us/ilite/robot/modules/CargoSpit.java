@@ -12,6 +12,7 @@ import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.manipulator.ECargoSpit;
 import us.ilite.common.types.sensor.EPowerDistPanel;
+import us.ilite.robot.commands.LimelightBlink;
 
 
 public class CargoSpit extends Module {
@@ -20,6 +21,9 @@ public class CargoSpit extends Module {
     private final double kLaunchPower = 0.7;
 
     private ILog mLog = Logger.createLog(CargoSpit.class);
+
+    private LimelightBlink mBlinker;
+    private Limelight mLimelight;
 
     private VictorSPX mLeftMotor, mRightMotor;
     private DigitalInput mBeambreak;
@@ -32,7 +36,7 @@ public class CargoSpit extends Module {
     private boolean mHasCargo = false;
 
 
-    public CargoSpit(Data pData) {
+    public CargoSpit(Data pData, Limelight pLimelight) {
 
         this.mData = pData;
         // TODO Change to VictorSPX (or keep as TalonSRX)
@@ -62,12 +66,14 @@ public class CargoSpit extends Module {
         mIntaking = false;
         mOuttaking = false;
         mEmergencyStopped = true;
+
+        mBlinker = new LimelightBlink(pLimelight);
     }
 
     @Override
     public void modeInit(double pNow) {
         mLog.error("MODE INIT");
-
+        mBlinker.init(pNow);
     }
 
     @Override
@@ -88,6 +94,7 @@ public class CargoSpit extends Module {
         mRightCurrent = mData.pdp.get(EPowerDistPanel.CURRENT5);
         mHasCargo = shouldStop();
         if ( mHasCargo ) {
+            mBlinker.update(pNow);
             stop();
         }
     }
@@ -170,5 +177,6 @@ public class CargoSpit extends Module {
 
     @Override
     public void shutdown(double pNow) {
+        mBlinker.shutdown(pNow);
     }
 }
