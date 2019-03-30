@@ -257,7 +257,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // LimeLight Camera Constants
     // Note: These constants need to be recalculted for a specific robot geometry
     // =============================================================================
-    public static double kLimelightBlinkPeriod = 3000;;
+    public static double kLimelightBlinkPeriod = 3000;
 
     public static double llCameraHeightIn = 58.0;
     public static double llCameraToBumperIn = 10.0;
