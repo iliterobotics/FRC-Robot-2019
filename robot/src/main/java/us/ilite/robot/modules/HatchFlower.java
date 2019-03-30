@@ -30,10 +30,10 @@ public class HatchFlower extends Module {
     private ExtensionState mExtensionState;
 
 
+
     /////////////////////////////////////////////////////////////////////////
     // ********************** Solenoid state enums *********************** //
-    public enum GrabberState
-    {
+    public enum GrabberState {
         GRAB(false),  // set to solenoid state that corresponds with grabbing the hatch
         RELEASE(true);
 
