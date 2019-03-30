@@ -16,6 +16,7 @@ public class LimelightBlink implements ICommand{
 
     private double mPreviousTime;
     private double mTime = SystemSettings.kLimelightBlinkPeriod;
+    private boolean isBlinking;
 
     public LimelightBlink(Limelight pLimelight) {
         this.mLimelight = pLimelight;
@@ -28,24 +29,32 @@ public class LimelightBlink implements ICommand{
         mPreviousLedMode = LedMode.fromOrdinal(mTable.getEntry("ledMode").getNumber(0).intValue());
 
         this.mPreviousTime = pNow;
+
+        isBlinking = false;
     }
 
     @Override
     public boolean update(double pNow) {
         SmartDashboard.putBoolean("Initializing Command", false);
 
-        mCurrentLedMode = LedMode.fromOrdinal(mTable.getEntry("ledMode").getNumber(0).intValue());
-
-        if(!mCurrentLedMode.equals(LedMode.LED_BLINK)) {
-            mLimelight.setLedMode(LedMode.LED_BLINK);
-        }
-
-        if (pNow - mPreviousTime > mTime) {
-            mLimelight.setLedMode(mPreviousLedMode);
+        if (isBlinking && pNow - mPreviousTime > mTime) {
+            stop();
             return true;
         }
-
+        
+        mPreviousTime = pNow;
         return false;
+    }
+
+    public void blink() {
+        mPreviousLedMode = LedMode.fromOrdinal(mTable.getEntry("ledmode").getNumber(0).intValue());
+        mLimelight.setLedMode(LedMode.LED_BLINK);
+        isBlinking = true;
+    }
+
+    public void stop() {
+        mLimelight.setLedMode(LedMode.LED_ON);
+        isBlinking = false;
     }
 
     @Override
