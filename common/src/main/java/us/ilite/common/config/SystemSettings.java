@@ -167,6 +167,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kTFourBar = 0;
     public static double kFourBarPusherDelay = 0.5;
 
+    // Pnuematic Intake
+    public static double kPneumaticIntakeIntakePower = 0.7;
 
     // =============================================================================
     // Arm Constants
