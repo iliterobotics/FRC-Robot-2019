@@ -1,11 +1,7 @@
 package us.ilite.robot.hardware;
 
 import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
+import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
@@ -17,6 +13,7 @@ import com.team254.lib.geometry.Rotation2d;
 
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.util.Conversions;
+import us.ilite.lib.drivers.ECommonControlMode;
 import us.ilite.lib.drivers.IMU;
 import us.ilite.lib.drivers.Pigeon;
 import us.ilite.robot.modules.DriveMessage;
@@ -27,9 +24,9 @@ import us.ilite.robot.modules.DriveMessage;
  * it would make a ton of sense, and we could just call setVelocity() or
  * setAcceleration in Drive
  */
-public class DriveHardware implements IDriveHardware {
+public class SrxDriveHardware implements IDriveHardware {
 
-    private final ILog mLogger = Logger.createLog(DriveHardware.class);
+    private final ILog mLogger = Logger.createLog(SrxDriveHardware.class);
 
     private IMU mGyro;
 
@@ -38,7 +35,7 @@ public class DriveHardware implements IDriveHardware {
     private ControlMode mLeftControlMode, mRightControlMode;
     private NeutralMode mLeftNeutralMode, mRightNeutralMode;
 
-    public DriveHardware() {
+    public SrxDriveHardware() {
         mGyro = new Pigeon(new PigeonIMU(SystemSettings.kPigeonId), SystemSettings.kGyroCollisionThreshold);
         // mGyro = new NavX(SerialPort.Port.kMXP);
 
@@ -104,23 +101,23 @@ public class DriveHardware implements IDriveHardware {
 
     public void set(DriveMessage pDriveMessage) {
 
-        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pDriveMessage.leftControlMode);
-        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pDriveMessage.rightControlMode);
+        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pDriveMessage.leftControlMode.kCtreControlMode);
+        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pDriveMessage.rightControlMode.kCtreControlMode);
 
-        mLeftNeutralMode = configForNeutralMode(mLeftNeutralMode, pDriveMessage.leftNeutralMode, mLeftMaster, mLeftMiddle, mLeftRear);
-        mRightNeutralMode = configForNeutralMode(mRightNeutralMode, pDriveMessage.rightNeutralMode, mRightMaster, mRightMiddle, mRightRear);
+        mLeftNeutralMode = configForNeutralMode(mLeftNeutralMode, pDriveMessage.leftNeutralMode.kCtreNeutralMode, mLeftMaster, mLeftMiddle, mLeftRear);
+        mRightNeutralMode = configForNeutralMode(mRightNeutralMode, pDriveMessage.rightNeutralMode.kCtreNeutralMode, mRightMaster, mRightMiddle, mRightRear);
 
-        mLeftMaster.set(mLeftControlMode, pDriveMessage.leftOutput, pDriveMessage.leftDemandType, pDriveMessage.leftDemand);
-        mRightMaster.set(mRightControlMode, pDriveMessage.rightOutput, pDriveMessage.rightDemandType, pDriveMessage.rightDemand);
+        mLeftMaster.set(mLeftControlMode, pDriveMessage.leftOutput, DemandType.ArbitraryFeedForward, pDriveMessage.leftDemand);
+        mRightMaster.set(mRightControlMode, pDriveMessage.rightOutput, DemandType.ArbitraryFeedForward, pDriveMessage.rightDemand);
     }
 
     /**
      * Allows external users to request that our control mode be pre-configured instead of configuring on the fly.
      * @param pControlMode
      */
-    public void configureMode(ControlMode pControlMode) {
-        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pControlMode);
-        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pControlMode);
+    public void configureMode(ECommonControlMode pControlMode) {
+        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pControlMode.kCtreControlMode);
+        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pControlMode.kCtreControlMode);
     }
 
     @Override
@@ -197,7 +194,7 @@ public class DriveHardware implements IDriveHardware {
         motorController.configVoltageCompSaturation(12.0, SystemSettings.kLongCANTimeoutMs);
         motorController.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_100Ms, SystemSettings.kLongCANTimeoutMs);
         motorController.configVelocityMeasurementWindow(64, SystemSettings.kLongCANTimeoutMs);
-        motorController.configOpenloopRamp(SystemSettings.kDriveOpenLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
+        motorController.configOpenloopRamp(SystemSettings.kDriveMinOpenLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
         motorController.configClosedloopRamp(SystemSettings.kDriveClosedLoopVoltageRampRate, SystemSettings.kLongCANTimeoutMs);
         // motorController.configNeutralDeadband(0.04, 0);
     }
@@ -237,7 +234,7 @@ public class DriveHardware implements IDriveHardware {
         configTalonForVelocity(talon);
 
         talon.configMotionCruiseVelocity(SystemSettings.kDriveMotionMagicCruiseVelocity, SystemSettings.kLongCANTimeoutMs);
-        talon.configMotionAcceleration(SystemSettings.kDriveMotionMagicAccelFeedforward, SystemSettings.kLongCANTimeoutMs);
+        talon.configMotionAcceleration(SystemSettings.kDriveMotionMagicMaxAccel, SystemSettings.kLongCANTimeoutMs);
     }
 
     public Rotation2d getHeading() {
@@ -252,11 +249,11 @@ public class DriveHardware implements IDriveHardware {
         return Conversions.ticksToInches(mRightMaster.getSelectedSensorPosition(0));
     }
 
-    public int getLeftVelTicks() {
+    public double getLeftVelTicks() {
         return mLeftMaster.getSelectedSensorVelocity(0);
     }
 
-    public int getRightVelTicks() {
+    public double getRightVelTicks() {
         return mRightMaster.getSelectedSensorVelocity(0);
     }
 
@@ -294,6 +291,12 @@ public class DriveHardware implements IDriveHardware {
     @Override
     public double getRightVoltage() {
         return mRightMaster.getMotorOutputVoltage();
+    }
+
+    @Override
+    public void setOpenLoopRampRate(double pOpenLoopRampRate) {
+        mLeftMaster.configOpenloopRamp(pOpenLoopRampRate);
+        mRightMaster.configOpenloopRamp(pOpenLoopRampRate);
     }
 
     @Override

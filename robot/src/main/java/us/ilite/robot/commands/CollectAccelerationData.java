@@ -8,6 +8,9 @@ import us.ilite.common.lib.physics.DriveCharacterization;
 import com.team254.lib.util.ReflectingCSVWriter;
 
 import us.ilite.common.lib.util.Conversions;
+import us.ilite.common.types.drive.ENeutralMode;
+import us.ilite.lib.drivers.ECommonControlMode;
+import us.ilite.lib.drivers.ECommonNeutralMode;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
 
@@ -46,8 +49,8 @@ public class CollectAccelerationData implements ICommand {
 
     @Override
     public void init(double pNow) {
-        DriveMessage driveMessage = new DriveMessage((mReverse ? -1.0 : 1.0) * kPower, (mReverse ? -1.0 : 1.0) * (mTurn ? -1.0 : 1.0) * kPower, ControlMode.PercentOutput);
-        driveMessage.setNeutralMode(NeutralMode.Coast);
+        DriveMessage driveMessage = new DriveMessage((mReverse ? -1.0 : 1.0) * kPower, (mReverse ? -1.0 : 1.0) * (mTurn ? -1.0 : 1.0) * kPower, ECommonControlMode.PERCENT_OUTPUT);
+        driveMessage.setNeutralMode(ECommonNeutralMode.COAST);
         mDrive.setDriveMessage(driveMessage);
         mStartTime = pNow;
         mPrevTime = mStartTime;
@@ -113,7 +116,7 @@ public class CollectAccelerationData implements ICommand {
 
     @Override
     public void shutdown(double pNow) {
-        mDrive.setDriveMessage(new DriveMessage(0.0, 0.0, ControlMode.PercentOutput).setNeutralMode(NeutralMode.Coast));
+        mDrive.setDriveMessage(new DriveMessage(0.0, 0.0, ECommonControlMode.PERCENT_OUTPUT).setNeutralMode(ECommonNeutralMode.COAST));
         mLeftCSVWriter.flush();
         mRightCSVWriter.flush();
     }

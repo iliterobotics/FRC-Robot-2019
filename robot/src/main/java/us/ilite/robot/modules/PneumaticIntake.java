@@ -6,6 +6,7 @@ import com.team254.lib.drivers.talon.TalonSRXFactory;
 import edu.wpi.first.wpilibj.Solenoid;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.robot.hardware.SolenoidWrapper;
 
 
 public class PneumaticIntake extends Module{
@@ -14,7 +15,8 @@ public class PneumaticIntake extends Module{
     EPneumaticIntakePosition mCurrentPosition;
     VictorSPX mRollerVictor;
 
-    private Solenoid mIntakeSolenoid;
+    private Solenoid mIntake;
+    private SolenoidWrapper mIntakeSolenoid;
     private Data mData;
     private double mPower = 0;
 
@@ -27,7 +29,8 @@ public class PneumaticIntake extends Module{
         this.mData = pData;
         this.mDesiredPosition = EPneumaticIntakePosition.STOWED;
         this.mCurrentPosition = EPneumaticIntakePosition.STOWED;
-        this.mIntakeSolenoid = new Solenoid( SystemSettings.kCANAddressPCM, 1 );
+        this.mIntake = new Solenoid( SystemSettings.kCANAddressPCM, 1 );
+        this.mIntakeSolenoid = new SolenoidWrapper(mIntake);
         mRollerVictor = TalonSRXFactory.createDefaultVictor( SystemSettings.kCargoIntakeSPXLowerAddress );
     }
 

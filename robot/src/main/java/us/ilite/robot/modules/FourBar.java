@@ -2,9 +2,7 @@ package us.ilite.robot.modules;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.*;
 import com.team254.lib.util.Util;
 
 import edu.wpi.first.wpilibj.Solenoid;
@@ -12,7 +10,9 @@ import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.EFourBarData;
+import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.SparkMaxFactory;
+import us.ilite.robot.hardware.SolenoidWrapper;
 
 
 public class FourBar extends Module {
@@ -26,14 +26,18 @@ public class FourBar extends Module {
 
     private CANSparkMax mNeos;
     private CANSparkMax mNeo2;
-    private Solenoid mPusherSolenoid;
+
+    private Solenoid mPusher;
+    private SolenoidWrapper mPusherSolenoid;
+
     private CANEncoder mNeo1Encoder;
     private CANEncoder mNeo2Encoder;
 
-    private double mAngularPosition;
-    private double mPreviousNeo1Rotations;
-    private double mPreviousNeo2Rotations;
+    private CANPIDController mCanController;
 
+    private double mAngularPosition;
+    private double mNeoARotations = 0;
+    private double mNeoBRotations = 0;
     private double mOutput;
 
     /**
@@ -44,14 +48,25 @@ public class FourBar extends Module {
         // Later: SystemSettings address
         mNeos = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kFourBarNEO1Address, CANSparkMaxLowLevel.MotorType.kBrushless);
         mNeo2 = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kFourBarNEO2Address, CANSparkMaxLowLevel.MotorType.kBrushless);
-        mPusherSolenoid = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kFourBarPusherAddress);
         mNeo2.follow( mNeos, true );
     
+        mPusher = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kFourBarPusherAddress);
+        mPusherSolenoid = new SolenoidWrapper( mPusher );
+        
         // Connect the NEO's to the encoders
         mNeo1Encoder = mNeos.getEncoder();
         mNeo2Encoder = mNeo2.getEncoder();
         mNeo1Encoder.setPosition(0);
         mNeo1Encoder.setPosition(0);
+        mNeo1Encoder.setPositionConversionFactor(-1.0);
+        mNeo2Encoder.setPositionConversionFactor(-1.0);
+        mCanController = mNeos.getPIDController();
+
+        mNeos.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        mNeo2.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        mNeos.burnFlash();
+        mNeo2.burnFlash();
+
 
         updateAngularPosition();
         mData = pData;
@@ -62,10 +77,19 @@ public class FourBar extends Module {
     public void modeInit( double pNow ) {
         mLog.error( "FourBar Initialized..." );
         mOutput = 0;
-        mPreviousNeo1Rotations = mNeo1Encoder.getPosition();
-        mPreviousNeo2Rotations = mNeo2Encoder.getPosition();
 
         mNeos.setSmartCurrentLimit( 80 );
+
+        mCanController.setP(SystemSettings.kFourBarP);
+        mCanController.setI(SystemSettings.kFourBarI);
+        mCanController.setD(SystemSettings.kFourBarD);
+        mCanController.setFF(SystemSettings.kFourBarF);
+
+//        mCanController.setSmartMotionMaxAccel(SystemSettings.kMaxElevatorAcceleration, 0);
+//        mCanController.setSmartMotionMinOutputVelocity(SystemSettings.kMinElevatorVelocity, 0);
+//        mCanController.setSmartMotionMaxVelocity(SystemSettings.kMaxElevatorVelocity, 0);
+//        mCanController.setSmartMotionMinOutputVelocity(0, 0);
+//        mCanController.setSmartMotionAllowedClosedLoopError(SystemSettings.kFourBarClosedLoopAllowableError, 0);
     }
 
     @Override
@@ -75,7 +99,14 @@ public class FourBar extends Module {
 
     @Override
     public void update( double pNow ) {
-        mNeos.set( mOutput );
+        if(Math.abs(mOutput) < 0.02) {
+            mCanController.setReference(mNeo1Encoder.getPosition(), ControlType.kPosition);
+            /*if ( -35 < mAngularPosition && mAngularPosition < 25) {
+                mNeos.set( someOutput );
+            }*/
+        } else {
+            mNeos.set( mOutput );
+        }
     }
 
     @Override
@@ -116,7 +147,9 @@ public class FourBar extends Module {
      * Update angular position based on current rotations
      */
     public void updateAngularPosition() {
-        mAngularPosition = (-mNeo1Encoder.getPosition() + mNeo2Encoder.getPosition()) / 2;
+        mNeoARotations = -mNeo1Encoder.getPosition() + mNeo1Encoder.getPosition();
+        mNeoBRotations = mNeo2Encoder.getPosition();
+        mAngularPosition = (mNeoARotations + mNeoBRotations) / 2;
     }
     
     /**
@@ -142,8 +175,7 @@ public class FourBar extends Module {
      * Cut power to the motor
      */
     public void stop() {
-        setDesiredOutput( 0, true );
-        mNeos.stopMotor();
+        setDesiredOutput( 0, true );;
     }
 
     /**
@@ -151,16 +183,25 @@ public class FourBar extends Module {
      */
     public void updateCodex() {
         updateAngularPosition();
-        mData.fourbar.set( EFourBarData.A_TICKS, mNeos.getEncoder().getPosition() );
-        mData.fourbar.set( EFourBarData.A_OUTPUT, mNeos.get() );
-        mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeos.getAppliedOutput() * 12.0 );
+        mData.fourbar.set( EFourBarData.DESIRED_OUTPUT, mOutput );
+        mData.fourbar.set( EFourBarData.A_TICKS, mNeoARotations );
+//        mData.fourbar.set( EFourBarData.A_OUTPUT, mNeos.get() );
+//        mData.fourbar.set( EFourBarData.A_VOLTAGE, mNeos.getAppliedOutput() * 12.0 );
         mData.fourbar.set( EFourBarData.A_CURRENT, mNeos.getOutputCurrent() );
 
-        mData.fourbar.set( EFourBarData.B_TICKS, mNeo2.getEncoder().getPosition() );
-        mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
-        mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getAppliedOutput() * 12.0 );
+        mData.fourbar.set( EFourBarData.B_TICKS, mNeoBRotations);
+//        mData.fourbar.set( EFourBarData.B_OUTPUT, mNeo2.get() );
+//        mData.fourbar.set( EFourBarData.B_VOLTAGE, mNeo2.getAppliedOutput() * 12.0 );
         mData.fourbar.set( EFourBarData.B_CURRENT, mNeo2.getOutputCurrent() );
 
         mData.fourbar.set( EFourBarData.ANGLE, mAngularPosition );
     }
+
+    public boolean isCurrentLimiting() {
+        return EPowerDistPanel.isAboveCurrentThreshold(SystemSettings.kFourBarWarnCurrentLimitThreshold, mData.pdp, SystemSettings.kFourBarPdpSlots);
+    }
+
+
 }
+
+
