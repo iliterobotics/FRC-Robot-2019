@@ -36,21 +36,16 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Drive Train Constants
     // =============================================================================
     public static double kDriveGearboxRatio = (12.0 / 80.0) * (42.0 / 80.0);
-    public static double kDriveClosedLoopVoltageRampRate = 0.0;
-    public static double kDriveBottomOpenLoopVoltageRampRate = 0.1;
-    public static double kDriveTopOpenLoopVoltageRampRate = 2.0;
-    public static int kDriveCurrentLimitAmps = 50;
-    public static int kDriveCurrentLimitTriggerDurationMs = 100;
     public static double kDriveWheelDiameterInches = 6.0;
-    public static double kDrivetrainWheelDiameterFeet = kDriveWheelDiameterInches / 12.0;
     public static double kDriveWheelCircumference = kDriveWheelDiameterInches * Math.PI;
-    public static double kDrivetrainDefaultRampRate = 120.0; // in V/sec
     public static double kDriveTicksPerRotation = 1.0;
     public static double kDriveEffectiveWheelbase = 23.25;
-    public static double kDrivetrainTurnCircumference = kDriveEffectiveWheelbase * Math.PI;
-    public static double kDrivetrainInchesPerDegree = kDrivetrainTurnCircumference / 360.0;
-    public static double kDrivetrainWheelTurnsPerDegree = kDrivetrainInchesPerDegree / kDriveWheelDiameterInches;
 
+    public static double kDriveClosedLoopVoltageRampRate = 0.0;
+    public static double kDriveMinOpenLoopVoltageRampRate = 0.1;
+    public static double kDriveMaxOpenLoopVoltageRampRate = 2.0;
+    public static int kDriveCurrentLimitAmps = 50;
+    public static int kDriveCurrentLimitTriggerDurationMs = 100;
 
     public static CheesyDriveGains kCheesyDriveGains = new CheesyDriveGains();
 

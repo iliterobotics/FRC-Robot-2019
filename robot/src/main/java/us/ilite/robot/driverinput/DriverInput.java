@@ -1,7 +1,5 @@
 package us.ilite.robot.driverinput;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
@@ -83,8 +81,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             this.mOperatorJoystick = new Joystick(1);
         }
 
-        this.mRangeScale = new RangeScale(SystemSettings.kDriveBottomOpenLoopVoltageRampRate,
-                SystemSettings.kDriveTopOpenLoopVoltageRampRate,
+        this.mRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
+                SystemSettings.kDriveMaxOpenLoopVoltageRampRate,
                 0.0,
                 Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
     }
@@ -95,8 +93,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     @Override
     public void modeInit(double pNow) {
-        mRangeScale = new RangeScale(SystemSettings.kDriveBottomOpenLoopVoltageRampRate,
-                SystemSettings.kDriveTopOpenLoopVoltageRampRate,
+        mRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
+                SystemSettings.kDriveMaxOpenLoopVoltageRampRate,
                 0.0,
                 Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
     }
