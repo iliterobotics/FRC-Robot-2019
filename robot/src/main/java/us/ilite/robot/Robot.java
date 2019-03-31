@@ -92,25 +92,12 @@ public class Robot extends TimedRobot {
 
 //        new Thread(new DSConnectInitThread()).start();
         // Init static variables and get singleton instances first
-
         ICodexTimeProvider provider = new ICodexTimeProvider() {
             public long getTimestamp() {
                 return (long) mClock.getCurrentTimeInNanos();
             }
         };
         CodexMetadata.overrideTimeProvider(provider);
-
-        // // Init the actual robot
-        // initTimer.reset();
-        // initTimer.start();
-
-        // mSettings.writeToNetworkTables();
-
-        // // Logger.setLevel(ELevel.INFO);
-        // Logger.setLevel(ELevel.ERROR);
-        // mLogger.info("Starting Robot Initialization...");
-
-        // mSettings.writeToNetworkTables();
 
         mRunningModules.setModules();
 
