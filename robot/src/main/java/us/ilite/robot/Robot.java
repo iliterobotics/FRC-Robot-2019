@@ -79,14 +79,15 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
-        //look for practice robot config:
-        AbstractSystemSettingsUtils.loadPracticeSettings(mSettings);
-
         // Init the actual robot
         initTimer.reset();
         initTimer.start();
         Logger.setLevel(ELevel.WARN);
         mLogger.info("Starting Robot Initialization...");
+
+        //look for practice robot config:
+        AbstractSystemSettingsUtils.loadPracticeSettings(mSettings);
+
 
         mSettings.writeToNetworkTables();
 
