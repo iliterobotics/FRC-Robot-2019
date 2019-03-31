@@ -1,5 +1,6 @@
 package us.ilite.robot.modules;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.flybotix.hfr.codex.Codex;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.LogOutput;
@@ -264,8 +265,8 @@ public class Drive extends Loop {
 
 	public void setProfilingToHeading() {
 		mDriveState = EDriveState.PATH_FOLLOWING;
-		mDriveHardware.configureMode(ControlMode.Velocity);
-		mDriveHardware.set(new DriveMessage(0.0, 0.0, ControlMode.Velocity));
+		mDriveHardware.configureMode(ECommonControlMode.VELOCITY);
+		mDriveHardware.set(new DriveMessage(0.0, 0.0, ECommonControlMode.VELOCITY));
 	}
 
 	public synchronized void setNormal() {
