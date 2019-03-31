@@ -12,6 +12,8 @@ public class CommandManager extends Module {
 
     private ILog mLog = Logger.createLog(CommandManager.class);
 
+    private String mManagerTag = "";
+
     private CommandQueue desiredCommandQueue;
     private boolean lastRunCommandQueue;
     private boolean runCommandQueue;
@@ -39,7 +41,7 @@ public class CommandManager extends Module {
 
         // Don't initialize and update on same cycle
         if (shouldInitializeCommandQueue()) {
-            mLog.warn("Initializing command queue");
+            mLog.warn(mManagerTag, ": Initializing command queue");
             desiredCommandQueue.init(pNow);
         } else if(isRunningCommands()) {
             desiredCommandQueue.update(pNow);
@@ -47,7 +49,7 @@ public class CommandManager extends Module {
 
         // Only check if we're done with queue if we're actually running...otherwise we're just spamming stopRunningCommands()
         if(isRunningCommands() && desiredCommandQueue.isDone()) {
-            mLog.warn("Command queue has completed execution");
+            mLog.warn(mManagerTag, ": Command queue has completed execution");
             stopRunningCommands(pNow);
         }
 
@@ -77,19 +79,24 @@ public class CommandManager extends Module {
     public void startCommands(ICommand ... pCommands) {
         // Only update the command queue if commands aren't already running
         if(!isRunningCommands()) {
-            mLog.warn("Starting command queue with a size of ", pCommands.length);
+            mLog.warn(mManagerTag, ": Starting command queue with a size of ", pCommands.length);
             runCommandQueue = true;
             desiredCommandQueue.setCommands(pCommands);
         } else {
-            mLog.warn("Set commands was called, but superstructure is already running commands");
+            mLog.warn(mManagerTag, ": Set commands was called, but superstructure is already running commands");
         }
     }
 
     public void stopRunningCommands(double pNow) {
-        mLog.warn("Stopping command queue");
+        mLog.warn(mManagerTag, ": Stopping command queue");
         runCommandQueue = false;
         desiredCommandQueue.shutdown(pNow);
         desiredCommandQueue.clear();
+    }
+
+    public CommandManager setManagerTag(String pManagerTag) {
+        mManagerTag = pManagerTag;
+        return this;
     }
 
 }

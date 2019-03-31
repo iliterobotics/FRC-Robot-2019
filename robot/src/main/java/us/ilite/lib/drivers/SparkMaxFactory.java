@@ -43,9 +43,9 @@ public class SparkMaxFactory {
         return createSparkMax(pId, pMotorType, kDefaultConfiguration);
     }
 
-    public static CANSparkMax createPermanentSlaveSparkMax(int pId, int pFollowerId, MotorType pMotorType, ExternalFollower pExternalFollower) {
+    public static CANSparkMax createPermanentSlaveSparkMax(int pId, CANSparkMax pMaster, MotorType pMotorType) {
         CANSparkMax spark = createSparkMax(pId, pMotorType, kSlaveConfiguration);
-        spark.follow(ExternalFollower.kFollowerSparkMax, pFollowerId);
+        spark.follow(pMaster);
         return spark;
     }
 

@@ -14,6 +14,8 @@ import us.ilite.common.lib.control.PIDGains;
 import us.ilite.common.lib.util.Conversions;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
+import us.ilite.lib.drivers.ECommonControlMode;
+import us.ilite.lib.drivers.ECommonNeutralMode;
 import us.ilite.lib.drivers.IMU;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
@@ -54,12 +56,12 @@ public class DriveStraight implements ICommand {
      * Indicates whether we use velocity control or pure % output for drivebase outputs.
      */
     public enum EDriveControlMode {
-        MOTION_MAGIC(ControlMode.MotionMagic),
-        PERCENT_OUTPUT(ControlMode.PercentOutput);
+        MOTION_MAGIC(ECommonControlMode.MOTION_MAGIC),
+        PERCENT_OUTPUT(ECommonControlMode.PERCENT_OUTPUT);
 
-        public final ControlMode kMotorControlMode;
+        public final ECommonControlMode kMotorControlMode;
 
-        EDriveControlMode(ControlMode pMotorControlMode) {
+        EDriveControlMode(ECommonControlMode pMotorControlMode) {
             kMotorControlMode = pMotorControlMode;
         }
     }
@@ -135,8 +137,8 @@ public class DriveStraight implements ICommand {
             are using.
             */
             driveMessage = new DriveMessage(linearOutput, linearOutput, mDriveControlMode.kMotorControlMode);
-            driveMessage.setDemand(DemandType.ArbitraryFeedForward, angularOutput, -angularOutput);
-            driveMessage.setNeutralMode(NeutralMode.Brake);
+            driveMessage.setDemand(angularOutput, -angularOutput);
+            driveMessage.setNeutralMode(ECommonNeutralMode.BRAKE);
 
             mDrive.setDriveMessage(driveMessage);
 

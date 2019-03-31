@@ -68,8 +68,8 @@ public class DriveSimulation {
             mDrive.loop(time);
             mDrive.periodicOutput(time);
 
-            Pose2d currentPose = mDrive.getDriveController().getRobotStateEstimator().getRobotState().getLatestFieldToVehiclePose();
-            Pose2d targetPose = mDrive.getDriveController().getDriveMotionPlanner().mSetpoint.state().getPose();
+            Pose2d currentPose = mDrive.getDriveController().getCurrentPose();
+            Pose2d targetPose = mDrive.getDriveController().getTargetPose();
 
             mTrajectoryWriter.add(mDrive.getDriveController().getDriveMotionPlanner());
             mOdometryWriter.add(currentPose);

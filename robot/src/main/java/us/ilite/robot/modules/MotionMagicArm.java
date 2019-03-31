@@ -403,4 +403,5 @@ public class MotionMagicArm extends Arm
        // this.mDesiredOutput = Util.limit(desiredOutput, -1, 1);
     }
 
+    public boolean isCurrentLimiting() { return motorOff; }
 }

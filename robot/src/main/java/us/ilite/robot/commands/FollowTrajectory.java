@@ -39,7 +39,7 @@ public class FollowTrajectory implements ICommand {
     public boolean update(double pNow) {
 
         Pose2d current = mDrive.getDriveController().getCurrentPose();
-        Pose2d setpoint = mDrive.getDriveController().getDriveMotionPlanner().mSetpoint.state().getPose();
+        Pose2d setpoint = mDrive.getDriveController().getTargetPose();
 
         Data.kSmartDashboard.putDouble("Heading", current.getRotation().getDegrees());
         Data.kSmartDashboard.putDouble("X", current.getTranslation().x());

@@ -130,4 +130,9 @@ public class DriveController {
     public Pose2d getCurrentPose() {
         return mCurrentPose;
     }
+
+    public Pose2d getTargetPose() {
+        return mDriveMotionPlanner.setpoint().state().getPose();
+    }
+
 }
