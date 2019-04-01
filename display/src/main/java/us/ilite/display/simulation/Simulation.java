@@ -21,54 +21,53 @@ import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.HenryProfile;
 import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideRocket;
+import us.ilite.robot.commands.FollowRotationTrajectory;
+import us.ilite.robot.commands.FollowTrajectory;
+import us.ilite.robot.modules.CommandManager;
 import us.ilite.robot.modules.Drive;
 
-public class TrackingSimulation {
+public class Simulation {
 
     private final double kDt;
-
-    private ReflectingCSVWriter<Pose2d> csvPoseWriter;
-    private ReflectingCSVWriter<DriveMotionPlanner> csvDrivePlanner;
 
     private final Data mData;
     private final Clock mClock;
     private final DriveController mDriveController;
     private final TrajectoryGenerator mTrajectoryGenerator;
     private final Drive mDrive;
-    private final DriveSimulation mDriveSimulation;
+    private final CommandManager mCommandManager;
 
-    public TrackingSimulation(double pDt) {
+    private final ModuleSim mSim;
+
+    public Simulation(double pDt) {
         this(new HenryProfile(), pDt);
     }
 
-    public TrackingSimulation(RobotProfile pRobotProfile, double pDt) {
+    public Simulation(RobotProfile pRobotProfile, double pDt) {
         kDt = pDt;
         mData = new Data();
         mClock = new Clock().simulated();
         mDriveController = new DriveController(pRobotProfile);
         mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
         mDrive = new Drive(mData, mDriveController, mClock, true);
-        csvPoseWriter = new ReflectingCSVWriter<>("tracking.csv", Pose2d.class);
-        csvDrivePlanner = new ReflectingCSVWriter<>("trajectory.csv", DriveMotionPlanner.class);
-        mDriveSimulation = new DriveSimulation(mDrive, csvPoseWriter, csvDrivePlanner, kDt);
+        mCommandManager = new CommandManager();
+
+         mSim = new ModuleSim(kDt, mCommandManager, mDrive);
     }
 
     public void simulate() {
 
         Logger.setLevel(ELevel.ERROR);
 
-        double timeDriven = 0.0;
+        mDrive.startCsvLogging();
+        mCommandManager.startCommands(
+                new FollowTrajectory(generate(MiddleToMiddleCargoToSideRocket.kStartToMiddleLeftHatchPath), mDrive, true),
+                new FollowTrajectory(generate(true, MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchToLoadingStationPath), mDrive,false),
+                new FollowRotationTrajectory(generate(MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchFromStart.getRotation(), MiddleToMiddleCargoToSideRocket.kLoadingStationFromMiddleLeftHatch.getRotation()), mDrive,false),
+                new FollowTrajectory(generate(true, MiddleToMiddleCargoToSideRocket.kLoadingStationToSideRocketSetupPath), mDrive, false)
+        );
 
-        mDrive.modeInit(mClock.getCurrentTime());
-
-        timeDriven += mDriveSimulation.driveTrajectory(generate(MiddleToMiddleCargoToSideRocket.kStartToMiddleLeftHatchPath), true);
-        timeDriven += mDriveSimulation.driveTrajectory(generate(true, MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchToLoadingStationPath), false);
-        timeDriven += mDriveSimulation.driveRotationTrajectory(generate(MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchFromStart.getRotation(), MiddleToMiddleCargoToSideRocket.kLoadingStationFromMiddleLeftHatch.getRotation()), false);
-        timeDriven += mDriveSimulation.driveTrajectory(generate(true, MiddleToMiddleCargoToSideRocket.kLoadingStationToSideRocketSetupPath), false);
-
-        mDrive.shutdown(mClock.getCurrentTime());
-
-        System.out.println("Time Driven:" + timeDriven);
+        mSim.start().setStopCondition(() -> !mCommandManager.isRunningCommands());
 
     }
 
@@ -86,10 +85,6 @@ public class TrackingSimulation {
 
     public Trajectory<TimedState<Rotation2d>> generate(Rotation2d initialHeading, Rotation2d finalHeading ) {
         return mTrajectoryGenerator.generateTurnInPlaceTrajectory(initialHeading, finalHeading,0.0,  AutonomousRoutines.kDefaultTrajectoryConstraints);
-    }
-
-    public DriveSimulation getDriveSimulation() {
-        return mDriveSimulation;
     }
 
     public RobotStateEstimator getRobotStateEstimator() {

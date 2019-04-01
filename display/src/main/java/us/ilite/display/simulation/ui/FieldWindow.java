@@ -22,7 +22,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import us.ilite.display.simulation.SimData;
 import us.ilite.display.simulation.ISimulationListener;
-import us.ilite.display.simulation.TrackingSimulation;
+import us.ilite.display.simulation.Simulation;
 import us.ilite.robot.auto.paths.RobotDimensions;
 
 public class FieldWindow extends Application implements ISimulationListener {
@@ -43,7 +43,7 @@ public class FieldWindow extends Application implements ISimulationListener {
                                                          new Translation2d(RobotDimensions.kFrontToCenter, -RobotDimensions.kSideToCenter));
     private DrawablePath robotPath = new DrawablePath(Color.BLUE);
 
-    private final TrackingSimulation mTrackingSimulation;
+    private final Simulation mSimulation;
 
     private Queue<SimData> drawQueue;
     private SimData nextDataToDraw = null;
@@ -52,8 +52,8 @@ public class FieldWindow extends Application implements ISimulationListener {
 
     private final double kDt;
 
-    public FieldWindow(TrackingSimulation pTrackingSimulation, double pDt) {
-        mTrackingSimulation = pTrackingSimulation;
+    public FieldWindow(Simulation pSimulation, double pDt) {
+        mSimulation = pSimulation;
         kDt = pDt;
         drawQueue = new LinkedList<>();
     }
@@ -100,8 +100,8 @@ public class FieldWindow extends Application implements ISimulationListener {
 
         reset();
 
-        mTrackingSimulation.getDriveSimulation().addListener(this);
-        mTrackingSimulation.simulate();
+        mSimulation.getDriveSimulation().addListener(this);
+        mSimulation.simulate();
 
         updateThread = new UpdateThread();
 
@@ -212,7 +212,7 @@ public class FieldWindow extends Application implements ISimulationListener {
     private void play() {
         if(drawQueue.isEmpty()) {
             updateThread = new UpdateThread();
-            mTrackingSimulation.simulate();
+            mSimulation.simulate();
             clear();
             startDrawing();
         }

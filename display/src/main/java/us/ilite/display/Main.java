@@ -2,7 +2,7 @@ package us.ilite.display;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import us.ilite.display.simulation.TrackingSimulation;
+import us.ilite.display.simulation.Simulation;
 import us.ilite.display.simulation.ui.FieldWindow;
 
 public class Main extends Application {
@@ -13,9 +13,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage pStage) throws InterruptedException {
-        TrackingSimulation mTrackingSimulation = new TrackingSimulation(0.01);
+        Simulation mSimulation = new Simulation(0.01);
 
-        FieldWindow mFieldWindow = new FieldWindow(mTrackingSimulation, 0.01);
+        FieldWindow mFieldWindow = new FieldWindow(mSimulation, 0.01);
 
         mFieldWindow.start(pStage);
         // Sleep for a bit to allow simulation to fill draw queue
