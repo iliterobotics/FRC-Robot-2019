@@ -54,7 +54,7 @@ public class Elevator extends Module {
         //TODO find encoder threshold
         HATCH_BOTTOM(1),
         HATCH_MIDDLE(18),
-        HATCH_TOP(36),
+        HATCH_TOP(33.5),
         CARGO_BOTTOM(9.5),
         CARGO_LOADING_STATION(17),
         CARGO_CARGO_SHIP(16.5),
