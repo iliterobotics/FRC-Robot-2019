@@ -241,7 +241,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
 
     public static double kIntakeRollerHatchPower = .25;
-    public static double kIntakeRollerCargoPower = .25;
+    public static double kIntakeRollerCargoPower = .15;
     public static double kIntakeRollerHoldPower = .25;
     public static double kIntakeWristStowedAngle = 0;
     public static double kIntakeWristHandoffAngle = 48;
