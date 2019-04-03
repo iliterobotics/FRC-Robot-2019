@@ -1,16 +1,9 @@
 package us.ilite.display.simulation.ui;
 
-import java.io.File;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.function.Consumer;
-
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
-
 import javafx.application.Application;
-import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -25,9 +18,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import us.ilite.display.simulation.SimData;
-import us.ilite.display.simulation.ISimulationListener;
-import us.ilite.display.simulation.Simulation;
+import us.ilite.display.simulation.SimRobot;
 import us.ilite.robot.auto.paths.RobotDimensions;
+
+import java.io.File;
 
 public class FieldWindow extends Application {
 
@@ -40,7 +34,7 @@ public class FieldWindow extends Application {
     private Text mouseXInches, mouseYInches;
     private Button playButton, pauseButton;
     private ToggleButton simToggle;
-    private Simulation mSimulation;
+    private SimRobot mSimulation;
 
     private Translation2d fieldInchesToPixels;
     private RobotOutline robotOutline = new RobotOutline(new Translation2d(-RobotDimensions.kBackToCenter, -RobotDimensions.kSideToCenter),
@@ -53,7 +47,7 @@ public class FieldWindow extends Application {
 
     public final double kDt;
 
-    public FieldWindow(Simulation mSimulation, double kDt) {
+    public FieldWindow(SimRobot mSimulation, double kDt) {
         this.mSimulation = mSimulation;
         this.kDt = kDt;
     }
