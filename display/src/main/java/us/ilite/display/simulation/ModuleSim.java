@@ -17,7 +17,7 @@ public class ModuleSim {
     private static final ILog sLog = Logger.createLog(ModuleSim.class);
     private final double mScheduleRate;
 
-    private final ScheduledExecutorService mModuleExecutor = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService mModuleExecutor = Executors.newScheduledThreadPool(1);
     private final Clock mClock = new Clock().simulated();
     private final ModuleList mModuleList = new ModuleList();
 
@@ -44,7 +44,7 @@ public class ModuleSim {
             mModuleList.update(mClock.getCurrentTime());
             mClock.cycleEnded();
 
-        }, 0L, rate, TimeUnit.MILLISECONDS);
+        }, 1L, rate, TimeUnit.MILLISECONDS);
         return this;
     }
 
