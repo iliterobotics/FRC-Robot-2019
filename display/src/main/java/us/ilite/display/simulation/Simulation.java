@@ -17,6 +17,7 @@ import us.ilite.common.lib.control.DriveController;
 import com.team254.frc2018.planners.DriveMotionPlanner;
 import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+import us.ilite.display.simulation.ui.FieldWindow;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.HenryProfile;
 import us.ilite.robot.auto.AutonomousRoutines;
@@ -35,31 +36,32 @@ public class Simulation {
     private final DriveController mDriveController;
     private final TrajectoryGenerator mTrajectoryGenerator;
     private final Drive mDrive;
+    private final UiUpdater mUiUpdater;
     private final CommandManager mCommandManager;
 
     private final ModuleSim mSim;
 
-    public Simulation(double pDt) {
-        this(new HenryProfile(), pDt);
-    }
+    private final FieldWindow mFieldWindow;
 
-    public Simulation(RobotProfile pRobotProfile, double pDt) {
+    public Simulation(RobotProfile pRobotProfile, FieldWindow pFieldWindow, double pDt) {
         kDt = pDt;
         mData = new Data();
         mClock = new Clock().simulated();
+        mFieldWindow = pFieldWindow;
         mDriveController = new DriveController(pRobotProfile);
         mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
         mDrive = new Drive(mData, mDriveController, mClock, true);
         mCommandManager = new CommandManager();
+        mUiUpdater = new UiUpdater(mData, pFieldWindow);
 
-         mSim = new ModuleSim(kDt, mCommandManager, mDrive);
+        mSim = new ModuleSim(0.01, mCommandManager, mDrive, mUiUpdater);
     }
 
     public void simulate() {
 
-        Logger.setLevel(ELevel.ERROR);
+        Logger.setLevel(ELevel.DEBUG);
 
-        mDrive.startCsvLogging();
+//        mDrive.startCsvLogging();
         mCommandManager.startCommands(
                 new FollowTrajectory(generate(MiddleToMiddleCargoToSideRocket.kStartToMiddleLeftHatchPath), mDrive, true),
                 new FollowTrajectory(generate(true, MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchToLoadingStationPath), mDrive,false),
@@ -67,7 +69,7 @@ public class Simulation {
                 new FollowTrajectory(generate(true, MiddleToMiddleCargoToSideRocket.kLoadingStationToSideRocketSetupPath), mDrive, false)
         );
 
-        mSim.start().setStopCondition(() -> !mCommandManager.isRunningCommands());
+        mSim.start();
 
     }
 

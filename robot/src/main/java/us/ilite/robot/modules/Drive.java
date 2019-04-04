@@ -162,14 +162,7 @@ public class Drive extends Loop {
 
 	@Override
 	public void update(double pNow) {
-        if(mDriveState != EDriveState.NORMAL) {
-			mLogger.error("Invalid drive state - maybe you meant to run this a high frequency?");
-			mDriveState = EDriveState.NORMAL;
-		} else {
-			mDriveHardware.set(mDriveMessage);
-		}
-
-		mPreviousTime = pNow;
+        loop(pNow);
 	}
 	
 	@Override
@@ -181,6 +174,7 @@ public class Drive extends Loop {
 	@Override
 	public void loop(double pNow) {
 //		mUpdateTimer.start();
+		mLogger.debug("AAAAA");
 		switch(mDriveState) {
 			case PATH_FOLLOWING:
 //				mCalculateTimer.start();

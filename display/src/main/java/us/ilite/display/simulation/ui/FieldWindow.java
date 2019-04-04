@@ -43,8 +43,6 @@ public class FieldWindow extends Application implements ISimulationListener {
                                                          new Translation2d(RobotDimensions.kFrontToCenter, -RobotDimensions.kSideToCenter));
     private DrawablePath robotPath = new DrawablePath(Color.BLUE);
 
-    private final Simulation mSimulation;
-
     private Queue<SimData> drawQueue;
     private SimData nextDataToDraw = null;
     private UpdateThread updateThread;
@@ -52,8 +50,7 @@ public class FieldWindow extends Application implements ISimulationListener {
 
     private final double kDt;
 
-    public FieldWindow(Simulation pSimulation, double pDt) {
-        mSimulation = pSimulation;
+    public FieldWindow(double pDt) {
         kDt = pDt;
         drawQueue = new LinkedList<>();
     }
@@ -99,9 +96,6 @@ public class FieldWindow extends Application implements ISimulationListener {
         });
 
         reset();
-
-        mSimulation.getDriveSimulation().addListener(this);
-        mSimulation.simulate();
 
         updateThread = new UpdateThread();
 
@@ -212,7 +206,6 @@ public class FieldWindow extends Application implements ISimulationListener {
     private void play() {
         if(drawQueue.isEmpty()) {
             updateThread = new UpdateThread();
-            mSimulation.simulate();
             clear();
             startDrawing();
         }

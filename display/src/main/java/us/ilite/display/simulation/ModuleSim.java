@@ -1,5 +1,7 @@
 package us.ilite.display.simulation;
 
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.modules.Module;
 import us.ilite.robot.modules.ModuleList;
@@ -12,6 +14,7 @@ import java.util.function.Supplier;
 
 public class ModuleSim {
 
+    private static final ILog sLog = Logger.createLog(ModuleSim.class);
     private final double mScheduleRate;
 
     private final ScheduledExecutorService mModuleExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -26,16 +29,22 @@ public class ModuleSim {
     }
 
     public ModuleSim start() {
+        long rate = (long)(mScheduleRate * 1000.0);
+        sLog.debug("Initializing with DT: " + rate);
         mModuleList.modeInit(mClock.getCurrentTime());
         mModuleExecutor.scheduleAtFixedRate(() -> {
 
+            sLog.debug("Updating: " + mClock.getCurrentTime());
             if(mStopCondition != null && mStopCondition.get()) {
                 stop();
+                sLog.debug("STOPPING MODULE EXECUTOR");
             }
 
+            mModuleList.periodicInput(mClock.getCurrentTime());
             mModuleList.update(mClock.getCurrentTime());
             mClock.cycleEnded();
-        }, 0L, (long)mScheduleRate, TimeUnit.SECONDS);
+
+        }, 0L, rate, TimeUnit.MILLISECONDS);
         return this;
     }
 
