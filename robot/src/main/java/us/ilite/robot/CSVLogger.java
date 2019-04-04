@@ -1,8 +1,5 @@
 package us.ilite.robot;
 
-import java.io.File;
-import java.nio.file.Files;
-
 import edu.wpi.first.wpilibj.Notifier;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
