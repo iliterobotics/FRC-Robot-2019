@@ -12,19 +12,20 @@ import com.flybotix.hfr.codex.Codex;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-import edu.wpi.first.wpilibj.DriverStation;
 import us.ilite.common.Data;
+import us.ilite.common.types.MatchMetadata;
 
 public class CodexCsvLogger {
 
     private final ILog mLog = Logger.createLog(CodexCsvLogger.class);
     private static final String ROBOT_DIR = "/u";
-    private static final String USER_DIR = System.getProperty("user.home");
+    // private static final String USER_DIR = System.getProperty("user.home");
     private static final String LOG_PATH_FORMAT = "/logs/%s/%s-%s-%s.csv";
     private Codex<?, ?> mCodex;
     private BufferedWriter writer;
+    private MatchMetadata mMatchData;
 
-    public CodexCsvLogger(Codex<?, ?> pCodex ) {
+    public CodexCsvLogger(Codex<?, ?> pCodex, MatchMetadata pMatchData) {
         mCodex = pCodex;
 
         File file = file(false);
@@ -34,6 +35,8 @@ public class CodexCsvLogger {
         } catch (IOException pE) {
             pE.printStackTrace();
         }
+
+        mMatchData = pMatchData;
 
     }
 
@@ -57,18 +60,18 @@ public class CodexCsvLogger {
 
     public File file(boolean handleUSBConnection) {
 
-        String dir = "";
-        if(!handleUSBConnection) {
-            if(Files.notExists(new File("/u").toPath())) {
-                dir = USER_DIR;
-            } else {
-                dir = ROBOT_DIR;
-            }
-        } else {
-            dir = USER_DIR;
-        }
+        String dir = ROBOT_DIR;
+        // if(!handleUSBConnection) {
+        //     if(Files.notExists(new File("/u").toPath())) {
+        //         dir = USER_DIR;
+        //     } else {
+        //         dir = ROBOT_DIR;
+        //     }
+        // } else {
+        //     dir = USER_DIR;
+        // }
 
-        String eventName = DriverStation.getInstance().getEventName();
+        String eventName = mMatchData.mEventName;
         if ( eventName.length() <= 0 ) {
             // event name format: MM-DD-YYYY_HH-MM-SS
             eventName =  new SimpleDateFormat("MM-dd-YYYY_HH-mm-ss").format(Calendar.getInstance().getTime());
@@ -77,21 +80,13 @@ public class CodexCsvLogger {
         File file = new File(String.format( dir + LOG_PATH_FORMAT,
                             mCodex.meta().getEnum().getSimpleName(),
                             eventName,
-                            DriverStation.getInstance().getMatchType().name(),
-                            Integer.toString(DriverStation.getInstance().getMatchNumber())
+                            mMatchData.mMatchType,
+                            Integer.toString(mMatchData.mMatchNumber)
                             ));
 
         mLog.error("Creating log file at ", file.toPath());
 
         return file;
-    }
-
-    public void toDriverStation() {
-        try {
-            writer = new BufferedWriter(new FileWriter(file(true)));
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public void closeWriter() {
