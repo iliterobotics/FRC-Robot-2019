@@ -19,9 +19,12 @@ import us.ilite.common.types.MatchMetadata;
 public class CodexCsvLogger {
 
     private final ILog mLog = Logger.createLog(CodexCsvLogger.class);
-    private static final String ROBOT_DIR = "/u";
+    public static final String ROBOT_DIR = "/u";
     // private static final String USER_DIR = System.getProperty("user.home");
     private static final String LOG_PATH_FORMAT = "/logs/%s/%s-%s-%s.csv";
+
+    // private final ILog mLog = Logger.createLog(CodexCsvLogger.class);
+
     private Codex<?, ?> mCodex;
     private BufferedWriter writer;
     private MatchMetadata mMatchData;

@@ -49,7 +49,7 @@ public class DriveMotionPlanner implements CSVWritable {
 
     // Trajectory and errors are in inches
     TrajectoryIterator<TimedState<Pose2dWithCurvature>> mCurrentTrajectory = null;
-    public TimedState<Pose2dWithCurvature> mSetpoint = new TimedState<>(Pose2dWithCurvature.identity());
+    private TimedState<Pose2dWithCurvature> mSetpoint = new TimedState<>(Pose2dWithCurvature.identity());
     Pose2d mError = Pose2d.identity();
     boolean mIsReversed = false;
     boolean mIsTurnInPlace = false;

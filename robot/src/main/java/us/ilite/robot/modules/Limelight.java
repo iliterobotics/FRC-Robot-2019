@@ -3,6 +3,8 @@ package us.ilite.robot.modules;
 import java.util.Optional;
 
 import com.flybotix.hfr.codex.Codex;
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.geometry.Translation2d;
 
 
@@ -21,6 +23,7 @@ import us.ilite.robot.modules.targetData.ITargetDataProvider;
 
 public class Limelight extends Loop implements ITargetDataProvider {
 
+    private final ILog mLog = Logger.createLog(Limelight.class);
     private final NetworkTable mTable = NetworkTableInstance.getDefault().getTable("limelight");
 
     private final Data mData;
@@ -69,7 +72,6 @@ public class Limelight extends Loop implements ITargetDataProvider {
 
     @Override
     public void update(double pNow) {
-
         if(mTrackingType != null) {
             setLedMode(mTrackingType.getLedOn() ? LedMode.LED_ON : LedMode.LED_OFF);
             setPipeline(mTrackingType.getPipeline());
@@ -106,8 +108,13 @@ public class Limelight extends Loop implements ITargetDataProvider {
     }
 
     public void setTracking(ETrackingType pTrackingType) {
+        mLog.error("SET TRACKING TYPE: " + pTrackingType.name());
         mTrackingType = pTrackingType;
         // TODO - reconcile pipeline
+    }
+    
+    public ETrackingType getTracking() {
+        return this.mTrackingType;
     }
 
     public void setCamMode(boolean pMode) {

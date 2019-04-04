@@ -12,6 +12,7 @@ import com.team254.lib.util.Util;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.manipulator.EElevator;
+import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.SparkMaxFactory;
 
 
@@ -57,8 +58,8 @@ public class Elevator extends Module {
         CARGO_BOTTOM(9.5),
         CARGO_LOADING_STATION(17),
         CARGO_CARGO_SHIP(16.5),
-        CARGO_MIDDLE(26),
-        CARGO_TOP(42.5);
+        CARGO_MIDDLE(27),
+        CARGO_TOP(44.5);
 
         private double kEncoderRotations;
 
@@ -100,7 +101,7 @@ public class Elevator extends Module {
         mCanController.setSmartMotionMinOutputVelocity(0, SystemSettings.kElevatorSmartMotionSlot);
         mCanController.setSmartMotionAllowedClosedLoopError(SystemSettings.kElevatorClosedLoopAllowableError, SystemSettings.kElevatorSmartMotionSlot);
 
-        mMasterElevator.getEncoder().setPosition(0);
+        zeroEncoder();
 
         // Make sure the elevator is stopped upon initialization
         mDesiredPosition = EElevatorPosition.HATCH_BOTTOM;
@@ -139,6 +140,7 @@ public class Elevator extends Module {
                 break;
             case SET_POSITION:
                 mSetPoint = mRequestedStop ? mData.elevator.get(EElevator.CURRENT_ENCODER_TICKS) : mDesiredPosition.getEncoderRotations();
+                mDesiredPower = 0;
                 mCanController.setReference(mSetPoint, ControlType.kSmartMotion, 0, SystemSettings.kElevatorFrictionVoltage);
                 break;
             default:
@@ -158,6 +160,7 @@ public class Elevator extends Module {
      */
     public void zeroEncoder() {
         mMasterElevator.getEncoder().setPosition(0);
+        mData.elevator.set(EElevator.CURRENT_ENCODER_TICKS, 0.0);
     }
 
 
@@ -191,9 +194,12 @@ public class Elevator extends Module {
         return mCurrentState == EElevatorState.SET_POSITION && (Math.abs(pPosition.getEncoderRotations() - mData.elevator.get(EElevator.CURRENT_ENCODER_TICKS)) <= SystemSettings.kElevatorAllowableError);
     }
 
+    public boolean isCurrentLimiting() {
+        return mData.pdp.get(EPowerDistPanel.CURRENT9) > SystemSettings.kElevatorWarnCurrentLimitThreshold;
+    }
+
     public void stop() {
         mRequestedStop = true;
-        mCurrentState = EElevatorState.STOP;
     }
 
 }

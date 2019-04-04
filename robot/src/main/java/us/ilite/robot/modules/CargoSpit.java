@@ -17,7 +17,7 @@ import us.ilite.common.types.sensor.EPowerDistPanel;
 public class CargoSpit extends Module {
 
     private final double kZero = 0.0;
-    private final double kLaunchPower = 0.7;
+    private final double kLaunchPower = 0.8;
 
     private ILog mLog = Logger.createLog(CargoSpit.class);
 
@@ -121,6 +121,10 @@ public class CargoSpit extends Module {
             return false;
         }
 
+        return isCurrentLimiting()/* || isBeamBroken()*/;
+    }
+
+    public boolean isCurrentLimiting() {
         double currentLimit = SystemSettings.kCargoSpitSPXCurrentRatioLimit;
         // Ratio being current over voltage
         // Voltage will be assumed to be 12 to avoid polling CAN so much
@@ -129,7 +133,7 @@ public class CargoSpit extends Module {
         double rightRatio = mRightCurrent / 12.0;
         double averageRatio = ( leftRatio + rightRatio ) / 2.0;
 
-        return (averageRatio >= currentLimit) || isBeamBroken();
+        return (averageRatio >= currentLimit);
     }
 
     public boolean hasCargo() {
@@ -139,6 +143,7 @@ public class CargoSpit extends Module {
     public boolean isIntaking() {
         return mIntaking;
     }
+    public boolean isOuttaking() { return mOuttaking; }
     
     public void stop() {
         mLeftMotor.set( ControlMode.PercentOutput, kZero );

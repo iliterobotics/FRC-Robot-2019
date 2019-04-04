@@ -34,4 +34,6 @@ public interface IDriveHardware extends IHardware {
     double getLeftVoltage();
     double getRightVoltage();
 
+    void setOpenLoopRampRate(double pOpenLoopRampRate);
+
 }

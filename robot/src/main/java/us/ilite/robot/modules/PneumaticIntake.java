@@ -70,7 +70,7 @@ public class PneumaticIntake extends Module{
     }
 
     private void activateRoller() {
-        mPower = 0.50;
+        mPower = SystemSettings.kPneumaticIntakeIntakePower;
     }
 
     private void deactivateRoller() {

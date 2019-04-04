@@ -21,6 +21,7 @@ import us.ilite.common.lib.util.Conversions;
 import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.sensor.EGyro;
+import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.lib.drivers.ECommonControlMode;
 import us.ilite.lib.drivers.ECommonNeutralMode;
@@ -135,6 +136,15 @@ public class Drive extends Loop {
 // 		mData.drive.set(EDriveData.LEFT_VOLTAGE, 0.0);
 //		mData.drive.set(EDriveData.RIGHT_VOLTAGE, 0.0);
 //
+
+		mData.drive.set(EDriveData.TARGET_X, mDriveController.getTargetPose().getTranslation().x());
+		mData.drive.set(EDriveData.TARGET_Y, mDriveController.getTargetPose().getTranslation().y());
+		mData.drive.set(EDriveData.TARGET_HEADING, mDriveController.getTargetPose().getRotation().getDegrees());
+
+		mData.drive.set(EDriveData.ODOM_X, mDriveController.getCurrentPose().getTranslation().x());
+		mData.drive.set(EDriveData.ODOM_Y, mDriveController.getCurrentPose().getTranslation().y());
+		mData.drive.set(EDriveData.ODOM_HEADING, mDriveController.getCurrentPose().getRotation().getDegrees());
+
 		mData.drive.set(EDriveData.LEFT_MESSAGE_OUTPUT, mDriveMessage.leftOutput);
 		mData.drive.set(EDriveData.RIGHT_MESSAGE_OUTPUT, mDriveMessage.rightOutput);
 		mData.drive.set(EDriveData.LEFT_MESSAGE_CONTROL_MODE, (double)mDriveMessage.leftControlMode.ordinal());
@@ -311,6 +321,10 @@ public class Drive extends Loop {
 		mGyroOffset = pHeading.rotateBy(mDriveHardware.getHeading().inverse());
 	}
 
+	public boolean isCurrentLimiting() {
+		return EPowerDistPanel.isAboveCurrentThreshold(SystemSettings.kDriveCurrentLimitAmps, mData.pdp, SystemSettings.kDrivePdpSlots);
+	}
+
 	public Clock getSimClock() {
 		return mSimClock;
 	}
@@ -345,8 +359,8 @@ public class Drive extends Loop {
 			rightVel = mData.drive.get(EDriveData.RIGHT_VEL_TICKS);
 
 //			status = Logger.getRecentLogs().stream().filter(logOutput -> logOutput.thread.equals(this.getClass().getName())).collect(Collectors.toList());
-			targetX = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().x();
-			targetY = mDriveController.getDriveMotionPlanner().mSetpoint.state().getPose().getTranslation().y();
+			targetX = mDriveController.getTargetPose().getTranslation().x();
+			targetY = mDriveController.getTargetPose().getTranslation().y();
 			x = mDriveController.getCurrentPose().getTranslation().x();
 			y = mDriveController.getCurrentPose().getTranslation().y();
 
@@ -358,6 +372,10 @@ public class Drive extends Loop {
 //			error = mDriveController.getDriveMotionPlanner().error();
 		}
 
+	}
+
+	public void setRampRate(double pOpenLoopRampRate) {
+		mDriveHardware.setOpenLoopRampRate(pOpenLoopRampRate);
 	}
 
 }

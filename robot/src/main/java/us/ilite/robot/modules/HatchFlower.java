@@ -4,7 +4,10 @@ import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
+import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.types.drive.EDriveData;
 import us.ilite.robot.hardware.SolenoidWrapper;
 
 /**
@@ -19,14 +22,18 @@ public class HatchFlower extends Module {
 
     private ILog mLog = Logger.createLog(HatchFlower.class);
 
+    private Data mData;
+
+    private Timer mBackupTimer = new Timer();
     private Solenoid mGrab;
     private Solenoid mExtend;
     private SolenoidWrapper mGrabSolenoid;
     private SolenoidWrapper mExtendSolenoid;
 
-    private GrabberState mGrabberState;
+    private GrabberState mLastGrabberState, mGrabberState;
     private ExtensionState mExtensionState;
 
+    private double mReleaseDistance = 0;
 
     /////////////////////////////////////////////////////////////////////////
     // ********************** Solenoid state enums *********************** //
@@ -54,7 +61,9 @@ public class HatchFlower extends Module {
         }
     }
 
-    public HatchFlower() {
+    public HatchFlower(Data pData) {
+        mData = pData;
+
         // TODO Do we need to pass the CAN Addresses in via the constructor?
         mGrab = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
         mExtend = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerExtensionSolenoidAddress);
@@ -62,6 +71,7 @@ public class HatchFlower extends Module {
         mExtendSolenoid = new SolenoidWrapper(mExtend);
 
         // Init Hatch Flower to grab state - Per JKnight we will start with a hatch or cargo onboard
+        this.mLastGrabberState = GrabberState.GRAB;
         this.mGrabberState = GrabberState.GRAB;
         this.mExtensionState = ExtensionState.DOWN;
 
@@ -89,6 +99,13 @@ public class HatchFlower extends Module {
         mGrabSolenoid.set(mGrabberState.grabber);
         mExtendSolenoid.set(mExtensionState.extension);
 
+        if(hasGrabberStateChanged() && mGrabberState == GrabberState.RELEASE && mExtensionState == ExtensionState.DOWN) {
+            mReleaseDistance = getAverageDistanceTraveled();
+            mBackupTimer.reset();
+            mBackupTimer.start();
+        }
+
+        mLastGrabberState = mGrabberState;
     }
 
     @Override
@@ -114,6 +131,26 @@ public class HatchFlower extends Module {
         mGrabberState = GrabberState.RELEASE;
     }
 
+    public boolean shouldBackUp() {
+
+        double distanceDelta = mReleaseDistance - getAverageDistanceTraveled();
+
+        return
+            mGrabberState == GrabberState.RELEASE &&
+            mExtensionState == ExtensionState.DOWN &&
+            distanceDelta <= SystemSettings.kHatchFlowerReleaseDistance;
+
+//        return mBackupTimer.get() <= SystemSettings.kHatchFlowerReleaseTime;
+    }
+
+    public boolean hasGrabberStateChanged() {
+        return mLastGrabberState != mGrabberState;
+    }
+
+    private double getAverageDistanceTraveled() {
+        return (mData.drive.get(EDriveData.LEFT_POS_INCHES) + mData.drive.get(EDriveData.LEFT_POS_INCHES)) / 2.0;
+    }
+
     /**
      * Sets whether hatch grabber is up or down
      * @param pExtensionState
@@ -135,7 +172,7 @@ public class HatchFlower extends Module {
      * @return Whether the hatch grabber is currently holding a hatch.
      */
     public boolean hasHatch() {
-        return true;
+        return false;
     }
 
 }
