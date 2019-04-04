@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
     private ModuleList mRunningModules = new ModuleList();
 
     private Clock mClock = new Clock();
-    private Data mData;
+    private Data mData = new Data();
     private Timer initTimer = new Timer();
     private final SystemSettings mSettings = new SystemSettings();
     private CSVLogger mCSVLogger = new CSVLogger(mData);
@@ -88,7 +88,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         initMatchMetadata();
-        mData = new Data(mMatchMeta);
+        mData.addMatchMetadata(mMatchMeta);
         //look for practice robot config:
         AbstractSystemSettingsUtils.loadPracticeSettings(mSettings);
 
