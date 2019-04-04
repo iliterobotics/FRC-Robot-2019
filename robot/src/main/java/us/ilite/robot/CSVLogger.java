@@ -10,23 +10,20 @@ import us.ilite.common.config.SystemSettings;
 public class CSVLogger implements Runnable {
     private Notifier mLoggingNotifier;
     private Data mData;
+    private boolean mShouldContinue;
 
     public CSVLogger( Data pData ) {
         mData = pData;
         mLoggingNotifier = new Notifier( this );
+        mShouldContinue = false;
     }
 
     /**
      * Starts the periodically called logging by mLoggingNotifier
      */
     public void start() {
-        try {
-            mData.logFromCodexToCSVHeader();
-            mLoggingNotifier.startPeriodic( SystemSettings.kCSVLoggingPeriod );
-        } catch (Exception e) {
-            System.out.println(e);
-            stop();
-        }
+        mShouldContinue = mData.logFromCodexToCSVHeader();
+        mLoggingNotifier.startPeriodic( SystemSettings.kCSVLoggingPeriod );
     }
 
     /**
@@ -37,10 +34,11 @@ public class CSVLogger implements Runnable {
     }
 
     public void run() {
-        if (Files.notExists(new File("/u").toPath())) {
-            mData.loggersToDriverStation();
+        if(!mShouldContinue) {
+            stop();
+        } else {
+            mShouldContinue = mData.logFromCodexToCSVLog();
         }
-        mData.logFromCodexToCSVLog();
     }
 
 }

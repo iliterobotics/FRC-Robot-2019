@@ -153,11 +153,24 @@ public class Data {
         }
     }
 
-    public void logFromCodexToCSVHeader() {
-        mCodexCsvLoggers.forEach(c -> c.writeHeader());
+    public boolean logFromCodexToCSVHeader() {
+        try {
+            mCodexCsvLoggers.forEach(c -> c.writeHeader());
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }
+        return true;
     }
-    public void logFromCodexToCSVLog() {
-        mCodexCsvLoggers.forEach(c -> c.writeLine());
+    
+    public boolean logFromCodexToCSVLog() {
+        try {
+            mCodexCsvLoggers.forEach(c -> c.writeLine());
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -210,10 +223,6 @@ public class Data {
                 e.printStackTrace();
             }
         }
-    }
-
-    public void loggersToDriverStation() {
-        mCodexCsvLoggers.forEach(logger -> logger.toDriverStation());
     }
 
     /**
