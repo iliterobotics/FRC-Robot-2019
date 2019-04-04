@@ -78,23 +78,23 @@ public class Data {
 
     private List<CodexNetworkTablesParser<?>> mNetworkTableParsers;
     private List<CodexCsvLogger> mCodexCsvLoggers;
+    private MatchMetadata mMatchData;
+    private boolean mLogging;
 
-    /**
-     * Create a Data object based on whether or not it is being used for logging
-     * @param pLogging
-     */
-    public Data(boolean pLogging, MatchMetadata pMatchData) {
-        if(pLogging) {
-            initParsers();
-        }
-    }
 
-    public Data(MatchMetadata pMatchData) {
-        this(true, pMatchData);
+    public Data(boolean pLogging) {
+        mLogging = pLogging;
     }
 
     public Data() {
-        this(true, null);
+        this(true);
+    }
+
+    public void addMatchMetadata(MatchMetadata pMatchData) {
+        if (mLogging) {
+            mMatchData = pMatchData;
+            initParsers();
+        }
     }
 
     private void initParsers() {
@@ -109,9 +109,8 @@ public class Data {
 //            new CodexNetworkTablesParser<EPowerDistPanel>( pdp, "PDP" ),
 //            new CodexNetworkTablesParser<EFourBarData>(fourbar, "FOURBAR")
 //        );
-        
         mCodexCsvLoggers = new ArrayList<>();
-        for(Codex c : mLoggedCodexes) mCodexCsvLoggers.add(new CodexCsvLogger(c));
+        for(Codex c : mLoggedCodexes) mCodexCsvLoggers.add(new CodexCsvLogger(c, mMatchData));
     }
 
     /**
@@ -154,23 +153,35 @@ public class Data {
     }
 
     public boolean logFromCodexToCSVHeader() {
+        boolean keepLogging = false;
         try {
-            mCodexCsvLoggers.forEach(c -> c.writeHeader());
+            for (CodexCsvLogger c : mCodexCsvLoggers) {
+                keepLogging = c.writeHeader();
+                if(!keepLogging) {
+                    break;
+                }
+            }
         } catch (Exception e) {
             System.out.println(e);
-            return false;
+            keepLogging = false;
         }
-        return true;
+        return keepLogging;
     }
-    
+
     public boolean logFromCodexToCSVLog() {
+        boolean keepLogging = false;
         try {
-            mCodexCsvLoggers.forEach(c -> c.writeLine());
+            for (CodexCsvLogger c : mCodexCsvLoggers) {
+                keepLogging = c.writeLine();
+                if(!keepLogging) {
+                    break;
+                }
+            }
         } catch (Exception e) {
             System.out.println(e);
-            return false;
+            keepLogging = false;
         }
-        return true;
+        return keepLogging;
     }
 
     /**
