@@ -72,6 +72,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 	
 	// Applied after any scaling
     public static double kDriverInputTurnMaxMagnitude = 0.5;
+
+    public static double kTurnInPlaceThrottleBump = 0.05;
     
 	public static double kInputDeadbandF310Joystick = 0.05;
     public static double kInputDeadbandF310Trigger = 0.5;

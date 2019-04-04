@@ -289,6 +289,11 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             rotate *= SystemSettings.kSnailModePercentRotateReduction;
         }
 
+        // Handled AFTER any scaling - we don't want the output of this to be scaled
+        if(Math.abs(throttle) < Util.kEpsilon) {
+            throttle = SystemSettings.kTurnInPlaceThrottleBump;
+        }
+
         DriveMessage driveMessage = DriveMessage.fromThrottleAndTurn(throttle, rotate);
         driveMessage.setNeutralMode(ECommonNeutralMode.BRAKE);
         driveMessage.setControlMode(ECommonControlMode.PERCENT_OUTPUT);
