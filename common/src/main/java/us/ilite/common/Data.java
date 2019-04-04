@@ -14,6 +14,7 @@ import us.ilite.common.io.CodexNetworkTablesParser;
 import us.ilite.common.io.CodexCsvLogger;
 import us.ilite.common.lib.util.SimpleNetworkTable;
 import us.ilite.common.types.ETargetingData;
+import us.ilite.common.types.MatchMetadata;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.input.EDriverInputMode;
 import us.ilite.common.types.input.ELogitech310;
@@ -82,15 +83,18 @@ public class Data {
      * Create a Data object based on whether or not it is being used for logging
      * @param pLogging
      */
-    public Data(boolean pLogging) {
+    public Data(boolean pLogging, MatchMetadata pMatchData) {
         if(pLogging) {
             initParsers();
-//            handleNetworkTableWriterCreation();
         }
     }
 
+    public Data(MatchMetadata pMatchData) {
+        this(true, pMatchData);
+    }
+
     public Data() {
-        this(true);
+        this(true, null);
     }
 
     private void initParsers() {
