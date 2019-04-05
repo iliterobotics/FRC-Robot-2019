@@ -111,7 +111,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Elevator Constants
     // =============================================================================
 
-    public static double kElevatorClosedLoopMinPower = -1.0;
+    public static double kElevatorClosedLoopMinPower = -0.5;
     public static double kElevatorClosedLoopMaxPower = 1.0;
 
     public static double kElevatorAllowableError = 1.0;
@@ -141,7 +141,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static double kMaxElevatorVelocity = 4000;
     public static double kMinElevatorVelocity = 0;
-    public static double kMaxElevatorAcceleration = 4000;
+    public static double kMaxElevatorAcceleration = 4000 * 1.0;
     public static double kElevatorClosedLoopAllowableError = 0; //The allowed deficit in rotations
 
 
@@ -283,14 +283,14 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // PID TargetLock constants
     // =============================================================================
-    public static PIDGains kTargetAngleLockGains = new PIDGains(0.0005, 0.000, 0.0);
+    public static PIDGains kTargetAngleLockGains = new PIDGains(8.0E-4, 0.000, 0.0);
     public static PIDGains kTargetDistanceLockGains = new PIDGains( 0.1, 0.0, 0.0);
 
     public static double kTargetAngleLockMinPower = -1.0;
     public static double kTargetAngleLockMaxPower = 1.0;
     public static double kTargetAngleLockMinInput = -27;
     public static double kTargetAngleLockMaxInput = 27;
-    public static double kTargetAngleLockFrictionFeedforward = 0.44 / 12;
+    public static double kTargetAngleLockFrictionFeedforward = 0.055;
     public static double kTargetAngleLockLostTargetThreshold = 10;
 
     // =============================================================================
@@ -333,7 +333,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // grab solenoid and engaging the push solenoid.
     public static double kHatchFlowerGrabToPushTransitionTimeSec = 0.250;
     public static double kHatchFlowerExtendStatusTimerDuration = 0.5;
-    public static double kHatchFlowerReleaseDistance = 6.0;
+    public static double kHatchFlowerReleaseDistance = 5.0;
     public static double kHatchFlowerReleaseTime = 1.0;
 
 

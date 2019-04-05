@@ -24,6 +24,7 @@ public class TargetLock implements ICommand {
     // Different throttle providers give us some control over behavior in autonomous
     private IThrottleProvider mTargetSearchThrottleProvider, mTargetLockThrottleProvider;
     private ETrackingType mTrackingType;
+    private boolean mStopWhenTargetLost = true;
 
     private double mAllowableError, mPreviousTime, mOutput = 0.0;
 
@@ -79,7 +80,7 @@ public class TargetLock implements ICommand {
         // If we've already seen the target and lose tracking, exit.
         } else if(!currentData.isSet(ETargetingData.tv)) {
             mNoTargetCount++;
-            if(mNoTargetCount >= SystemSettings.kTargetAngleLockLostTargetThreshold) {
+            if(mNoTargetCount >= SystemSettings.kTargetAngleLockLostTargetThreshold && mStopWhenTargetLost) {
                 return true;
             }
         }
@@ -116,6 +117,11 @@ public class TargetLock implements ICommand {
 
     public TargetLock setTargetSearchThrottleProvider(IThrottleProvider pThrottleProvider) {
         this.mTargetSearchThrottleProvider = pThrottleProvider;
+        return this;
+    }
+
+    public TargetLock setStopWhenTargetLost(boolean pStopWhenTargetLost) {
+        this.mStopWhenTargetLost = pStopWhenTargetLost;
         return this;
     }
 

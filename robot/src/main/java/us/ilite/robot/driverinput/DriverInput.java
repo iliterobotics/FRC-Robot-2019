@@ -45,7 +45,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private final Limelight mLimelight;
     private final Data mData;
     private Timer mGroundCargoTimer = new Timer();
-    private RangeScale mRangeScale;
+    private RangeScale mRampRateRangeScale;
 
     private boolean mIsCargo = false;
     private Joystick mDriverJoystick;
@@ -81,7 +81,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             this.mOperatorJoystick = new Joystick(1);
         }
 
-        this.mRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
+        this.mRampRateRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
                 SystemSettings.kDriveMaxOpenLoopVoltageRampRate,
                 0.0,
                 Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
@@ -93,7 +93,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     @Override
     public void modeInit(double pNow) {
-        mRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
+        mRampRateRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
                 SystemSettings.kDriveMaxOpenLoopVoltageRampRate,
                 0.0,
                 Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
@@ -270,15 +270,20 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     }
 
     private void scaleRampRate() {
-        double value = mRangeScale.scaleBtoA(mElevator.getEncoderPosition());
-        SmartDashboard.putNumber("Current Ramp Rate", value);
-        mDrive.setRampRate(value);
+
     }
 
     private void updateDriveTrain() {
         double rotate = getTurn();
         double throttle = getThrottle();
-        scaleRampRate();
+
+        if(mData.driverinput.get(DriveTeamInputMap.DRIVER_ACCEL_LIMIT_BYPASS) < 0.5) {
+            double value = mRampRateRangeScale.scaleBtoA(mElevator.getEncoderPosition());
+            SmartDashboard.putNumber("Current Ramp Rate", value);
+            mDrive.setRampRate(value);
+        } else {
+            mDrive.setRampRate(SystemSettings.kDriveMinOpenLoopVoltageRampRate);
+        }
 
         //		    throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
         rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
@@ -310,7 +315,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     private void updateElevator() {
 
-        double manualThrottle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR) * 0.5;
+        double manualThrottle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
 
 
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_POSITION_ELEVATOR)) {
@@ -406,7 +411,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 mLog.error("Requesting command start");
                 mLog.error("Stopping teleop command queue");
                 mTeleopCommandManager.stopRunningCommands(pNow);
-                mTeleopCommandManager.startCommands(new LimelightTargetLock(mDrive, mLimelight, 2, mTrackingType, this, false));
+                mTeleopCommandManager.startCommands(new LimelightTargetLock(mDrive, mLimelight, 2, mTrackingType, this, false).setStopWhenTargetLost(false));
             }
         } else {
             mTrackingType = null;
