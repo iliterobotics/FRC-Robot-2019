@@ -65,7 +65,7 @@ public class TargetLock implements ICommand {
         Codex<Double, ETargetingData> currentData = mCamera.getTargetingData();
         Data.kSmartDashboard.getEntry("Has Acquired Target").setBoolean(mHasAcquiredTarget);
 
-        mDrive.setTargetTrackingThrottle(mTargetLockThrottleProvider.getThrottle() * SystemSettings.kSnailModePercentThrottleReduction);
+        mDrive.setTargetTrackingThrottle(mTargetLockThrottleProvider.getThrottle() * SystemSettings.kTargetLockThrottleReduction);
 
         if(currentData != null && currentData.isSet(ETargetingData.tv) && currentData.get(ETargetingData.tx) != null) {
             mHasAcquiredTarget = true;

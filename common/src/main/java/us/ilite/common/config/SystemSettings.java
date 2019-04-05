@@ -69,6 +69,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 	// These are applied AFTER the normal throttle reduction
     public static double kSnailModePercentThrottleReduction = 0.5;
     public static double kSnailModePercentRotateReduction = 0.4;
+
+    public static double kTargetLockThrottleReduction = 0.3;
 	
 	// Applied after any scaling
     public static double kDriverInputTurnMaxMagnitude = 0.5;
@@ -241,7 +243,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
 
     public static double kIntakeRollerHatchPower = .25;
-    public static double kIntakeRollerCargoPower = .25;
+    public static double kIntakeRollerCargoPower = .15;
     public static double kIntakeRollerHoldPower = .25;
     public static double kIntakeWristStowedAngle = 0;
     public static double kIntakeWristHandoffAngle = 48;
