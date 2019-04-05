@@ -174,7 +174,6 @@ public class Drive extends Loop {
 	@Override
 	public void loop(double pNow) {
 //		mUpdateTimer.start();
-		mLogger.debug("AAAAA");
 		switch(mDriveState) {
 			case PATH_FOLLOWING:
 //				mCalculateTimer.start();

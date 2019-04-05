@@ -15,8 +15,8 @@ public class CommandManager extends Module {
     private String mManagerTag = "";
 
     private CommandQueue desiredCommandQueue;
-    private boolean lastRunCommandQueue;
-    private boolean runCommandQueue;
+    private boolean lastRunCommandQueue = false;
+    private boolean runCommandQueue = false;
 
     public CommandManager() {
         this.desiredCommandQueue = new CommandQueue();
@@ -24,7 +24,7 @@ public class CommandManager extends Module {
 
     @Override
     public void modeInit(double pNow) {
-        runCommandQueue = lastRunCommandQueue = false;
+
     }
 
     @Override

@@ -70,7 +70,6 @@ public class SimDriveHardware implements IDriveHardware {
 
     public void update(double pNow) {
         double dt = pNow - mLastTime;
-        mLogger.debug("Updating");
         if(mDriveMessage.leftControlMode.kCtreControlMode == ControlMode.Velocity && mDriveMessage.rightControlMode.kCtreControlMode == ControlMode.Velocity) {
             mLeftEncoder.update(dt, mDriveMessage.leftOutput);
             mRightEncoder.update(dt, mDriveMessage.rightOutput);

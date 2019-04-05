@@ -3,6 +3,7 @@ package us.ilite.display.simulation.ui;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
@@ -140,16 +141,14 @@ public class FieldWindow extends Application implements ISimulationListener {
                     if(nextDataToDraw != null) {
                         drawData(nextDataToDraw);
                     }
-                    setRunTime((currentTime - startTime) / 1000.0);
                     lastTimeDrawn = currentTime;
                 } else {
-
-                    if(drawQueue.isEmpty()) break;
-
-                    // Update pose to draw @ same rate as simulation ran
-                    if(currentTime - lastTimePolled >= (kDt * 1000)) {
-                        nextDataToDraw = drawQueue.poll();
-                        lastTimePolled = currentTime;
+                    if(!drawQueue.isEmpty()) {
+                        // Update pose to draw @ same rate as simulation ran
+                        if(currentTime - lastTimePolled >= (kDt * 1000)) {
+                            nextDataToDraw = drawQueue.poll();
+                            lastTimePolled = currentTime;
+                        }
                     }
                 }
 
@@ -169,8 +168,8 @@ public class FieldWindow extends Application implements ISimulationListener {
         reset();
     }
 
-    public void update(double timestamp, SimData simData) {
-        setRunTime(timestamp);
+    public synchronized void update(double timestamp, SimData simData) {
+//        setRunTime(timestamp);
         drawQueue.add(simData);
     }
 
@@ -189,7 +188,7 @@ public class FieldWindow extends Application implements ISimulationListener {
     }
 
     private Pose2d normalizePoseToField(Pose2d pose) {
-        Translation2d normalizedTranslation = new Translation2d(pose.getTranslation().x(), Math.abs(pose.getTranslation().y()));
+        Translation2d normalizedTranslation = new Translation2d(pose.getTranslation().x(), pose.getTranslation().y());
         Rotation2d normalizedRotation = pose.getRotation();
 
         return new Pose2d(normalizedTranslation, normalizedRotation);

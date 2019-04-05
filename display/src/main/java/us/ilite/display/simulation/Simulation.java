@@ -52,14 +52,14 @@ public class Simulation {
         mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
         mDrive = new Drive(mData, mDriveController, mClock, true);
         mCommandManager = new CommandManager();
-        mUiUpdater = new UiUpdater(mData, pFieldWindow);
+        mUiUpdater = new UiUpdater(mData, mDrive, pFieldWindow);
 
-        mSim = new ModuleSim(0.01, mCommandManager, mDrive, mUiUpdater);
+        mSim = new ModuleSim(0.01, mClock, mData, mCommandManager, mDrive, mUiUpdater);
     }
 
     public void simulate() {
 
-        Logger.setLevel(ELevel.DEBUG);
+        Logger.setLevel(ELevel.WARN);
 
 //        mDrive.startCsvLogging();
         mCommandManager.startCommands(
@@ -69,7 +69,7 @@ public class Simulation {
                 new FollowTrajectory(generate(true, MiddleToMiddleCargoToSideRocket.kLoadingStationToSideRocketSetupPath), mDrive, false)
         );
 
-        mSim.start();
+        mSim.start().setStopCondition(() -> !mCommandManager.isRunningCommands());
 
     }
 
