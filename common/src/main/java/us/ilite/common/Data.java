@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.io.CodexNetworkTables;
 import us.ilite.common.io.CodexNetworkTablesParser;
+import us.ilite.common.io.CodexCsvLogger;
 import us.ilite.common.lib.util.SimpleNetworkTable;
 import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.drive.EDriveData;
@@ -20,9 +21,11 @@ import us.ilite.common.types.manipulator.ECargoSpit;
 import us.ilite.common.types.manipulator.EElevator;
 import us.ilite.common.types.manipulator.EIntake;
 import us.ilite.common.types.sensor.EGyro;
+import us.ilite.common.types.EFourBarData;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.*;
 
 public class Data {
@@ -37,8 +40,8 @@ public class Data {
     public final Codex<Double, ELogitech310> driverinput = Codex.of.thisEnum(ELogitech310.class);
     public final Codex<Double, ELogitech310> operatorinput = Codex.of.thisEnum(ELogitech310.class);
     public final Codex<Double, EElevator> elevator = Codex.of.thisEnum(EElevator.class);
+    public final Codex<Double, EFourBarData> fourbar = Codex.of.thisEnum(EFourBarData.class);
     public final Codex<Double, ECargoSpit> cargospit = Codex.of.thisEnum( ECargoSpit.class );
-  
     public final Codex<Double, EPowerDistPanel> pdp = Codex.of.thisEnum(EPowerDistPanel.class);
     public final Codex<Double, EIntake> intake = Codex.of.thisEnum(EIntake.class);
     public Codex<Double, ETargetingData> limelight = Codex.of.thisEnum(ETargetingData.class);
@@ -46,11 +49,11 @@ public class Data {
     private final List<CodexSender> mSenders = new ArrayList<>();
 
     public final Codex[] mAllCodexes = new Codex[] {
-            imu, /*drive,*/ driverinput, operatorinput, elevator, cargospit, pdp, intake, limelight
+            imu, /*drive,*/ driverinput, operatorinput, elevator, cargospit, pdp, intake, /*limelight,*/ fourbar
     };
 
     public final Codex[] mLoggedCodexes = new Codex[] {
-        imu, drive, driverinput, /*operatorinput,*/ elevator, cargospit,  pdp, intake, limelight
+        imu, drive, driverinput, /*operatorinput,*/ elevator, cargospit,  pdp, intake, limelight, fourbar
     };
 
     public final Codex[] mDisplayedCodexes = new Codex[] {
@@ -70,14 +73,19 @@ public class Data {
     };
 
     //Stores writers per codex needed for CSV logging
-    private Map<String, Writer> mWriters = new HashMap<String, Writer>();
-    private boolean mHasMadeWriters = false;
+    private Map<String, Writer> mNetworkTableWriters = new HashMap<>();
 
-    private List<CodexNetworkTablesParser> mParsers;
+    private List<CodexNetworkTablesParser<?>> mNetworkTableParsers;
+    private List<CodexCsvLogger> mCodexCsvLoggers;
 
-    public Data(boolean pInitParsers) {
-        if(pInitParsers) {
+    /**
+     * Create a Data object based on whether or not it is being used for logging
+     * @param pLogging
+     */
+    public Data(boolean pLogging) {
+        if(pLogging) {
             initParsers();
+//            handleNetworkTableWriterCreation();
         }
     }
 
@@ -87,31 +95,36 @@ public class Data {
 
     private void initParsers() {
         //Add new codexes as we support more into this list
-        mParsers = Arrays.asList(
-            new CodexNetworkTablesParser<EGyro>(imu),
-            new CodexNetworkTablesParser<EDriveData>(drive),
-            new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
-            new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR"),
-            new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" ),
-            new CodexNetworkTablesParser<ECargoSpit>( cargospit, "CARGOSPIT" ),
-            new CodexNetworkTablesParser<EPowerDistPanel>( pdp, "PDP" )
-        );
+//        mNetworkTableParsers = Arrays.asList(
+//            new CodexNetworkTablesParser<EGyro>(imu),
+//            new CodexNetworkTablesParser<EDriveData>(drive),
+//            new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
+//            new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR"),
+//            new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" ),
+//            new CodexNetworkTablesParser<ECargoSpit>( cargospit, "CARGOSPIT" ),
+//            new CodexNetworkTablesParser<EPowerDistPanel>( pdp, "PDP" ),
+//            new CodexNetworkTablesParser<EFourBarData>(fourbar, "FOURBAR")
+//        );
+        
+        mCodexCsvLoggers = new ArrayList<>();
+//        for(Codex c : mLoggedCodexes) mCodexCsvLoggers.add(new CodexCsvLogger(c));
     }
 
     /**
-     * Translate NT to on-computer codex for each CodexNetworkTablesParser in mParsers
+     * Translate NT to on-computer codex for each CodexNetworkTablesParser in mNetworkTableParsers
      */
     public void logFromNetworkTables() {
-        mParsers.forEach(c -> c.parseFromNetworkTables());
+        mNetworkTableParsers.forEach(c -> c.parseFromNetworkTables());
     }
 
     /**
-     * Makes a csv file and writes the starting row/header for each CodexNetworkTablesParser in mParsers
+     * Logs csv headers to the files using network tables
+     * -- This should be called once before csv logging --
      */
-    public void logFromCodexToCSVHeader() {
-        for (CodexNetworkTablesParser parser : mParsers) {
+    public void networkTablesCodexToCSVHeader() {
+        for (CodexNetworkTablesParser<?> parser : mNetworkTableParsers) {
             try {
-                Writer logger = mWriters.get(parser.getCSVIdentifier());
+                Writer logger = mNetworkTableWriters.get(parser.getCSVIdentifier());
                 logger.append(parser.codexToCSVHeader());
                 logger.flush();
             }
@@ -121,29 +134,12 @@ public class Data {
         }
     }
     /**
-     * Logs codex values to its corresponding csv
+     * Logs codex values to its corresponding csv using network tables
      */
-    public void logFromCodexToCSVLog() {
-
-
-        if(!mHasMadeWriters) {
-            //This loop makes a Writer for each parser and sticks it into mWriters
-            for (CodexNetworkTablesParser parser : mParsers) {
-                try {
-                    File file = parser.file();
-                    handleCreation(file);
-                    mWriters.put(parser.getCSVIdentifier(), new BufferedWriter(new FileWriter(parser.file())));
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            mHasMadeWriters = true;
-        }
-
-        for (CodexNetworkTablesParser parser : mParsers) {
+    public void networkTablesCodexToCSVLog() {
+        for (CodexNetworkTablesParser<?> parser : mNetworkTableParsers) {
             try {
-                Writer logger = mWriters.get(parser.getCSVIdentifier());
+                Writer logger = mNetworkTableWriters.get(parser.getCSVIdentifier());
                 logger.append(parser.codexToCSVLog());
                 logger.flush();
             }
@@ -152,13 +148,29 @@ public class Data {
             }
         }
     }
+
+    public void logFromCodexToCSVHeader() {
+        // Check that the USB drive is still plugged in
+//        if(Files.exists(new File(CodexCsvLogger.USB_DIR).toPath())) {
+            mCodexCsvLoggers.forEach(c -> c.writeHeader());
+//        }
+    }
+    public void logFromCodexToCSVLog() {
+        // Check that the USB drive is still plugged in
+//        if(Files.exists(new File(CodexCsvLogger.USB_DIR).toPath())) {
+            mCodexCsvLoggers.forEach(c -> c.writeLine());
+//        }
+    }
+
     /**
-     * Closes all the writers in mWriters
+     * Creates writers if they don't already exist
      */
-    public void closeWriters() {
-        for (Writer writer : mWriters.values()) {
+    public void handleNetworkTableWriterCreation() {
+        for (CodexNetworkTablesParser<?> parser : mNetworkTableParsers) {
             try {
-                writer.close();
+                File file = parser.file();
+                handleCreation(file);
+                mNetworkTableWriters.put(parser.getCSVIdentifier(), new BufferedWriter(new FileWriter(parser.file())));
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -167,12 +179,29 @@ public class Data {
     }
 
     /**
+     * Closes all the writers in mNetworkTableWriters
+     */
+    public void closeWriters() {
+        for (Writer writer : mNetworkTableWriters.values()) {
+            try {
+                writer.flush();
+                writer.close();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        mCodexCsvLoggers.forEach(c -> c.closeWriter());
+    }
+
+    /**
      * Makes the log file if it doesn't already exist
      */
-    private void handleCreation(File pFile) {
+    public static void handleCreation(File pFile) {
         //Makes every folder before the file if the CSV's parent folder doesn't exist
-        if(!pFile.getParentFile().exists()) {
-            pFile.getParentFile().mkdirs();
+        if(Files.notExists(pFile.toPath())) {
+            pFile.getAbsoluteFile().getParentFile().mkdirs();
         }
 
         //Creates the .CSV if it doesn't exist
@@ -190,24 +219,24 @@ public class Data {
      */
     public void sendCodices() {
         for(CodexSender cs : mSenders) {
-            for(Codex c : mDisplayedCodexes) {
+            for(Codex<?, ?> c : mDisplayedCodexes) {
                 cs.sendIfChanged(c);
             }
         }
     }
 
     public void sendCodicesToNetworkTables() {
-        for(Codex c : mLoggedCodexes) {
+        for(Codex<?, ?> c : mLoggedCodexes) {
             mCodexNT.send(c);
         }
     }
 
     /**
-     * @deprecated
+     * @Deprecated
      * Do this before sending codices to NetworkTables
      */
     public void registerCodices() {
-        for(Codex c : mLoggedCodexes) {
+        for(Codex<?, ?> c : mLoggedCodexes) {
             mCodexNT.registerCodex(c);
         }
     }

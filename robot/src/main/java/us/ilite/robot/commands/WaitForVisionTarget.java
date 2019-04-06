@@ -19,7 +19,7 @@ public class WaitForVisionTarget implements ICommand {
 
     @Override
     public void init(double pNow) {
-        mLimelight.setTracking(ETrackingType.TARGET_LEFT);
+        mLimelight.setTracking(ETrackingType.TARGET);
     }
 
     @Override
