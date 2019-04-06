@@ -70,7 +70,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kSnailModePercentThrottleReduction = 0.5;
     public static double kSnailModePercentRotateReduction = 0.4;
 
-    public static double kTargetLockThrottleReduction = 0.3;
+    public static double kTargetLockThrottleReduction = 0.40;
 	
 	// Applied after any scaling
     public static double kDriverInputTurnMaxMagnitude = 0.5;
@@ -113,8 +113,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Elevator Constants
     // =============================================================================
 
-    public static double kElevatorClosedLoopMinPower = -0.5;
-    public static double kElevatorClosedLoopMaxPower = 1.0;
+    public static double kElevatorClosedLoopMinPower = -0.3;
+    public static double kElevatorClosedLoopMaxPower = 0.80;
 
     public static double kElevatorAllowableError = 1.0;
     public static int kElevatorNEOAddress = 15;
@@ -141,7 +141,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kElevatorMotionFF = 0.000391419;
     public static double kElevatorFrictionVoltage = 0.02 * 12.0;
 
-    public static double kMaxElevatorVelocity = 4000;
+    public static double kMaxElevatorVelocity = 3700;
     public static double kMinElevatorVelocity = 0;
     public static double kMaxElevatorAcceleration = 4000 * 1.0;
     public static double kElevatorClosedLoopAllowableError = 0; //The allowed deficit in rotations
