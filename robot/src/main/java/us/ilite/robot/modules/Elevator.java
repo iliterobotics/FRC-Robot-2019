@@ -29,6 +29,8 @@ public class Elevator extends Module {
     EElevatorState mCurrentState;
     EElevatorPosition mDesiredPosition;
     CANSparkMax mMasterElevator;
+//    private boolean mDifferentAcceleration = true;
+//    private mLastUp;
 
     public enum EElevatorState {
 
@@ -95,7 +97,7 @@ public class Elevator extends Module {
         mCanController.setD(SystemSettings.kElevatorMotionD);
         mCanController.setFF(SystemSettings.kElevatorMotionFF);
 
-        mCanController.setSmartMotionMaxAccel(SystemSettings.kMaxElevatorAcceleration, SystemSettings.kElevatorSmartMotionSlot);
+        mCanController.setSmartMotionMaxAccel(SystemSettings.kMaxElevatorUpAcceleration, SystemSettings.kElevatorSmartMotionSlot);
         mCanController.setSmartMotionMinOutputVelocity(SystemSettings.kMinElevatorVelocity, SystemSettings.kElevatorSmartMotionSlot);
         mCanController.setSmartMotionMaxVelocity(SystemSettings.kMaxElevatorVelocity, SystemSettings.kElevatorSmartMotionSlot);
         mCanController.setSmartMotionMinOutputVelocity(0, SystemSettings.kElevatorSmartMotionSlot);
@@ -142,6 +144,7 @@ public class Elevator extends Module {
                 mSetPoint = mRequestedStop ? mData.elevator.get(EElevator.CURRENT_ENCODER_TICKS) : mDesiredPosition.getEncoderRotations();
                 mDesiredPower = 0;
                 mCanController.setReference(mSetPoint, ControlType.kSmartMotion, 0, SystemSettings.kElevatorFrictionVoltage);
+                gainSchedule();
                 break;
             default:
                 mLog.error("Somehow reached an unaccounted state with ", mCurrentState.toString());
@@ -196,6 +199,14 @@ public class Elevator extends Module {
 
     public boolean isCurrentLimiting() {
         return mData.pdp.get(EPowerDistPanel.CURRENT9) > SystemSettings.kElevatorWarnCurrentLimitThreshold;
+    }
+
+    public void gainSchedule() {
+        if ( getDesiredPosition().getEncoderRotations() > getEncoderPosition() /*&& mDifferentAcceleration*/) {
+            mCanController.setSmartMotionMaxAccel(SystemSettings.kMaxElevatorUpAcceleration, SystemSettings.kElevatorSmartMotionSlot);
+        } else /*if ( mDifferentAcceleration ) */{
+            mCanController.setSmartMotionMaxAccel(SystemSettings.kMaxElevatorDownAcceleration, SystemSettings.kElevatorSmartMotionSlot);
+        }
     }
 
     public void stop() {

@@ -135,7 +135,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     Units are RPM
      */
-    public static double kElevatorMotionP = 2.5e-4;
+    public static double kElevatorMotionP = 5.0e-4;
     public static double kElevatorMotionI = 0.0;
     public static double kElevatorMotionD = 0.0;
     public static double kElevatorMotionFF = 0.000391419;
@@ -143,7 +143,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static double kMaxElevatorVelocity = 3700;
     public static double kMinElevatorVelocity = 0;
-    public static double kMaxElevatorAcceleration = 4000 * 1.0;
+    public static double kMaxElevatorUpAcceleration = 4000 * 1.5;
+    public static double kMaxElevatorDownAcceleration = 4000 * 1.0;
     public static double kElevatorClosedLoopAllowableError = 0; //The allowed deficit in rotations
 
 
