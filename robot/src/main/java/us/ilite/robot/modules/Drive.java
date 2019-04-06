@@ -244,8 +244,6 @@ public class Drive extends Loop {
 				}
 
 				break;
-			case NORMAL:
-				break;
 			default:
 				mLogger.warn("Got drive state: " + mDriveState+" which is unhandled");
 				break;

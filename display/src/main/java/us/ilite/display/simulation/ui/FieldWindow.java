@@ -21,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import us.ilite.common.Data;
 import us.ilite.display.simulation.SimData;
 import us.ilite.display.simulation.ISimulationListener;
 import us.ilite.display.simulation.Simulation;
@@ -151,7 +152,12 @@ public class FieldWindow extends Application implements ISimulationListener {
                             double y = Data.kSmartDashboard.getEntry("Odometry Y").getDouble(0.0);
                             double heading = Data.kSmartDashboard.getEntry("Odometry Heading").getDouble(0.0);
 
-                            nextPoseToDraw = new Pose2d(x, y, Rotation2d.fromDegrees(heading));
+                            SimData telemetryData = new SimData(
+                                    new Pose2d(x, y, Rotation2d.fromDegrees(heading)),
+                                    new Pose2d()
+                            );
+
+                            nextDataToDraw = telemetryData;
 
 //                            nextDataToDraw = drawQueue.poll();
                             lastTimePolled = currentTime;
