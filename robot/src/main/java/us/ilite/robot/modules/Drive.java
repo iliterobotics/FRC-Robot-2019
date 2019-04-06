@@ -175,6 +175,17 @@ public class Drive extends Loop {
 	public void loop(double pNow) {
 //		mUpdateTimer.start();
 		switch(mDriveState) {
+			case NORMAL:
+				mDriveController.update(
+						pNow,
+						mData.drive.get(EDriveData.LEFT_POS_INCHES),
+						mData.drive.get(EDriveData.RIGHT_POS_INCHES),
+						Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES)));
+
+				Data.kSmartDashboard.getEntry("Odometry X").setDouble(getDriveController().getCurrentPose().getTranslation().x());
+				Data.kSmartDashboard.getEntry("Odometry Y").setDouble(getDriveController().getCurrentPose().getTranslation().y());
+				Data.kSmartDashboard.getEntry("Odometry Heading").setDouble(getDriveController().getCurrentPose().getRotation().getDegrees());
+
 			case PATH_FOLLOWING:
 //				mCalculateTimer.start();
 //				mMotionPlannerTimer.start();

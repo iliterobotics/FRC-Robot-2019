@@ -146,7 +146,14 @@ public class FieldWindow extends Application implements ISimulationListener {
                     if(!drawQueue.isEmpty()) {
                         // Update pose to draw @ same rate as simulation ran
                         if(currentTime - lastTimePolled >= (kDt * 1000)) {
-                            nextDataToDraw = drawQueue.poll();
+
+                            double x = Data.kSmartDashboard.getEntry("Odometry X").getDouble(0.0);
+                            double y = Data.kSmartDashboard.getEntry("Odometry Y").getDouble(0.0);
+                            double heading = Data.kSmartDashboard.getEntry("Odometry Heading").getDouble(0.0);
+
+                            nextPoseToDraw = new Pose2d(x, y, Rotation2d.fromDegrees(heading));
+
+//                            nextDataToDraw = drawQueue.poll();
                             lastTimePolled = currentTime;
                         }
                     }
