@@ -43,7 +43,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static double kDriveClosedLoopVoltageRampRate = 0.0;
     public static double kDriveMinOpenLoopVoltageRampRate = 0.1;
-    public static double kDriveMaxOpenLoopVoltageRampRate = 2.0;
+    public static double kDriveMaxOpenLoopVoltageRampRate = 0.9;
     public static int kDriveCurrentLimitAmps = 50;
     public static int kDriveCurrentLimitTriggerDurationMs = 100;
 
