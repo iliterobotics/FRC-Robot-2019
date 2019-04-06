@@ -138,7 +138,7 @@ public class Robot extends TimedRobot {
         mLoopManager.setRunningLoops(mLimelight, mDrive);
         mLoopManager.start();
 
-//        mAutonomousCommandManager.startCommands();
+//        mAutonomousCommandManager.startCommands(new CharacterizeDrive(mDrive, false, true));
 
         mData.registerCodices();
 //        mCSVLogger.start(); // Start csv logging
