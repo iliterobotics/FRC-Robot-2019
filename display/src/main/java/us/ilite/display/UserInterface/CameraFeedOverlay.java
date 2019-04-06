@@ -1,5 +1,6 @@
 package us.ilite.display.UserInterface;
 
+import edu.wpi.cscore.AxisCamera;
 import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
@@ -21,6 +22,7 @@ public class CameraFeedOverlay extends Application {
 
         WebView webView = new WebView();
         WebEngine engine = webView.getEngine();
+        AxisCamera axis = new AxisCamera( );
         Button btn = new Button("Load Site");
 
         Canvas canvas = new Canvas( 800, 500 );
