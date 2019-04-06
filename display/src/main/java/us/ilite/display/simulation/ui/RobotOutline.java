@@ -33,8 +33,8 @@ public class RobotOutline extends ADrawable {
         Translation2d rightSide = outlinePoints[1].translateBy(new Translation2d(RobotDimensions.kSideToCenter, 0)).rotateBy(pose.getRotation()).translateBy(pose.getTranslation());
         leftSide = new Translation2d(leftSide.x() * aspectRatio.x(), leftSide.y() * aspectRatio.y());
         rightSide = new Translation2d(rightSide.x() * aspectRatio.x(), rightSide.y() * aspectRatio.y());
-        leftPath.draw(gc, new Pose2d(leftSide, Rotation2d.fromDegrees(0.0)));
-        rightPath.draw(gc, new Pose2d(rightSide, Rotation2d.fromDegrees(0.0)));
+//        leftPath.draw(gc, new Pose2d(leftSide, Rotation2d.fromDegrees(0.0)));
+//        rightPath.draw(gc, new Pose2d(rightSide, Rotation2d.fromDegrees(0.0)));
 
         gc.setStroke(Color.BLACK);
         gc.beginPath();

@@ -9,6 +9,7 @@ import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
+import com.team254.lib.geometry.Pose2d;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -29,6 +30,7 @@ import us.ilite.lib.drivers.Clock;
 import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.lib.drivers.VisionGyro;
 import us.ilite.robot.auto.AutonomousRoutines;
+import us.ilite.robot.auto.paths.StartingPoses;
 import us.ilite.robot.commands.CharacterizeDrive;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
@@ -137,6 +139,9 @@ public class Robot extends TimedRobot {
 
         mLoopManager.setRunningLoops(mLimelight, mDrive);
         mLoopManager.start();
+
+
+        mDrive.getDriveController().setPose(StartingPoses.kFarSideStart);
 
 //        mAutonomousCommandManager.startCommands(new CharacterizeDrive(mDrive, false, true));
 

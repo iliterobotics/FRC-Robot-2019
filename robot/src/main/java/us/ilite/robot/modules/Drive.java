@@ -7,6 +7,7 @@ import com.flybotix.hfr.util.log.LogOutput;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.ReflectingCSVWriter;
@@ -26,14 +27,14 @@ import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.lib.drivers.ECommonControlMode;
 import us.ilite.lib.drivers.ECommonNeutralMode;
+import us.ilite.robot.auto.paths.VisionTargetLocations;
 import us.ilite.robot.hardware.NeoDriveHardware;
 import us.ilite.robot.hardware.SrxDriveHardware;
 import us.ilite.robot.hardware.IDriveHardware;
 import us.ilite.robot.hardware.SimDriveHardware;
 import us.ilite.robot.loops.Loop;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Class for running all drive train control operations from both autonomous and
@@ -174,23 +175,26 @@ public class Drive extends Loop {
 	@Override
 	public void loop(double pNow) {
 //		mUpdateTimer.start();
+
+        // Update state if not updated by path following
+        if(mDriveState != EDriveState.PATH_FOLLOWING) {
+            if(	mData.drive.isSet(EDriveData.LEFT_POS_INCHES) &&
+                    mData.drive.isSet(EDriveData.RIGHT_POS_INCHES) &&
+                    mData.imu.isSet(EGyro.YAW_DEGREES)) {
+                mDriveController.update(
+                        pNow,
+                        mData.drive.get(EDriveData.LEFT_POS_INCHES),
+                        mData.drive.get(EDriveData.RIGHT_POS_INCHES),
+                        Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES)));
+            }
+        }
+
+        // Post to NT for display
+        Data.kSmartDashboard.getEntry("Odometry X").setDouble(getDriveController().getCurrentPose().getTranslation().x());
+        Data.kSmartDashboard.getEntry("Odometry Y").setDouble(getDriveController().getCurrentPose().getTranslation().y());
+        Data.kSmartDashboard.getEntry("Odometry Heading").setDouble(getDriveController().getCurrentPose().getRotation().getDegrees());
+
 		switch(mDriveState) {
-			case NORMAL:
-				if(	mData.drive.isSet(EDriveData.LEFT_POS_INCHES) &&
-					mData.drive.isSet(EDriveData.RIGHT_POS_INCHES) &&
-					mData.imu.isSet(EGyro.YAW_DEGREES)) {
-					mDriveController.update(
-							pNow,
-							mData.drive.get(EDriveData.LEFT_POS_INCHES),
-							mData.drive.get(EDriveData.RIGHT_POS_INCHES),
-							Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES)));
-
-					Data.kSmartDashboard.getEntry("Odometry X").setDouble(getDriveController().getCurrentPose().getTranslation().x());
-					Data.kSmartDashboard.getEntry("Odometry Y").setDouble(getDriveController().getCurrentPose().getTranslation().y());
-					Data.kSmartDashboard.getEntry("Odometry Heading").setDouble(getDriveController().getCurrentPose().getRotation().getDegrees());
-				}
-
-				break;
 			case PATH_FOLLOWING:
 //				mCalculateTimer.start();
 //				mMotionPlannerTimer.start();
@@ -217,6 +221,7 @@ public class Drive extends Loop {
 				 * which means that the derivative of error would be highly inaccurate and cause oscillation.
 				 * Since kD * de/dt = kD * (SP - PV)/dt = ((kD * SP) - (kD * PV)) / dt, and dt = 1 for the Talon, we can add the
 				 * setpoint derivative calculation back in.
+				 * (Credit to Oblarg for the explanation, credit to Stephen for deobfuscating it)
 					*/
 				double leftDemand = (output.left_feedforward_voltage / 12.0) + SystemSettings.kDriveVelocity_kD * leftAccel / 1023.0;
 				double rightDemand = (output.right_feedforward_voltage / 12.0) + SystemSettings.kDriveVelocity_kD * rightAccel / 1023.0;
@@ -266,12 +271,14 @@ public class Drive extends Loop {
 
 	public synchronized void setPathFollowing() {
 		mDriveState = EDriveState.PATH_FOLLOWING;
+		mDriveController.setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDBACK);
 		mDriveHardware.configureMode(ECommonControlMode.VELOCITY);
 		mDriveHardware.set(new DriveMessage(0.0, 0.0, ECommonControlMode.VELOCITY));
 	}
 
 	public void setProfilingToHeading() {
 		mDriveState = EDriveState.PATH_FOLLOWING;
+		mDriveController.setPlannerMode(DriveMotionPlanner.PlannerMode.FEEDFORWARD_ONLY);
 		mDriveHardware.configureMode(ECommonControlMode.VELOCITY);
 		mDriveHardware.set(new DriveMessage(0.0, 0.0, ECommonControlMode.VELOCITY));
 	}

@@ -144,7 +144,7 @@ public class FieldWindow extends Application implements ISimulationListener {
                     }
                     lastTimeDrawn = currentTime;
                 } else {
-                    if(!drawQueue.isEmpty()) {
+//                    if(!drawQueue.isEmpty()) {
                         // Update pose to draw @ same rate as simulation ran
                         if(currentTime - lastTimePolled >= (kDt * 1000)) {
 
@@ -157,11 +157,13 @@ public class FieldWindow extends Application implements ISimulationListener {
                                     new Pose2d()
                             );
 
+                            System.out.println(telemetryData.current_pose);
+
                             nextDataToDraw = telemetryData;
 
 //                            nextDataToDraw = drawQueue.poll();
                             lastTimePolled = currentTime;
-                        }
+//                        }
                     }
                 }
 

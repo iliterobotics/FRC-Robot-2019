@@ -16,9 +16,6 @@ public class Main extends Application {
     @Override
     public void start(Stage pStage) throws InterruptedException {
 
-        NetworkTableInstance.getDefault().startServer();
-        NetworkTableInstance.getDefault().startClient("localhost");
-
         FieldWindow mFieldWindow = new FieldWindow(0.01);
         Simulation mSimulation = new Simulation(new HenryProfile(), mFieldWindow, 0.01);
 
@@ -27,7 +24,7 @@ public class Main extends Application {
         Thread.sleep(2000);
         mFieldWindow.startDrawing();
 
-        mSimulation.simulate();
+//        mSimulation.simulate();
 
     }
 }

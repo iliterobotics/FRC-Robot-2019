@@ -2,6 +2,7 @@ package us.ilite.robot.auto.paths;
 
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
 
 /**
  * Defines the starting location of the *center* of the robot as (x, y, theta) coordinates.
@@ -16,5 +17,7 @@ public class StartingPoses {
      * Y: 11.5 feet + length from side of robot to center
      */
     public static final Pose2d kSideStart = new Pose2d((4.0 * 12.0) + RobotDimensions.kBackToCenter, (11.5 * 12.0) + RobotDimensions.kSideToCenter, Rotation2d.fromDegrees(0.0));
+
+    public static final Pose2d kFarSideStart = new Pose2d(new Translation2d(48.0 + RobotDimensions.kBackToCenter, 228.0 - RobotDimensions.kSideToCenter), Rotation2d.fromDegrees(0.0));
 
 }
