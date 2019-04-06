@@ -289,7 +289,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
         rotate *= SystemSettings.kNormalPercentThrottleReduction;
 
-        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) && mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) && mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD || mData.driverinput.get(DriveTeamInputMap.DRIVER_ACCEL_LIMIT_BYPASS) > 0.5) {
             throttle *= SystemSettings.kSnailModePercentThrottleReduction;
             rotate *= SystemSettings.kSnailModePercentRotateReduction;
         }
