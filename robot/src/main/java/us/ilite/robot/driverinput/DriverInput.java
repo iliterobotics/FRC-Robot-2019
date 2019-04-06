@@ -203,7 +203,14 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private void updatePneumaticIntake() {
         if(mIsCargo) {
             if ( mData.operatorinput.get( DriveTeamInputMap.OPERATOR_INTAKE_GROUND ) > 0.5 ) {
-                mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.OUT );
+
+                // If both ground intake and score are held, reverse the roller
+                if( mData.operatorinput.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
+                    mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.OUTTAKING);
+                } else {
+                    mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.INTAKING);
+                }
+
             } else {
                 mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.STOWED );
             }
