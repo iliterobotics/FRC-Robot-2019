@@ -43,7 +43,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static double kDriveClosedLoopVoltageRampRate = 0.0;
     public static double kDriveMinOpenLoopVoltageRampRate = 0.1;
-    public static double kDriveMaxOpenLoopVoltageRampRate = 2.0;
+    public static double kDriveMaxOpenLoopVoltageRampRate = 0.9;
     public static int kDriveCurrentLimitAmps = 50;
     public static int kDriveCurrentLimitTriggerDurationMs = 100;
 
@@ -69,9 +69,13 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 	// These are applied AFTER the normal throttle reduction
     public static double kSnailModePercentThrottleReduction = 0.5;
     public static double kSnailModePercentRotateReduction = 0.4;
+
+    public static double kTargetLockThrottleReduction = 0.40;
 	
 	// Applied after any scaling
     public static double kDriverInputTurnMaxMagnitude = 0.5;
+
+    public static double kTurnInPlaceThrottleBump = 0.05;
     
 	public static double kInputDeadbandF310Joystick = 0.05;
     public static double kInputDeadbandF310Trigger = 0.5;
@@ -109,8 +113,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // Elevator Constants
     // =============================================================================
 
-    public static double kElevatorClosedLoopMinPower = -1.0;
-    public static double kElevatorClosedLoopMaxPower = 1.0;
+    public static double kElevatorClosedLoopMinPower = -0.3;
+    public static double kElevatorClosedLoopMaxPower = 0.80;
 
     public static double kElevatorAllowableError = 1.0;
     public static int kElevatorNEOAddress = 15;
@@ -131,15 +135,16 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     Units are RPM
      */
-    public static double kElevatorMotionP = 2.5e-4;
+    public static double kElevatorMotionP = 5.0e-4;
     public static double kElevatorMotionI = 0.0;
     public static double kElevatorMotionD = 0.0;
     public static double kElevatorMotionFF = 0.000391419;
     public static double kElevatorFrictionVoltage = 0.02 * 12.0;
 
-    public static double kMaxElevatorVelocity = 4000;
+    public static double kMaxElevatorVelocity = 3700;
     public static double kMinElevatorVelocity = 0;
-    public static double kMaxElevatorAcceleration = 4000;
+    public static double kMaxElevatorUpAcceleration = 4000 * 1.5;
+    public static double kMaxElevatorDownAcceleration = 4000 * 1.0;
     public static double kElevatorClosedLoopAllowableError = 0; //The allowed deficit in rotations
 
 
@@ -167,6 +172,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kTFourBar = 0;
     public static double kFourBarPusherDelay = 0.5;
 
+    // Pnuematic Intake
+    public static double kPneumaticIntakeIntakePower = 0.7;
 
     // =============================================================================
     // Arm Constants
@@ -237,7 +244,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
 
     public static double kIntakeRollerHatchPower = .25;
-    public static double kIntakeRollerCargoPower = .25;
+    public static double kIntakeRollerCargoPower = .15;
     public static double kIntakeRollerHoldPower = .25;
     public static double kIntakeWristStowedAngle = 0;
     public static double kIntakeWristHandoffAngle = 48;
@@ -279,14 +286,14 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // PID TargetLock constants
     // =============================================================================
-    public static PIDGains kTargetAngleLockGains = new PIDGains(0.0005, 0.000, 0.0);
+    public static PIDGains kTargetAngleLockGains = new PIDGains(0.000025, 0.000, 0.0);
     public static PIDGains kTargetDistanceLockGains = new PIDGains( 0.1, 0.0, 0.0);
 
     public static double kTargetAngleLockMinPower = -1.0;
     public static double kTargetAngleLockMaxPower = 1.0;
     public static double kTargetAngleLockMinInput = -27;
     public static double kTargetAngleLockMaxInput = 27;
-    public static double kTargetAngleLockFrictionFeedforward = 0.44 / 12;
+    public static double kTargetAngleLockFrictionFeedforward = 0.071544619136622825;
     public static double kTargetAngleLockLostTargetThreshold = 10;
 
     // =============================================================================
@@ -329,7 +336,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // grab solenoid and engaging the push solenoid.
     public static double kHatchFlowerGrabToPushTransitionTimeSec = 0.250;
     public static double kHatchFlowerExtendStatusTimerDuration = 0.5;
-    public static double kHatchFlowerReleaseDistance = 6.0;
+    public static double kHatchFlowerReleaseDistance = 5.0;
     public static double kHatchFlowerReleaseTime = 1.0;
 
 
@@ -361,7 +368,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static int kCargoSpitLeftSPXAddress = 13;
     public static int kCargoSpitRightSPXAddress = 14;
     public static int kCargoSpitBeamBreakAddress = 1;
-    public static double kCargoSpitRollerPower = 0.40; // 15% seems like adequate power (maybe more?)
+    public static double kCargoSpitRollerPower = 0.20; // 15% seems like adequate power (maybe more?)
     public static double kCargoSpitSPXCurrentRatioLimit = 8.5; // Voltage ~ 1.8
 
     // TO-DO: Elevator encoder address?
