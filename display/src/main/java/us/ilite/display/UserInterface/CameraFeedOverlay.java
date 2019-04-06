@@ -28,10 +28,10 @@ public class CameraFeedOverlay extends Application {
         canvas.setOnMouseDragged( e -> gc.fillOval( e.getX(), e.getY(), 5,5 ) );
 
         StackPane root = new StackPane();
-        root.getChildren().addAll ( webView, canvas);
+        root.getChildren().addAll ( webView);
 
         Scene scene = new Scene(root, 800, 500);
-        engine.load("http://10.18.85.11:5800" );
+        engine.load("http://10.18.85.11:5800/" );
         stage.setScene(scene);
         stage.show();
     }
