@@ -55,7 +55,7 @@ public class PneumaticIntake extends Module{
                 break;
             case INTAKING:
                 mIntakeSolenoid.set( true );
-                setRollerIntaking();
+                activateRoller();
                 break;
             case OUTTAKING:
                 mIntakeSolenoid.set( true );
