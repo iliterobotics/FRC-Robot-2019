@@ -22,7 +22,7 @@ public class CameraFeedOverlay extends Application {
 
         WebView webView = new WebView();
         WebEngine engine = webView.getEngine();
-        AxisCamera axis = new AxisCamera( );
+        AxisCamera axis = new AxisCamera( "Limelight", "10.18.85.11:5800" );
         Button btn = new Button("Load Site");
 
         Canvas canvas = new Canvas( 800, 500 );
