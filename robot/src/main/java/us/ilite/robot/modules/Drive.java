@@ -63,10 +63,6 @@ public class Drive extends Loop {
 	ReflectingCSVWriter<DebugOutput> mDebugLogger = null;
 	DebugOutput debugOutput = new DebugOutput();
 
-//	PerfTimer mUpdateTimer = new PerfTimer().alwayLog();
-//	PerfTimer mCalculateTimer = new PerfTimer().alwayLog().setLogMessage("Calculate: %s");
-//	PerfTimer mMotionPlannerTimer = new PerfTimer().alwayLog().setLogMessage("Planner: %s");
-
 	public Drive(Data data, DriveController pDriveController, Clock pSimClock, boolean pSimulated)
 	{
 		this.mData = data;
@@ -194,11 +190,8 @@ public class Drive extends Loop {
 
 		switch(mDriveState) {
 			case PATH_FOLLOWING:
-//				mCalculateTimer.start();
-//				mMotionPlannerTimer.start();
 				// Update controller - calculates new robot position and retrieves motion planner output
 				DriveOutput output = mDriveController.getDriveOutput(pNow);
-//				mMotionPlannerTimer.stop();
 				// Convert controller output into something compatible with Talons
 				DriveMessage driveMessage = new DriveMessage(
 						Conversions.radiansPerSecondToTicksPer100ms(output.left_velocity),
@@ -225,7 +218,6 @@ public class Drive extends Loop {
 				driveMessage.setNeutralMode(ECommonNeutralMode.BRAKE);
 
 				mDriveMessage = driveMessage;
-//				mCalculateTimer.stop();
 
 				if(mDebugLogger != null) {
 					debugOutput.update(pNow, mDriveMessage);
@@ -254,7 +246,6 @@ public class Drive extends Loop {
 		}
 		mDriveHardware.set(mDriveMessage);
 		mPreviousTime = pNow;
-//		mUpdateTimer.stop();
 	}
 
 	public synchronized void setTargetAngleLock() {

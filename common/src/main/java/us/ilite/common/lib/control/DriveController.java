@@ -34,9 +34,6 @@ public class DriveController {
 
     private Pose2d mCurrentPose = new Pose2d();
 
-//    private PerfTimer mStateEstimatorTimer = new PerfTimer().alwayLog().setLogMessage("State Estimation: %s");
-//    private PerfTimer mMotionPlannerTimer = new PerfTimer().alwayLog().setLogMessage("Motion Plan Update: %s");
-
     public DriveController(RobotProfile pRobotProfile) {
         mRobotProfile = pRobotProfile;
         // Invert our feedforward constants. Torque constant is kT = I * kA, where I is the robot modeled as a cylindrical load on the transmission and kA is the inverted feedforward.
