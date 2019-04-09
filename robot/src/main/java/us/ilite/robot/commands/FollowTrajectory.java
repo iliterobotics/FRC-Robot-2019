@@ -38,15 +38,15 @@ public class FollowTrajectory implements ICommand {
     @Override
     public boolean update(double pNow) {
 
-        Pose2d current = mDrive.getDriveController().getCurrentPose();
-        Pose2d setpoint = mDrive.getDriveController().getTargetPose();
-
-        Data.kSmartDashboard.putDouble("Heading", current.getRotation().getDegrees());
-        Data.kSmartDashboard.putDouble("X", current.getTranslation().x());
-        Data.kSmartDashboard.putDouble("Y", current.getTranslation().y());
-        Data.kSmartDashboard.putDouble("Target Heading", setpoint.getRotation().getDegrees());
-        Data.kSmartDashboard.putDouble("Target X", setpoint.getTranslation().x());
-        Data.kSmartDashboard.putDouble("Target Y", setpoint.getTranslation().y());
+//        Pose2d current = mDrive.getDriveController().getCurrentPose();
+//        Pose2d setpoint = mDrive.getDriveController().getTargetPose();
+//
+//        Data.kSmartDashboard.putDouble("Heading", current.getRotation().getDegrees());
+//        Data.kSmartDashboard.putDouble("X", current.getTranslation().x());
+//        Data.kSmartDashboard.putDouble("Y", current.getTranslation().y());
+//        Data.kSmartDashboard.putDouble("Target Heading", setpoint.getRotation().getDegrees());
+//        Data.kSmartDashboard.putDouble("Target X", setpoint.getTranslation().x());
+//        Data.kSmartDashboard.putDouble("Target Y", setpoint.getTranslation().y());
 
         if(mDrive.getDriveController().isDone()) {
             Pose2d error = mDrive.getDriveController().getDriveMotionPlanner().error();

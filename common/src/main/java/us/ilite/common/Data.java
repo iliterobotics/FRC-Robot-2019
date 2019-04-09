@@ -12,6 +12,7 @@ import us.ilite.common.config.SystemSettings;
 import us.ilite.common.io.CodexNetworkTables;
 import us.ilite.common.io.CodexNetworkTablesParser;
 import us.ilite.common.io.CodexCsvLogger;
+import us.ilite.common.io.NTSender;
 import us.ilite.common.lib.util.SimpleNetworkTable;
 import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.drive.EDriveData;
@@ -105,7 +106,7 @@ public class Data {
 //            new CodexNetworkTablesParser<EPowerDistPanel>( pdp, "PDP" ),
 //            new CodexNetworkTablesParser<EFourBarData>(fourbar, "FOURBAR")
 //        );
-        
+
         mCodexCsvLoggers = new ArrayList<>();
 //        for(Codex c : mLoggedCodexes) mCodexCsvLoggers.add(new CodexCsvLogger(c));
     }
@@ -250,7 +251,8 @@ public class Data {
     public void initCodexSender(List<String> pIpAddresses) {
         for(String ip : pIpAddresses) {
             mLogger.warn("======> Initializing sender to " + ip + ":" + SystemSettings.sCODEX_COMMS_PORT);
-            ISendProtocol protocol = MessageProtocols.createSender(MessageProtocols.EProtocol.UDP, SystemSettings.sCODEX_COMMS_PORT, SystemSettings.sCODEX_COMMS_PORT, ip);
+//            ISendProtocol protocol = MessageProtocols.createSender(MessageProtocols.EProtocol.UDP, SystemSettings.sCODEX_COMMS_PORT, SystemSettings.sCODEX_COMMS_PORT, ip);
+            ISendProtocol protocol = new NTSender();
             CodexSender sender = new CodexSender(protocol);
             mSenders.add(sender);
         }

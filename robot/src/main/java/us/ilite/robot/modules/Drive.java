@@ -172,7 +172,7 @@ public class Drive extends Loop {
 	public void loop(double pNow) {
 //		mUpdateTimer.start();
 
-        // Update state if not updated by path following
+        // Update odometry
 		if(		mData.drive.isSet(EDriveData.LEFT_POS_INCHES) &&
 				mData.drive.isSet(EDriveData.RIGHT_POS_INCHES) &&
 				mData.imu.isSet(EGyro.YAW_DEGREES)) {

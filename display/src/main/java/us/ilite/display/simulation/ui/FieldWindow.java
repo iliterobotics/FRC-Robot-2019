@@ -3,17 +3,20 @@ package us.ilite.display.simulation.ui;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.function.Consumer;
 
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
 import javafx.application.Application;
+import javafx.event.EventType;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -21,15 +24,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import us.ilite.common.Data;
 import us.ilite.display.simulation.SimData;
 import us.ilite.display.simulation.ISimulationListener;
 import us.ilite.display.simulation.Simulation;
 import us.ilite.robot.auto.paths.RobotDimensions;
 
-public class FieldWindow extends Application implements ISimulationListener {
+public class FieldWindow extends Application {
 
-    public static final double kDrawsPerSecond = 60.0;
+    public static final double kDrawsPerSecond = 30.0;
 
     private Image fieldImage;
     private Canvas fieldCanvas;
@@ -37,6 +39,8 @@ public class FieldWindow extends Application implements ISimulationListener {
     private Text durationDisplay;
     private Text mouseXInches, mouseYInches;
     private Button playButton, pauseButton;
+    private ToggleButton simToggle;
+    private Simulation mSimulation;
 
     private Translation2d fieldInchesToPixels;
     private RobotOutline robotOutline = new RobotOutline(new Translation2d(-RobotDimensions.kBackToCenter, -RobotDimensions.kSideToCenter),
@@ -45,16 +49,13 @@ public class FieldWindow extends Application implements ISimulationListener {
                                                          new Translation2d(RobotDimensions.kFrontToCenter, -RobotDimensions.kSideToCenter));
     private DrawablePath robotPath = new DrawablePath(Color.BLUE);
 
-    private Queue<SimData> drawQueue;
-    private SimData nextDataToDraw = null;
     private UpdateThread updateThread;
-    private boolean mIsPaused = false;
 
-    private final double kDt;
+    public final double kDt;
 
-    public FieldWindow(double pDt) {
-        kDt = pDt;
-        drawQueue = new LinkedList<>();
+    public FieldWindow(Simulation mSimulation, double kDt) {
+        this.mSimulation = mSimulation;
+        this.kDt = kDt;
     }
 
     public static void main(String[] args) {
@@ -74,9 +75,19 @@ public class FieldWindow extends Application implements ISimulationListener {
         mouseYInches = new Text("Y");
         playButton = new Button("Play");
         pauseButton = new Button("Pause");
+        simToggle = new ToggleButton("Simulate");
 
-        playButton.setOnAction(e -> play());
-        pauseButton.setOnAction(e -> pause());
+        playButton.setOnAction(e -> {
+            updateThread.play();
+            if(!mSimulation.isRunning()) mSimulation.start();
+        });
+        pauseButton.setOnAction(e -> {
+            updateThread.pause();
+            mSimulation.stop();
+        });
+        simToggle.setSelected(false);
+
+        VBox.setMargin(sidePane, new Insets(10, 10, 10, 10));
 
         try {
             fieldImage = new Image(new File("field.png").toURI().toURL().toExternalForm(), 640, 480, true, false);
@@ -99,10 +110,10 @@ public class FieldWindow extends Application implements ISimulationListener {
 
         reset();
 
-        updateThread = new UpdateThread();
+        updateThread = new UpdateThread(this);
 
 
-        sidePane.getChildren().addAll(durationDisplay, playButton, pauseButton);
+        sidePane.getChildren().addAll(durationDisplay, playButton, pauseButton, simToggle);
         bottomPane.getChildren().addAll(mouseXInches, mouseYInches);
         root.setCenter(fieldCanvas);
         root.setRight(sidePane);
@@ -110,66 +121,6 @@ public class FieldWindow extends Application implements ISimulationListener {
         primaryStage.setOnCloseRequest(e -> System.exit(0));
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
-
-    private class UpdateThread extends Thread {
-
-        @Override
-        public void run() {
-            super.run();
-            double lastTimePolled = System.currentTimeMillis();
-            double lastTimeDrawn = System.currentTimeMillis();
-            double startTime = System.currentTimeMillis();
-            double currentTime = System.currentTimeMillis();
-
-            while(!Thread.interrupted()) {
-
-                if(mIsPaused) {
-                    double pauseStartTime = System.currentTimeMillis();
-                    // Without this print statement we can't break out of the loop
-                    while (mIsPaused) {
-                        System.out.println("Paused");
-                    }
-                    // Adjust our start time so time elapsed isn't off
-                    startTime = startTime + (System.currentTimeMillis() - pauseStartTime);
-                } else {
-                    currentTime = System.currentTimeMillis();
-                }
-
-                // If we have to draw this iteration, don't clog up our timing by getting the next pose to draw
-                // Draw @ 30 Hz
-                if(currentTime - lastTimeDrawn > (1.0 / kDrawsPerSecond) * 1000.0) {
-                    if(nextDataToDraw != null) {
-                        drawData(nextDataToDraw);
-                    }
-                    lastTimeDrawn = currentTime;
-                } else {
-//                    if(!drawQueue.isEmpty()) {
-                        // Update pose to draw @ same rate as simulation ran
-                        if(currentTime - lastTimePolled >= (kDt * 1000)) {
-
-                            double x = Data.kSmartDashboard.getEntry("Odometry X").getDouble(0.0);
-                            double y = Data.kSmartDashboard.getEntry("Odometry Y").getDouble(0.0);
-                            double heading = Data.kSmartDashboard.getEntry("Odometry Heading").getDouble(0.0);
-
-                            SimData telemetryData = new SimData(
-                                    new Pose2d(x, y, Rotation2d.fromDegrees(heading)),
-                                    new Pose2d()
-                            );
-
-                            System.out.println(telemetryData.current_pose);
-
-                            nextDataToDraw = telemetryData;
-
-//                            nextDataToDraw = drawQueue.poll();
-                            lastTimePolled = currentTime;
-//                        }
-                    }
-                }
-
-            }
-
-        }
     }
 
     public void reset() {
@@ -183,18 +134,26 @@ public class FieldWindow extends Application implements ISimulationListener {
         reset();
     }
 
-    public synchronized void update(double timestamp, SimData simData) {
-//        setRunTime(timestamp);
-        drawQueue.add(simData);
-    }
-
     public void startDrawing() {
-        updateThread.start();
+//        updateThread.start();
+        Thread thread = new Thread(() -> {
+            while(true) {
+                SimData data = new SimData(mSimulation.mDrive.getDriveController().getCurrentPose(), mSimulation.mDrive.getDriveController().getTargetPose());
+                drawData(data);
+                System.out.println(data.current_pose);
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+
     }
 
     public void drawData(SimData pNextDataToDraw) {
         reset();
-
         Pose2d robotPose = normalizePoseToField(pNextDataToDraw.current_pose);
         Pose2d targetPose = normalizePoseToField(pNextDataToDraw.target_pose);
 
@@ -217,17 +176,9 @@ public class FieldWindow extends Application implements ISimulationListener {
         durationDisplay.setText("Run Time: " + String.format("%.2f", runTime));
     }
 
-    private void play() {
-        if(drawQueue.isEmpty()) {
-            updateThread = new UpdateThread();
-            clear();
-            startDrawing();
-        }
-        mIsPaused = false;
+    public boolean shouldSimulate() {
+        return simToggle.isSelected();
     }
 
-    private void pause() {
-        mIsPaused = true;
-    }
 
 }

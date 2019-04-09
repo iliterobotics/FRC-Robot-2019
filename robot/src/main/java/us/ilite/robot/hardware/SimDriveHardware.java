@@ -51,7 +51,7 @@ public class SimDriveHardware implements IDriveHardware {
 
     public void set(DriveMessage pDriveMessage) {
         mDriveMessage = pDriveMessage;
-        update(mClock.getCurrentTime());
+        update(System.currentTimeMillis() / 1000.0);
     }
 
     public void configureMode(ECommonControlMode pControlMode) {
@@ -90,7 +90,6 @@ public class SimDriveHardware implements IDriveHardware {
         }
 
         mEncoderStateEstimator.update(pNow, getLeftInches(), getRightInches());
-//        System.out.println(mEncoderStateEstimator.getRobotState().getLatestFieldToVehiclePose().getRotation());
 
         mLastTime = pNow;
     }

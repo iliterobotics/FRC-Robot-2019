@@ -125,11 +125,11 @@ public class DriveController {
         return mRightTransmission;
     }
 
-    public Pose2d getCurrentPose() {
+    public synchronized Pose2d getCurrentPose() {
         return mCurrentPose;
     }
 
-    public Pose2d getTargetPose() {
+    public synchronized Pose2d getTargetPose() {
         return mDriveMotionPlanner.setpoint().state().getPose();
     }
 

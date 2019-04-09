@@ -35,33 +35,29 @@ public class Simulation {
     private final Clock mClock;
     private final DriveController mDriveController;
     private final TrajectoryGenerator mTrajectoryGenerator;
-    private final Drive mDrive;
-    private final UiUpdater mUiUpdater;
+    public final Drive mDrive;
     private final CommandManager mCommandManager;
 
     private final ModuleSim mSim;
 
-    private final FieldWindow mFieldWindow;
-
-    public Simulation(RobotProfile pRobotProfile, FieldWindow pFieldWindow, double pDt) {
+    public Simulation(RobotProfile pRobotProfile, double pDt) {
         kDt = pDt;
         mData = new Data();
         mClock = new Clock().simulated();
-        mFieldWindow = pFieldWindow;
         mDriveController = new DriveController(pRobotProfile);
         mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
         mDrive = new Drive(mData, mDriveController, mClock, true);
         mCommandManager = new CommandManager();
-        mUiUpdater = new UiUpdater(mData, mDrive, pFieldWindow);
 
-        mSim = new ModuleSim(0.01, mClock, mData, mCommandManager, mDrive, mUiUpdater);
+        mSim = new ModuleSim(0.01, mClock, mData, mCommandManager, mDrive);
     }
 
-    public void simulate() {
+    public void start() {
 
-        Logger.setLevel(ELevel.WARN);
+        Logger.setLevel(ELevel.ERROR);
 
-//        mDrive.startCsvLogging();
+        mDrive.startCsvLogging();
+        mCommandManager.stopRunningCommands(mClock.getCurrentTime());
         mCommandManager.startCommands(
                 new FollowTrajectory(generate(MiddleToMiddleCargoToSideRocket.kStartToMiddleLeftHatchPath), mDrive, true),
                 new FollowTrajectory(generate(true, MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchToLoadingStationPath), mDrive,false),
@@ -71,6 +67,14 @@ public class Simulation {
 
         mSim.start().setStopCondition(() -> !mCommandManager.isRunningCommands());
 
+    }
+
+    public void stop() {
+        mSim.stop();
+    }
+
+    public boolean isRunning() {
+        return mSim.isRunning();
     }
 
     public Trajectory<TimedState<Pose2dWithCurvature>> generate(List<Pose2d> waypoints) {

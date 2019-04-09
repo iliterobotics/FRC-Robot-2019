@@ -11,10 +11,7 @@ import us.ilite.robot.modules.ModuleList;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.Supplier;
 
 public class ModuleSim {
@@ -22,11 +19,13 @@ public class ModuleSim {
     private static final ILog sLog = Logger.createLog(ModuleSim.class);
     private final double mScheduleRate;
 
-    private final Timer mModuleExecutor = new Timer();
     private final Clock mClock;
     private final Data mData;
     private final ModuleList mModuleList = new ModuleList();
 
+    private ScheduledExecutorService mModuleExecutor;
+    private ScheduledFuture<?> mTask;
+    private boolean mRunning = false;
     private Supplier<Boolean> mStopCondition = null;
 
     public ModuleSim(double pScheduleRate, Clock pClock, Data pData, Module ... pModules) {
@@ -50,13 +49,12 @@ public class ModuleSim {
     private void simPeriodic() {
         if (mStopCondition != null && mStopCondition.get()) {
             stop();
-            sLog.warn("STOPPING MODULE EXECUTOR");
+            sLog.error("STOPPING MODULE EXECUTOR");
         }
-
         mModuleList.periodicInput(mClock.getCurrentTime());
         mModuleList.update(mClock.getCurrentTime());
-
-//                mData.sendCodicesToNetworkTables();
+        mData.sendCodices();
+//      mData.sendCodicesToNetworkTables();
         mClock.cycleEnded();
     }
 
@@ -65,25 +63,21 @@ public class ModuleSim {
     }
 
     public ModuleSim start() {
-        long rate = (long)(mScheduleRate * 1000.0);
-        sLog.warn("Initializing with DT: " + rate);
+        mRunning = true;
+        long rateMs = (long)(mScheduleRate * 1000.0);
+        sLog.warn("Initializing with DT: " + rateMs);
 
         simInit();
 
-        mModuleExecutor.scheduleAtFixedRate(new TimerTask() {
-
-            @Override
-            public void run() {
-                simPeriodic();
-            }
-
-        }, 0L, rate);
+        mModuleExecutor = Executors.newScheduledThreadPool(1);
+        mTask = mModuleExecutor.scheduleAtFixedRate(() -> simPeriodic(), 0L, rateMs, TimeUnit.MILLISECONDS);
 
         return this;
     }
 
     public ModuleSim stop() {
-        mModuleExecutor.cancel();
+        mRunning = false;
+        if(mTask != null) mTask.cancel(true);
         simShutdown();
         return this;
     }
@@ -96,6 +90,10 @@ public class ModuleSim {
     public ModuleSim setStopCondition(Supplier<Boolean> pStopCondition) {
         mStopCondition = pStopCondition;
         return this;
+    }
+
+    public boolean isRunning() {
+        return mRunning;
     }
 
 }
