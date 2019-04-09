@@ -52,21 +52,22 @@ public class DriveController {
 
     }
 
-    public DriveOutput update(double pTimestamp, double pLeftAbsolutePos, double pRightAbsolutePos, Rotation2d pHeading) {
-//        mStateEstimatorTimer.start();
+    public Pose2d updateOdometry(double pTimestamp, double pLeftAbsolutePos, double pRightAbsolutePos, Rotation2d pHeading) {
         mCurrentPose = mRobotStateEstimator.update(pTimestamp, pLeftAbsolutePos, pRightAbsolutePos, pHeading);
-//        mStateEstimatorTimer.stop();
-
-//        mMotionPlannerTimer.start();
-        DriveOutput output = mDriveMotionPlanner.update(pTimestamp, mCurrentPose);
-//        mMotionPlannerTimer.stop();
-
-        return output;
+        return mCurrentPose;
     }
 
-    public DriveOutput update(double pTimestamp, double pLeftAbsolutePos, double pRightAbsolutePos) {
+    public Pose2d updateOdometry(double pTimestamp, double pLeftAbsolutePos, double pRightAbsolutePos) {
         mCurrentPose = mRobotStateEstimator.update(pTimestamp, pLeftAbsolutePos, pRightAbsolutePos);
+        return mCurrentPose;
+    }
 
+    /**
+     *
+     * @param pTimestamp
+     * @return The updated outputs from the motion planner using the pose when DriveController was last updated.
+     */
+    public DriveOutput getDriveOutput(double pTimestamp) {
         return mDriveMotionPlanner.update(pTimestamp, mCurrentPose);
     }
 

@@ -177,17 +177,15 @@ public class Drive extends Loop {
 //		mUpdateTimer.start();
 
         // Update state if not updated by path following
-        if(mDriveState != EDriveState.PATH_FOLLOWING) {
-            if(	mData.drive.isSet(EDriveData.LEFT_POS_INCHES) &&
-                    mData.drive.isSet(EDriveData.RIGHT_POS_INCHES) &&
-                    mData.imu.isSet(EGyro.YAW_DEGREES)) {
-                mDriveController.update(
-                        pNow,
-                        mData.drive.get(EDriveData.LEFT_POS_INCHES),
-                        mData.drive.get(EDriveData.RIGHT_POS_INCHES),
-                        Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES)));
-            }
-        }
+		if(		mData.drive.isSet(EDriveData.LEFT_POS_INCHES) &&
+				mData.drive.isSet(EDriveData.RIGHT_POS_INCHES) &&
+				mData.imu.isSet(EGyro.YAW_DEGREES)) {
+			mDriveController.updateOdometry(
+					pNow,
+					mData.drive.get(EDriveData.LEFT_POS_INCHES),
+					mData.drive.get(EDriveData.RIGHT_POS_INCHES),
+					Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES)));
+		}
 
         // Post to NT for display
         Data.kSmartDashboard.getEntry("Odometry X").setDouble(getDriveController().getCurrentPose().getTranslation().x());
@@ -199,11 +197,7 @@ public class Drive extends Loop {
 //				mCalculateTimer.start();
 //				mMotionPlannerTimer.start();
 				// Update controller - calculates new robot position and retrieves motion planner output
-				DriveOutput output = mDriveController.update(
-						pNow,
-						mData.drive.get(EDriveData.LEFT_POS_INCHES),
-						mData.drive.get(EDriveData.RIGHT_POS_INCHES),
-						Rotation2d.fromDegrees(mData.imu.get(EGyro.YAW_DEGREES)));
+				DriveOutput output = mDriveController.getDriveOutput(pNow);
 //				mMotionPlannerTimer.stop();
 				// Convert controller output into something compatible with Talons
 				DriveMessage driveMessage = new DriveMessage(
