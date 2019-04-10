@@ -121,7 +121,7 @@ public class CargoSpit extends Module {
             return false;
         }
 
-        return isCurrentLimiting()/* || isBeamBroken()*/;
+        return isCurrentLimiting() || isBeamBroken();
     }
 
     public boolean isCurrentLimiting() {
