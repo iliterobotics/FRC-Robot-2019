@@ -1,39 +1,50 @@
 package us.ilite.robot;
 
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
+
 import edu.wpi.first.wpilibj.Notifier;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 
 public class CSVLogger implements Runnable {
+    private ILog mLog = Logger.createLog(CSVLogger.class);
     private Notifier mLoggingNotifier;
     private Data mData;
-    private boolean mShouldContinue;
+    private boolean mShouldContinue, mIsRunning;
 
     public CSVLogger( Data pData ) {
         mData = pData;
         mLoggingNotifier = new Notifier( this );
         mShouldContinue = false;
+        mIsRunning = false;
     }
 
     /**
      * Starts the periodically called logging by mLoggingNotifier
      */
     public void start() {
-        mShouldContinue = mData.logFromCodexToCSVHeader();
-        mLoggingNotifier.startPeriodic( SystemSettings.kCSVLoggingPeriod );
+        if(!mIsRunning) {
+            mShouldContinue = mData.logFromCodexToCSVHeader();
+            mLoggingNotifier.startPeriodic( SystemSettings.kCSVLoggingPeriod );
+            mIsRunning = true;
+        }
     }
 
     /**
      * Stops the periodically called logging by mLoggingNotifier
      */
     public void stop() {
-        mLoggingNotifier.stop();
+        if(mIsRunning) {
+            mLoggingNotifier.stop();
+            mData.closeWriters();
+            mIsRunning = false;
+        }
     }
 
     public void run() {
-        if(!mShouldContinue) {
-            stop();
-        } else {
+        if(mIsRunning) {
+            if(!mShouldContinue) stop();
             mShouldContinue = mData.logFromCodexToCSVLog();
         }
     }

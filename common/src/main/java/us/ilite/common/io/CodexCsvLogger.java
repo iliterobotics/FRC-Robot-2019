@@ -108,7 +108,7 @@ public class CodexCsvLogger {
 
     public void closeWriter() {
         try {
-            writer.flush();
+            // writer.flush();
             writer.close();
         } catch (IOException pE) {
             pE.printStackTrace();
