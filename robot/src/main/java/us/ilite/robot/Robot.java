@@ -73,6 +73,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
+        initMatchMetadata();
+        mData.addMatchMetadata(mMatchMeta);
+        //look for practice robot config:
+        AbstractSystemSettingsUtils.loadPracticeSettings(mSettings);
+
         // Init the actual robot
         initTimer.reset();
         initTimer.start();
@@ -141,7 +146,7 @@ public class Robot extends TimedRobot {
 //        mAutonomousCommandManager.startCommands(new CharacterizeDrive(mDrive, false, true));
 
         mData.registerCodices();
-//        mCSVLogger.start(); // Start csv logging
+        mCSVLogger.start(); // Start csv logging
 
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");
@@ -165,7 +170,7 @@ public class Robot extends TimedRobot {
         mLoopManager.setRunningLoops(mLimelight, mDrive);
         mLoopManager.start();
 
-//        mCSVLogger.start(); // start csv logging
+        mCSVLogger.start(); // start csv logging
     }
 
     @Override
