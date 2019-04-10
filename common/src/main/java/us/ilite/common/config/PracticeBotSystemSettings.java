@@ -18,8 +18,8 @@ public class PracticeBotSystemSettings {
     public static double kDriveTicksPerRotation = 1024.0;
     public static double kDriveEffectiveWheelbase = 23.25;
 
-    public static double kTargetAngleLockFrictionFeedforward = 0.055;
-    public static PIDGains kTargetAngleLockGains = new PIDGains(0.00055, 0.000, 0.0);
+//    public static double kTargetAngleLockFrictionFeedforward = 0.055;
+//    public static PIDGains kTargetAngleLockGains = new PIDGains(0.00055, 0.000, 0.0);
 
 
     public static PracticeBotSystemSettings getInstance() {

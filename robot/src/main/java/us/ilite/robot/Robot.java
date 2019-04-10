@@ -29,6 +29,7 @@ import us.ilite.lib.drivers.Clock;
 import us.ilite.lib.drivers.GetLocalIP;
 import us.ilite.lib.drivers.VisionGyro;
 import us.ilite.robot.auto.AutonomousRoutines;
+import us.ilite.robot.commands.CharacterizeDrive;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.loops.LoopManager;
 import us.ilite.robot.modules.*;
@@ -142,7 +143,7 @@ public class Robot extends TimedRobot {
         mLoopManager.setRunningLoops(mLimelight, mDrive);
         mLoopManager.start();
 
-//        mAutonomousCommandManager.startCommands(mAutonomousRoutines.getDefault());
+//        mAutonomousCommandManager.startCommands(new CharacterizeDrive(mDrive, false, true));
 
         mData.registerCodices();
        mCSVLogger.start(); // Start csv logging

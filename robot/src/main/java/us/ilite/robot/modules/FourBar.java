@@ -85,7 +85,7 @@ public class FourBar extends Module {
         mCanController.setD(SystemSettings.kFourBarD);
         mCanController.setFF(SystemSettings.kFourBarF);
 
-//        mCanController.setSmartMotionMaxAccel(SystemSettings.kMaxElevatorAcceleration, 0);
+//        mCanController.setSmartMotionMaxAccel(SystemSettings.kMaxElevatorUpAcceleration, 0);
 //        mCanController.setSmartMotionMinOutputVelocity(SystemSettings.kMinElevatorVelocity, 0);
 //        mCanController.setSmartMotionMaxVelocity(SystemSettings.kMaxElevatorVelocity, 0);
 //        mCanController.setSmartMotionMinOutputVelocity(0, 0);

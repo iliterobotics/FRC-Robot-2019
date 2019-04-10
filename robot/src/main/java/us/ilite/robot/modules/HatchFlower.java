@@ -138,7 +138,8 @@ public class HatchFlower extends Module {
         return
             mGrabberState == GrabberState.RELEASE &&
             mExtensionState == ExtensionState.DOWN &&
-            distanceDelta <= SystemSettings.kHatchFlowerReleaseDistance;
+            distanceDelta <= SystemSettings.kHatchFlowerReleaseDistance &&
+            distanceDelta > 0;
 
 //        return mBackupTimer.get() <= SystemSettings.kHatchFlowerReleaseTime;
     }
