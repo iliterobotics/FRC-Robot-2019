@@ -145,7 +145,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kMaxElevatorVelocity = 3700;
     public static double kMinElevatorVelocity = 0;
     public static double kMaxElevatorUpAcceleration = 4000 * 1.5;
-    public static double kMaxElevatorDownAcceleration = 4000 * 1.0;
+    public static double kMaxElevatorDownAcceleration = 4000 * 1.5;
     public static double kElevatorClosedLoopAllowableError = 0; //The allowed deficit in rotations
 
 
