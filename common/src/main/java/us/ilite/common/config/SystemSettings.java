@@ -389,6 +389,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kFourBarD = 0.0;
     public static double kFourBarF = 0.0;
 
+    public static double kFourbarStallPower = 0.05;
     public static double kFourBarWarnCurrentLimitThreshold = 40;
 
     public static EPowerDistPanel[] kFourBarPdpSlots = new EPowerDistPanel[] {
