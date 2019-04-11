@@ -268,11 +268,11 @@ public class NeoDriveHardware implements IDriveHardware {
     }
 
     public double getLeftVelInches() {
-        return Conversions.ticksPer100msToRadiansPerSecond(getLeftVelTicks());
+        return Conversions.ticksPerTimeUnitToRadiansPerSecond(getLeftVelTicks());
     }
 
     public double getRightVelInches() {
-        return Conversions.ticksPer100msToRadiansPerSecond(getRightVelTicks());
+        return Conversions.ticksPerTimeUnitToRadiansPerSecond(getRightVelTicks());
     }
 
     @Override
