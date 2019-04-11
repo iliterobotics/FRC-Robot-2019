@@ -39,6 +39,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveWheelDiameterInches = 6.0;
     public static double kDriveWheelCircumference = kDriveWheelDiameterInches * Math.PI;
     public static double kDriveTicksPerRotation = 1.0;
+    public static double kDriveVelTimeScale = 1.0;
     public static double kDriveEffectiveWheelbase = 23.25;
 
     public static double kDriveClosedLoopVoltageRampRate = 0.0;

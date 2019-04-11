@@ -21,7 +21,7 @@ public class Conversions {
     }
 
     public static double radiansPerSecondToTicksPer100ms(double rad_s) {
-        return rad_s / (Math.PI * 2.0) * SystemSettings.kDriveTicksPerRotation / 10.0;
+        return rad_s / (Math.PI * 2.0) * SystemSettings.kDriveTicksPerRotation / SystemSettings.kDriveVelTimeScale;
     }
 
     public static double ticksToRotations(double ticks) {
@@ -37,7 +37,7 @@ public class Conversions {
     }
 
     public static double ticksPer100msToRotationsPerSecond(double ticks) {
-        return ticks / SystemSettings.kDriveTicksPerRotation * 10.0;
+        return ticks / SystemSettings.kDriveTicksPerRotation * SystemSettings.kDriveVelTimeScale;
     }
 
     public static double ticksPer100msToInchesPerSecond(double ticks) {
