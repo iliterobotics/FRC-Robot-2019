@@ -64,8 +64,7 @@ public class CodexCsvLogger {
             writer.newLine();
             continueWriting = true;
         } catch (Exception pE) {
-            pE.printStackTrace();
-            System.out.println("********************* CODEXCSVLogger being printed");
+//            pE.printStackTrace();
             continueWriting = false;
         }
         return continueWriting;

@@ -44,7 +44,10 @@ public class CSVLogger implements Runnable {
 
     public void run() {
         if(mIsRunning) {
-            if(!mShouldContinue) stop();
+            if(!mShouldContinue) {
+                mLog.error("USB not found! Stopping logging.");
+                stop();
+            }
             mShouldContinue = mData.logFromCodexToCSVLog();
         }
     }
