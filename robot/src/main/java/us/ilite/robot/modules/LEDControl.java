@@ -5,6 +5,7 @@ import com.ctre.phoenix.CANifier;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.ETrackingType;
 
 public class LEDControl extends Module {
@@ -158,7 +159,7 @@ public class LEDControl extends Module {
         if(mCargoSpit.isOuttaking()) mCurrentMessage = Message.SPITTING_CARGO;
         if(mHatchFlower.shouldBackUp()) mCurrentMessage = Message.KICKING_HATCH;
 
-        if(mLimelight.getTracking() != ETrackingType.NONE) mCurrentMessage = Message.VISION_TRACKING;
+        if(mLimelight.getTracking() != ETrackingType.NONE && mData.limelight.isSet(ETargetingData.tv) && mData.limelight.get(ETargetingData.tv) == 1.0) mCurrentMessage = Message.VISION_TRACKING;
 
         // Did the message change?
         if ( lastMsg != this.mCurrentMessage ) {
