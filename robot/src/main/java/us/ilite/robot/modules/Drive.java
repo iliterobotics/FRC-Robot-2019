@@ -161,7 +161,8 @@ public class Drive extends Loop {
 		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND, mDriveMessage.rightDemand);
 //
 		mData.imu.set(EGyro.YAW_DEGREES, getHeading().getDegrees());
-
+		mData.drive.meta().next(true);
+		mData.imu.meta().next(true);
 //		SimpleNetworkTable.writeCodexToSmartDashboard(EDriveData.class, mData.drive, mClock.getCurrentTime());
 	}
 
