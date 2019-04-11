@@ -45,25 +45,30 @@ public class CodexCsvLogger {
     }
 
     public boolean writeHeader() {
+        boolean continueWriting = false;
         try {
             writer.append(mCodex.getCSVHeader());
             writer.newLine();
-        } catch (IOException pE) {
+            continueWriting = true;
+        } catch (Exception pE) {
             pE.printStackTrace();
-            return false;
+            continueWriting = false;
         }
-        return true;
+        return continueWriting;
     }
 
     public boolean writeLine() {
+        boolean continueWriting = false;
         try {
             writer.append(mCodex.toCSV());
             writer.newLine();
-        } catch (IOException pE) {
+            continueWriting = true;
+        } catch (Exception pE) {
             pE.printStackTrace();
-            return false;
+            System.out.println("********************* CODEXCSVLogger being printed");
+            continueWriting = false;
         }
-        return true;
+        return continueWriting;
     }
 
     public File file(boolean handleUSBConnection) {

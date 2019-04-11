@@ -162,7 +162,7 @@ public class Data {
                 }
             }
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e + "*********** DATA EXCEPTION");
             keepLogging = false;
         }
         return keepLogging;
