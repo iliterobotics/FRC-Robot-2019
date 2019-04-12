@@ -110,7 +110,7 @@ public class Data {
 //            new CodexNetworkTablesParser<EFourBarData>(fourbar, "FOURBAR")
 //        );
         mCodexCsvLoggers = new ArrayList<>();
-        for(Codex c : mLoggedCodexes) mCodexCsvLoggers.add(new CodexCsvLogger(c, mMatchData));
+//        for(Codex c : mLoggedCodexes) mCodexCsvLoggers.add(new CodexCsvLogger(c, mMatchData));
     }
 
     /**
