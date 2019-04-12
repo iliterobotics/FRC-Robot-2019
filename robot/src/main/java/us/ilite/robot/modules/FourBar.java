@@ -103,7 +103,7 @@ public class FourBar extends Module {
     @Override
     public void update( double pNow ) {
         if(Math.abs(mOutput) < 0.02) {
-            System.out.println("POSITION: " + mAngularPosition);
+//            System.out.println("POSITION: " + mAngularPosition);
 //            mCanController.setReference(mNeo1Encoder.getPosition(), ControlType.kPosition);
             if ( -35 < mAngularPosition && mAngularPosition < 25) {
                 mNeos.set( SystemSettings.kFourbarStallPower );
