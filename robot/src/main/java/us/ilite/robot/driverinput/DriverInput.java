@@ -47,7 +47,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private Timer mGroundCargoTimer = new Timer();
     private RangeScale mRampRateRangeScale;
 
-    private boolean mIsCargo = false;
+    private boolean mIsCargo = true; //false;
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
 
