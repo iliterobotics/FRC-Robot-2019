@@ -103,6 +103,8 @@ public class Elevator extends Module {
         mCanController.setSmartMotionMinOutputVelocity(0, SystemSettings.kElevatorSmartMotionSlot);
         mCanController.setSmartMotionAllowedClosedLoopError(SystemSettings.kElevatorClosedLoopAllowableError, SystemSettings.kElevatorSmartMotionSlot);
 
+        mMasterElevator.burnFlash();
+
         zeroEncoder();
 
         // Make sure the elevator is stopped upon initialization
