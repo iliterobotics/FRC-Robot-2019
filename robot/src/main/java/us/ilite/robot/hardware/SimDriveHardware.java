@@ -51,7 +51,7 @@ public class SimDriveHardware implements IDriveHardware {
 
     public void set(DriveMessage pDriveMessage) {
         mDriveMessage = pDriveMessage;
-        update(System.currentTimeMillis() / 1000.0);
+        update(mClock.getCurrentTime());
     }
 
     public void configureMode(ECommonControlMode pControlMode) {

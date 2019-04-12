@@ -140,9 +140,9 @@ public class FieldWindow extends Application {
             while(true) {
                 SimData data = new SimData(mSimulation.mDrive.getDriveController().getCurrentPose(), mSimulation.mDrive.getDriveController().getTargetPose());
                 drawData(data);
-                System.out.println(data.current_pose);
+//                System.out.println(data.current_pose);
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(16);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -5,6 +5,9 @@ import com.flybotix.hfr.codex.ICodexTimeProvider;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import us.ilite.common.Data;
+import us.ilite.common.config.AbstractSystemSettingsUtils;
+import us.ilite.common.config.PracticeBotSystemSettings;
+import us.ilite.common.config.SystemSettings;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.modules.Module;
 import us.ilite.robot.modules.ModuleList;
@@ -36,6 +39,8 @@ public class ModuleSim {
     }
 
     private void simInit() {
+        // Force use of PracticeBotSystemSettings. This is necessary because the robot code isn't fully ready for NEO units yet.
+        AbstractSystemSettingsUtils.copyOverValues(PracticeBotSystemSettings.getInstance(), new SystemSettings());
         ICodexTimeProvider provider = new ICodexTimeProvider() {
             public long getTimestamp() {
                 return (long) mClock.getCurrentTimeInNanos();
@@ -53,7 +58,7 @@ public class ModuleSim {
         }
         mModuleList.periodicInput(mClock.getCurrentTime());
         mModuleList.update(mClock.getCurrentTime());
-        mData.sendCodices();
+//        mData.sendCodices();
 //      mData.sendCodicesToNetworkTables();
         mClock.cycleEnded();
     }
