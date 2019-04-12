@@ -7,13 +7,18 @@ import com.team254.lib.geometry.Translation2d;
  * Naming always assumes that the robot is starting on the LEFT.
  */
 public class FieldElementLocations {
+    //----------
+    // Hab Line
+    //----------
+    public static final double kHabLineDistance = 94.3;
+
     //------------------------------
     // Cargo ship scoring locations
     //------------------------------
 
-    // Two middle hatches
+    // Two midLeft hatches
     public static final Translation2d kCargoShipMiddleLeftHatch = new Translation2d((14.5 * 12.0) + 52.0 - RobotDimensions.kFrontToCenter, 155.0);
-    public static final Translation2d kCargoShipMiddleRightHatch = new Translation2d();
+    public static final Translation2d kCargoShipMiddleRightHatch = new Translation2d( (14.5 * 12.0) + 52.0 - RobotDimensions.kFrontToCenter, 175.0);
 
     // Three side hatches - naming assumes you are facing the three hatches
     public static final Translation2d kCargoShipSideLeftHatch = new Translation2d();

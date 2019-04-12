@@ -1,18 +1,22 @@
 package us.ilite.robot.auto;
 
-import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.google.gson.Gson;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
-import com.team254.lib.trajectory.timing.TimingConstraint;
+import us.ilite.common.AutonSelectionData;
 import us.ilite.common.Data;
+import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.trajectory.TrajectoryConstraints;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+import us.ilite.common.types.auton.*;
+import us.ilite.robot.auto.paths.AutoSequence;
 import us.ilite.lib.drivers.VisionGyro;
-import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideRocket;
+import us.ilite.robot.auto.paths.DefaultAuto;
+import us.ilite.robot.auto.paths.left.LeftToRocketToRocket;
+import us.ilite.robot.auto.paths.midLeft.MidLeftToFrontLeftToRocket;
+import us.ilite.robot.auto.paths.midRight.MidRightToFrontRightToRocket;
+import us.ilite.robot.auto.paths.right.RightToRocketToRocket;
 import us.ilite.robot.commands.*;
 import us.ilite.robot.modules.*;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class AutonomousRoutines {
 
@@ -34,10 +38,26 @@ public class AutonomousRoutines {
     private VisionGyro mVisionGyro;
     private Data mData;
 
-    private MiddleToMiddleCargoToSideRocket mMiddleToMiddleCargoToSideRocket;
-    private ICommand[] mMiddleToMiddleCargoToSideRocketSequence;
+    private DefaultAuto mDefaultAuto;
 
-    public AutonomousRoutines(TrajectoryGenerator mTrajectoryGenerator, Drive mDrive, Elevator mElevator, Intake mIntake, CargoSpit mCargoSpit, HatchFlower mHatchFlower, Limelight mLimelight, VisionGyro mVisionGyro, Data mData) {
+    private AutoSequence mLeft_FrontLeft_Rocket;//TODO these
+    private AutoSequence mMidLeft_FrontLeft_Rocket;//TODO these
+    private AutoSequence mRight_FrontRight_Rocket;//TODO these
+    private AutoSequence mMidRight_FrontRight_Rocket;//TODO these
+
+    private ICommand[] mLeft_FrontLeft_Rocket_CargoSequence; //TODO these
+    private ICommand[] mMidLeft_FrontLeft_Rocket_CargoSequence;//TODO these
+    private ICommand[] mRight_FrontRight_Rocket_CargoSequence;//TODO these
+    private ICommand[] mMidRight_FrontRight_Rocket_CargoSequence;//TODO these
+
+    private ICommand[] mLeft_FrontLeft_Rocket_HatchSequence; //TODO these
+    private ICommand[] mMidLeft_FrontLeft_Rocket_HatchSequence;//TODO these
+    private ICommand[] mRight_FrontRight_Rocket_HatchSequence;//TODO these
+    private ICommand[] mMidRight_FrontRight_Rocket_HatchSequence;//TODO these
+
+    private Gson mGson = new Gson();
+
+    public AutonomousRoutines(TrajectoryGenerator mTrajectoryGenerator, Drive mDrive, Elevator mElevator, PneumaticIntake mPneumaticIntake, Intake mIntake, CargoSpit mCargoSpit, HatchFlower mHatchFlower, Limelight mLimelight, VisionGyro mVisionGyro, Data mData) {
         this.mTrajectoryGenerator = mTrajectoryGenerator;
         this.mDrive = mDrive;
         this.mElevator = mElevator;
@@ -48,15 +68,152 @@ public class AutonomousRoutines {
         this.mVisionGyro = mVisionGyro;
         this.mData = mData;
 
-        this.mMiddleToMiddleCargoToSideRocket = new MiddleToMiddleCargoToSideRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mLimelight, mVisionGyro);
+        mLeft_FrontLeft_Rocket = new LeftToRocketToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+        mMidLeft_FrontLeft_Rocket = new MidLeftToFrontLeftToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+        mRight_FrontRight_Rocket = new RightToRocketToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+        mMidRight_FrontRight_Rocket = new MidRightToFrontRightToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+
     }
 
     public void generateTrajectories() {
-        mMiddleToMiddleCargoToSideRocketSequence = mMiddleToMiddleCargoToSideRocket.generateSequence();
+        //Cargo Sequences
+        mLeft_FrontLeft_Rocket_CargoSequence = mLeft_FrontLeft_Rocket.generateCargoSequence();
+        mMidLeft_FrontLeft_Rocket_CargoSequence = mMidLeft_FrontLeft_Rocket.generateCargoSequence();
+        mRight_FrontRight_Rocket_CargoSequence = mRight_FrontRight_Rocket.generateCargoSequence();
+        mMidRight_FrontRight_Rocket_CargoSequence = mMidRight_FrontRight_Rocket.generateCargoSequence();
+
+        //Hatch Sequences
+        mLeft_FrontLeft_Rocket_HatchSequence = mLeft_FrontLeft_Rocket.generateHatchSequence();
+        mMidLeft_FrontLeft_Rocket_HatchSequence = mMidLeft_FrontLeft_Rocket.generateHatchSequence();
+        mRight_FrontRight_Rocket_CargoSequence = mRight_FrontRight_Rocket.generateHatchSequence();
+        mMidRight_FrontRight_Rocket_CargoSequence = mMidRight_FrontRight_Rocket.generateHatchSequence();
     }
 
     public ICommand[] getDefault() {
-        return mMiddleToMiddleCargoToSideRocketSequence;
+        return mDefaultAuto.generateDefaultSequence();
+    }
+
+    public ICommand[] getSequence() {
+        String jsonData = Data.kAutonTable.getEntry(SystemSettings.kAutonSelectionDataKey).getString("");
+        AutonSelectionData data = mGson.fromJson(jsonData, AutonSelectionData.class);
+        
+        switch(data.mStartingPosition) {
+            case LEFT:
+                switch (data.mHatchShipAction) {
+                    case FRONT_LEFT:
+                        switch (data.mHatchRocketAction) {
+                            case LEFT:
+                                return mLeft_FrontLeft_Rocket_HatchSequence;
+                            case RIGHT:
+                                return mLeft_FrontLeft_Rocket_HatchSequence; // To be changed
+                            default:
+                                break;
+                        }
+                    default:
+                        break;
+                }
+                switch (data.mCargoShipAction) {
+                    case FRONT_LEFT:
+                        switch (data.mCargoRocketAction) {
+                            case MID:
+                                return mLeft_FrontLeft_Rocket_CargoSequence;
+                            default:
+                                break;
+                        }
+                }
+            case MID_LEFT:
+                switch (data.mHatchShipAction) {
+                    case FRONT_LEFT:
+                        switch (data.mHatchRocketAction) {
+                            case LEFT:
+                                return mMidLeft_FrontLeft_Rocket_HatchSequence;
+                            case RIGHT:
+                                return mMidLeft_FrontLeft_Rocket_HatchSequence; // To be changed
+                            default:
+                                break;
+                        }
+                    default:
+                        break;
+                }
+                switch (data.mCargoShipAction) {
+                    case FRONT_LEFT:
+                        switch (data.mCargoRocketAction) {
+                            case MID:
+                                return mMidLeft_FrontLeft_Rocket_CargoSequence;
+                            default:
+                                break;
+                        }
+                }
+            case MID_RIGHT:
+                switch (data.mHatchShipAction) {
+                    case FRONT_LEFT:
+                        switch (data.mHatchRocketAction) {
+                            case LEFT:
+                                return mMidLeft_FrontLeft_Rocket_HatchSequence;
+                            case RIGHT:
+                                return mMidLeft_FrontLeft_Rocket_HatchSequence; // To be changed
+                            default:
+                                break;
+                        }
+                    default:
+                        break;
+                }
+                switch (data.mCargoShipAction) {
+                    case FRONT_LEFT:
+                        switch (data.mCargoRocketAction) {
+                            case MID:
+                                return mMidLeft_FrontLeft_Rocket_CargoSequence;
+                            default:
+                                break;
+                        }
+                }
+            case RIGHT:
+                switch (data.mHatchShipAction) {
+                    case FRONT_LEFT:
+                        switch (data.mHatchRocketAction) {
+                            case LEFT:
+                                return mRight_FrontRight_Rocket_HatchSequence;
+                            case RIGHT:
+                                return mRight_FrontRight_Rocket_HatchSequence; // To be changed
+                            default:
+                                break;
+                        }
+                    default:
+                        break;
+                }
+                switch (data.mCargoShipAction) {
+                    case FRONT_LEFT:
+                        switch (data.mCargoRocketAction) {
+                            case MID:
+                                return mRight_FrontRight_Rocket_CargoSequence;
+                            default:
+                                break;
+                        }
+                }
+            case UNKNOWN:
+                break;
+            default:
+                return mDefaultAuto.generateDefaultSequence();
+        }
+
+        return null;
+
+    }
+
+    public AutoSequence getmLeft_FrontLeft_Rocket() {
+        return mLeft_FrontLeft_Rocket;
+    }
+
+    public AutoSequence getmMidLeft_FrontLeft_Rocket() {
+        return mMidLeft_FrontLeft_Rocket;
+    }
+
+    public AutoSequence getmRight_FrontRight_Rocket() {
+        return mRight_FrontRight_Rocket;
+    }
+
+    public AutoSequence getmMidRight_FrontRight_Rocket() {
+        return mMidRight_FrontRight_Rocket;
     }
 
 }

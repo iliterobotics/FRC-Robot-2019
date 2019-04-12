@@ -1,7 +1,5 @@
 package us.ilite.display.simulation;
 
-import java.util.List;
-
 import com.flybotix.hfr.util.log.ELevel;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.geometry.Pose2d;
@@ -9,23 +7,19 @@ import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
-import com.team254.lib.util.ReflectingCSVWriter;
-
 import us.ilite.common.Data;
 import us.ilite.common.lib.RobotProfile;
 import us.ilite.common.lib.control.DriveController;
-import com.team254.frc2018.planners.DriveMotionPlanner;
 import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
-import us.ilite.display.simulation.ui.FieldWindow;
 import us.ilite.lib.drivers.Clock;
-import us.ilite.robot.HenryProfile;
 import us.ilite.robot.auto.AutonomousRoutines;
-import us.ilite.robot.auto.paths.middle.MiddleToMiddleCargoToSideRocket;
-import us.ilite.robot.commands.FollowRotationTrajectory;
+import us.ilite.robot.auto.paths.right.RightToRocketToRocket;
 import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.modules.CommandManager;
 import us.ilite.robot.modules.Drive;
+
+import java.util.List;
 
 public class Simulation {
 
@@ -59,10 +53,7 @@ public class Simulation {
         mDrive.startCsvLogging();
         mCommandManager.stopRunningCommands(mClock.getCurrentTime());
         mCommandManager.startCommands(
-                new FollowTrajectory(generate(MiddleToMiddleCargoToSideRocket.kStartToMiddleLeftHatchPath), mDrive, true),
-                new FollowTrajectory(generate(true, MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchToLoadingStationPath), mDrive,false),
-                new FollowRotationTrajectory(generate(MiddleToMiddleCargoToSideRocket.kMiddleLeftHatchFromStart.getRotation(), MiddleToMiddleCargoToSideRocket.kLoadingStationFromMiddleLeftHatch.getRotation()), mDrive,false),
-                new FollowTrajectory(generate(true, MiddleToMiddleCargoToSideRocket.kLoadingStationToSideRocketSetupPath), mDrive, false)
+
         );
 
         mSim.start().setStopCondition(() -> !mCommandManager.isRunningCommands());

@@ -3,7 +3,8 @@ package us.ilite.common.types.auton;
 public enum EStartingPosition {
     LEFT,
     RIGHT,
-    MIDDLE,
+    MID_LEFT,
+    MID_RIGHT,
 	UNKNOWN;
   public static EStartingPosition intToEnum(int num) {
     if(num == -1)return UNKNOWN;
