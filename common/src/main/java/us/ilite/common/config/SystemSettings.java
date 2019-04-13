@@ -119,6 +119,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     public static double kElevatorAllowableError = 1.0;
     public static int kElevatorNEOAddress = 15;
+    public static int kElevatorBottomHallEffectId = 3;
 
     public static int kElevatorSmartMotionSlot = 0;
     public static double kElevatorOpenLoopMinPower = -1.0;

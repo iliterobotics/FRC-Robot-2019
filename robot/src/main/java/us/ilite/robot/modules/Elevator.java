@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.ControlType;
 import com.team254.lib.util.Util;
+import edu.wpi.first.wpilibj.DigitalInput;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.manipulator.EElevator;
@@ -29,6 +30,7 @@ public class Elevator extends Module {
     EElevatorState mCurrentState;
     EElevatorPosition mDesiredPosition;
     CANSparkMax mMasterElevator;
+    private DigitalInput mBottomHallEffect;
 //    private boolean mDifferentAcceleration = true;
 //    private mLastUp;
 
@@ -77,6 +79,8 @@ public class Elevator extends Module {
 
     public Elevator(Data pData) {
         this.mData = pData;
+
+        mBottomHallEffect = new DigitalInput(SystemSettings.kElevatorBottomHallEffectId);
 
         // Create default NEO
         mMasterElevator = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kElevatorNEOAddress, MotorType.kBrushless);
@@ -129,10 +133,15 @@ public class Elevator extends Module {
 //        mData.elevator.set(EElevator.BUS_VOLTAGE, mMasterElevator.getBusVoltage());
         mData.elevator.set(EElevator.DESIRED_POSITION_TYPE, (double) mDesiredPosition.ordinal());
         mData.elevator.set(EElevator.CURRENT_STATE, (double) mCurrentState.ordinal());
+        mData.elevator.set(EElevator.BOTTOM_HALL_EFFECT, mBottomHallEffect.get() ? 1d : 0d);
 
     }
 
     public void update(double pNow) {
+
+        if(mBottomHallEffect.get()) {
+            zeroEncoder();
+        }
 
         switch (mCurrentState) {
             case NORMAL:

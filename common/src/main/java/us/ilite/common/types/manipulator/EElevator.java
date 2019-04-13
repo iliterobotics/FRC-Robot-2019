@@ -12,7 +12,8 @@ public enum EElevator implements CodexOf<Double> {
     CURRENT,
     BUS_VOLTAGE,
     DESIRED_POSITION_TYPE,
-    CURRENT_STATE
+    CURRENT_STATE,
+    BOTTOM_HALL_EFFECT
 
 }
 
