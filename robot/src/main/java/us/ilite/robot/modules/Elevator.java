@@ -139,7 +139,8 @@ public class Elevator extends Module {
 
     public void update(double pNow) {
 
-        if(mBottomHallEffect.get()) {
+        // false = triggered
+        if(!mBottomHallEffect.get()) {
             zeroEncoder();
         }
 
