@@ -144,8 +144,6 @@ public class Robot extends TimedRobot {
 
 //        mAutonomousCommandManager.startCommands(new CharacterizeDrive(mDrive, false, true));
 
-        mData.registerCodices();
-
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");
     }
