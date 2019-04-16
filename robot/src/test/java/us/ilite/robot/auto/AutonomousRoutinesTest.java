@@ -1,7 +1,5 @@
 package us.ilite.robot.auto;
 
-import com.flybotix.hfr.util.log.ELevel;
-import com.flybotix.hfr.util.log.Logger;
 import com.google.gson.Gson;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,17 +7,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import us.ilite.TestingUtils;
 import us.ilite.common.AutonSelectionData;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.common.types.auton.*;
-import us.ilite.lib.drivers.Clock;
 import us.ilite.lib.drivers.VisionGyro;
-import us.ilite.robot.auto.paths.left.LeftToRocketToRocket;
-import us.ilite.robot.commands.ICommand;
-import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.modules.*;
 
 import static org.junit.Assert.*;

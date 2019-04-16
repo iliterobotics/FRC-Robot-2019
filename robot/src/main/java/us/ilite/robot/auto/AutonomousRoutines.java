@@ -7,14 +7,13 @@ import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.trajectory.TrajectoryConstraints;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
-import us.ilite.common.types.auton.*;
 import us.ilite.robot.auto.paths.AutoSequence;
 import us.ilite.lib.drivers.VisionGyro;
 import us.ilite.robot.auto.paths.DefaultAuto;
-import us.ilite.robot.auto.paths.left.LeftToRocketToRocket;
+import us.ilite.robot.auto.paths.left.LeftToCargoToRocket;
 import us.ilite.robot.auto.paths.midLeft.MidLeftToFrontLeftToRocket;
 import us.ilite.robot.auto.paths.midRight.MidRightToFrontRightToRocket;
-import us.ilite.robot.auto.paths.right.RightToRocketToRocket;
+import us.ilite.robot.auto.paths.right.RightToCargoToRocket;
 import us.ilite.robot.commands.*;
 import us.ilite.robot.modules.*;
 
@@ -68,9 +67,9 @@ public class AutonomousRoutines {
         this.mVisionGyro = mVisionGyro;
         this.mData = mData;
 
-        mLeft_FrontLeft_Rocket = new LeftToRocketToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+        mLeft_FrontLeft_Rocket = new LeftToCargoToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
         mMidLeft_FrontLeft_Rocket = new MidLeftToFrontLeftToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
-        mRight_FrontRight_Rocket = new RightToRocketToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+        mRight_FrontRight_Rocket = new RightToCargoToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
         mMidRight_FrontRight_Rocket = new MidRightToFrontRightToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
 
     }
