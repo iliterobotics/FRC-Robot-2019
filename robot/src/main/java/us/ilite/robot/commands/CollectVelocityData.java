@@ -2,8 +2,6 @@ package us.ilite.robot.commands;
 
 import java.util.List;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import us.ilite.common.lib.physics.DriveCharacterization;
 import com.team254.lib.util.ReflectingCSVWriter;
 
@@ -72,7 +70,7 @@ public class CollectVelocityData implements ICommand {
 
     public void updateData(List<DriveCharacterization.VelocityDataPoint> pVelocityDataPoints, ReflectingCSVWriter<DriveCharacterization.VelocityDataPoint> pCSVWriter, double pCurrentPercentPower, double pVelocityTicks) {
         pVelocityDataPoints.add(new DriveCharacterization.VelocityDataPoint(
-                Conversions.ticksPer100msToRadiansPerSecond((int)pVelocityTicks), //convert velocity to radians per second
+                Conversions.ticksPerTimeUnitToRadiansPerSecond((int)pVelocityTicks), //convert velocity to radians per second
                 pCurrentPercentPower * 12.0 //convert to volts
         ));
         pCSVWriter.add(pVelocityDataPoints.get(pVelocityDataPoints.size() - 1));

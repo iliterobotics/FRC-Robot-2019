@@ -16,4 +16,9 @@ public class PIDGains {
         kD = pD;
         kF = pF;
     }
+
+    public String toString() {
+        return String.format("kP: %s\nkI: %s\nkD: %s\nkF: %s", kP, kI, kD, kF);
+    }
+
 }

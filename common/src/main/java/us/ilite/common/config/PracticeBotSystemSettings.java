@@ -12,11 +12,15 @@ public class PracticeBotSystemSettings {
     // =============================================================================
     // Drive Train Constants
     // =============================================================================
-    public static double kDriveGearboxRatio = (12.0 / 80.0) * (42.0 / 80.0);
     public static double kDriveWheelDiameterInches = 6.0;
     public static double kDriveWheelCircumference = kDriveWheelDiameterInches * Math.PI;
     public static double kDriveTicksPerRotation = 1024.0;
+    public static double kDriveVelTimeScale = 10.0; // This is because velocity units for Talons are ticks per *100 ms*
     public static double kDriveEffectiveWheelbase = 23.25;
+
+//    public static double kTargetAngleLockFrictionFeedforward = 0.055;
+//    public static PIDGains kTargetAngleLockGains = new PIDGains(0.00055, 0.000, 0.0);
+
 
     public static PracticeBotSystemSettings getInstance() {
         return INSTANCE_HOLDER.sInstance;

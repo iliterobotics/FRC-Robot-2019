@@ -25,7 +25,7 @@ public class CharacterizeDrive implements ICommand {
     
     private CommandQueue mCommandQueue = new CommandQueue();
 
-    public CharacterizeDrive(Drive pDrive, boolean pTurn, boolean pReverse) {
+    public CharacterizeDrive(Drive pDrive, boolean pReverse, boolean pTurn) {
         mDrive = pDrive;
         mCollectVelocityData = new CollectVelocityData(mDrive, mLeftVelData, mRightVelData, pReverse, pTurn);
         mCollectAccelerationData = new CollectAccelerationData(mDrive, mLeftAccelData, mRightAccelData, pReverse, pTurn);
@@ -33,6 +33,7 @@ public class CharacterizeDrive implements ICommand {
     
     @Override
     public void init(double pNow) {
+        mLog.error("Beginning characterization");
         mCommandQueue.setCommands(mCollectVelocityData, new Delay(3.0), mCollectAccelerationData);
         mCommandQueue.init(pNow);
     }

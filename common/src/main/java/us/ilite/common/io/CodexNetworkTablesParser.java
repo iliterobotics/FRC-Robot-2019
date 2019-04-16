@@ -100,7 +100,7 @@ public class CodexNetworkTablesParser<E extends Enum<E> & CodexOf<Double>> {
     public File file() {
 
         String dir = "";
-        if(Files.notExists(new File(CodexCsvLogger.USB_DIR).toPath())) {
+        if(Files.notExists(new File(CodexCsvLogger.ROBOT_DIR).toPath())) {
             dir = USER_DIR;
         } else {
             dir = ROBOT_DIR;

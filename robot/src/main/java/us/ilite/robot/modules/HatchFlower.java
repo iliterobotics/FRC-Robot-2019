@@ -73,10 +73,10 @@ public class HatchFlower extends Module {
         // Init Hatch Flower to grab state - Per JKnight we will start with a hatch or cargo onboard
         this.mLastGrabberState = GrabberState.GRAB;
         this.mGrabberState = GrabberState.GRAB;
-        this.mExtensionState = ExtensionState.DOWN;
+        this.mExtensionState = ExtensionState.UP;
 
         this.mGrabSolenoid.set(GrabberState.GRAB.grabber);
-        this.mExtendSolenoid.set(ExtensionState.DOWN.extension);
+        this.mExtendSolenoid.set(ExtensionState.UP.extension);
 
     }
 
@@ -138,7 +138,8 @@ public class HatchFlower extends Module {
         return
             mGrabberState == GrabberState.RELEASE &&
             mExtensionState == ExtensionState.DOWN &&
-            distanceDelta <= SystemSettings.kHatchFlowerReleaseDistance;
+            distanceDelta <= SystemSettings.kHatchFlowerReleaseDistance &&
+            distanceDelta > 0;
 
 //        return mBackupTimer.get() <= SystemSettings.kHatchFlowerReleaseTime;
     }

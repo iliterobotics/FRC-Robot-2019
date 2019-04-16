@@ -45,9 +45,9 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private final Limelight mLimelight;
     private final Data mData;
     private Timer mGroundCargoTimer = new Timer();
-    private RangeScale mRangeScale;
+    private RangeScale mRampRateRangeScale;
 
-    private boolean mIsCargo = false;
+    private boolean mIsCargo = true; //false;
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
 
@@ -81,7 +81,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
             this.mOperatorJoystick = new Joystick(1);
         }
 
-        this.mRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
+        this.mRampRateRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
                 SystemSettings.kDriveMaxOpenLoopVoltageRampRate,
                 0.0,
                 Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
@@ -93,7 +93,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     @Override
     public void modeInit(double pNow) {
-        mRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
+        mRampRateRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
                 SystemSettings.kDriveMaxOpenLoopVoltageRampRate,
                 0.0,
                 Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
@@ -203,7 +203,14 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private void updatePneumaticIntake() {
         if(mIsCargo) {
             if ( mData.operatorinput.get( DriveTeamInputMap.OPERATOR_INTAKE_GROUND ) > 0.5 ) {
-                mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.OUT );
+
+                // If both ground intake and score are held, reverse the roller
+                if( mData.operatorinput.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
+                    mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.OUTTAKING);
+                } else {
+                    mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.INTAKING);
+                }
+
             } else {
                 mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.STOWED );
             }
@@ -270,23 +277,33 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     }
 
     private void scaleRampRate() {
-        double value = mRangeScale.scaleBtoA(mElevator.getEncoderPosition());
-        SmartDashboard.putNumber("Current Ramp Rate", value);
-        mDrive.setRampRate(value);
+
     }
 
     private void updateDriveTrain() {
         double rotate = getTurn();
         double throttle = getThrottle();
-        scaleRampRate();
+
+        if(mData.driverinput.get(DriveTeamInputMap.DRIVER_ACCEL_LIMIT_BYPASS) < 0.5) {
+            double value = mRampRateRangeScale.scaleBtoA(mElevator.getEncoderPosition());
+            SmartDashboard.putNumber("Current Ramp Rate", value);
+            mDrive.setRampRate(value);
+        } else {
+            mDrive.setRampRate(SystemSettings.kDriveMinOpenLoopVoltageRampRate);
+        }
 
         //		    throttle = EInputScale.EXPONENTIAL.map(throttle, 2);
         rotate = EInputScale.EXPONENTIAL.map(rotate, 2);
         rotate *= SystemSettings.kNormalPercentThrottleReduction;
 
-        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) && mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD) {
+        if (mData.driverinput.isSet(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) && mData.driverinput.get(DriveTeamInputMap.DRIVER_SUB_WARP_AXIS) > DRIVER_SUB_WARP_AXIS_THRESHOLD || mData.driverinput.get(DriveTeamInputMap.DRIVER_ACCEL_LIMIT_BYPASS) > 0.5) {
             throttle *= SystemSettings.kSnailModePercentThrottleReduction;
             rotate *= SystemSettings.kSnailModePercentRotateReduction;
+        }
+
+        // Handled AFTER any scaling - we don't want the output of this to be scaled
+        if(Math.abs(throttle) < Util.kEpsilon) {
+            throttle = SystemSettings.kTurnInPlaceThrottleBump;
         }
 
         DriveMessage driveMessage = DriveMessage.fromThrottleAndTurn(throttle, rotate);
@@ -305,8 +322,13 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     private void updateElevator() {
 
-        double manualThrottle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR) * 0.5;
+        double manualThrottle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
 
+        if(manualThrottle > 0) {
+            manualThrottle *= SystemSettings.kElevatorManualUpThrottleReduction;
+        } else if(manualThrottle < 0) {
+            manualThrottle *= SystemSettings.kElevatorManualDownThrottleReduction;
+        }
 
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_POSITION_ELEVATOR)) {
             mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_BOTTOM);
@@ -401,7 +423,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 mLog.error("Requesting command start");
                 mLog.error("Stopping teleop command queue");
                 mTeleopCommandManager.stopRunningCommands(pNow);
-                mTeleopCommandManager.startCommands(new LimelightTargetLock(mDrive, mLimelight, 2, mTrackingType, this, false));
+                mTeleopCommandManager.startCommands(new LimelightTargetLock(mDrive, mLimelight, 2, mTrackingType, this, false).setStopWhenTargetLost(false));
             }
         } else {
             mTrackingType = null;
