@@ -129,20 +129,20 @@ public class FieldWindow extends Application {
     }
 
     public void startDrawing() {
-//        updateThread.start();
-        Thread thread = new Thread(() -> {
-            while(true) {
-                SimData data = new SimData(mSimulation.mDrive.getDriveController().getCurrentPose(), mSimulation.mDrive.getDriveController().getTargetPose());
-                drawData(data);
-//                System.out.println(data.current_pose);
-                try {
-                    Thread.sleep(16);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread.start();
+        updateThread.start();
+//        Thread thread = new Thread(() -> {
+//            while(true) {
+//                SimData data = new SimData(mSimulation.mDrive.getDriveController().getCurrentPose(), mSimulation.mDrive.getDriveController().getTargetPose());
+//                drawData(data);
+////                System.out.println(data.current_pose);
+//                try {
+//                    Thread.sleep(16);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//        thread.start();
 
     }
 

@@ -3,6 +3,7 @@ package us.ilite.display.simulation;
 import com.flybotix.hfr.codex.CodexMetadata;
 import com.flybotix.hfr.codex.ICodexTimeProvider;
 import com.flybotix.hfr.util.log.ELevel;
+import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
@@ -19,13 +20,18 @@ import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.HenryProfile;
 import us.ilite.robot.auto.AutonomousRoutines;
+import us.ilite.robot.auto.paths.right.RightToRocketToRocket;
+import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.modules.CommandManager;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.ModuleList;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class SimRobot extends SimHarness {
+
+    private static final ILog mLogger = Logger.createLog(SimRobot.class);
 
     public final Data mData = new Data();
     public final Clock mClock = new Clock().simulated();
@@ -51,24 +57,25 @@ public class SimRobot extends SimHarness {
             }
         };
         CodexMetadata.overrideTimeProvider(provider);
-
+        mData.initCodexSender(Arrays.asList("127.0.0.1"));
         mData.registerCodices();
+
         mDrive.startCsvLogging();
         this.setStopCondition(() -> !mCommandManager.isRunningCommands());
 
-
+        mModuleList.setModules(mCommandManager, mDrive);
         mModuleList.modeInit(mClock.getCurrentTime());
 
-
         mCommandManager.startCommands(
-
+            new FollowTrajectory(generate(RightToRocketToRocket.kStartToMiddleRightHatchPath), mDrive, true)
         );
+
     }
 
     public void simPeriodic() {
         mModuleList.periodicInput(mClock.getCurrentTime());
         mModuleList.update(mClock.getCurrentTime());
-//        mData.sendCodices();
+        mData.sendCodices();
 //      mData.sendCodicesToNetworkTables();
         mClock.cycleEnded();
     }

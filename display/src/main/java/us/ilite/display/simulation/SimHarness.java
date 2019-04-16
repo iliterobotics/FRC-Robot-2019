@@ -27,15 +27,31 @@ public abstract class SimHarness {
     protected abstract void simPeriodic();
     protected abstract void simShutdown();
 
+    private void init() {
+        simInit();
+    }
+
+    private void periodic() {
+        if(mStopCondition.get()) {
+            stop();
+        }
+
+        simPeriodic();
+    }
+
+    private void shutdown() {
+        simShutdown();
+    }
+
     public SimHarness start() {
         mRunning = true;
         long rateMs = (long)(mScheduleRate * 1000.0);
         sLog.warn("Initializing with DT: " + rateMs);
 
-        simInit();
+        init();
 
         mModuleExecutor = Executors.newScheduledThreadPool(1);
-        mTask = mModuleExecutor.scheduleAtFixedRate(() -> simPeriodic(), 0L, rateMs, TimeUnit.MILLISECONDS);
+        mTask = mModuleExecutor.scheduleAtFixedRate(() -> periodic(), 0L, rateMs, TimeUnit.MILLISECONDS);
 
         return this;
     }
@@ -43,7 +59,7 @@ public abstract class SimHarness {
     public SimHarness stop() {
         mRunning = false;
         if(mTask != null) mTask.cancel(true);
-        simShutdown();
+        shutdown();
         return this;
     }
 
