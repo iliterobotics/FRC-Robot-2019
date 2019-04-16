@@ -11,24 +11,28 @@ import com.flybotix.hfr.codex.Codex;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import us.ilite.common.Data;
+import us.ilite.common.types.MatchMetadata;
 
 public class CodexCsvLogger {
 
-    public static final String USB_DIR = "/u";
-    public static final String USER_DIR = System.getProperty("user.home");
+    private final ILog mLog = Logger.createLog(CodexCsvLogger.class);
+    public static final String ROBOT_DIR = "/u";
+    // private static final String USER_DIR = System.getProperty("user.home");
     private static final String LOG_PATH_FORMAT = "/logs/%s/%s-%s-%s.csv";
 
-    private final ILog mLog = Logger.createLog(CodexCsvLogger.class);
+    // private final ILog mLog = Logger.createLog(CodexCsvLogger.class);
 
     private Codex<?, ?> mCodex;
     private BufferedWriter writer;
+    private MatchMetadata mMatchData;
 
-    public CodexCsvLogger(Codex<?, ?> pCodex ) {
+    public CodexCsvLogger(Codex<?, ?> pCodex, MatchMetadata pMatchData) {
         mCodex = pCodex;
 
-        File file = file();
+        File file = file(false);
         Data.handleCreation( file );
         try {
             writer = new BufferedWriter( new FileWriter( file ) );
@@ -36,49 +40,69 @@ public class CodexCsvLogger {
             pE.printStackTrace();
         }
 
+        mMatchData = pMatchData;
+
     }
 
-    public void writeHeader() {
+    public boolean writeHeader() {
+        boolean continueWriting = false;
         try {
             writer.append(mCodex.getCSVHeader());
             writer.newLine();
-        } catch (IOException pE) {
+            continueWriting = true;
+        } catch (Exception pE) {
             pE.printStackTrace();
+            continueWriting = false;
         }
+        return continueWriting;
     }
 
-    public void writeLine() {
+    public boolean writeLine() {
+        boolean continueWriting = false;
         try {
             writer.append(mCodex.toCSV());
             writer.newLine();
-        } catch (IOException pE) {
-            pE.printStackTrace();
+            continueWriting = true;
+        } catch (Exception pE) {
+//            pE.printStackTrace();
+            continueWriting = false;
         }
+        return continueWriting;
     }
 
-    public File file() {
+    public File file(boolean handleUSBConnection) {
 
-        // Don't default to home dir to avoid filling up memory
-//        String dir = "";
-//        if(Files.notExists(new File(USB_DIR).toPath())) {
-//            dir = USER_DIR;
-//        } else {
-//            dir = USB_DIR;
-//        }
-
-        String dir = USB_DIR;
-
-        String eventName = DriverStation.getInstance().getEventName();
-        if ( eventName.length() <= 0 ) {
-            // event name format: MM-DD-YYYY_HH-MM-SS
-            eventName =  new SimpleDateFormat("MM-dd-YYYY_HH-mm-ss").format(Calendar.getInstance().getTime());
+        String dir = ROBOT_DIR;
+        // if(!handleUSBConnection) {
+        //     if(Files.notExists(new File("/u").toPath())) {
+        //         dir = USER_DIR;
+        //     } else {
+        //         dir = ROBOT_DIR;
+        //     }
+        // } else {
+        //     dir = USER_DIR;
+        // }
+        String mEventName;
+        String mMatchType;
+        Integer mMatchNumber;
+        if(mMatchData != null) {
+            mEventName = mMatchData.mEventName;
+            mMatchType = mMatchData.mMatchType.toString();
+            mMatchNumber = mMatchData.mMatchNumber;
+        } else {
+            mEventName = DriverStation.getInstance().getEventName();
+            mMatchType = DriverStation.getInstance().getMatchType().toString();
+            mMatchNumber = DriverStation.getInstance().getMatchNumber();
         }
-
+        if ( mEventName.length() <= 0 ) {
+            // event name format: MM-DD-YYYY_HH-MM-SS
+            mEventName =  new SimpleDateFormat("MM-dd-YYYY_HH-mm-ss").format(Calendar.getInstance().getTime());
+        }
         File file = new File(String.format( dir + LOG_PATH_FORMAT,
-                            eventName,
                             mCodex.meta().getEnum().getSimpleName(),
-                            DriverStation.getInstance().getMatchType().name(),
-                            Integer.toString(DriverStation.getInstance().getMatchNumber())
+                            mEventName,
+                            mMatchType,
+                            Integer.toString(mMatchNumber)
                             ));
 
         mLog.error("Creating log file at ", file.toPath());
@@ -88,8 +112,8 @@ public class CodexCsvLogger {
 
     public void closeWriter() {
         try {
-            writer.flush();
-            writer.close();
+            // writer.flush();
+            if(writer != null) writer.close();
         } catch (IOException pE) {
             pE.printStackTrace();
         }

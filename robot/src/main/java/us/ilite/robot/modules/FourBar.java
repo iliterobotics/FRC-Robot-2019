@@ -62,6 +62,9 @@ public class FourBar extends Module {
         mNeo2Encoder.setPositionConversionFactor(-1.0);
         mCanController = mNeos.getPIDController();
 
+        mNeos.getEncoder().setPosition(0.0);
+        mNeo2.getEncoder().setPosition(0.0);
+
         mNeos.setIdleMode(CANSparkMax.IdleMode.kBrake);
         mNeo2.setIdleMode(CANSparkMax.IdleMode.kBrake);
         mNeos.burnFlash();
@@ -100,10 +103,13 @@ public class FourBar extends Module {
     @Override
     public void update( double pNow ) {
         if(Math.abs(mOutput) < 0.02) {
-            mCanController.setReference(mNeo1Encoder.getPosition(), ControlType.kPosition);
-            /*if ( -35 < mAngularPosition && mAngularPosition < 25) {
-                mNeos.set( someOutput );
-            }*/
+//            System.out.println("POSITION: " + mAngularPosition);
+//            mCanController.setReference(mNeo1Encoder.getPosition(), ControlType.kPosition);
+            if ( -35 < mAngularPosition && mAngularPosition < 25) {
+                mNeos.set( SystemSettings.kFourbarStallPower );
+            } else {
+                mNeos.set( 0 );
+            }
         } else {
             mNeos.set( mOutput );
         }
@@ -149,7 +155,7 @@ public class FourBar extends Module {
     public void updateAngularPosition() {
         mNeoARotations = -mNeo1Encoder.getPosition() + mNeo1Encoder.getPosition();
         mNeoBRotations = mNeo2Encoder.getPosition();
-        mAngularPosition = (mNeoARotations + mNeoBRotations) / 2;
+        mAngularPosition = (mNeoARotations + mNeoBRotations) * 360.0 / 300 / 2;
     }
     
     /**

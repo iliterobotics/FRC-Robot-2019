@@ -143,6 +143,12 @@ public class Drive extends Loop {
 		mData.drive.set(EDriveData.ODOM_Y, mDriveController.getCurrentPose().getTranslation().y());
 		mData.drive.set(EDriveData.ODOM_HEADING, mDriveController.getCurrentPose().getRotation().getDegrees());
 
+		mData.drive.set(EDriveData.VISION_TRACKING_TARGET_X, mData.limelight.get(ETargetingData.tx));
+		if(mTargetAngleLockPid != null) {
+			mData.drive.set(EDriveData.VISION_TRACKING_ERROR, mTargetAngleLockPid.getError());
+			mData.drive.set(EDriveData.VISION_TRACKING_OUTPUT, mTargetAngleLockPid.getOutput());
+		}
+
 		mData.drive.set(EDriveData.LEFT_MESSAGE_OUTPUT, mDriveMessage.leftOutput);
 		mData.drive.set(EDriveData.RIGHT_MESSAGE_OUTPUT, mDriveMessage.rightOutput);
 		mData.drive.set(EDriveData.LEFT_MESSAGE_CONTROL_MODE, (double)mDriveMessage.leftControlMode.ordinal());
@@ -153,7 +159,8 @@ public class Drive extends Loop {
 		mData.drive.set(EDriveData.RIGHT_MESSAGE_DEMAND, mDriveMessage.rightDemand);
 //
 		mData.imu.set(EGyro.YAW_DEGREES, getHeading().getDegrees());
-
+		mData.drive.meta().next(true);
+		mData.imu.meta().next(true);
 //		SimpleNetworkTable.writeCodexToSmartDashboard(EDriveData.class, mData.drive, mClock.getCurrentTime());
 	}
 

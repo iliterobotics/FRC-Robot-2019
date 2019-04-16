@@ -2,13 +2,10 @@ package us.ilite.robot.commands;
 
 import java.util.List;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import us.ilite.common.lib.physics.DriveCharacterization;
 import com.team254.lib.util.ReflectingCSVWriter;
 
 import us.ilite.common.lib.util.Conversions;
-import us.ilite.common.types.drive.ENeutralMode;
 import us.ilite.lib.drivers.ECommonControlMode;
 import us.ilite.lib.drivers.ECommonNeutralMode;
 import us.ilite.robot.modules.Drive;
@@ -58,8 +55,8 @@ public class CollectAccelerationData implements ICommand {
 
     @Override
     public boolean update(double pNow) {
-        double currentLeftVelocity = Conversions.ticksPer100msToRadiansPerSecond(mDrive.getDriveHardware().getLeftVelTicks());
-        double currentRightVelocity = Conversions.ticksPer100msToRadiansPerSecond(mDrive.getDriveHardware().getRightVelTicks());
+        double currentLeftVelocity = Conversions.ticksPerTimeUnitToRadiansPerSecond(mDrive.getDriveHardware().getLeftVelTicks());
+        double currentRightVelocity = Conversions.ticksPerTimeUnitToRadiansPerSecond(mDrive.getDriveHardware().getRightVelTicks());
 
         double currentTime = pNow;
 

@@ -21,7 +21,7 @@ public class Conversions {
     }
 
     public static double radiansPerSecondToTicksPer100ms(double rad_s) {
-        return rad_s / (Math.PI * 2.0) * SystemSettings.kDriveTicksPerRotation / 10.0;
+        return rad_s / (Math.PI * 2.0) * SystemSettings.kDriveTicksPerRotation / SystemSettings.kDriveVelTimeScale;
     }
 
     public static double ticksToRotations(double ticks) {
@@ -36,16 +36,16 @@ public class Conversions {
         return (int)(inchesToRotations(inches) * SystemSettings.kDriveTicksPerRotation);
     }
 
-    public static double ticksPer100msToRotationsPerSecond(double ticks) {
-        return ticks / SystemSettings.kDriveTicksPerRotation * 10.0;
+    public static double ticksPerTimeUnitToRotationsPerSecond(double ticks) {
+        return ticks / SystemSettings.kDriveTicksPerRotation * SystemSettings.kDriveVelTimeScale;
     }
 
-    public static double ticksPer100msToInchesPerSecond(double ticks) {
-        return ticksPer100msToRotationsPerSecond(ticks) * SystemSettings.kDriveWheelCircumference;
+    public static double ticksPerTimeUnitToInchesPerSecond(double ticks) {
+        return ticksPerTimeUnitToRotationsPerSecond(ticks) * SystemSettings.kDriveWheelCircumference;
     }
 
-    public static double ticksPer100msToRadiansPerSecond(double ticks) {
-        return ticksPer100msToRotationsPerSecond(ticks) * (Math.PI * 2.0);
+    public static double ticksPerTimeUnitToRadiansPerSecond(double ticks) {
+        return ticksPerTimeUnitToRotationsPerSecond(ticks) * (Math.PI * 2.0);
     }
     
 }

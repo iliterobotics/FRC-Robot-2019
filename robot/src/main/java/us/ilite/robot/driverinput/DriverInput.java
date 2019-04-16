@@ -47,7 +47,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private Timer mGroundCargoTimer = new Timer();
     private RangeScale mRampRateRangeScale;
 
-    private boolean mIsCargo = false;
+    private boolean mIsCargo = true; //false;
     private Joystick mDriverJoystick;
     private Joystick mOperatorJoystick;
 
@@ -324,6 +324,11 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
         double manualThrottle = -mData.operatorinput.get(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR);
 
+        if(manualThrottle > 0) {
+            manualThrottle *= SystemSettings.kElevatorManualUpThrottleReduction;
+        } else if(manualThrottle < 0) {
+            manualThrottle *= SystemSettings.kElevatorManualDownThrottleReduction;
+        }
 
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_POSITION_ELEVATOR)) {
             mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_BOTTOM);

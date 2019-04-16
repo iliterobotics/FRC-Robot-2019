@@ -5,6 +5,7 @@ import com.ctre.phoenix.CANifier;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.types.ETargetingData;
 import us.ilite.common.types.ETrackingType;
 
 public class LEDControl extends Module {

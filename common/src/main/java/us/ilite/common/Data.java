@@ -15,6 +15,7 @@ import us.ilite.common.io.CodexCsvLogger;
 import us.ilite.common.io.NTSender;
 import us.ilite.common.lib.util.SimpleNetworkTable;
 import us.ilite.common.types.ETargetingData;
+import us.ilite.common.types.MatchMetadata;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.input.EDriverInputMode;
 import us.ilite.common.types.input.ELogitech310;
@@ -50,7 +51,7 @@ public class Data {
     private final List<CodexSender> mSenders = new ArrayList<>();
 
     public final Codex[] mAllCodexes = new Codex[] {
-            imu, /*drive,*/ driverinput, operatorinput, elevator, cargospit, pdp, intake, /*limelight,*/ fourbar
+            /*imu, drive, IGNORE THESE WE HANDLE TIMESTAMP MANUALLY*/ driverinput, operatorinput, elevator, cargospit, pdp, intake, /*limelight,*/ fourbar
     };
 
     public final Codex[] mLoggedCodexes = new Codex[] {
@@ -78,20 +79,23 @@ public class Data {
 
     private List<CodexNetworkTablesParser<?>> mNetworkTableParsers;
     private List<CodexCsvLogger> mCodexCsvLoggers;
+    private MatchMetadata mMatchData;
+    private boolean mLogging;
 
-    /**
-     * Create a Data object based on whether or not it is being used for logging
-     * @param pLogging
-     */
+
     public Data(boolean pLogging) {
-        if(pLogging) {
-            initParsers();
-//            handleNetworkTableWriterCreation();
-        }
+        mLogging = pLogging;
     }
 
     public Data() {
         this(true);
+    }
+
+    public void addMatchMetadata(MatchMetadata pMatchData) {
+        if (mLogging) {
+            mMatchData = pMatchData;
+            initParsers();
+        }
     }
 
     private void initParsers() {
@@ -106,9 +110,8 @@ public class Data {
 //            new CodexNetworkTablesParser<EPowerDistPanel>( pdp, "PDP" ),
 //            new CodexNetworkTablesParser<EFourBarData>(fourbar, "FOURBAR")
 //        );
-
         mCodexCsvLoggers = new ArrayList<>();
-//        for(Codex c : mLoggedCodexes) mCodexCsvLoggers.add(new CodexCsvLogger(c));
+//        for(Codex c : mLoggedCodexes) mCodexCsvLoggers.add(new CodexCsvLogger(c, mMatchData));
     }
 
     /**
@@ -150,17 +153,36 @@ public class Data {
         }
     }
 
-    public void logFromCodexToCSVHeader() {
-        // Check that the USB drive is still plugged in
-//        if(Files.exists(new File(CodexCsvLogger.USB_DIR).toPath())) {
-            mCodexCsvLoggers.forEach(c -> c.writeHeader());
-//        }
+    public boolean logFromCodexToCSVHeader() {
+        boolean keepLogging = false;
+        try {
+            for (CodexCsvLogger c : mCodexCsvLoggers) {
+                keepLogging = c.writeHeader();
+                if(!keepLogging) {
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e + "*********** DATA EXCEPTION");
+            keepLogging = false;
+        }
+        return keepLogging;
     }
-    public void logFromCodexToCSVLog() {
-        // Check that the USB drive is still plugged in
-//        if(Files.exists(new File(CodexCsvLogger.USB_DIR).toPath())) {
-            mCodexCsvLoggers.forEach(c -> c.writeLine());
-//        }
+
+    public boolean logFromCodexToCSVLog() {
+        boolean keepLogging = false;
+        try {
+            for (CodexCsvLogger c : mCodexCsvLoggers) {
+                keepLogging = c.writeLine();
+                if(!keepLogging) {
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            keepLogging = false;
+        }
+        return keepLogging;
     }
 
     /**

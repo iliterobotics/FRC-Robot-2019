@@ -266,11 +266,11 @@ public class SrxDriveHardware implements IDriveHardware {
     }
 
     public double getLeftVelInches() {
-        return Conversions.ticksPer100msToRadiansPerSecond(mLeftMaster.getSelectedSensorVelocity());
+        return Conversions.ticksPerTimeUnitToRadiansPerSecond(mLeftMaster.getSelectedSensorVelocity());
     }
 
     public double getRightVelInches() {
-        return Conversions.ticksPer100msToRadiansPerSecond(mRightMaster.getSelectedSensorVelocity());
+        return Conversions.ticksPerTimeUnitToRadiansPerSecond(mRightMaster.getSelectedSensorVelocity());
     }
 
     @Override

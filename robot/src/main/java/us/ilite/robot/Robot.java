@@ -47,7 +47,6 @@ public class Robot extends TimedRobot {
     private final Clock mClock = new Clock();
     private final Data mData = new Data();
     private final SystemSettings mSettings = new SystemSettings();
-    private final CSVLogger mCSVLogger = new CSVLogger(mData);
     private final PowerDistributionPanel pdp = new PowerDistributionPanel(SystemSettings.kPowerDistPanelAddress);
     private final DriveController mDriveController = new DriveController(new HenryProfile());
 
@@ -75,6 +74,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
+        initMatchMetadata();
+        mData.addMatchMetadata(mMatchMeta);
+        //look for practice robot config:
+        AbstractSystemSettingsUtils.loadPracticeSettings(mSettings);
+
         // Init the actual robot
         initTimer.reset();
         initTimer.start();
@@ -145,9 +149,6 @@ public class Robot extends TimedRobot {
 
 //        mAutonomousCommandManager.startCommands(new CharacterizeDrive(mDrive, false, true));
 
-        mData.registerCodices();
-//        mCSVLogger.start(); // Start csv logging
-
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");
     }
@@ -170,7 +171,6 @@ public class Robot extends TimedRobot {
         mLoopManager.setRunningLoops(mLimelight, mDrive);
         mLoopManager.start();
 
-//        mCSVLogger.start(); // start csv logging
     }
 
     @Override
@@ -184,7 +184,6 @@ public class Robot extends TimedRobot {
         mLogger.info("Disabled Initialization");
         mRunningModules.shutdown(mClock.getCurrentTime());
         mLoopManager.stop();
-        mCSVLogger.stop(); // stop csv logging
     }
 
     @Override
