@@ -197,7 +197,11 @@ public class Drive extends Loop {
 
 		switch(mDriveState) {
 			case PATH_FOLLOWING:
-				// Update controller - calculates new robot position and retrieves motion planner output
+                Data.kSmartDashboard.getEntry("Target X").setDouble(mDriveController.getTargetPose().getTranslation().x());
+                Data.kSmartDashboard.getEntry("Target Y").setDouble(mDriveController.getTargetPose().getTranslation().y());
+                Data.kSmartDashboard.getEntry("Target Heading").setDouble(mDriveController.getTargetPose().getRotation().getDegrees());
+
+                // Update controller - calculates new robot position and retrieves motion planner output
 				DriveOutput output = mDriveController.getDriveOutput(pNow);
 				// Convert controller output into something compatible with Talons
 				DriveMessage driveMessage = new DriveMessage(

@@ -68,7 +68,8 @@ public class SimRobot extends SimHarness {
 
         mCommandManager.startCommands(
             new FollowTrajectory(generate(RightToRocketToRocket.kStartToBackRocketPath), mDrive, true),
-                new FollowTrajectory(generate(true, RightToRocketToRocket.kBackRocketToLoadingStationPath), mDrive, false)
+                new FollowTrajectory(generate(true, RightToRocketToRocket.kBackRocketToLinePath), mDrive, false),
+                new FollowTrajectory(generate(RightToRocketToRocket.kLineToLoadingStation), mDrive, false)
         );
 
     }

@@ -41,16 +41,20 @@ public class UpdateThread extends Thread {
     }
 
     private SimData getFromNt() {
-        double x = Data.kSmartDashboard.getEntry("Odometry X").getDouble(-1.0);
-        double y = Data.kSmartDashboard.getEntry("Odometry Y").getDouble(-1.0);
-        double heading = Data.kSmartDashboard.getEntry("Odometry Heading").getDouble(-1.0);
+        double odomX = Data.kSmartDashboard.getEntry("Odometry X").getDouble(-1.0);
+        double odomY = Data.kSmartDashboard.getEntry("Odometry Y").getDouble(-1.0);
+        double odomHeading = Data.kSmartDashboard.getEntry("Odometry Heading").getDouble(-1.0);
 
-        if(x == -1.0 || y == -1.0 || heading == -1.0) {
+        double targetX = Data.kSmartDashboard.getEntry("Target X").getDouble(-1.0);
+        double targetY = Data.kSmartDashboard.getEntry("Target Y").getDouble(-1.0);
+        double targetHeading = Data.kSmartDashboard.getEntry("Target Heading").getDouble(-1.0);
+
+        if(odomX == -1.0 || odomY == -1.0 || odomHeading == -1 || targetX == -1.0 || targetY == -1.0 || targetHeading == -1.0) {
             return null;
         } else {
             return new SimData(
-                    new Pose2d(x, y, Rotation2d.fromDegrees(heading)),
-                    new Pose2d()
+                    new Pose2d(odomX, odomY, Rotation2d.fromDegrees(odomHeading)),
+                    new Pose2d(targetX, targetY, Rotation2d.fromDegrees(targetHeading))
             );
         }
 
