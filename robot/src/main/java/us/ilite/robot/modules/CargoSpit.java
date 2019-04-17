@@ -107,11 +107,31 @@ public class CargoSpit extends Module {
     }
 
     public void setOuttaking() {
+        mLeftCurrent = mData.pdp.get(EPowerDistPanel.CURRENT10);
+        mRightCurrent = mData.pdp.get(EPowerDistPanel.CURRENT5);
+
+        double adjustConstant = 0.5;
+        double equityConstant = 0.3d;
+
+        double leftRatio = mLeftCurrent/mLeftMotor.getBusVoltage();
+        double rightRatio = mRightCurrent/mRightMotor.getBusVoltage();
+
         if ( !mEmergencyStopped ) {
             mIntaking = false;
             mOuttaking = true;
-            mLeftMotor.set( ControlMode.PercentOutput, -kLaunchPower );
-            mRightMotor.set( ControlMode. PercentOutput, -kLaunchPower );
+
+            if ( leftRatio - rightRatio > 0 + equityConstant) {
+                System.out.println( "++++++++++++++++++++++++++++++++++ Misaligned Cargospit: Too Far Right?" );
+                mLeftMotor.set( ControlMode.PercentOutput, -kLaunchPower );
+                mRightMotor.set( ControlMode.PercentOutput, kLaunchPower );
+            } else if (leftRatio - rightRatio < 0 - equityConstant ) {
+                System.out.println( "++++++++++++++++++++++++++++++++++ Misaligned Cargospit: Too Far Left?" );
+                mLeftMotor.set( ControlMode.PercentOutput, kLaunchPower );
+                mRightMotor.set( ControlMode.PercentOutput, -kLaunchPower );
+            } else {
+                mLeftMotor.set( ControlMode.PercentOutput, -kLaunchPower );
+                mRightMotor.set( ControlMode. PercentOutput, -kLaunchPower );
+            }
         }
         mEmergencyStopped = false;
     }
