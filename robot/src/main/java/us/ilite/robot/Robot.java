@@ -62,6 +62,7 @@ public class Robot extends TimedRobot {
     private final PneumaticIntake mPneumaticIntake = new PneumaticIntake(mData);
     private final LEDControl mLEDControl = new LEDControl(mDrive, mElevator, mPneumaticIntake, mCargoSpit, mHatchFlower, mFourBar, mLimelight, mData);
     private final DriverInput mDriverInput = new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, false  );
+    private CSVLogger mCSVLogger;
 
     private final TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
     private final AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator,
@@ -73,7 +74,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         initMatchMetadata();
-        mData.addMatchMetadata(mMatchMeta);
+        mCSVLogger = new CSVLogger(mData, mMatchMeta);
         //look for practice robot config:
         AbstractSystemSettingsUtils.loadPracticeSettings(mSettings);
 
@@ -146,6 +147,7 @@ public class Robot extends TimedRobot {
 
         initTimer.stop();
         mLogger.info("Autonomous initialization finished. Took: ", initTimer.get(), " seconds");
+        mCSVLogger.start();
     }
 
     @Override
@@ -165,7 +167,7 @@ public class Robot extends TimedRobot {
 
         mLoopManager.setRunningLoops(mLimelight, mDrive);
         mLoopManager.start();
-
+        mCSVLogger.start();
     }
 
     @Override
@@ -179,6 +181,8 @@ public class Robot extends TimedRobot {
         mLogger.info("Disabled Initialization");
         mRunningModules.shutdown(mClock.getCurrentTime());
         mLoopManager.stop();
+        mLogger.error("STOPPING LOGGING*********************************");
+        mCSVLogger.stop();
     }
 
     @Override
