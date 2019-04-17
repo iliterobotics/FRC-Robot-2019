@@ -50,7 +50,7 @@ public class Data {
     private final List<CodexSender> mSenders = new ArrayList<>();
 
     public final Codex[] mAllCodexes = new Codex[] {
-            imu, /*drive,*/ driverinput, operatorinput, elevator, cargospit, pdp, intake, /*limelight,*/ fourbar
+            /*imu, drive, IGNORE THESE WE HANDLE TIMESTAMP MANUALLY*/ driverinput, operatorinput, elevator, cargospit, pdp, intake, /*limelight,*/ fourbar
     };
 
     public final Codex[] mLoggedCodexes = new Codex[] {
@@ -110,7 +110,7 @@ public class Data {
 //            new CodexNetworkTablesParser<EFourBarData>(fourbar, "FOURBAR")
 //        );
         mCodexCsvLoggers = new ArrayList<>();
-        for(Codex c : mLoggedCodexes) mCodexCsvLoggers.add(new CodexCsvLogger(c, mMatchData));
+//        for(Codex c : mLoggedCodexes) mCodexCsvLoggers.add(new CodexCsvLogger(c, mMatchData));
     }
 
     /**
@@ -162,7 +162,7 @@ public class Data {
                 }
             }
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e + "*********** DATA EXCEPTION");
             keepLogging = false;
         }
         return keepLogging;

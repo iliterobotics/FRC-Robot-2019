@@ -17,7 +17,7 @@ import us.ilite.common.types.sensor.EPowerDistPanel;
 public class CargoSpit extends Module {
 
     private final double kZero = 0.0;
-    private final double kLaunchPower = 0.8;
+    private final double kLaunchPower = 0.70;
 
     private ILog mLog = Logger.createLog(CargoSpit.class);
 
@@ -121,7 +121,7 @@ public class CargoSpit extends Module {
             return false;
         }
 
-        return isCurrentLimiting()/* || isBeamBroken()*/;
+        return isCurrentLimiting() || isBeamBroken();
     }
 
     public boolean isCurrentLimiting() {

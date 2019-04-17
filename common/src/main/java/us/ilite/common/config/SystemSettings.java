@@ -39,12 +39,13 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kDriveWheelDiameterInches = 6.0;
     public static double kDriveWheelCircumference = kDriveWheelDiameterInches * Math.PI;
     public static double kDriveTicksPerRotation = 1.0;
+    public static double kDriveVelTimeScale = 1.0;
     public static double kDriveEffectiveWheelbase = 23.25;
 
     public static double kDriveClosedLoopVoltageRampRate = 0.0;
     public static double kDriveMinOpenLoopVoltageRampRate = 0.1;
     public static double kDriveMaxOpenLoopVoltageRampRate = 0.9;
-    public static int kDriveCurrentLimitAmps = 50;
+    public static int kDriveCurrentLimitAmps = 40;//50;
     public static int kDriveCurrentLimitTriggerDurationMs = 100;
 
     public static CheesyDriveGains kCheesyDriveGains = new CheesyDriveGains();
@@ -68,7 +69,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 	
 	// These are applied AFTER the normal throttle reduction
     public static double kSnailModePercentThrottleReduction = 0.5;
-    public static double kSnailModePercentRotateReduction = 0.4;
+    public static double kSnailModePercentRotateReduction = 0.3;
 
     public static double kTargetLockThrottleReduction = 0.40;
 	
@@ -144,8 +145,11 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kMaxElevatorVelocity = 3700;
     public static double kMinElevatorVelocity = 0;
     public static double kMaxElevatorUpAcceleration = 4000 * 1.5;
-    public static double kMaxElevatorDownAcceleration = 4000 * 1.0;
+    public static double kMaxElevatorDownAcceleration = 4000 * 1.5;
     public static double kElevatorClosedLoopAllowableError = 0; //The allowed deficit in rotations
+
+    public static double kElevatorManualUpThrottleReduction = 0.8;
+    public static double kElevatorManualDownThrottleReduction = 0.3;
 
 
     // =============================================================================
@@ -173,7 +177,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kFourBarPusherDelay = 0.5;
 
     // Pnuematic Intake
-    public static double kPneumaticIntakeIntakePower = 0.7;
+    public static double kPneumaticIntakeIntakePower = 0.5;
 
     // =============================================================================
     // Arm Constants
@@ -286,7 +290,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // PID TargetLock constants
     // =============================================================================
-    public static PIDGains kTargetAngleLockGains = new PIDGains(0.000025, 0.000, 0.0);
+    public static PIDGains kTargetAngleLockGains = new PIDGains(0.00001, 0.000, 0.0);
     public static PIDGains kTargetDistanceLockGains = new PIDGains( 0.1, 0.0, 0.0);
 
     public static double kTargetAngleLockMinPower = -1.0;
@@ -388,6 +392,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kFourBarD = 0.0;
     public static double kFourBarF = 0.0;
 
+    public static double kFourbarStallPower = 0.05;
     public static double kFourBarWarnCurrentLimitThreshold = 40;
 
     public static EPowerDistPanel[] kFourBarPdpSlots = new EPowerDistPanel[] {

@@ -55,13 +55,13 @@ public class Elevator extends Module {
 
         //TODO find encoder threshold
         HATCH_BOTTOM(1),
-        HATCH_MIDDLE(18),
-        HATCH_TOP(36),
-        CARGO_BOTTOM(9.5),
+        HATCH_MIDDLE(17),
+        HATCH_TOP(35),
+        CARGO_BOTTOM(10.5),
         CARGO_LOADING_STATION(17),
         CARGO_CARGO_SHIP(16.5),
-        CARGO_MIDDLE(26.5),
-        CARGO_TOP(44);
+        CARGO_MIDDLE(27.5),
+        CARGO_TOP(45);
 
         private double kEncoderRotations;
 
@@ -102,6 +102,8 @@ public class Elevator extends Module {
         mCanController.setSmartMotionMaxVelocity(SystemSettings.kMaxElevatorVelocity, SystemSettings.kElevatorSmartMotionSlot);
         mCanController.setSmartMotionMinOutputVelocity(0, SystemSettings.kElevatorSmartMotionSlot);
         mCanController.setSmartMotionAllowedClosedLoopError(SystemSettings.kElevatorClosedLoopAllowableError, SystemSettings.kElevatorSmartMotionSlot);
+
+        mMasterElevator.burnFlash();
 
         zeroEncoder();
 
