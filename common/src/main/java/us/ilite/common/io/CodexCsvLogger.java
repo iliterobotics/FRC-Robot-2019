@@ -70,18 +70,7 @@ public class CodexCsvLogger {
         return continueWriting;
     }
 
-    public File file(boolean handleUSBConnection) {
-
-        String dir = ROBOT_DIR;
-        // if(!handleUSBConnection) {
-        //     if(Files.notExists(new File("/u").toPath())) {
-        //         dir = USER_DIR;
-        //     } else {
-        //         dir = ROBOT_DIR;
-        //     }
-        // } else {
-        //     dir = USER_DIR;
-        // }
+    public File file(boolean isAuto) {
         String mEventName;
         String mMatchType;
         Integer mMatchNumber;

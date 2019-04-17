@@ -10,11 +10,8 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.io.CodexNetworkTables;
-import us.ilite.common.io.CodexNetworkTablesParser;
-import us.ilite.common.io.CodexCsvLogger;
 import us.ilite.common.lib.util.SimpleNetworkTable;
 import us.ilite.common.types.ETargetingData;
-import us.ilite.common.types.MatchMetadata;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.input.EDriverInputMode;
 import us.ilite.common.types.input.ELogitech310;
@@ -73,148 +70,7 @@ public class Data {
         }
     };
 
-    //Stores writers per codex needed for CSV logging
-    private Map<String, Writer> mNetworkTableWriters = new HashMap<>();
-
-    private List<CodexNetworkTablesParser<?>> mNetworkTableParsers;
-    private List<CodexCsvLogger> mCodexCsvLoggers;
-    private MatchMetadata mMatchData;
-    private boolean mLogging;
-
-
-    public Data(boolean pLogging) {
-        mLogging = pLogging;
-    }
-
     public Data() {
-        this(true);
-    }
-
-    public void addMatchMetadata(MatchMetadata pMatchData) {
-        if (mLogging) {
-            mMatchData = pMatchData;
-            initParsers();
-        }
-    }
-
-    private void initParsers() {
-        //Add new codexes as we support more into this list
-//        mNetworkTableParsers = Arrays.asList(
-//            new CodexNetworkTablesParser<EGyro>(imu),
-//            new CodexNetworkTablesParser<EDriveData>(drive),
-//            new CodexNetworkTablesParser<ELogitech310>(driverinput, "DRIVER"),
-//            new CodexNetworkTablesParser<ELogitech310>(operatorinput, "OPERATOR"),
-//            new CodexNetworkTablesParser<EElevator>( elevator, "ELEVATOR" ),
-//            new CodexNetworkTablesParser<ECargoSpit>( cargospit, "CARGOSPIT" ),
-//            new CodexNetworkTablesParser<EPowerDistPanel>( pdp, "PDP" ),
-//            new CodexNetworkTablesParser<EFourBarData>(fourbar, "FOURBAR")
-//        );
-        mCodexCsvLoggers = new ArrayList<>();
-//        for(Codex c : mLoggedCodexes) mCodexCsvLoggers.add(new CodexCsvLogger(c, mMatchData));
-    }
-
-    /**
-     * Translate NT to on-computer codex for each CodexNetworkTablesParser in mNetworkTableParsers
-     */
-    public void logFromNetworkTables() {
-        mNetworkTableParsers.forEach(c -> c.parseFromNetworkTables());
-    }
-
-    /**
-     * Logs csv headers to the files using network tables
-     * -- This should be called once before csv logging --
-     */
-    public void networkTablesCodexToCSVHeader() {
-        for (CodexNetworkTablesParser<?> parser : mNetworkTableParsers) {
-            try {
-                Writer logger = mNetworkTableWriters.get(parser.getCSVIdentifier());
-                logger.append(parser.codexToCSVHeader());
-                logger.flush();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    /**
-     * Logs codex values to its corresponding csv using network tables
-     */
-    public void networkTablesCodexToCSVLog() {
-        for (CodexNetworkTablesParser<?> parser : mNetworkTableParsers) {
-            try {
-                Writer logger = mNetworkTableWriters.get(parser.getCSVIdentifier());
-                logger.append(parser.codexToCSVLog());
-                logger.flush();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public boolean logFromCodexToCSVHeader() {
-        boolean keepLogging = false;
-        try {
-            for (CodexCsvLogger c : mCodexCsvLoggers) {
-                keepLogging = c.writeHeader();
-                if(!keepLogging) {
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e + "*********** DATA EXCEPTION");
-            keepLogging = false;
-        }
-        return keepLogging;
-    }
-
-    public boolean logFromCodexToCSVLog() {
-        boolean keepLogging = false;
-        try {
-            for (CodexCsvLogger c : mCodexCsvLoggers) {
-                keepLogging = c.writeLine();
-                if(!keepLogging) {
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-            keepLogging = false;
-        }
-        return keepLogging;
-    }
-
-    /**
-     * Creates writers if they don't already exist
-     */
-    public void handleNetworkTableWriterCreation() {
-        for (CodexNetworkTablesParser<?> parser : mNetworkTableParsers) {
-            try {
-                File file = parser.file();
-                handleCreation(file);
-                mNetworkTableWriters.put(parser.getCSVIdentifier(), new BufferedWriter(new FileWriter(parser.file())));
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
-     * Closes all the writers in mNetworkTableWriters
-     */
-    public void closeWriters() {
-        for (Writer writer : mNetworkTableWriters.values()) {
-            try {
-                writer.flush();
-                writer.close();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        mCodexCsvLoggers.forEach(c -> c.closeWriter());
     }
 
     /**
