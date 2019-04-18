@@ -13,7 +13,6 @@ public class UpdateThread extends Thread {
     private FieldWindow fieldWindow;
     private Queue<SimData> drawQueue;
     private SimData nextDataToDraw = null;
-    private boolean mIsPaused = false;
 
 
     public UpdateThread(FieldWindow fieldWindow) {
@@ -58,14 +57,6 @@ public class UpdateThread extends Thread {
             );
         }
 
-    }
-
-    public void play() {
-        mIsPaused = false;
-    }
-
-    public void pause() {
-        mIsPaused = true;
     }
 
 }

@@ -19,6 +19,9 @@ public class Clock {
     private boolean hasTimeUpdatedThisCycle = false;
     private boolean mIsSimulated = false;
 
+    private boolean mIsPaused = false;
+    private double mPauseStartTime = 0.0;
+
     public Clock() {
     }
 
@@ -28,7 +31,7 @@ public class Clock {
      */
     public double getCurrentTime() {
         if(hasTimeUpdatedThisCycle == false) {
-            mCurrentTime = (mIsSimulated) ? getJavaTime() : getRobotTime();
+            mCurrentTime = getTime();
             mCurrentTime -= mStartTime;
             hasTimeUpdatedThisCycle = true;
         }
@@ -76,10 +79,29 @@ public class Clock {
         }
     }
 
+    private double getTime() {
+        return (mIsSimulated) ? getJavaTime() : getRobotTime();
+    }
+
     public Clock simulated() {
         mStartTime = getJavaTime();
         mIsSimulated = true;
         return this;
+    }
+
+    public void pause() {
+        mPauseStartTime = getTime();
+        mIsPaused = true;
+    }
+
+    public void play() {
+        if(mIsPaused) {
+            mIsPaused = false;
+            double timePaused = getTime() - mPauseStartTime;
+            mStartTime += timePaused; // Offset clock by time paused
+
+            System.out.println("Time elapsed: " + timePaused);
+        }
     }
 
     private static double getJavaTime() {

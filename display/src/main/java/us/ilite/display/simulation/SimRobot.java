@@ -21,6 +21,7 @@ import us.ilite.lib.drivers.Clock;
 import us.ilite.robot.HenryProfile;
 import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.robot.auto.paths.right.RightToRocketToRocket;
+import us.ilite.robot.commands.FollowRotationTrajectory;
 import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.modules.CommandManager;
 import us.ilite.robot.modules.Drive;
@@ -43,6 +44,7 @@ public class SimRobot extends SimHarness {
 
     public SimRobot(double pScheduleRate) {
         super(pScheduleRate);
+        setClock(mClock);
     }
 
     public void simInit() {

@@ -13,7 +13,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage pStage) throws InterruptedException {
+    public void start(Stage pStage) {
 
         SimRobot mSimulation = new SimRobot(0.01);
         FieldWindow mFieldWindow = new FieldWindow(mSimulation, 0.01);
@@ -23,8 +23,6 @@ public class Main extends Application {
 
         NetworkTableInstance.getDefault().startServer();
         NetworkTableInstance.getDefault().startClient("localhost");
-        mSimulation.start();
-        mFieldWindow.startDrawing();
 
     }
 }

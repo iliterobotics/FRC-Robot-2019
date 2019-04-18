@@ -72,12 +72,21 @@ public class FieldWindow extends Application {
         simToggle = new ToggleButton("Simulate");
 
         playButton.setOnAction(e -> {
-            updateThread.play();
-            if(!mSimulation.isRunning()) mSimulation.start();
+            if(!updateThread.isAlive()) {
+                updateThread.start();
+            } else {
+                updateThread.resume();
+            }
+            if(simToggle.isSelected() && !mSimulation.isRunning()) {
+                reset();
+                mSimulation.start();
+            } else {
+                mSimulation.resume();
+            }
         });
         pauseButton.setOnAction(e -> {
-            updateThread.pause();
-            mSimulation.stop();
+            updateThread.suspend();
+            if(simToggle.isSelected()) mSimulation.suspend();
         });
         simToggle.setSelected(false);
 
@@ -126,24 +135,6 @@ public class FieldWindow extends Application {
         robotOutline.clear();
         robotPath.clear();
         reset();
-    }
-
-    public void startDrawing() {
-        updateThread.start();
-//        Thread thread = new Thread(() -> {
-//            while(true) {
-//                SimData data = new SimData(mSimulation.mDrive.getDriveController().getCurrentPose(), mSimulation.mDrive.getDriveController().getTargetPose());
-//                drawData(data);
-////                System.out.println(data.current_pose);
-//                try {
-//                    Thread.sleep(16);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//        thread.start();
-
     }
 
     public void drawData(SimData pNextDataToDraw) {
