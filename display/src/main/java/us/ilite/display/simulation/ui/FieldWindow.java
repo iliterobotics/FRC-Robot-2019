@@ -96,8 +96,6 @@ public class FieldWindow extends Application {
             updateThread.suspend();
             if(simToggle.isSelected()) mSimulation.suspend();
         });
-
-        simToggle.setSelected(false);
         simToggle.setOnAction(e -> {
             if(!simToggle.isSelected()) {
                 mSimulation.stop();
@@ -106,6 +104,7 @@ public class FieldWindow extends Application {
                 resetAll();
             }
         });
+        simToggle.setSelected(false);
 
         try {
             fieldImage = new Image(new File("field.png").toURI().toURL().toExternalForm(), 640, 480, true, false);
@@ -157,7 +156,7 @@ public class FieldWindow extends Application {
         Pose2d robotPose = normalizePoseToField(pNextDataToDraw.current_pose);
         Pose2d targetPose = normalizePoseToField(pNextDataToDraw.target_pose);
 
-        robotOutline.draw(fieldContext, robotPose, fieldInchesToPixels/*,simToggle.isSelected()*/);
+        robotOutline.draw(fieldContext, robotPose, fieldInchesToPixels, simToggle.isSelected());
         robotPath.draw(fieldContext, targetPose, fieldInchesToPixels);
 
         drawSimTime(mSimulation.getTime());

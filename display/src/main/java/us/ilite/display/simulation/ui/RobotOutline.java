@@ -12,8 +12,8 @@ import us.ilite.robot.auto.paths.RobotDimensions;
 public class RobotOutline extends ADrawable {
 
     private Translation2d[] outlinePoints;
-    private DrawablePath leftPath = new DrawablePath(Color.RED);
-    private DrawablePath rightPath = new DrawablePath(Color.RED);
+    private DrawablePath leftPath = new DrawablePath(Color.RED, 50);
+    private DrawablePath rightPath = new DrawablePath(Color.RED, 50);
 
     public RobotOutline(Translation2d...outlinePoints) {
         this.outlinePoints = outlinePoints;
