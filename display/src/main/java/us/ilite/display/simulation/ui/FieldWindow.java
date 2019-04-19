@@ -5,6 +5,7 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -30,11 +31,11 @@ public class FieldWindow extends Application {
     private Image fieldImage;
     private Canvas fieldCanvas;
     private GraphicsContext fieldContext;
-    private Text durationDisplay;
+    private Text simClock;
     private Text mouseXInches, mouseYInches;
     private Button playButton, pauseButton;
     private ToggleButton simToggle;
-    private SimRobot mSimulation;
+    private SimRobot mSimulation = new SimRobot(0.01);
 
     private Translation2d fieldInchesToPixels;
     private RobotOutline robotOutline = new RobotOutline(new Translation2d(-RobotDimensions.kBackToCenter, -RobotDimensions.kSideToCenter),
@@ -47,8 +48,7 @@ public class FieldWindow extends Application {
 
     public final double kDt;
 
-    public FieldWindow(SimRobot mSimulation, double kDt) {
-        this.mSimulation = mSimulation;
+    public FieldWindow(double kDt) {
         this.kDt = kDt;
     }
 
@@ -60,11 +60,14 @@ public class FieldWindow extends Application {
     public void start(Stage primaryStage) {
 
         BorderPane root = new BorderPane();
-        VBox sidePane = new VBox();
+        VBox sidePane = new VBox(5);
         HBox bottomPane = new HBox();
         Scene scene = new Scene(root, 800, 600);
 
-        durationDisplay = new Text("0.0");
+        sidePane.setAlignment(Pos.TOP_CENTER);
+        sidePane.setPadding(new Insets(10, 10, 10, 10));
+
+        simClock = new Text("0.0");
         mouseXInches = new Text("X");
         mouseYInches = new Text("Y");
         playButton = new Button("Play");
@@ -73,13 +76,17 @@ public class FieldWindow extends Application {
 
         playButton.setOnAction(e -> {
             if(!updateThread.isAlive()) {
+                updateThread = new UpdateThread(this);
                 updateThread.start();
+                simClock.setVisible(false);
                 resetAll();
             } else {
                 updateThread.resume();
             }
             if(simToggle.isSelected() && !mSimulation.isRunning()) {
+                mSimulation = new SimRobot(0.01);
                 mSimulation.start();
+                simClock.setVisible(true);
                 resetAll();
             } else {
                 mSimulation.resume();
@@ -89,9 +96,16 @@ public class FieldWindow extends Application {
             updateThread.suspend();
             if(simToggle.isSelected()) mSimulation.suspend();
         });
-        simToggle.setSelected(false);
 
-        VBox.setMargin(sidePane, new Insets(10, 10, 10, 10));
+        simToggle.setSelected(false);
+        simToggle.setOnAction(e -> {
+            if(!simToggle.isSelected()) {
+                mSimulation.stop();
+                updateThread.stop();
+                simClock.setVisible(false);
+                resetAll();
+            }
+        });
 
         try {
             fieldImage = new Image(new File("field.png").toURI().toURL().toExternalForm(), 640, 480, true, false);
@@ -112,12 +126,11 @@ public class FieldWindow extends Application {
             mouseYInches.setText("Y: " + mouseYInchesVal);
         });
 
-        resetField();
+        resetAll();
 
         updateThread = new UpdateThread(this);
 
-
-        sidePane.getChildren().addAll(durationDisplay, playButton, pauseButton, simToggle);
+        sidePane.getChildren().addAll(simClock, playButton, pauseButton, simToggle);
         bottomPane.getChildren().addAll(mouseXInches, mouseYInches);
         root.setCenter(fieldCanvas);
         root.setRight(sidePane);
@@ -135,6 +148,7 @@ public class FieldWindow extends Application {
     public void resetAll() {
         robotOutline.clear();
         robotPath.clear();
+        drawSimTime(0.0);
         resetField();
     }
 
@@ -145,6 +159,8 @@ public class FieldWindow extends Application {
 
         robotOutline.draw(fieldContext, robotPose, fieldInchesToPixels);
         robotPath.draw(fieldContext, targetPose, fieldInchesToPixels);
+
+        drawSimTime(mSimulation.getTime());
     }
 
     private Pose2d normalizePoseToField(Pose2d pose) {
@@ -158,8 +174,8 @@ public class FieldWindow extends Application {
         fieldContext.drawImage(fieldImage, 0.0, 0.0);
     }
 
-    private void setRunTime(double runTime) {
-        durationDisplay.setText("Run Time: " + String.format("%.2f", runTime));
+    private void drawSimTime(double runTime) {
+        simClock.setText("Sim Time: " + String.format("%.2f", runTime));
     }
 
     public boolean shouldSimulate() {

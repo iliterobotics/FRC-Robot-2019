@@ -90,6 +90,10 @@ public abstract class SimHarness {
         return  mModuleExecutor.scheduleAtFixedRate(this::periodic, 0L, rateMs, TimeUnit.MILLISECONDS);
     }
 
+    public double getTime() {
+        return (mClock == null) ? 0.0 : mClock.getCurrentTime();
+    }
+
     public boolean isRunning() {
         return mRunning;
     }

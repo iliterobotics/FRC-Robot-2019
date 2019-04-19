@@ -15,8 +15,7 @@ public class Main extends Application {
     @Override
     public void start(Stage pStage) {
 
-        SimRobot mSimulation = new SimRobot(0.01);
-        FieldWindow mFieldWindow = new FieldWindow(mSimulation, 0.01);
+        FieldWindow mFieldWindow = new FieldWindow(0.01);
 
         mFieldWindow.start(pStage);
         // Sleep for a bit to allow simulation to fill draw queue
