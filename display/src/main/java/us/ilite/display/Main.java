@@ -20,8 +20,8 @@ public class Main extends Application {
         mFieldWindow.start(pStage);
         // Sleep for a bit to allow simulation to fill draw queue
 
-        NetworkTableInstance.getDefault().startServer();
-        NetworkTableInstance.getDefault().startClient("localhost");
+//        NetworkTableInstance.getDefault().startServer();
+//        NetworkTableInstance.getDefault().startClient("localhost");
 
     }
 }
