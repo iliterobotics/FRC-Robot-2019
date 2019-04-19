@@ -19,8 +19,7 @@ public class RobotOutline extends ADrawable {
         this.outlinePoints = outlinePoints;
     }
 
-    @Override
-    public void draw(GraphicsContext gc, Pose2d pose, Translation2d aspectRatio) {
+    public void draw(GraphicsContext gc, Pose2d pose, Translation2d aspectRatio, boolean drawLeftRight) {
         Translation2d[] pointsToDraw = new Translation2d[outlinePoints.length];
         for(int pointIndex = 0; pointIndex < outlinePoints.length; pointIndex++) {
             pointsToDraw[pointIndex] = outlinePoints[pointIndex].rotateBy(pose.getRotation());
@@ -33,8 +32,10 @@ public class RobotOutline extends ADrawable {
         Translation2d rightSide = outlinePoints[1].translateBy(new Translation2d(RobotDimensions.kSideToCenter, 0)).rotateBy(pose.getRotation()).translateBy(pose.getTranslation());
         leftSide = new Translation2d(leftSide.x() * aspectRatio.x(), leftSide.y() * aspectRatio.y());
         rightSide = new Translation2d(rightSide.x() * aspectRatio.x(), rightSide.y() * aspectRatio.y());
-//        leftPath.draw(gc, new Pose2d(leftSide, Rotation2d.fromDegrees(0.0)));
-//        rightPath.draw(gc, new Pose2d(rightSide, Rotation2d.fromDegrees(0.0)));
+        if(drawLeftRight) {
+            leftPath.draw(gc, new Pose2d(leftSide, Rotation2d.fromDegrees(0.0)));
+            rightPath.draw(gc, new Pose2d(rightSide, Rotation2d.fromDegrees(0.0)));
+        }
 
         gc.setStroke(Color.BLACK);
         gc.beginPath();
@@ -44,6 +45,11 @@ public class RobotOutline extends ADrawable {
         }
         gc.stroke();
         gc.closePath();
+    }
+
+    @Override
+    public void draw(GraphicsContext gc, Pose2d pose, Translation2d aspectRatio) {
+        draw(gc, pose, aspectRatio, false);
     }
 
     public void clear() {

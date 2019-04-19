@@ -157,7 +157,7 @@ public class FieldWindow extends Application {
         Pose2d robotPose = normalizePoseToField(pNextDataToDraw.current_pose);
         Pose2d targetPose = normalizePoseToField(pNextDataToDraw.target_pose);
 
-        robotOutline.draw(fieldContext, robotPose, fieldInchesToPixels);
+        robotOutline.draw(fieldContext, robotPose, fieldInchesToPixels/*,simToggle.isSelected()*/);
         robotPath.draw(fieldContext, targetPose, fieldInchesToPixels);
 
         drawSimTime(mSimulation.getTime());
