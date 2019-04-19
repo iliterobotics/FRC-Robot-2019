@@ -74,12 +74,13 @@ public class FieldWindow extends Application {
         playButton.setOnAction(e -> {
             if(!updateThread.isAlive()) {
                 updateThread.start();
+                resetAll();
             } else {
                 updateThread.resume();
             }
             if(simToggle.isSelected() && !mSimulation.isRunning()) {
-                reset();
                 mSimulation.start();
+                resetAll();
             } else {
                 mSimulation.resume();
             }
@@ -111,7 +112,7 @@ public class FieldWindow extends Application {
             mouseYInches.setText("Y: " + mouseYInchesVal);
         });
 
-        reset();
+        resetField();
 
         updateThread = new UpdateThread(this);
 
@@ -126,19 +127,19 @@ public class FieldWindow extends Application {
         primaryStage.show();
     }
 
-    public void reset() {
+    public void resetField() {
         fieldContext.clearRect(0.0, 0.0, fieldCanvas.getWidth(), fieldCanvas.getHeight());
         drawFieldImage();
     }
 
-    public void clear() {
+    public void resetAll() {
         robotOutline.clear();
         robotPath.clear();
-        reset();
+        resetField();
     }
 
     public void drawData(SimData pNextDataToDraw) {
-        reset();
+        resetField();
         Pose2d robotPose = normalizePoseToField(pNextDataToDraw.current_pose);
         Pose2d targetPose = normalizePoseToField(pNextDataToDraw.target_pose);
 
