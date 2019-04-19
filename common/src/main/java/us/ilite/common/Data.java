@@ -273,8 +273,7 @@ public class Data {
     public void initCodexSender(List<String> pIpAddresses) {
         for(String ip : pIpAddresses) {
             mLogger.warn("======> Initializing sender to " + ip + ":" + SystemSettings.sCODEX_COMMS_PORT);
-//            ISendProtocol protocol = MessageProtocols.createSender(MessageProtocols.EProtocol.UDP, SystemSettings.sCODEX_COMMS_PORT, SystemSettings.sCODEX_COMMS_PORT, ip);
-            ISendProtocol protocol = new NTSender();
+            ISendProtocol protocol = MessageProtocols.createSender(MessageProtocols.EProtocol.UDP, SystemSettings.sCODEX_COMMS_PORT, SystemSettings.sCODEX_COMMS_PORT, ip);
             CodexSender sender = new CodexSender(protocol);
             mSenders.add(sender);
         }
