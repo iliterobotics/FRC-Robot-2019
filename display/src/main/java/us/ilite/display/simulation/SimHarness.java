@@ -64,7 +64,7 @@ public abstract class SimHarness {
     }
 
     public void suspend() {
-        mTask.cancel(true);
+        if(mTask != null) mTask.cancel(true);
         if(mClock != null) mClock.pause();
     }
 

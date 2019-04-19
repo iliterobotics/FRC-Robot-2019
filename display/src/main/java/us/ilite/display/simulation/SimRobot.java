@@ -10,6 +10,8 @@ import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import org.mockito.Mock;
 import us.ilite.common.Data;
 import us.ilite.common.config.AbstractSystemSettingsUtils;
 import us.ilite.common.config.PracticeBotSystemSettings;
@@ -17,15 +19,16 @@ import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.control.DriveController;
 import us.ilite.common.lib.odometry.RobotStateEstimator;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
+import us.ilite.common.types.MatchMetadata;
 import us.ilite.lib.drivers.Clock;
+import us.ilite.lib.drivers.VisionGyro;
 import us.ilite.robot.HenryProfile;
 import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.robot.auto.paths.right.RightToRocketToRocket;
 import us.ilite.robot.commands.FollowRotationTrajectory;
 import us.ilite.robot.commands.FollowTrajectory;
-import us.ilite.robot.modules.CommandManager;
-import us.ilite.robot.modules.Drive;
-import us.ilite.robot.modules.ModuleList;
+import us.ilite.robot.driverinput.DriverInput;
+import us.ilite.robot.modules.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,13 +37,33 @@ public class SimRobot extends SimHarness {
 
     private static final ILog mLogger = Logger.createLog(SimRobot.class);
 
-    public final Data mData = new Data();
-    public final Clock mClock = new Clock().simulated();
-    public final DriveController mDriveController = new DriveController(new HenryProfile());
-    public final TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
-    public final Drive mDrive = new Drive(mData, mDriveController, mClock, true);
-    public final CommandManager mCommandManager = new CommandManager();
-    public final ModuleList mModuleList = new ModuleList();
+    private final ModuleList mRunningModules = new ModuleList();
+    
+    private final Clock mClock = new Clock().simulated();
+    private final Data mData = new Data();
+    private final SystemSettings mSettings = new SystemSettings();
+    private final DriveController mDriveController = new DriveController(new HenryProfile());
+
+    // Module declarations here
+    private final CommandManager mAutonomousCommandManager = new CommandManager().setManagerTag("Autonomous Manager");
+    private final CommandManager mTeleopCommandManager = new CommandManager().setManagerTag("Teleop Manager");
+    private final Drive mDrive = new Drive(mData, mDriveController, mClock, true);
+    
+    @Mock private FourBar mFourBar;
+    @Mock private Elevator mElevator;
+    @Mock private Intake mIntake;
+    @Mock private CargoSpit mCargoSpit;
+    @Mock private HatchFlower mHatchFlower;
+    @Mock private Limelight mLimelight = new Limelight(mData);
+    @Mock private VisionGyro mVisionGyro;
+    @Mock private PneumaticIntake mPneumaticIntake;
+    @Mock private LEDControl mLEDControl;
+    @Mock private DriverInput mDriverInput;
+
+    private final TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
+    private final AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator,
+            mPneumaticIntake, mIntake, mCargoSpit, mHatchFlower, mLimelight, mVisionGyro, mData);
+    private MatchMetadata mMatchMeta = null;
 
     public SimRobot(double pScheduleRate) {
         super(pScheduleRate);
@@ -48,7 +71,7 @@ public class SimRobot extends SimHarness {
     }
 
     public void simInit() {
-        Logger.setLevel(ELevel.ERROR);
+        Logger.setLevel(ELevel.WARN);
 
         // Force use of PracticeBotSystemSettings. This is necessary because the robot code isn't fully ready for NEO units yet.
         AbstractSystemSettingsUtils.copyOverValues(PracticeBotSystemSettings.getInstance(), new SystemSettings());
@@ -63,32 +86,35 @@ public class SimRobot extends SimHarness {
         mData.registerCodices();
 
         mDrive.startCsvLogging();
-        this.setStopCondition(() -> !mCommandManager.isRunningCommands());
+        this.setStopCondition(() -> !mAutonomousCommandManager.isRunningCommands());
 
-        mModuleList.setModules(mCommandManager, mDrive);
-        mModuleList.modeInit(mClock.getCurrentTime());
+        mRunningModules.setModules(mAutonomousCommandManager, mDrive);
+        mRunningModules.modeInit(mClock.getCurrentTime());
 
-        mCommandManager.startCommands(
-            new FollowTrajectory(generate(RightToRocketToRocket.kStartToBackRocketPath), mDrive, true),
-                new FollowTrajectory(generate(true, RightToRocketToRocket.kBackRocketToLinePath), mDrive, false),
-                new FollowTrajectory(generate(RightToRocketToRocket.kLineToLoadingStationPath), mDrive, false),
-                new FollowTrajectory(generate(true, RightToRocketToRocket.kLoadingStationToBackRocketPath), mDrive, false),
-                new FollowTrajectory(generate(RightToRocketToRocket.kLineToBackRocketPath), mDrive, false)
-        );
+        mAutonomousRoutines.getSequence();
+        mAutonomousCommandManager.startCommands();
+
+//        mAutonomousCommandManager.startCommands(
+//            new FollowTrajectory(generate(RightToRocketToRocket.kStartToBackRocketPath), mDrive, true),
+//                new FollowTrajectory(generate(true, RightToRocketToRocket.kBackRocketToLinePath), mDrive, false),
+//                new FollowTrajectory(generate(RightToRocketToRocket.kLineToLoadingStationPath), mDrive, false),
+//                new FollowTrajectory(generate(true, RightToRocketToRocket.kLoadingStationToBackRocketPath), mDrive, false),
+//                new FollowTrajectory(generate(RightToRocketToRocket.kLineToBackRocketPath), mDrive, false)
+//        );
 
     }
 
     public void simPeriodic() {
-        mModuleList.periodicInput(mClock.getCurrentTime());
-        mModuleList.update(mClock.getCurrentTime());
-        mData.sendCodices();
-//      mData.sendCodicesToNetworkTables();
+        mRunningModules.periodicInput(mClock.getCurrentTime());
+        mRunningModules.update(mClock.getCurrentTime());
+//        mData.sendCodices();
+      mData.sendCodicesToNetworkTables();
         mClock.cycleEnded();
     }
 
     public void simShutdown() {
-        mCommandManager.stopRunningCommands(mClock.getCurrentTime());
-        mModuleList.shutdown(mClock.getCurrentTime());
+        mAutonomousCommandManager.stopRunningCommands(mClock.getCurrentTime());
+        mRunningModules.shutdown(mClock.getCurrentTime());
     }
 
     public Trajectory<TimedState<Pose2dWithCurvature>> generate(List<Pose2d> waypoints) {

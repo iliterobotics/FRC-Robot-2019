@@ -1,5 +1,7 @@
 package us.ilite.robot.auto;
 
+import com.flybotix.hfr.util.log.ILog;
+import com.flybotix.hfr.util.log.Logger;
 import com.google.gson.Gson;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import us.ilite.common.AutonSelectionData;
@@ -18,6 +20,8 @@ import us.ilite.robot.commands.*;
 import us.ilite.robot.modules.*;
 
 public class AutonomousRoutines {
+
+    private final ILog mLogger = Logger.createLog(AutonomousRoutines.class);
 
     public static final TrajectoryConstraints kDefaultTrajectoryConstraints = new TrajectoryConstraints(
             130.0,
@@ -95,7 +99,9 @@ public class AutonomousRoutines {
     public ICommand[] getSequence() {
         String jsonData = Data.kAutonTable.getEntry(SystemSettings.kAutonSelectionDataKey).getString("");
         AutonSelectionData data = mGson.fromJson(jsonData, AutonSelectionData.class);
-        
+
+        mLogger.warn("\n", data);
+
         switch(data.mStartingPosition) {
             case LEFT:
                 switch (data.mHatchShipAction) {

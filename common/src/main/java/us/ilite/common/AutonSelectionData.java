@@ -21,4 +21,21 @@ public class AutonSelectionData {
         this.mHatchShipAction = pHatchShipAction;
         this.mStartingPosition = pStartingPosition;
     }
+
+    public String toString() {
+        return String.format(
+                "Starting Position: %s\n" +
+                "Cargo:\n" +
+                "\tRocket Action: %s\n" +
+                "\tCargo Ship Action: %s\n" +
+                "Hatch:\n" +
+                "\tRocket Action: %s\n" +
+                "\tCargo Ship Action: %s\n",
+                mStartingPosition,
+                mCargoRocketAction,
+                mCargoShipAction,
+                mHatchRocketAction,
+                mHatchShipAction);
+    }
+
 }

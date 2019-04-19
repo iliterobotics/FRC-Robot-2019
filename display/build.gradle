@@ -19,6 +19,7 @@ dependencies {
     implementation 'com.github.flybotix:charts:1.0.6.alpha'
 
     compile name: 'jfxrt'
+    compile "org.mockito:mockito-core:2.+" // We do...special things in-sim for this.
 
     compile "eu.hansolo:Medusa:+"
     compile "eu.hansolo:regulators:+"
@@ -42,7 +43,7 @@ dependencies {
         ['mainClass'   : 'eu.hansolo.tilesfxdemo.MiscDemo',
          'description' :' Executes the tiles misc demo'
         ],
-    'DriverStation' : 
+    'DriverStation' :
         ['mainClass'   : 'us.ilite.display.DriverStation',
          'description' : 'The main drivers station display'
         ],
@@ -54,7 +55,7 @@ dependencies {
         ['mainClass'   : 'us.ilite.display.auton.AutonConfigDisplay',
          'description' : 'The autonomous config display'
         ],
-    'TestingDisplay' : 
+    'TestingDisplay' :
         ['mainClass'   : 'us.ilite.display.testing.TestingDisplay',
          'display'     : 'The testing display'
         ]
