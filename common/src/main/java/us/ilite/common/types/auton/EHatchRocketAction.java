@@ -1,8 +1,8 @@
 package us.ilite.common.types.auton;
 
 public enum EHatchRocketAction {
-    LEFT,
-    RIGHT,
+    FRONT,
+    BACK,
     NONE;
 
     public static EHatchRocketAction intToEnum( int num ) {

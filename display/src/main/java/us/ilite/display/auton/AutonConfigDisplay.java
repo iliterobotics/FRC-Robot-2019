@@ -2,6 +2,7 @@ package us.ilite.display.auton;
 
 import com.flybotix.hfr.util.lang.EnumUtils;
 import com.google.gson.Gson;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import javafx.application.Application;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -73,11 +74,13 @@ public class AutonConfigDisplay extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception { //Starts Program
 
+        NetworkTableInstance.getDefault().startClient("localhost");
+
         BorderPane root = new BorderPane();
         Scene scene = new Scene(root, 800, 600);
 
         // This is dumb and changes background
-        // scene.getStylesheets().add(iliteCss);
+         scene.getStylesheets().add("ILITEStyle.css");
         // scene.setOnMouseClicked(e -> {
         // if(scene.getStylesheets().contains(awesomeCss)) {
         // playSound("./airhorn.mp3");
@@ -89,38 +92,22 @@ public class AutonConfigDisplay extends Application {
             sendData();
         });
 
-        Button mode = new Button("Enhanced Mode");
-        mode.setOnAction(e -> {
-            // if(scene.getStylesheets().contains(awesomeCss)) {
-            // mode.setText("Enhanced Mode");
-            // scene.getStylesheets().clear();
-            // scene.getStylesheets().add(iliteCss);
-            // } else {
-            // mode.setText("Judge's Mode");
-            // scene.getStylesheets().clear();
-            // scene.getStylesheets().add(awesomeCss);
-            //     setFieldImage("./field.png");
-            // }
+//        TextField delayText = new TextField();
+//        delayText.setOnAction(e -> {
+//            mDelay = Double.parseDouble(delayText.getText());
+//        });
+//        Label delayLabel = new Label("Delay");
 
-        });
-
-        TextField delayText = new TextField();
-        delayText.setOnAction(e -> {
-            mDelay = Double.parseDouble(delayText.getText());
-        });
-        Label delayLabel = new Label("Delay");
-
-        HBox selectionBoxes = new HBox(
+        VBox selectionBoxes = new VBox(
                 //This is the dropdown for selecting autonomous type
                 labeledDropdown(EStartingPosition.class),
                 labeledDropdown(EHatchShipAction.class),
                 labeledDropdown(ECargoShipAction.class),
                 labeledDropdown(EHatchRocketAction.class),
-                labeledDropdown(ECargoRocketAction.class),
-                delayLabel,
-                delayText);
+                labeledDropdown(ECargoRocketAction.class));
+        selectionBoxes.setAlignment(Pos.TOP_CENTER);
 
-        HBox modeOptions = new HBox(mode, send);
+        HBox modeOptions = new HBox(send);
         modeOptions.setMargin(send, new Insets(0, 40, 0, 20));
 
         Thread dataSender = new Thread(() -> {

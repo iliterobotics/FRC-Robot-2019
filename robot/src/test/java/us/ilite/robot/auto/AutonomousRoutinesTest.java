@@ -50,7 +50,7 @@ public class AutonomousRoutinesTest {
         mAutonSelectionData = new AutonSelectionData(
                 ECargoRocketAction.NONE,
                 ECargoShipAction.NONE,
-                EHatchRocketAction.LEFT,
+                EHatchRocketAction.FRONT,
                 EHatchShipAction.FRONT_LEFT,
                 EStartingPosition.LEFT
         );

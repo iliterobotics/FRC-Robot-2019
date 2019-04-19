@@ -101,9 +101,9 @@ public class AutonomousRoutines {
                 switch (data.mHatchShipAction) {
                     case FRONT_LEFT:
                         switch (data.mHatchRocketAction) {
-                            case LEFT:
+                            case FRONT:
                                 return mLeft_FrontLeft_Rocket_HatchSequence;
-                            case RIGHT:
+                            case BACK:
                                 return mLeft_FrontLeft_Rocket_HatchSequence; // To be changed
                             default:
                                 break;
@@ -124,9 +124,9 @@ public class AutonomousRoutines {
                 switch (data.mHatchShipAction) {
                     case FRONT_LEFT:
                         switch (data.mHatchRocketAction) {
-                            case LEFT:
+                            case FRONT:
                                 return mMidLeft_FrontLeft_Rocket_HatchSequence;
-                            case RIGHT:
+                            case BACK:
                                 return mMidLeft_FrontLeft_Rocket_HatchSequence; // To be changed
                             default:
                                 break;
@@ -147,9 +147,9 @@ public class AutonomousRoutines {
                 switch (data.mHatchShipAction) {
                     case FRONT_LEFT:
                         switch (data.mHatchRocketAction) {
-                            case LEFT:
+                            case FRONT:
                                 return mMidLeft_FrontLeft_Rocket_HatchSequence;
-                            case RIGHT:
+                            case BACK:
                                 return mMidLeft_FrontLeft_Rocket_HatchSequence; // To be changed
                             default:
                                 break;
@@ -170,9 +170,9 @@ public class AutonomousRoutines {
                 switch (data.mHatchShipAction) {
                     case FRONT_LEFT:
                         switch (data.mHatchRocketAction) {
-                            case LEFT:
+                            case FRONT:
                                 return mRight_FrontRight_Rocket_HatchSequence;
-                            case RIGHT:
+                            case BACK:
                                 return mRight_FrontRight_Rocket_HatchSequence; // To be changed
                             default:
                                 break;
