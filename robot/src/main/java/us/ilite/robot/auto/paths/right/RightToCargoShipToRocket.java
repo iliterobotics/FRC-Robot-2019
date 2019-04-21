@@ -22,9 +22,9 @@ import us.ilite.robot.auto.paths.StartingPoses;
 import us.ilite.robot.commands.*;
 import us.ilite.robot.modules.*;
 
-public class RightToCargoToRocket extends AutoSequence {
+public class RightToCargoShipToRocket extends AutoSequence {
 
-    public RightToCargoToRocket(TrajectoryGenerator mTrajectoryGenerator, Data mData, Drive mDrive, HatchFlower mHatchFlower, PneumaticIntake mPneumaticIntake, CargoSpit mCargoSpit, Elevator mElevator, Limelight mLimelight, VisionGyro mVisionGyro) {
+    public RightToCargoShipToRocket(TrajectoryGenerator mTrajectoryGenerator, Data mData, Drive mDrive, HatchFlower mHatchFlower, PneumaticIntake mPneumaticIntake, CargoSpit mCargoSpit, Elevator mElevator, Limelight mLimelight, VisionGyro mVisionGyro) {
         super(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
     }
 

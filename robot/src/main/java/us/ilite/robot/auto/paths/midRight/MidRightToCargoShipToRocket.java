@@ -7,9 +7,9 @@ import us.ilite.robot.auto.paths.AutoSequence;
 import us.ilite.robot.commands.ICommand;
 import us.ilite.robot.modules.*;
 
-public class MidRightToFrontRightToRocket extends AutoSequence {
+public class MidRightToCargoShipToRocket extends AutoSequence {
 
-    public MidRightToFrontRightToRocket(TrajectoryGenerator mTrajectoryGenerator, Data mData, Drive mDrive, HatchFlower mHatchFlower, PneumaticIntake mPneumaticIntake, CargoSpit mCargoSpit, Elevator mElevator, Limelight mLimelight, VisionGyro mVisionGyro) {
+    public MidRightToCargoShipToRocket(TrajectoryGenerator mTrajectoryGenerator, Data mData, Drive mDrive, HatchFlower mHatchFlower, PneumaticIntake mPneumaticIntake, CargoSpit mCargoSpit, Elevator mElevator, Limelight mLimelight, VisionGyro mVisionGyro) {
         super(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
     }
 

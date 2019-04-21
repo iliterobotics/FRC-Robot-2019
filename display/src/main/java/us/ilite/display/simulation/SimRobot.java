@@ -10,7 +10,6 @@ import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import org.mockito.Mock;
 import us.ilite.common.Data;
 import us.ilite.common.config.AbstractSystemSettingsUtils;
@@ -24,9 +23,6 @@ import us.ilite.lib.drivers.Clock;
 import us.ilite.lib.drivers.VisionGyro;
 import us.ilite.robot.HenryProfile;
 import us.ilite.robot.auto.AutonomousRoutines;
-import us.ilite.robot.auto.paths.right.RightToRocketToRocket;
-import us.ilite.robot.commands.FollowRotationTrajectory;
-import us.ilite.robot.commands.FollowTrajectory;
 import us.ilite.robot.driverinput.DriverInput;
 import us.ilite.robot.modules.*;
 
@@ -95,11 +91,11 @@ public class SimRobot extends SimHarness {
         mAutonomousCommandManager.startCommands();
 
 //        mAutonomousCommandManager.startCommands(
-//            new FollowTrajectory(generate(RightToRocketToRocket.kStartToBackRocketPath), mDrive, true),
-//                new FollowTrajectory(generate(true, RightToRocketToRocket.kBackRocketToLinePath), mDrive, false),
-//                new FollowTrajectory(generate(RightToRocketToRocket.kLineToLoadingStationPath), mDrive, false),
-//                new FollowTrajectory(generate(true, RightToRocketToRocket.kLoadingStationToBackRocketPath), mDrive, false),
-//                new FollowTrajectory(generate(RightToRocketToRocket.kLineToBackRocketPath), mDrive, false)
+//            new FollowTrajectory(generate(LeftToRocket.kStartToBackRocketPath), mDrive, true),
+//                new FollowTrajectory(generate(true, LeftToRocket.kBackRocketToLinePath), mDrive, false),
+//                new FollowTrajectory(generate(LeftToRocket.kLineToLoadingStationPath), mDrive, false),
+//                new FollowTrajectory(generate(true, LeftToRocket.kLoadingStationToBackRocketPath), mDrive, false),
+//                new FollowTrajectory(generate(LeftToRocket.kLineToBackRocketPath), mDrive, false)
 //        );
 
     }

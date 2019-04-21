@@ -21,7 +21,7 @@ public class Main extends Application {
         // Sleep for a bit to allow simulation to fill draw queue
 
 //        NetworkTableInstance.getDefault().startServer();
-//        NetworkTableInstance.getDefault().startClient("localhost");
+        NetworkTableInstance.getDefault().startClient("localhost");
 
     }
 }

@@ -18,6 +18,8 @@ public abstract class AutoSequence {
     protected final Limelight mLimelight;
     protected final VisionGyro mVisionGyro;
 
+    protected ICommand[] generatedSequence = null;
+
     public AutoSequence(TrajectoryGenerator mTrajectoryGenerator, Data mData, Drive mDrive, HatchFlower mHatchFlower, PneumaticIntake mPneumaticIntake, CargoSpit mCargoSpit, Elevator mElevator, Limelight mLimelight, VisionGyro mVisionGyro) {
         this.mTrajectoryGenerator = mTrajectoryGenerator;
         this.mData = mData;
@@ -30,9 +32,14 @@ public abstract class AutoSequence {
         this.mVisionGyro = mVisionGyro;
     }
 
-    public abstract ICommand[] generateCargoSequence();
+    public void generateSequenceAndCache() {
+        generatedSequence = generateSequence();
+    }
 
-    public abstract ICommand[] generateHatchSequence();
+    protected abstract ICommand[] generateSequence();
 
+    public ICommand[] getGeneratedSequence() {
+        return generatedSequence;
+    }
 
 }

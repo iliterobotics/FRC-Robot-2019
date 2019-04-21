@@ -16,7 +16,7 @@ import us.ilite.robot.modules.*;
 import java.util.Arrays;
 import java.util.List;
 
-public class RightToRocketToRocket extends AutoSequence {
+public class RightToRocket extends AutoSequence {
 
     public static final Pose2d kStartToBackRocket = new Pose2d(FieldElementLocations.kRocketRightHatch.translateBy(new Translation2d(RobotDimensions.kFrontToCenter, 0.0).rotateBy(Rotation2d.fromDegrees(35.0))), Rotation2d.fromDegrees(210.0));
     public static final Pose2d kBackRocketToLine = new Pose2d(FieldElementLocations.kRocketRightHatch.translateBy(new Translation2d(RobotDimensions.kFrontToCenter + 36.0, -12.0).rotateBy(Rotation2d.fromDegrees(35.0))), Rotation2d.fromDegrees(0.0));
@@ -51,7 +51,7 @@ public class RightToRocketToRocket extends AutoSequence {
             kStartToBackRocket
     );
 
-    public RightToRocketToRocket(TrajectoryGenerator mTrajectoryGenerator, Data mData, Drive mDrive, HatchFlower mHatchFlower, PneumaticIntake mPneumaticIntake, CargoSpit mCargoSpit, Elevator mElevator, Limelight mLimelight, VisionGyro mVisionGyro) {
+    public RightToRocket(TrajectoryGenerator mTrajectoryGenerator, Data mData, Drive mDrive, HatchFlower mHatchFlower, PneumaticIntake mPneumaticIntake, CargoSpit mCargoSpit, Elevator mElevator, Limelight mLimelight, VisionGyro mVisionGyro) {
         super(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
     }
 

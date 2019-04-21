@@ -12,10 +12,12 @@ import us.ilite.common.lib.trajectory.TrajectoryGenerator;
 import us.ilite.robot.auto.paths.AutoSequence;
 import us.ilite.lib.drivers.VisionGyro;
 import us.ilite.robot.auto.paths.DefaultAuto;
-import us.ilite.robot.auto.paths.left.LeftToCargoToRocket;
-import us.ilite.robot.auto.paths.midLeft.MidLeftToFrontLeftToRocket;
-import us.ilite.robot.auto.paths.midRight.MidRightToFrontRightToRocket;
-import us.ilite.robot.auto.paths.right.RightToCargoToRocket;
+import us.ilite.robot.auto.paths.left.LeftToCargoShipToRocket;
+import us.ilite.robot.auto.paths.left.LeftToRocket;
+import us.ilite.robot.auto.paths.midLeft.MidLeftToCargoShipToRocket;
+import us.ilite.robot.auto.paths.midRight.MidRightToCargoShipToRocket;
+import us.ilite.robot.auto.paths.right.RightToCargoShipToRocket;
+import us.ilite.robot.auto.paths.right.RightToRocket;
 import us.ilite.robot.commands.*;
 import us.ilite.robot.modules.*;
 
@@ -43,20 +45,14 @@ public class AutonomousRoutines {
 
     private DefaultAuto mDefaultAuto;
 
-    private AutoSequence mLeft_FrontLeft_Rocket;//TODO these
-    private AutoSequence mMidLeft_FrontLeft_Rocket;//TODO these
-    private AutoSequence mRight_FrontRight_Rocket;//TODO these
-    private AutoSequence mMidRight_FrontRight_Rocket;//TODO these
-
-    private ICommand[] mLeft_FrontLeft_Rocket_CargoSequence; //TODO these
-    private ICommand[] mMidLeft_FrontLeft_Rocket_CargoSequence;//TODO these
-    private ICommand[] mRight_FrontRight_Rocket_CargoSequence;//TODO these
-    private ICommand[] mMidRight_FrontRight_Rocket_CargoSequence;//TODO these
-
-    private ICommand[] mLeft_FrontLeft_Rocket_HatchSequence; //TODO these
-    private ICommand[] mMidLeft_FrontLeft_Rocket_HatchSequence;//TODO these
-    private ICommand[] mRight_FrontRight_Rocket_HatchSequence;//TODO these
-    private ICommand[] mMidRight_FrontRight_Rocket_HatchSequence;//TODO these
+    // Start far left
+    private AutoSequence mLeftToCargoShipToRocket, mLeftToRocket;
+    // Start mid left
+    private AutoSequence mMidLeftCargoShipToRocket;
+    // Start mid right
+    private AutoSequence mMidRightToCargoShipToRocket;
+    // Start far right
+    private AutoSequence mRightToCargoShipToRocket, mRightToRocket;
 
     private Gson mGson = new Gson();
 
@@ -71,25 +67,21 @@ public class AutonomousRoutines {
         this.mVisionGyro = mVisionGyro;
         this.mData = mData;
 
-        mLeft_FrontLeft_Rocket = new LeftToCargoToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
-        mMidLeft_FrontLeft_Rocket = new MidLeftToFrontLeftToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
-        mRight_FrontRight_Rocket = new RightToCargoToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
-        mMidRight_FrontRight_Rocket = new MidRightToFrontRightToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+        // Start far left
+        mLeftToCargoShipToRocket = new LeftToCargoShipToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+        mLeftToRocket = new LeftToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+        // Start mid left
+        mMidLeftCargoShipToRocket = new MidLeftToCargoShipToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+        // Start mid right
+        mMidRightToCargoShipToRocket = new MidRightToCargoShipToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+        // Start far right
+        mRightToCargoShipToRocket = new RightToCargoShipToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
+        mRightToRocket = new RightToRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mPneumaticIntake, mCargoSpit, mElevator, mLimelight, mVisionGyro);
 
     }
 
     public void generateTrajectories() {
-        //Cargo Sequences
-        mLeft_FrontLeft_Rocket_CargoSequence = mLeft_FrontLeft_Rocket.generateCargoSequence();
-        mMidLeft_FrontLeft_Rocket_CargoSequence = mMidLeft_FrontLeft_Rocket.generateCargoSequence();
-        mRight_FrontRight_Rocket_CargoSequence = mRight_FrontRight_Rocket.generateCargoSequence();
-        mMidRight_FrontRight_Rocket_CargoSequence = mMidRight_FrontRight_Rocket.generateCargoSequence();
 
-        //Hatch Sequences
-        mLeft_FrontLeft_Rocket_HatchSequence = mLeft_FrontLeft_Rocket.generateHatchSequence();
-        mMidLeft_FrontLeft_Rocket_HatchSequence = mMidLeft_FrontLeft_Rocket.generateHatchSequence();
-        mRight_FrontRight_Rocket_CargoSequence = mRight_FrontRight_Rocket.generateHatchSequence();
-        mMidRight_FrontRight_Rocket_CargoSequence = mMidRight_FrontRight_Rocket.generateHatchSequence();
     }
 
     public ICommand[] getDefault() {
