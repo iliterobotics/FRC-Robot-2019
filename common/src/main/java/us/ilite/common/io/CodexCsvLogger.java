@@ -1,20 +1,21 @@
 package us.ilite.common.io;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import com.flybotix.hfr.codex.Codex;
-
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import us.ilite.common.Data;
 import us.ilite.common.types.MatchMetadata;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 public class CodexCsvLogger {
 
@@ -91,7 +92,7 @@ public class CodexCsvLogger {
         }
         if ( mEventName.length() <= 0 ) {
             // event name format: MM-DD-YYYY_HH-MM-SS
-            mEventName =  new SimpleDateFormat("MM-dd-YYYY_HH-mm-ss").format(Calendar.getInstance().getTime());
+            mEventName =  new SimpleDateFormat("MM-dd-YYYY_HH-mm-ss").format(new Date());
         }
         File file = new File(String.format( LOG_PATH_FORMAT,
                             mCodex.meta().getEnum().getSimpleName(),
