@@ -91,7 +91,7 @@ public class CodexCsvLogger {
         }
         if ( mEventName.length() <= 0 ) {
             // event name format: MM-DD-YYYY_HH-MM-SS
-            mEventName =  new SimpleDateFormat("MM-dd-YYYY_HH-mm-ss").format(Calendar.getInstance().getTime());
+            mEventName =  new SimpleDateFormat("MM-dd-YYYY_HH-mm-ss").format(Calendar.getInstance());
         }
         File file = new File(String.format( LOG_PATH_FORMAT,
                             mCodex.meta().getEnum().getSimpleName(),
