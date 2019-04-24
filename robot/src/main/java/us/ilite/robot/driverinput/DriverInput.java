@@ -284,7 +284,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         double rotate = getTurn();
         double throttle = getThrottle();
 
-        if(mData.driverinput.get(DriveTeamInputMap.DRIVER_ACCEL_LIMIT_BYPASS) < 0.5) {
+        if(mData.driverinput.get(DriveTeamInputMap.DRIVER_ACCEL_LIMIT_BYPASS) < 0.5 && !mData.driverinput.isSet(DriveTeamInputMap.DRIVER_TRACK_TARGET_BTN)) {
             double value = mRampRateRangeScale.scaleBtoA(mElevator.getEncoderPosition());
             SmartDashboard.putNumber("Current Ramp Rate", value);
             mDrive.setRampRate(value);
@@ -302,7 +302,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         }
 
         // Handled AFTER any scaling - we don't want the output of this to be scaled
-        if(Math.abs(throttle) < Util.kEpsilon) {
+        if(Math.abs(throttle) < Util.kEpsilon && Math.abs(throttle) > 0) {
             throttle = SystemSettings.kTurnInPlaceThrottleBump;
         }
 
@@ -475,7 +475,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     @Override
     public double getThrottle() {
-        if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_THROTTLE_AXIS)) {
+        if(Math.abs(mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS)) > 0.05) {
             return -mData.driverinput.get(DriveTeamInputMap.DRIVER_THROTTLE_AXIS);
         } else {
             return 0.0;
@@ -484,7 +484,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
     @Override
     public double getTurn() {
-        if(mData.driverinput.isSet(DriveTeamInputMap.DRIVER_TURN_AXIS)) {
+        if(Math.abs(mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS)) > 0.05) {
             return mData.driverinput.get(DriveTeamInputMap.DRIVER_TURN_AXIS);
         } else {
             return 0.0;
