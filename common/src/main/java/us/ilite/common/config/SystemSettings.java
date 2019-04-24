@@ -72,6 +72,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kSnailModePercentRotateReduction = 0.3;
 
     public static double kTargetLockThrottleReduction = 0.20;
+    public static double kTargetLockCrawlSpeed = 0.20;
 	
 	// Applied after any scaling
     public static double kDriverInputTurnMaxMagnitude = 0.5;
