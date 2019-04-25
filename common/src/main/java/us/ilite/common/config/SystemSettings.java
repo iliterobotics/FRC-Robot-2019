@@ -72,7 +72,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     public static double kSnailModePercentRotateReduction = 0.35;
 
     public static double kTargetLockThrottleReduction = 0.20;
-    public static double kTargetLockCrawlSpeed = 0.20;
+    public static double kTargetLockCrawlSpeed = 0.40;
 	
 	// Applied after any scaling
     public static double kDriverInputTurnMaxMagnitude = 0.5;
@@ -291,7 +291,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // PID TargetLock constants
     // =============================================================================
-    public static PIDGains kTargetAngleLockGains = new PIDGains(0.00001, 0.000, 1.0E-5);
+    public static PIDGains kTargetAngleLockGains = new PIDGains(1.0E-3, 0.000, 1.0E-5);
     public static PIDGains kTargetDistanceLockGains = new PIDGains( 0.1, 0.0, 0.0);
 
     public static double kTargetAngleLockMinPower = -1.0;
