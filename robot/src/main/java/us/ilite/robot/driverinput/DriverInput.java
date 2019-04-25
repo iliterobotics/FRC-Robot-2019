@@ -46,6 +46,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private final Data mData;
     private Timer mGroundCargoTimer = new Timer();
     private RangeScale mRampRateRangeScale;
+    private RangeScale mLimelightRangeScale;
 
     private boolean mIsCargo = true; //false;
     private Joystick mDriverJoystick;
@@ -85,6 +86,11 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 SystemSettings.kDriveMaxOpenLoopVoltageRampRate,
                 0.0,
                 Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
+
+        this.mLimelightRangeScale = new RangeScale( SystemSettings.kMinTargetLockCrawlSpeed,
+                SystemSettings.kMaxTargetLockCrawlSpeed,
+                0.0,
+                Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations() );
     }
 
     public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar) {
@@ -97,6 +103,11 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 SystemSettings.kDriveMaxOpenLoopVoltageRampRate,
                 0.0,
                 Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
+
+        mLimelightRangeScale = new RangeScale( SystemSettings.kMinTargetLockCrawlSpeed,
+                SystemSettings.kMaxTargetLockCrawlSpeed,
+                0.0,
+                Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations() );
     }
 
     @Override
@@ -427,7 +438,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                     if(Math.abs(getThrottle()) > 0) {
                         return getThrottle() * SystemSettings.kTargetLockThrottleReduction;
                     } else {
-                        return SystemSettings.kTargetLockCrawlSpeed;
+                        return mLimelightRangeScale.scaleBtoA(mElevator.getEncoderPosition());
                     }
                 }, false).setStopWhenTargetLost(false));
             }
