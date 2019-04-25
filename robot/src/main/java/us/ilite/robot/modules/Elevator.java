@@ -55,13 +55,14 @@ public class Elevator extends Module {
 
         //TODO find encoder threshold
         HATCH_BOTTOM(1),
-        HATCH_MIDDLE(17),
+        HATCH_MIDDLE(17.8),
         HATCH_TOP(35),
-        CARGO_BOTTOM(10.5),
+        CARGO_BOTTOM(6.9),
         CARGO_LOADING_STATION(17),
         CARGO_CARGO_SHIP(16.5),
-        CARGO_MIDDLE(27.5),
-        CARGO_TOP(45);
+        CARGO_MIDDLE(23.3),
+        CARGO_TOP(41.1);
+
 
         private double kEncoderRotations;
 
