@@ -69,7 +69,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 	
 	// These are applied AFTER the normal throttle reduction
     public static double kSnailModePercentThrottleReduction = 0.5;
-    public static double kSnailModePercentRotateReduction = 0.3;
+    public static double kSnailModePercentRotateReduction = 0.35;
 
     public static double kTargetLockThrottleReduction = 0.20;
     public static double kTargetLockCrawlSpeed = 0.20;
