@@ -132,6 +132,8 @@ public class SystemSettings extends NetworkTablesConstantsBase {
 
     // If the elevator's PDP slot draws more than this much current we flash the LEDs
     public static int kElevatorWarnCurrentLimitThreshold = 30;
+    public static double kElevatorSetpointOffset = 0.615;
+
 
     /*
     Smart Motion Constants

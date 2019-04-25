@@ -146,7 +146,7 @@ public class Elevator extends Module {
             case SET_POSITION:
                 mSetPoint = mRequestedStop ? mData.elevator.get(EElevator.CURRENT_ENCODER_TICKS) : mDesiredPosition.getEncoderRotations();
                 mDesiredPower = 0;
-                mCanController.setReference(mSetPoint, ControlType.kSmartMotion, 0, SystemSettings.kElevatorFrictionVoltage);
+                mCanController.setReference(mSetPoint + SystemSettings.kElevatorSetpointOffset, ControlType.kSmartMotion, 0, SystemSettings.kElevatorFrictionVoltage);
                 gainSchedule();
                 break;
             default:
@@ -156,6 +156,10 @@ public class Elevator extends Module {
         }
 
         mRequestedStop = false;
+
+        if ( mMasterElevator.getStickyFaults() > 0 ) {
+            mMasterElevator.clearFaults();
+        }
 
     }
 
@@ -214,6 +218,15 @@ public class Elevator extends Module {
 
     public void stop() {
         mRequestedStop = true;
+    }
+
+    public double rotationsToInchesOfTravel(double rotations) {
+        // rotations * output_gearing / input_gearing * sprocket_pitch_diameter * PI * stage_conversion_factor
+        return rotations * 10.0 / 72.0 * 1.273 * Math.PI * 4.0;
+    }
+
+    public double inchesOfTravelToRotations(double inches) {
+        return inches / 4.0 / 1.273 / Math.PI * 72.0 / 10.0;
     }
 
 }
