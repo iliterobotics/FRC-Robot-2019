@@ -104,8 +104,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 0.0,
                 Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
 
-        mLimelightRangeScale = new RangeScale( SystemSettings.kMinTargetLockCrawlSpeed,
-                SystemSettings.kMaxTargetLockCrawlSpeed,
+        mLimelightRangeScale = new RangeScale( SystemSettings.kMaxTargetLockCrawlSpeed,
+                SystemSettings.kMinTargetLockCrawlSpeed,
                 0.0,
                 Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations() );
     }
