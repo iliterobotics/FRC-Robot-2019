@@ -45,19 +45,11 @@ public class NeoDriveHardware implements IDriveHardware {
         mRightMiddle = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kDriveRightMiddleTalonId, CANSparkMaxLowLevel.MotorType.kBrushless);
         mRightRear = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kDriveRightRearTalonId, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-        configureMaster(mLeftMaster, true);
-        configureMaster(mLeftMiddle, true);
-        configureMaster(mLeftRear, true);
-        configureMotor(mLeftMaster);
-        configureMotor(mLeftMiddle);
-        configureMotor(mLeftRear);
+        configureMaster(true, mLeftMaster, mLeftMiddle, mLeftRear);
+        configureMotor(mLeftMaster, mLeftMiddle, mLeftRear);
 
-        configureMaster(mRightMaster, false);
-        configureMaster(mLeftMiddle, false);
-        configureMaster(mLeftRear, false);
-        configureMotor(mRightMaster);
-        configureMotor(mRightMiddle);
-        configureMotor(mRightRear);
+        configureMaster(false, mRightMaster, mRightMiddle, mRightRear);
+        configureMotor(mRightMaster, mRightMiddle, mRightRear);
 
         mLeftMaster.setInverted(true);
         mLeftMiddle.setInverted(true);
@@ -69,14 +61,15 @@ public class NeoDriveHardware implements IDriveHardware {
 
         // Invert sensor readings by multiplying by 1 or -1
         mLeftMaster.getEncoder().setPositionConversionFactor(1.0 * kGearRatio);
-        mLeftMaster.getEncoder().setVelocityConversionFactor(1.0 * kGearRatio);
+        mLeftMiddle.getEncoder().setPositionConversionFactor(1.0 * kGearRatio);
+        mLeftRear.getEncoder().setPositionConversionFactor(1.0 * kGearRatio);
 
         mRightMaster.getEncoder().setPositionConversionFactor(1.0 * kGearRatio);
-        mRightMaster.getEncoder().setVelocityConversionFactor(1.0 * kGearRatio);
+        mRightMiddle.getEncoder().setPositionConversionFactor(1.0 * kGearRatio);
+        mRightRear.getEncoder().setPositionConversionFactor(1.0 * kGearRatio);
 
-
-        reloadVelocityGains(mLeftMaster);
-        reloadVelocityGains(mRightMaster);
+        reloadVelocityGains(mLeftMaster, mLeftMiddle, mLeftRear);
+        reloadVelocityGains(mRightMaster, mRightMiddle, mRightRear);
 
         mRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
                 SystemSettings.kDriveMaxOpenLoopVoltageRampRate,
@@ -194,27 +187,31 @@ public class NeoDriveHardware implements IDriveHardware {
         }
     }
 
-    private void configureMaster(CANSparkMax sparkMax, boolean pIsLeft) {
-        // Velocity, temperature, voltage, and current according the REV docs
-        sparkMax.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 5);
-        // Position according to REV docs
-        sparkMax.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 5);
+    private void configureMaster(boolean pIsLeft, CANSparkMax ... pSparkMaxes) {
+        for(CANSparkMax sparkMax : pSparkMaxes) {
+            // Velocity, temperature, voltage, and current according the REV docs
+            sparkMax.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 5);
+            // Position according to REV docs
+            sparkMax.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 5);
 
-        sparkMax.setSmartCurrentLimit(SystemSettings.kDriveCurrentLimitAmps);
-        sparkMax.setSecondaryCurrentLimit(SystemSettings.kDriveCurrentLimitAmps);
-        // Set a peak current limit duration??
+            sparkMax.setSmartCurrentLimit(SystemSettings.kDriveCurrentLimitAmps);
+            sparkMax.setSecondaryCurrentLimit(SystemSettings.kDriveCurrentLimitAmps);
+            // Set a peak current limit duration??
+        }
     }
 
-    private void configureMotor(CANSparkMax motorController) {
-        /*
-        TODO Disabled voltage comp for now because of:
-        https://www.chiefdelphi.com/t/sparkmax-voltage-compensation/350540/5
-         */
-//        motorController.enableVoltageCompensation(12.0);
-        // No velocity measurement filter
-        motorController.setOpenLoopRampRate(SystemSettings.kDriveMaxOpenLoopVoltageRampRate);
-        motorController.setClosedLoopRampRate(SystemSettings.kDriveClosedLoopVoltageRampRate);
-        // motorController.configNeutralDeadband(0.04, 0);
+    private void configureMotor(CANSparkMax ... pSparkMaxes) {
+        for(CANSparkMax motorController : pSparkMaxes) {
+            /*
+            TODO Disabled voltage comp for now because of:
+            https://www.chiefdelphi.com/t/sparkmax-voltage-compensation/350540/5
+             */
+    //        motorController.enableVoltageCompensation(12.0);
+            // No velocity measurement filter
+            motorController.setOpenLoopRampRate(SystemSettings.kDriveMaxOpenLoopVoltageRampRate);
+            motorController.setClosedLoopRampRate(SystemSettings.kDriveClosedLoopVoltageRampRate);
+            // motorController.configNeutralDeadband(0.04, 0);
+        }
     }
 
     private void configSparkForPercentOutput(CANSparkMax ... pSparkMax) {
@@ -223,22 +220,30 @@ public class NeoDriveHardware implements IDriveHardware {
 //        }
     }
 
-    private void configSparkForVelocity(CANSparkMax pSparkMax) {
-        mPidSlot = SystemSettings.kDriveVelocityLoopSlot;
-        mLogger.info("Configuring Spark ID ", pSparkMax.getDeviceId(), " for velocity mode");
+    private void configSparkForVelocity(CANSparkMax ... pSparkMaxes) {
+
+        for(CANSparkMax spark : pSparkMaxes) {
+            mPidSlot = SystemSettings.kDriveVelocityLoopSlot;
+            mLogger.info("Configuring Spark ID ", spark.getDeviceId(), " for velocity mode");
+        }
+
     }
 
 
-    private void reloadVelocityGains(CANSparkMax pSparkMax) {
-        mLogger.info("Reloading gains for Talon ID ", pSparkMax.getDeviceId());
+    private void reloadVelocityGains(CANSparkMax ... pSparkMaxes) {
 
-        CANPIDController sparkMaxPid = pSparkMax.getPIDController();
+        for(CANSparkMax spark : pSparkMaxes) {
+            mLogger.info("Reloading gains for Talon ID ", spark.getDeviceId());
 
-        sparkMaxPid.setSmartMotionAllowedClosedLoopError(SystemSettings.kDriveVelocityTolerance, SystemSettings.kDriveVelocityLoopSlot);
-        sparkMaxPid.setP(SystemSettings.kDriveVelocity_kP, SystemSettings.kDriveVelocityLoopSlot);
-        sparkMaxPid.setI(SystemSettings.kDriveVelocity_kI, SystemSettings.kDriveVelocityLoopSlot);
-        sparkMaxPid.setD(SystemSettings.kDriveVelocity_kD, SystemSettings.kDriveVelocityLoopSlot);
-        sparkMaxPid.setFF(SystemSettings.kDriveVelocity_kF, SystemSettings.kDriveVelocityLoopSlot);
+            CANPIDController sparkMaxPid = spark.getPIDController();
+
+            sparkMaxPid.setSmartMotionAllowedClosedLoopError(SystemSettings.kDriveVelocityTolerance, SystemSettings.kDriveVelocityLoopSlot);
+            sparkMaxPid.setP(SystemSettings.kDriveVelocity_kP, SystemSettings.kDriveVelocityLoopSlot);
+            sparkMaxPid.setI(SystemSettings.kDriveVelocity_kI, SystemSettings.kDriveVelocityLoopSlot);
+            sparkMaxPid.setD(SystemSettings.kDriveVelocity_kD, SystemSettings.kDriveVelocityLoopSlot);
+            sparkMaxPid.setFF(SystemSettings.kDriveVelocity_kF, SystemSettings.kDriveVelocityLoopSlot);
+        }
+
     }
 
     private void configSparkForSmartMotion(CANSparkMax talon) {
