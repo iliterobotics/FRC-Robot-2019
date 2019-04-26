@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
 import com.team254.lib.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.CAN;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.util.Conversions;
 import us.ilite.common.lib.util.RangeScale;
@@ -71,9 +72,23 @@ public class NeoDriveHardware implements IDriveHardware {
         mRightMaster.getEncoder().setVelocityConversionFactor(1.0 * kGearRatio);
 
 
-        reloadVelocityGains(mLeftMaster);
-        reloadVelocityGains(mRightMaster);
+        reloadVelocityGains(mLeftMaster, mLeftMiddle, mLeftRear,
+                mRightMaster, mRightMiddle, mRightRear);
 
+        mLeftMaster.clearFaults();
+        mLeftMiddle.clearFaults();
+        mLeftRear.clearFaults();
+        mRightMaster.clearFaults();
+        mRightMiddle.clearFaults();
+        mRightRear.clearFaults();
+
+        mLeftMaster.burnFlash();
+        mLeftMiddle.burnFlash();
+        mLeftRear.burnFlash();
+        mRightMaster.burnFlash();
+        mRightMiddle.burnFlash();
+        mRightRear.burnFlash();
+        
         mRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
                 SystemSettings.kDriveMaxOpenLoopVoltageRampRate,
                 Elevator.EElevatorPosition.CARGO_BOTTOM.getEncoderRotations(),
@@ -212,16 +227,20 @@ public class NeoDriveHardware implements IDriveHardware {
     }
 
 
-    private void reloadVelocityGains(CANSparkMax pSparkMax) {
-        mLogger.info("Reloading gains for Talon ID ", pSparkMax.getDeviceId());
+    private void reloadVelocityGains(CANSparkMax... pSparkMaxes) {
 
-        CANPIDController sparkMaxPid = pSparkMax.getPIDController();
+        for(CANSparkMax pSparkMax : pSparkMaxes) {
+            mLogger.info("Reloading gains for Talon ID ", pSparkMax.getDeviceId());
 
-        sparkMaxPid.setSmartMotionAllowedClosedLoopError(SystemSettings.kDriveVelocityTolerance, SystemSettings.kDriveVelocityLoopSlot);
-        sparkMaxPid.setP(SystemSettings.kDriveVelocity_kP, SystemSettings.kDriveVelocityLoopSlot);
-        sparkMaxPid.setI(SystemSettings.kDriveVelocity_kI, SystemSettings.kDriveVelocityLoopSlot);
-        sparkMaxPid.setD(SystemSettings.kDriveVelocity_kD, SystemSettings.kDriveVelocityLoopSlot);
-        sparkMaxPid.setFF(SystemSettings.kDriveVelocity_kF, SystemSettings.kDriveVelocityLoopSlot);
+            CANPIDController sparkMaxPid = pSparkMax.getPIDController();
+
+            sparkMaxPid.setSmartMotionAllowedClosedLoopError(SystemSettings.kDriveVelocityTolerance, SystemSettings.kDriveVelocityLoopSlot);
+            sparkMaxPid.setP(SystemSettings.kDriveVelocity_kP, SystemSettings.kDriveVelocityLoopSlot);
+            sparkMaxPid.setI(SystemSettings.kDriveVelocity_kI, SystemSettings.kDriveVelocityLoopSlot);
+            sparkMaxPid.setD(SystemSettings.kDriveVelocity_kD, SystemSettings.kDriveVelocityLoopSlot);
+            sparkMaxPid.setFF(SystemSettings.kDriveVelocity_kF, SystemSettings.kDriveVelocityLoopSlot);
+        }
+
     }
 
     private void configSparkForSmartMotion(CANSparkMax talon) {
