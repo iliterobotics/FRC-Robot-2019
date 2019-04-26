@@ -95,7 +95,7 @@ public class NeoDriveHardware implements IDriveHardware {
 
         // Bypass state machine in set() and configure directly
         configSparkForPercentOutput(mLeftMaster, mLeftMiddle, mLeftRear);
-        configSparkForPercentOutput(mRightMaster, mLeftMiddle, mLeftRear);
+        configSparkForPercentOutput(mRightMaster, mRightMiddle, mRightRear);
         setNeutralMode(CANSparkMax.IdleMode.kBrake, mLeftMaster, mLeftMiddle, mLeftRear);
         setNeutralMode(CANSparkMax.IdleMode.kBrake, mRightMaster, mRightMiddle, mRightRear);
 
