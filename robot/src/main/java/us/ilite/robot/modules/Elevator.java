@@ -54,14 +54,15 @@ public class Elevator extends Module {
     public enum EElevatorPosition {
 
         //TODO find encoder threshold
+        GROUND(0.225084801),
         HATCH_BOTTOM(1),
         HATCH_MIDDLE(17.8),
         HATCH_TOP(35),
         CARGO_BOTTOM(6.9),
         CARGO_LOADING_STATION(17),
-        CARGO_CARGO_SHIP(16.5),
-        CARGO_MIDDLE(23.3),
-        CARGO_TOP(41.1);
+        CARGO_CARGO_SHIP(16.5 - 1.800678406),
+        CARGO_MIDDLE(23.3 + 0.450169601),
+        CARGO_TOP(41.1 + 0.900339203);
 
 
         private double kEncoderRotations;
