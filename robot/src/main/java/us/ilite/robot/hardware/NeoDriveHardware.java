@@ -38,19 +38,23 @@ public class NeoDriveHardware implements IDriveHardware {
         // mGyro = new NavX(SerialPort.Port.kMXP);
 
         mLeftMaster = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kDriveLeftMasterTalonId, CANSparkMaxLowLevel.MotorType.kBrushless);
-        mLeftMiddle = SparkMaxFactory.createPermanentSlaveSparkMax(SystemSettings.kDriveLeftMiddleTalonId, mLeftMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
-        mLeftRear = SparkMaxFactory.createPermanentSlaveSparkMax(SystemSettings.kDriveLeftRearTalonId, mLeftMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mLeftMiddle = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kDriveLeftMiddleTalonId, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mLeftRear = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kDriveLeftRearTalonId, CANSparkMaxLowLevel.MotorType.kBrushless);
 
         mRightMaster = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kDriveRightMasterTalonId, CANSparkMaxLowLevel.MotorType.kBrushless);
-        mRightMiddle = SparkMaxFactory.createPermanentSlaveSparkMax(SystemSettings.kDriveRightMiddleTalonId, mRightMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
-        mRightRear = SparkMaxFactory.createPermanentSlaveSparkMax(SystemSettings.kDriveRightRearTalonId, mRightMaster, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mRightMiddle = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kDriveRightMiddleTalonId, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mRightRear = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kDriveRightRearTalonId, CANSparkMaxLowLevel.MotorType.kBrushless);
 
         configureMaster(mLeftMaster, true);
+        configureMaster(mLeftMiddle, true);
+        configureMaster(mLeftRear, true);
         configureMotor(mLeftMaster);
         configureMotor(mLeftMiddle);
         configureMotor(mLeftRear);
 
         configureMaster(mRightMaster, false);
+        configureMaster(mLeftMiddle, false);
+        configureMaster(mLeftRear, false);
         configureMotor(mRightMaster);
         configureMotor(mRightMiddle);
         configureMotor(mRightRear);
@@ -97,25 +101,34 @@ public class NeoDriveHardware implements IDriveHardware {
         mRightMaster.getEncoder().setPosition(0.0);
 
         // Bypass state machine in set() and configure directly
-        configSparkForPercentOutput(mLeftMaster);
-        configSparkForPercentOutput(mRightMaster);
+        configSparkForPercentOutput(mLeftMaster, mLeftMiddle, mLeftRear);
+        configSparkForPercentOutput(mRightMaster, mLeftMiddle, mLeftRear);
         setNeutralMode(CANSparkMax.IdleMode.kBrake, mLeftMaster, mLeftMiddle, mLeftRear);
         setNeutralMode(CANSparkMax.IdleMode.kBrake, mRightMaster, mRightMiddle, mRightRear);
 
         mLeftMaster.set(0.0);
+        mLeftMiddle.set(0.0);
+        mLeftRear.set(0.0);
         mRightMaster.set(0.0);
+        mRightMiddle.set(0.0);
+        mRightRear.set(0.0);
     }
 
     public void set(DriveMessage pDriveMessage) {
 
-        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pDriveMessage.leftControlMode.kRevControlType);
-        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pDriveMessage.rightControlMode.kRevControlType);
+        mLeftControlMode = configForControlMode(mLeftControlMode, pDriveMessage.leftControlMode.kRevControlType, mLeftMaster, mLeftMiddle, mLeftRear);
+        mRightControlMode = configForControlMode(mRightControlMode, pDriveMessage.rightControlMode.kRevControlType, mRightMaster, mRightMiddle, mRightRear);
 
         mLeftNeutralMode = configForNeutralMode(mLeftNeutralMode, pDriveMessage.leftNeutralMode.kRevIdleMode, mLeftMaster, mLeftMiddle, mLeftRear);
         mRightNeutralMode = configForNeutralMode(mRightNeutralMode, pDriveMessage.rightNeutralMode.kRevIdleMode, mRightMaster, mRightMiddle, mRightRear);
 
         mLeftMaster.getPIDController().setReference(pDriveMessage.leftOutput, mLeftControlMode, mPidSlot, pDriveMessage.leftDemand);
+        mLeftMiddle.getPIDController().setReference(pDriveMessage.leftOutput, mLeftControlMode, mPidSlot, pDriveMessage.leftDemand);
+        mLeftRear.getPIDController().setReference(pDriveMessage.leftOutput, mLeftControlMode, mPidSlot, pDriveMessage.leftDemand);
+
         mRightMaster.getPIDController().setReference(pDriveMessage.rightOutput, mRightControlMode, mPidSlot, pDriveMessage.rightDemand);
+        mRightMiddle.getPIDController().setReference(pDriveMessage.rightOutput, mRightControlMode, mPidSlot, pDriveMessage.rightDemand);
+        mRightRear.getPIDController().setReference(pDriveMessage.rightOutput, mRightControlMode, mPidSlot, pDriveMessage.rightDemand);
 
     }
 
@@ -124,8 +137,8 @@ public class NeoDriveHardware implements IDriveHardware {
      * @param pControlMode
      */
     public void configureMode(ECommonControlMode pControlMode) {
-        mLeftControlMode = configForControlMode(mLeftMaster, mLeftControlMode, pControlMode.kRevControlType);
-        mRightControlMode = configForControlMode(mRightMaster, mRightControlMode, pControlMode.kRevControlType);
+        mLeftControlMode = configForControlMode(mLeftControlMode, pControlMode.kRevControlType, mLeftMaster, mLeftMiddle, mLeftRear);
+        mRightControlMode = configForControlMode(mRightControlMode, pControlMode.kRevControlType, mRightMaster, mRightMiddle, mRightRear);
     }
 
     @Override
@@ -137,31 +150,33 @@ public class NeoDriveHardware implements IDriveHardware {
         return mGyro;
     }
 
-    private ControlType configForControlMode(CANSparkMax pSparkMax, ControlType pCurrentControlMode, ControlType pDesiredControlMode) {
-        ControlType controlMode = pCurrentControlMode;
+    private ControlType configForControlMode(ControlType pCurrentControlMode, ControlType pDesiredControlMode, CANSparkMax ... pSparkMaxes) {
+        for(CANSparkMax spark : pSparkMaxes) {
+            ControlType controlMode = pCurrentControlMode;
 
-        if(pCurrentControlMode != pDesiredControlMode) {
-            switch(pDesiredControlMode) {
-                case kDutyCycle:
-                    controlMode = ControlType.kDutyCycle;
-                    configSparkForPercentOutput(pSparkMax);
-                    break;
-                case kSmartMotion:
-                    controlMode = ControlType.kSmartMotion;
-                    configSparkForSmartMotion(pSparkMax);
-                    break;
-                case kVelocity:
-                    controlMode = ControlType.kVelocity;
-                    configSparkForVelocity(pSparkMax);
-                    break;
-                default:
-                    mLogger.error("Unimplemented control mode - defaulting to PercentOutput.");
-                    controlMode = ControlType.kDutyCycle;
-                    break;
+            if(pCurrentControlMode != pDesiredControlMode) {
+                switch(pDesiredControlMode) {
+                    case kDutyCycle:
+                        controlMode = ControlType.kDutyCycle;
+                        configSparkForPercentOutput(spark);
+                        break;
+                    case kSmartMotion:
+                        controlMode = ControlType.kSmartMotion;
+                        configSparkForSmartMotion(spark);
+                        break;
+                    case kVelocity:
+                        controlMode = ControlType.kVelocity;
+                        configSparkForVelocity(spark);
+                        break;
+                    default:
+                        mLogger.error("Unimplemented control mode - defaulting to PercentOutput.");
+                        controlMode = ControlType.kDutyCycle;
+                        break;
+                }
             }
         }
 
-        return controlMode;
+        return pDesiredControlMode;
     }
 
     private CANSparkMax.IdleMode configForNeutralMode(CANSparkMax.IdleMode pCurrentNeutralMode, CANSparkMax.IdleMode pDesiredNeutralMode, CANSparkMax... pSparkMaxes) {
@@ -202,8 +217,10 @@ public class NeoDriveHardware implements IDriveHardware {
         // motorController.configNeutralDeadband(0.04, 0);
     }
 
-    private void configSparkForPercentOutput(CANSparkMax pSparkMax) {
-        // talon.configNeutralDeadband(0.04, 0);
+    private void configSparkForPercentOutput(CANSparkMax ... pSparkMax) {
+//        for(CANSparkMax s : pSparkMax) {
+//             talon.configNeutralDeadband(0.04, 0);
+//        }
     }
 
     private void configSparkForVelocity(CANSparkMax pSparkMax) {
@@ -298,7 +315,12 @@ public class NeoDriveHardware implements IDriveHardware {
     @Override
     public void setOpenLoopRampRate(double pOpenLoopRampRate) {
         mLeftMaster.setOpenLoopRampRate(pOpenLoopRampRate);
+        mLeftMiddle.setOpenLoopRampRate(pOpenLoopRampRate);
+        mLeftRear.setOpenLoopRampRate(pOpenLoopRampRate);
+
         mRightMaster.setOpenLoopRampRate(pOpenLoopRampRate);
+        mRightMiddle.setOpenLoopRampRate(pOpenLoopRampRate);
+        mRightRear.setOpenLoopRampRate(pOpenLoopRampRate);
     }
 
     @Override
