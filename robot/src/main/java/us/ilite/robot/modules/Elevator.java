@@ -54,7 +54,7 @@ public class Elevator extends Module {
     public enum EElevatorPosition {
 
         //TODO find encoder threshold
-        GROUND(0.225084801),
+        GROUND(0.04501696),
         HATCH_BOTTOM(1),
         HATCH_MIDDLE(17.8),
         HATCH_TOP(35),

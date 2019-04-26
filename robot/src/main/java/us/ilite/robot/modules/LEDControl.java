@@ -159,7 +159,9 @@ public class LEDControl extends Module {
         if(mCargoSpit.isOuttaking()) mCurrentMessage = Message.SPITTING_CARGO;
         if(mHatchFlower.shouldBackUp()) mCurrentMessage = Message.KICKING_HATCH;
 
-        if(mLimelight.getTracking() != ETrackingType.NONE) mCurrentMessage = Message.VISION_TRACKING;
+//        if(mLimelight.getTracking() != ETrackingType.NONE) mCurrentMessage = Message.VISION_TRACKING;
+
+        if(mData.limelight.isSet(ETargetingData.tx) && Math.abs(mData.limelight.get(ETargetingData.tx)) <= 3d) mCurrentMessage = Message.VISION_TRACKING;
 
         // Did the message change?
         if ( lastMsg != this.mCurrentMessage ) {
