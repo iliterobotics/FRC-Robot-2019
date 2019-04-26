@@ -342,7 +342,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         }
 
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_POSITION_ELEVATOR)) {
-            mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_BOTTOM);
+            mElevator.setDesiredPosition(Elevator.EElevatorPosition.GROUND);
         } else {
             if(mIsCargo) {
                 if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {

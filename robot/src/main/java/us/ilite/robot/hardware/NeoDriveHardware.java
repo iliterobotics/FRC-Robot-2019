@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
 import com.team254.lib.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.CAN;
 import us.ilite.common.config.SystemSettings;
 import us.ilite.common.lib.util.Conversions;
 import us.ilite.common.lib.util.RangeScale;
@@ -71,6 +72,23 @@ public class NeoDriveHardware implements IDriveHardware {
         reloadVelocityGains(mLeftMaster, mLeftMiddle, mLeftRear);
         reloadVelocityGains(mRightMaster, mRightMiddle, mRightRear);
 
+        reloadVelocityGains(mLeftMaster, mLeftMiddle, mLeftRear,
+                mRightMaster, mRightMiddle, mRightRear);
+
+        mLeftMaster.clearFaults();
+        mLeftMiddle.clearFaults();
+        mLeftRear.clearFaults();
+        mRightMaster.clearFaults();
+        mRightMiddle.clearFaults();
+        mRightRear.clearFaults();
+
+        mLeftMaster.burnFlash();
+        mLeftMiddle.burnFlash();
+        mLeftRear.burnFlash();
+        mRightMaster.burnFlash();
+        mRightMiddle.burnFlash();
+        mRightRear.burnFlash();
+        
         mRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
                 SystemSettings.kDriveMaxOpenLoopVoltageRampRate,
                 Elevator.EElevatorPosition.CARGO_BOTTOM.getEncoderRotations(),
