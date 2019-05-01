@@ -41,19 +41,19 @@ dependencies {
         ['mainClass'   : 'eu.hansolo.tilesfxdemo.MiscDemo',
          'description' :' Executes the tiles misc demo'
         ],
-    'driverStation' : 
+    'Driverstation' : 
         ['mainClass'   : 'us.ilite.display.DriverStation',
          'description' : 'The main drivers station display'
         ],
-    'iliteMain' : 
+    'IliteMain' : 
         ['mainClass'   : 'us.ilite.display.Main',
          'description' : 'The main display'
         ],
-    'testinAutonConfig' :
+    'AutonConfig' :
         ['mainClass'   : 'us.ilite.display.testing.AutonConfigDisplay',
          'description' : 'The autonomous config display'
         ],
-    'testDisplay' : 
+    'TestingDisplay' : 
         ['mainClass'   : 'us.ilite.display.testing.TestingDisplay',
          'display'     : 'The testing display'
         ]
