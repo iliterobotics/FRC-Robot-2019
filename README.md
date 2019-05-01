@@ -14,6 +14,14 @@ This is ILITE's robot, display, and telemetry code for the 2019 FIRST Robotics C
 
 [YourKit Java Profiler](https://www.yourkit.com/java/profiler/)
 
+## Usage
+- If you want to deploy to the robot fast, use `./gradlew assemble deploy`.
+    - This skips any steps outside of compiling and deploying the robot code, meaning that it skips unit tests and style checks.
+- To open up the top-down field display for Sandstorm or autonomous simulation, use `./gradlew runIliteMain`.
+- To run the testing display for live editing of constants, use `./gradlew runTestingDisplay`.
+- To run the autonomous selection display, use `./gradlew runAutonConfig`.
+- To run the experimental driver station display, use `./gradlew runDriverstation`.
+
 ## Project Structure
 
 The project consists of three subprojects: `robot`, `display`, and `common`.
