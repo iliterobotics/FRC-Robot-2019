@@ -9,6 +9,7 @@ This is ILITE's robot, display, and telemetry code for the 2019 FIRST Robotics C
 - Jesse for the [highfrequencyrobots](https://github.com/flybotix/highfrequencyrobots) project, which allows us to define data structures for robot telemetry as well as internal use.
 - Team 1678 for their excellent README section on contributing code with Git, which can be found [here](https://github.com/frc1678/robot-code-public)
 - YourKit for YourKit Java Profiler
+- IHMC Robotics for the link to a nice article on the git-flow branching model that we happen to use
 
 ![YourKit](https://www.yourkit.com/images/yklogo.png)
 
@@ -166,6 +167,8 @@ Here's how to get your code into the main robot repository:
 1. Clone the repo to your computer - `git clone https://github.com/iliterobotics/FRC-Robot-2019`
 
 ### Any time you want to make a change:
+We use a feature branch workflow. You can read more about that [here](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow).
+
 1. Create and checkout a new branch.
   * `git checkout -b <your_branch_name>`, where <your_branch_name> is a descriptive name for your branch. For example `fix-shooter-wheel`, `two-ball-auto`, or `climbing`. Use dashes in the branch name, not underscores.
 1. Make whatever code changes you want/need/ to make. Be sure to write tests for your changes!
