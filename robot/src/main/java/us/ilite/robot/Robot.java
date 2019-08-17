@@ -55,17 +55,17 @@ public class Robot extends TimedRobot {
     private final FourBar mFourBar = new FourBar( mData );
     private final Elevator mElevator = new Elevator(mData);
     private final Intake mIntake = new Intake(mData);
-    private final CargoSpit mCargoSpit = new CargoSpit(mData);
+//    private final CargoSpit mCargoSpit = new CargoSpit(mData);
     private final HatchFlower mHatchFlower = new HatchFlower(mData);
     private final Limelight mLimelight = new Limelight(mData);
     private final VisionGyro mVisionGyro = new VisionGyro(mData);
     private final PneumaticIntake mPneumaticIntake = new PneumaticIntake(mData);
-    private final LEDControl mLEDControl = new LEDControl(mDrive, mElevator, mPneumaticIntake, mCargoSpit, mHatchFlower, mFourBar, mLimelight, mData);
-    private final DriverInput mDriverInput = new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake, mCargoSpit, mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, false  );
+    private final LEDControl mLEDControl = new LEDControl(mDrive, mElevator, mPneumaticIntake,/* mCargoSpit,*/ mHatchFlower, mFourBar, mLimelight, mData);
+    private final DriverInput mDriverInput = new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake,/* mCargoSpit,*/ mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, false  );
 
     private final TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
     private final AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator,
-            mIntake, mCargoSpit, mHatchFlower, mLimelight, mVisionGyro, mData);
+            mIntake, /*mCargoSpit,*/ mHatchFlower, mLimelight, mVisionGyro, mData);
     private MatchMetadata mMatchMeta = null;
 
     private final PerfTimer mClockUpdateTimer = new PerfTimer();
@@ -74,6 +74,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         initMatchMetadata();
         mData.addMatchMetadata(mMatchMeta);
+        CargoSpitSingle.getInstance().setData( mData );
         //look for practice robot config:
         AbstractSystemSettingsUtils.loadPracticeSettings(mSettings);
 
@@ -135,7 +136,7 @@ public class Robot extends TimedRobot {
         mSettings.loadFromNetworkTables();
 
         // Init modules after commands are set
-        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mTeleopCommandManager, mElevator, mHatchFlower, /*mIntake,*/ mCargoSpit, mPneumaticIntake, mFourBar/*, mLEDControl*/);
+        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mTeleopCommandManager, mElevator, mHatchFlower, /*mIntake,*/ CargoSpitSingle.getInstance(), mPneumaticIntake, mFourBar/*, mLEDControl*/);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
@@ -159,7 +160,7 @@ public class Robot extends TimedRobot {
 
         mSettings.loadFromNetworkTables();
 
-        mRunningModules.setModules(mDriverInput, mTeleopCommandManager, mElevator, mHatchFlower, /*mIntake,*/ mCargoSpit, mPneumaticIntake, mFourBar, mLEDControl);
+        mRunningModules.setModules(mDriverInput, mTeleopCommandManager, mElevator, mHatchFlower, /*mIntake,*/ CargoSpitSingle.getInstance(), mPneumaticIntake, mFourBar, mLEDControl);
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
@@ -209,7 +210,7 @@ public class Robot extends TimedRobot {
         EPowerDistPanel.map(mData.pdp, pdp);
         mRunningModules.periodicInput(mClock.getCurrentTime());
         mRunningModules.update(mClock.getCurrentTime());
-//        mData.sendCodicesToNetworkTables();
+        mData.sendCodicesToNetworkTables();
         SmartDashboard.putNumber("common_periodic_dt", Timer.getFPGATimestamp() - start);
     }
 

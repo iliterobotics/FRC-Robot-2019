@@ -37,7 +37,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     protected final Elevator mElevator;
     protected final Intake mIntake;
     protected final PneumaticIntake mPneumaticIntake;
-    protected final CargoSpit mCargoSpit;
+//    protected final CargoSpit mCargoSpit;
     protected final HatchFlower mHatchFlower;
     protected final FourBar mFourBar;
     private final CommandManager mTeleopCommandManager;
@@ -58,12 +58,12 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private ETrackingType mLastTrackingType = null;
     private ETrackingType mTrackingType = null;
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar, boolean pSimulated) {
         this.mDrive = pDrivetrain;
         this.mElevator = pElevator;
         this.mIntake = pIntake;
         this.mPneumaticIntake = pPneumaticIntake;
-        this.mCargoSpit = pCargoSpit;
+//        this.mCargoSpit = pCargoSpit;
         this.mHatchFlower = pHatchFlower;
         this.mLimelight = pLimelight;
         this.mData = pData;
@@ -87,8 +87,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
     }
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake, CargoSpit pCargoSpit, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar) {
-        this(pDrivetrain, pElevator, pHatchFlower, pIntake, pPneumaticIntake, pCargoSpit, pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, pFourBar, false);
+    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar) {
+        this(pDrivetrain, pElevator, pHatchFlower, pIntake, pPneumaticIntake, /**/ pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, pFourBar, false);
     }
 
     @Override
@@ -244,19 +244,19 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         if(mIsCargo) {
             if(mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_INTAKE_LOADING_STATION)) {
                 // Intake from loading station
-                mCargoSpit.setIntaking();
+                CargoSpitSingle.getInstance().setIntaking();
 
                 resetCargoTimer();
 
             } else if(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_INTAKE_GROUND) > 0.5) {
                 // Intake from ground - recieve cargo from ground intake
-                mCargoSpit.setIntaking();
+                CargoSpitSingle.getInstance().setIntaking();
 
                 mGroundCargoTimer.start();
 
             } else if(mData.operatorinput.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
                 // Spit
-                mCargoSpit.setOuttaking();
+                CargoSpitSingle.getInstance().setOuttaking();
 
                 resetCargoTimer();
 
@@ -266,7 +266,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 // Stop
                 resetCargoTimer();
 
-                mCargoSpit.stop();
+                CargoSpitSingle.getInstance().stop();
             }
         }
     }

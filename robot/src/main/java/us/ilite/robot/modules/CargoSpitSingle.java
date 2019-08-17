@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-
 import com.team254.lib.drivers.talon.TalonSRXFactory;
 import edu.wpi.first.wpilibj.DigitalInput;
 import us.ilite.common.Data;
@@ -13,8 +12,9 @@ import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.manipulator.ECargoSpit;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 
+public class CargoSpitSingle extends Module {
 
-public class CargoSpit extends Module {
+    private static CargoSpitSingle cargoSpitInstance = new CargoSpitSingle();
 
     private final double kZero = 0.0;
     private final double kLaunchPower = 0.70;
@@ -31,31 +31,30 @@ public class CargoSpit extends Module {
     private boolean mOuttaking = false;
     private boolean mHasCargo = false;
 
+    public static CargoSpitSingle getInstance() {
+        if ( cargoSpitInstance == null ) {
+            cargoSpitInstance = new CargoSpitSingle();
+        }
+        return cargoSpitInstance;
+    }
 
-    public CargoSpit(Data pData) {
-
-        this.mData = pData;
-        // TODO Change to VictorSPX (or keep as TalonSRX)
-        mLeftMotor = TalonSRXFactory.createDefaultVictor(SystemSettings.kCargoSpitLeftSPXAddress);
-//        mLeftMotor = new VictorSPX(SystemSettings.kCargoSpitLeftSPXAddress);
-        mRightMotor = TalonSRXFactory.createDefaultVictor(SystemSettings.kCargoSpitRightSPXAddress);
-//        mRightMotor = new VictorSPX(SystemSettings.kCargoSpitRightSPXAddress);
+    private CargoSpitSingle() {
+        mLeftMotor = TalonSRXFactory.createDefaultVictor( SystemSettings.kCargoSpitLeftSPXAddress );
+        mRightMotor = TalonSRXFactory.createDefaultVictor( SystemSettings.kCargoSpitRightSPXAddress);
 
         mLeftMotor.enableVoltageCompensation(true);
         mRightMotor.enableVoltageCompensation(true);
         mLeftMotor.configVoltageCompSaturation(12.0);
         mRightMotor.configVoltageCompSaturation(12.0);
 
-        mLeftMotor.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 5);
+        mLeftMotor.setStatusFramePeriod( StatusFrame.Status_4_AinTempVbat, 5);
         mRightMotor.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat, 5);
 
         mBeambreak = new DigitalInput(SystemSettings.kCargoSpitBeamBreakAddress);
 
-        //TODO figure out these values and make them constants
         mRightMotor.configOpenloopRamp( mPower, 5 );
         mLeftMotor.configOpenloopRamp( mPower, 5 );
 
-        // mRightMotor.follow( mLeftMotor );
         mLeftMotor.setInverted(false);
         mRightMotor.setInverted( true ); //Set one motor inverted
 
@@ -64,15 +63,17 @@ public class CargoSpit extends Module {
         mEmergencyStopped = true;
     }
 
+    public void setData(Data pData) {
+        this.mData = pData;
+    }
+
     @Override
     public void modeInit(double pNow) {
-        mLog.error("MODE INIT");
-
+        mLog.error( "MODE INIT" );
     }
 
     @Override
     public void periodicInput(double pNow) {
-        // TODO Read the PDP for current limiting check and compare to SystemSettings cargo spit current limit
         mData.cargospit.set( ECargoSpit.HAS_CARGO, mHasCargo ? 1.0 : 0.0);
         mData.cargospit.set( ECargoSpit.INTAKING, convertBoolean( mIntaking ) );
         mData.cargospit.set( ECargoSpit.OUTTAKING, convertBoolean( mOuttaking ) );
@@ -89,7 +90,7 @@ public class CargoSpit extends Module {
         } else {
             System.out.println("NOT LIMITING");
         }
-        mLeftCurrent = mData.pdp.get(EPowerDistPanel.CURRENT10);
+        mLeftCurrent = mData.pdp.get( EPowerDistPanel.CURRENT10);
         mRightCurrent = mData.pdp.get(EPowerDistPanel.CURRENT5);
         mHasCargo = shouldStop();
         if ( mHasCargo ) {
@@ -149,7 +150,7 @@ public class CargoSpit extends Module {
         return mIntaking;
     }
     public boolean isOuttaking() { return mOuttaking; }
-    
+
     public void stop() {
         mLeftMotor.set( ControlMode.PercentOutput, kZero );
         mRightMotor.set( ControlMode.PercentOutput, kZero );

@@ -2,7 +2,7 @@ package us.ilite.common.types.drive;
 
 import com.flybotix.hfr.codex.CodexOf;
 
-public enum EDriveData implements CodexOf<Double> {
+public enum  EDriveData implements CodexOf<Double> {
 
     // Sensor inputs
     LEFT_POS_INCHES, RIGHT_POS_INCHES,

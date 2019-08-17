@@ -18,7 +18,7 @@ public class LEDControl extends Module {
     private final Drive mDrive;
     private final Elevator mElevator;
     private final PneumaticIntake mPneumaticIntake;
-    private final CargoSpit mCargoSpit;
+//    private final CargoSpit mCargoSpit;
     private final HatchFlower mHatchFlower;
     private final FourBar mFourBar;
     private final Limelight mLimelight;
@@ -112,11 +112,11 @@ public class LEDControl extends Module {
         }
     }
 
-    public LEDControl(Drive mDrive, Elevator mElevator, PneumaticIntake mPneumaticIntake, CargoSpit mCargoSpit, HatchFlower mHatchFlower, FourBar mFourBar, Limelight mLimelight, Data mData) {
+    public LEDControl(Drive mDrive, Elevator mElevator, PneumaticIntake mPneumaticIntake, /*CargoSpit mCargoSpit, */HatchFlower mHatchFlower, FourBar mFourBar, Limelight mLimelight, Data mData) {
         this.mDrive = mDrive;
         this.mElevator = mElevator;
         this.mPneumaticIntake = mPneumaticIntake;
-        this.mCargoSpit = mCargoSpit;
+//        this.mCargoSpit = mCargoSpit;
         this.mHatchFlower = mHatchFlower;
         this.mFourBar = mFourBar;
         this.mLimelight = mLimelight;
@@ -148,15 +148,15 @@ public class LEDControl extends Module {
         Message lastMsg = this.mCurrentMessage;
         this.mCurrentMessage = Message.NONE;
         
-        if(mCargoSpit.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
+        if(CargoSpitSingle.getInstance().isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
         if(mElevator.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
         if(mDrive.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
         if(mFourBar.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
         
-        if(mCargoSpit.hasCargo()) mCurrentMessage = Message.HAS_CARGO;
+        if(CargoSpitSingle.getInstance().hasCargo()) mCurrentMessage = Message.HAS_CARGO;
         if(mHatchFlower.hasHatch()) mCurrentMessage = Message.HAS_HATCH;
 
-        if(mCargoSpit.isOuttaking()) mCurrentMessage = Message.SPITTING_CARGO;
+        if(CargoSpitSingle.getInstance().isOuttaking()) mCurrentMessage = Message.SPITTING_CARGO;
         if(mHatchFlower.shouldBackUp()) mCurrentMessage = Message.KICKING_HATCH;
 
         if(mLimelight.getTracking() != ETrackingType.NONE) mCurrentMessage = Message.VISION_TRACKING;
