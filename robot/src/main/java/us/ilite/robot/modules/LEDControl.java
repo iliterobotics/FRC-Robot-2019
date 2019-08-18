@@ -16,7 +16,7 @@ public class LEDControl extends Module {
     private Message mCurrentMessage;
     
     private final Drive mDrive;
-    private final Elevator mElevator;
+//    private final Elevator mElevator;
     private final PneumaticIntake mPneumaticIntake;
 //    private final CargoSpit mCargoSpit;
     private final HatchFlower mHatchFlower;
@@ -112,9 +112,9 @@ public class LEDControl extends Module {
         }
     }
 
-    public LEDControl(Drive mDrive, Elevator mElevator, PneumaticIntake mPneumaticIntake, /*CargoSpit mCargoSpit, */HatchFlower mHatchFlower, FourBar mFourBar, Limelight mLimelight, Data mData) {
+    public LEDControl(Drive mDrive,/* Elevator mElevator, */PneumaticIntake mPneumaticIntake, /*CargoSpit mCargoSpit, */HatchFlower mHatchFlower, FourBar mFourBar, Limelight mLimelight, Data mData) {
         this.mDrive = mDrive;
-        this.mElevator = mElevator;
+//        this.mElevator = mElevator;
         this.mPneumaticIntake = mPneumaticIntake;
 //        this.mCargoSpit = mCargoSpit;
         this.mHatchFlower = mHatchFlower;
@@ -149,7 +149,7 @@ public class LEDControl extends Module {
         this.mCurrentMessage = Message.NONE;
         
         if(CargoSpitSingle.getInstance().isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
-        if(mElevator.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
+        if(ElevatorSingle.getInstance().isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
         if(mDrive.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
         if(mFourBar.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
         

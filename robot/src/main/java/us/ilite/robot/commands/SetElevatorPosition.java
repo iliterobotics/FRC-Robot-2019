@@ -1,28 +1,27 @@
 package us.ilite.robot.commands;
 
-import us.ilite.robot.modules.Elevator;
+import us.ilite.robot.modules.ElevatorSingle;
 
 public class SetElevatorPosition implements ICommand {
 
-    private final Elevator mElevator;
+//    private final Elevator mElevator;
 
-    private final Elevator.EElevatorPosition mDesiredPosition;
+    private final ElevatorSingle.EElevatorPosition mDesiredPosition;
 
-    public SetElevatorPosition(Elevator pElevator, Elevator.EElevatorPosition pDesiredPosition) {
-        mElevator = pElevator;
+    public SetElevatorPosition(/**/ ElevatorSingle.EElevatorPosition pDesiredPosition) {
         mDesiredPosition = pDesiredPosition;
     }
 
     @Override
     public void init(double pNow) {
 
-        mElevator.setDesiredPosition(mDesiredPosition);
+        ElevatorSingle.getInstance().setDesiredPosition(mDesiredPosition);
 
     }
 
     @Override
     public boolean update(double pNow) {
-        return mElevator.isAtPosition(mDesiredPosition);
+        return ElevatorSingle.getInstance().isAtPosition(mDesiredPosition);
     }
 
     @Override

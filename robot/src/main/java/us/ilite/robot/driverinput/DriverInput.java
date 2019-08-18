@@ -34,7 +34,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
 
     protected final Drive mDrive;
-    protected final Elevator mElevator;
+//    protected final Elevator mElevator;
     protected final Intake mIntake;
     protected final PneumaticIntake mPneumaticIntake;
 //    protected final CargoSpit mCargoSpit;
@@ -58,9 +58,9 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private ETrackingType mLastTrackingType = null;
     private ETrackingType mTrackingType = null;
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, /**/ HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar, boolean pSimulated) {
         this.mDrive = pDrivetrain;
-        this.mElevator = pElevator;
+//        this.mElevator = pElevator;
         this.mIntake = pIntake;
         this.mPneumaticIntake = pPneumaticIntake;
 //        this.mCargoSpit = pCargoSpit;
@@ -84,11 +84,11 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         this.mRampRateRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
                 SystemSettings.kDriveMaxOpenLoopVoltageRampRate,
                 0.0,
-                Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
+                ElevatorSingle.EElevatorPosition.CARGO_TOP.getEncoderRotations());
     }
 
-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar) {
-        this(pDrivetrain, pElevator, pHatchFlower, pIntake, pPneumaticIntake, /**/ pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, pFourBar, false);
+    public DriverInput(Drive pDrivetrain, /**/ HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar) {
+        this(pDrivetrain, pHatchFlower, pIntake, pPneumaticIntake, /**/ pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, pFourBar, false);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         mRampRateRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,
                 SystemSettings.kDriveMaxOpenLoopVoltageRampRate,
                 0.0,
-                Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());
+                ElevatorSingle.EElevatorPosition.CARGO_TOP.getEncoderRotations());
     }
 
     @Override
@@ -285,7 +285,7 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         double throttle = getThrottle();
 
         if(mData.driverinput.get(DriveTeamInputMap.DRIVER_ACCEL_LIMIT_BYPASS) < 0.5) {
-            double value = mRampRateRangeScale.scaleBtoA(mElevator.getEncoderPosition());
+            double value = mRampRateRangeScale.scaleBtoA(ElevatorSingle.getInstance().getEncoderPosition());
             SmartDashboard.putNumber("Current Ramp Rate", value);
             mDrive.setRampRate(value);
         } else {
@@ -331,36 +331,36 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
         }
 
         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_POSITION_ELEVATOR)) {
-            mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_BOTTOM);
+            ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.HATCH_BOTTOM);
         } else {
             if(mIsCargo) {
                 if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_BOTTOM);
+                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.CARGO_BOTTOM);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_LOW_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_CARGO_SHIP);
+                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.CARGO_CARGO_SHIP);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_MIDDLE);
+                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.CARGO_MIDDLE);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_TOP);
+                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.CARGO_TOP);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_INTAKE_LOADING_STATION)) {
-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_LOADING_STATION);
+                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.CARGO_LOADING_STATION);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-                    mElevator.setDesiredPower(manualThrottle);
+                    ElevatorSingle.getInstance().setDesiredPower(manualThrottle);
                 } else {
-                    mElevator.setDesiredPower(0d);
+                    ElevatorSingle.getInstance().setDesiredPower(0d);
                 }
             } else {
                 if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_BOTTOM);
+                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.HATCH_BOTTOM);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_LOW_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_MIDDLE);
+                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.HATCH_MIDDLE);
                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR) ||
                             mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {
-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_TOP);
+                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.HATCH_TOP);
                 } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {
-                    mElevator.setDesiredPower(manualThrottle);
+                    ElevatorSingle.getInstance().setDesiredPower(manualThrottle);
                 } else {
-                    mElevator.setDesiredPower(0d);
+                    ElevatorSingle.getInstance().setDesiredPower(0d);
                 }
             }
 

@@ -1,11 +1,11 @@
 package us.ilite.robot.commands;
 
-import us.ilite.robot.modules.CargoSpit;
+import us.ilite.robot.modules.CargoSpitSingle;
 
 public class IntakeCargo extends FunctionalCommand {
 
-    public IntakeCargo(CargoSpit pCargoSpit) {
-        super(pCargoSpit::setIntaking, pCargoSpit::hasCargo);
+    public IntakeCargo() {
+        super( CargoSpitSingle.getInstance()::setIntaking, CargoSpitSingle.getInstance()::hasCargo);
     }
 
 }

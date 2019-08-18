@@ -1,0 +1,577 @@
+[1mdiff --git a/robot/src/main/java/us/ilite/robot/Robot.java b/robot/src/main/java/us/ilite/robot/Robot.java[m
+[1mindex a1423662..e8af51fa 100644[m
+[1m--- a/robot/src/main/java/us/ilite/robot/Robot.java[m
+[1m+++ b/robot/src/main/java/us/ilite/robot/Robot.java[m
+[36m@@ -53,18 +53,18 @@[m [mpublic class Robot extends TimedRobot {[m
+     private final CommandManager mTeleopCommandManager = new CommandManager().setManagerTag("Teleop Manager");[m
+     private final Drive mDrive = new Drive(mData, mDriveController);[m
+     private final FourBar mFourBar = new FourBar( mData );[m
+[31m-    private final Elevator mElevator = new Elevator(mData);[m
+[32m+[m[32m//    private final Elevator mElevator = new Elevator(mData);[m
+     private final Intake mIntake = new Intake(mData);[m
+ //    private final CargoSpit mCargoSpit = new CargoSpit(mData);[m
+     private final HatchFlower mHatchFlower = new HatchFlower(mData);[m
+     private final Limelight mLimelight = new Limelight(mData);[m
+     private final VisionGyro mVisionGyro = new VisionGyro(mData);[m
+     private final PneumaticIntake mPneumaticIntake = new PneumaticIntake(mData);[m
+[31m-    private final LEDControl mLEDControl = new LEDControl(mDrive, mElevator, mPneumaticIntake,/* mCargoSpit,*/ mHatchFlower, mFourBar, mLimelight, mData);[m
+[31m-    private final DriverInput mDriverInput = new DriverInput( mDrive, mElevator, mHatchFlower, mIntake, mPneumaticIntake,/* mCargoSpit,*/ mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, false  );[m
+[32m+[m[32m    private final LEDControl mLEDControl = new LEDControl(mDrive, mPneumaticIntake,/* mCargoSpit,*/ mHatchFlower, mFourBar, mLimelight, mData);[m
+[32m+[m[32m    private final DriverInput mDriverInput = new DriverInput( mDrive, mHatchFlower, mIntake, mPneumaticIntake,/* mCargoSpit,*/ mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, false  );[m
+ [m
+     private final TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);[m
+[31m-    private final AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive, mElevator,[m
+[32m+[m[32m    private final AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive,[m
+             mIntake, /*mCargoSpit,*/ mHatchFlower, mLimelight, mVisionGyro, mData);[m
+     private MatchMetadata mMatchMeta = null;[m
+ [m
+[36m@@ -74,7 +74,6 @@[m [mpublic class Robot extends TimedRobot {[m
+     public void robotInit() {[m
+         initMatchMetadata();[m
+         mData.addMatchMetadata(mMatchMeta);[m
+[31m-        CargoSpitSingle.getInstance().setData( mData );[m
+         //look for practice robot config:[m
+         AbstractSystemSettingsUtils.loadPracticeSettings(mSettings);[m
+ [m
+[36m@@ -100,6 +99,8 @@[m [mpublic class Robot extends TimedRobot {[m
+ [m
+         // Clear out running modules[m
+         mRunningModules.setModules();[m
+[32m+[m[32m        CargoSpitSingle.getInstance().setData( mData );[m
+[32m+[m[32m        ElevatorSingle.getInstance().setData( mData );[m
+ [m
+         // Generate trajectories on power-on on there's no delay when autonomous is started[m
+         try {[m
+[36m@@ -136,7 +137,7 @@[m [mpublic class Robot extends TimedRobot {[m
+         mSettings.loadFromNetworkTables();[m
+ [m
+         // Init modules after commands are set[m
+[31m-        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mTeleopCommandManager, mElevator, mHatchFlower, /*mIntake,*/ CargoSpitSingle.getInstance(), mPneumaticIntake, mFourBar/*, mLEDControl*/);[m
+[32m+[m[32m        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mTeleopCommandManager, mHatchFlower, /*mIntake,*/ CargoSpitSingle.getInstance(), mPneumaticIntake, mFourBar/*, mLEDControl*/);[m
+         mRunningModules.modeInit(mClock.getCurrentTime());[m
+         mRunningModules.periodicInput(mClock.getCurrentTime());[m
+ [m
+[36m@@ -160,7 +161,7 @@[m [mpublic class Robot extends TimedRobot {[m
+ [m
+         mSettings.loadFromNetworkTables();[m
+ [m
+[31m-        mRunningModules.setModules(mDriverInput, mTeleopCommandManager, mElevator, mHatchFlower, /*mIntake,*/ CargoSpitSingle.getInstance(), mPneumaticIntake, mFourBar, mLEDControl);[m
+[32m+[m[32m        mRunningModules.setModules(mDriverInput, mTeleopCommandManager, mHatchFlower, /*mIntake,*/ CargoSpitSingle.getInstance(), mPneumaticIntake, mFourBar, mLEDControl);[m
+         mRunningModules.modeInit(mClock.getCurrentTime());[m
+         mRunningModules.periodicInput(mClock.getCurrentTime());[m
+ [m
+[1mdiff --git a/robot/src/main/java/us/ilite/robot/auto/AutonomousRoutines.java b/robot/src/main/java/us/ilite/robot/auto/AutonomousRoutines.java[m
+[1mindex 3b8d94df..60fe0f7f 100644[m
+[1m--- a/robot/src/main/java/us/ilite/robot/auto/AutonomousRoutines.java[m
+[1m+++ b/robot/src/main/java/us/ilite/robot/auto/AutonomousRoutines.java[m
+[36m@@ -26,7 +26,7 @@[m [mpublic class AutonomousRoutines {[m
+     private TrajectoryGenerator mTrajectoryGenerator;[m
+ [m
+     private Drive mDrive;[m
+[31m-    private Elevator mElevator;[m
+[32m+[m[32m//    private Elevator mElevator;[m
+     private Intake mIntake;[m
+ //    private CargoSpit mCargoSpit;[m
+     private HatchFlower mHatchFlower;[m
+[36m@@ -37,10 +37,10 @@[m [mpublic class AutonomousRoutines {[m
+     private MiddleToMiddleCargoToSideRocket mMiddleToMiddleCargoToSideRocket;[m
+     private ICommand[] mMiddleToMiddleCargoToSideRocketSequence;[m
+ [m
+[31m-    public AutonomousRoutines(TrajectoryGenerator mTrajectoryGenerator, Drive mDrive, Elevator mElevator, Intake mIntake, /**/ HatchFlower mHatchFlower, Limelight mLimelight, VisionGyro mVisionGyro, Data mData) {[m
+[32m+[m[32m    public AutonomousRoutines(TrajectoryGenerator mTrajectoryGenerator, Drive mDrive, Intake mIntake, /**/ HatchFlower mHatchFlower, Limelight mLimelight, VisionGyro mVisionGyro, Data mData) {[m
+         this.mTrajectoryGenerator = mTrajectoryGenerator;[m
+         this.mDrive = mDrive;[m
+[31m-        this.mElevator = mElevator;[m
+[32m+[m[32m//        this.mElevator = mElevator;[m
+         this.mIntake = mIntake;[m
+ //        this.mCargoSpit = mCargoSpit;[m
+         this.mHatchFlower = mHatchFlower;[m
+[1mdiff --git a/robot/src/main/java/us/ilite/robot/commands/GroundIntakeCargo.java b/robot/src/main/java/us/ilite/robot/commands/GroundIntakeCargo.java[m
+[1mindex ebeb6003..5697dfb2 100644[m
+[1m--- a/robot/src/main/java/us/ilite/robot/commands/GroundIntakeCargo.java[m
+[1m+++ b/robot/src/main/java/us/ilite/robot/commands/GroundIntakeCargo.java[m
+[36m@@ -5,10 +5,10 @@[m [mimport us.ilite.robot.modules.*;[m
+ [m
+ public class GroundIntakeCargo extends CommandQueue {[m
+ [m
+[31m-    public GroundIntakeCargo(Elevator pElevator, Intake pIntake, CargoSpit pCargoSpit, HatchFlower pHatchFlower) {[m
+[32m+[m[32m    public GroundIntakeCargo(/**/ Intake pIntake, CargoSpit pCargoSpit, HatchFlower pHatchFlower) {[m
+         setCommands([m
+                 new ParallelCommand([m
+[31m-                        new SetElevatorPosition(pElevator, Elevator.EElevatorPosition.HATCH_BOTTOM),[m
+[32m+[m[32m                        new SetElevatorPosition(ElevatorSingle.EElevatorPosition.HATCH_BOTTOM),[m
+                         new SetHatchGrabberExtension(pHatchFlower, HatchFlower.ExtensionState.UP),[m
+                         new ReleaseHatch(pHatchFlower)[m
+                 ),[m
+[1mdiff --git a/robot/src/main/java/us/ilite/robot/commands/GroundIntakeHatch.java b/robot/src/main/java/us/ilite/robot/commands/GroundIntakeHatch.java[m
+[1mindex a6e22a14..305f85f8 100644[m
+[1m--- a/robot/src/main/java/us/ilite/robot/commands/GroundIntakeHatch.java[m
+[1m+++ b/robot/src/main/java/us/ilite/robot/commands/GroundIntakeHatch.java[m
+[36m@@ -1,16 +1,16 @@[m
+ package us.ilite.robot.commands;[m
+ [m
+ import us.ilite.robot.driverinput.DriverInput.EGamePiece;[m
+[31m-import us.ilite.robot.modules.Elevator;[m
+[32m+[m[32mimport us.ilite.robot.modules.ElevatorSingle;[m
+ import us.ilite.robot.modules.HatchFlower;[m
+ import us.ilite.robot.modules.Intake;[m
+ [m
+ public class GroundIntakeHatch extends CommandQueue {[m
+ [m
+[31m-    public GroundIntakeHatch(Elevator pElevator, Intake pIntake, HatchFlower pHatchFlower) {[m
+[32m+[m[32m    public GroundIntakeHatch(/**/ Intake pIntake, HatchFlower pHatchFlower) {[m
+         setCommands([m
+                 new ParallelCommand([m
+[31m-                        new SetElevatorPosition(pElevator, Elevator.EElevatorPosition.HATCH_BOTTOM),[m
+[32m+[m[32m                        new SetElevatorPosition( ElevatorSingle.EElevatorPosition.HATCH_BOTTOM),[m
+                         new ReleaseHatch(pHatchFlower),[m
+                         new SetHatchGrabberExtension(pHatchFlower, HatchFlower.ExtensionState.DOWN)[m
+                 ),[m
+[1mdiff --git a/robot/src/main/java/us/ilite/robot/commands/HandoffHatch.java b/robot/src/main/java/us/ilite/robot/commands/HandoffHatch.java[m
+[1mindex 0f4507f2..e587c720 100644[m
+[1m--- a/robot/src/main/java/us/ilite/robot/commands/HandoffHatch.java[m
+[1m+++ b/robot/src/main/java/us/ilite/robot/commands/HandoffHatch.java[m
+[36m@@ -5,10 +5,10 @@[m [mimport us.ilite.robot.modules.*;[m
+ [m
+ public class HandoffHatch extends CommandQueue {[m
+ [m
+[31m-    public HandoffHatch(Elevator pElevator, Intake pIntake, HatchFlower pHatchFlower) {[m
+[32m+[m[32m    public HandoffHatch(/**/ Intake pIntake, HatchFlower pHatchFlower) {[m
+         setCommands([m
+                 new ParallelCommand([m
+[31m-                        new SetElevatorPosition(pElevator, Elevator.EElevatorPosition.HATCH_BOTTOM),[m
+[32m+[m[32m                        new SetElevatorPosition(ElevatorSingle.EElevatorPosition.HATCH_BOTTOM),[m
+                         new SetHatchGrabberExtension(pHatchFlower, HatchFlower.ExtensionState.DOWN)[m
+                 ),[m
+                 new SetIntakeState(pIntake, Intake.EIntakeState.HANDOFF, EGamePiece.HATCH),[m
+[1mdiff --git a/robot/src/main/java/us/ilite/robot/commands/SetElevatorPosition.java b/robot/src/main/java/us/ilite/robot/commands/SetElevatorPosition.java[m
+[1mindex 7c7fc74f..cc3ae685 100644[m
+[1m--- a/robot/src/main/java/us/ilite/robot/commands/SetElevatorPosition.java[m
+[1m+++ b/robot/src/main/java/us/ilite/robot/commands/SetElevatorPosition.java[m
+[36m@@ -1,28 +1,27 @@[m
+ package us.ilite.robot.commands;[m
+ [m
+[31m-import us.ilite.robot.modules.Elevator;[m
+[32m+[m[32mimport us.ilite.robot.modules.ElevatorSingle;[m
+ [m
+ public class SetElevatorPosition implements ICommand {[m
+ [m
+[31m-    private final Elevator mElevator;[m
+[32m+[m[32m//    private final Elevator mElevator;[m
+ [m
+[31m-    private final Elevator.EElevatorPosition mDesiredPosition;[m
+[32m+[m[32m    private final ElevatorSingle.EElevatorPosition mDesiredPosition;[m
+ [m
+[31m-    public SetElevatorPosition(Elevator pElevator, Elevator.EElevatorPosition pDesiredPosition) {[m
+[31m-        mElevator = pElevator;[m
+[32m+[m[32m    public SetElevatorPosition(/**/ ElevatorSingle.EElevatorPosition pDesiredPosition) {[m
+         mDesiredPosition = pDesiredPosition;[m
+     }[m
+ [m
+     @Override[m
+     public void init(double pNow) {[m
+ [m
+[31m-        mElevator.setDesiredPosition(mDesiredPosition);[m
+[32m+[m[32m        ElevatorSingle.getInstance().setDesiredPosition(mDesiredPosition);[m
+ [m
+     }[m
+ [m
+     @Override[m
+     public boolean update(double pNow) {[m
+[31m-        return mElevator.isAtPosition(mDesiredPosition);[m
+[32m+[m[32m        return ElevatorSingle.getInstance().isAtPosition(mDesiredPosition);[m
+     }[m
+ [m
+     @Override[m
+[1mdiff --git a/robot/src/main/java/us/ilite/robot/driverinput/DriverInput.java b/robot/src/main/java/us/ilite/robot/driverinput/DriverInput.java[m
+[1mindex d19b1bbf..920196f9 100644[m
+[1m--- a/robot/src/main/java/us/ilite/robot/driverinput/DriverInput.java[m
+[1m+++ b/robot/src/main/java/us/ilite/robot/driverinput/DriverInput.java[m
+[36m@@ -34,7 +34,7 @@[m [mpublic class DriverInput extends Module implements IThrottleProvider, ITurnProvi[m
+ [m
+ [m
+     protected final Drive mDrive;[m
+[31m-    protected final Elevator mElevator;[m
+[32m+[m[32m//    protected final Elevator mElevator;[m
+     protected final Intake mIntake;[m
+     protected final PneumaticIntake mPneumaticIntake;[m
+ //    protected final CargoSpit mCargoSpit;[m
+[36m@@ -58,9 +58,9 @@[m [mpublic class DriverInput extends Module implements IThrottleProvider, ITurnProvi[m
+     private ETrackingType mLastTrackingType = null;[m
+     private ETrackingType mTrackingType = null;[m
+ [m
+[31m-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar, boolean pSimulated) {[m
+[32m+[m[32m    public DriverInput(Drive pDrivetrain, /**/ HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar, boolean pSimulated) {[m
+         this.mDrive = pDrivetrain;[m
+[31m-        this.mElevator = pElevator;[m
+[32m+[m[32m//        this.mElevator = pElevator;[m
+         this.mIntake = pIntake;[m
+         this.mPneumaticIntake = pPneumaticIntake;[m
+ //        this.mCargoSpit = pCargoSpit;[m
+[36m@@ -84,11 +84,11 @@[m [mpublic class DriverInput extends Module implements IThrottleProvider, ITurnProvi[m
+         this.mRampRateRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,[m
+                 SystemSettings.kDriveMaxOpenLoopVoltageRampRate,[m
+                 0.0,[m
+[31m-                Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());[m
+[32m+[m[32m                ElevatorSingle.EElevatorPosition.CARGO_TOP.getEncoderRotations());[m
+     }[m
+ [m
+[31m-    public DriverInput(Drive pDrivetrain, Elevator pElevator, HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar) {[m
+[31m-        this(pDrivetrain, pElevator, pHatchFlower, pIntake, pPneumaticIntake, /**/ pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, pFourBar, false);[m
+[32m+[m[32m    public DriverInput(Drive pDrivetrain, /**/ HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar) {[m
+[32m+[m[32m        this(pDrivetrain, pHatchFlower, pIntake, pPneumaticIntake, /**/ pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, pFourBar, false);[m
+     }[m
+ [m
+     @Override[m
+[36m@@ -96,7 +96,7 @@[m [mpublic class DriverInput extends Module implements IThrottleProvider, ITurnProvi[m
+         mRampRateRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,[m
+                 SystemSettings.kDriveMaxOpenLoopVoltageRampRate,[m
+                 0.0,[m
+[31m-                Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());[m
+[32m+[m[32m                ElevatorSingle.EElevatorPosition.CARGO_TOP.getEncoderRotations());[m
+     }[m
+ [m
+     @Override[m
+[36m@@ -285,7 +285,7 @@[m [mpublic class DriverInput extends Module implements IThrottleProvider, ITurnProvi[m
+         double throttle = getThrottle();[m
+ [m
+         if(mData.driverinput.get(DriveTeamInputMap.DRIVER_ACCEL_LIMIT_BYPASS) < 0.5) {[m
+[31m-            double value = mRampRateRangeScale.scaleBtoA(mElevator.getEncoderPosition());[m
+[32m+[m[32m            double value = mRampRateRangeScale.scaleBtoA(ElevatorSingle.getInstance().getEncoderPosition());[m
+             SmartDashboard.putNumber("Current Ramp Rate", value);[m
+             mDrive.setRampRate(value);[m
+         } else {[m
+[36m@@ -331,36 +331,36 @@[m [mpublic class DriverInput extends Module implements IThrottleProvider, ITurnProvi[m
+         }[m
+ [m
+         if(mOperatorInputCodex.isSet(DriveTeamInputMap.OPERATOR_GROUND_POSITION_ELEVATOR)) {[m
+[31m-            mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_BOTTOM);[m
+[32m+[m[32m            ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.HATCH_BOTTOM);[m
+         } else {[m
+             if(mIsCargo) {[m
+                 if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {[m
+[31m-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_BOTTOM);[m
+[32m+[m[32m                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.CARGO_BOTTOM);[m
+                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_LOW_POSITION_ELEVATOR)) {[m
+[31m-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_CARGO_SHIP);[m
+[32m+[m[32m                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.CARGO_CARGO_SHIP);[m
+                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {[m
+[31m-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_MIDDLE);[m
+[32m+[m[32m                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.CARGO_MIDDLE);[m
+                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR)) {[m
+[31m-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_TOP);[m
+[32m+[m[32m                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.CARGO_TOP);[m
+                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_INTAKE_LOADING_STATION)) {[m
+[31m-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.CARGO_LOADING_STATION);[m
+[32m+[m[32m                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.CARGO_LOADING_STATION);[m
+                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {[m
+[31m-                    mElevator.setDesiredPower(manualThrottle);[m
+[32m+[m[32m                    ElevatorSingle.getInstance().setDesiredPower(manualThrottle);[m
+                 } else {[m
+[31m-                    mElevator.setDesiredPower(0d);[m
+[32m+[m[32m                    ElevatorSingle.getInstance().setDesiredPower(0d);[m
+                 }[m
+             } else {[m
+                 if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_BOTTOM_POSITION_ELEVATOR)) {[m
+[31m-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_BOTTOM);[m
+[32m+[m[32m                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.HATCH_BOTTOM);[m
+                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_LOW_POSITION_ELEVATOR)) {[m
+[31m-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_MIDDLE);[m
+[32m+[m[32m                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.HATCH_MIDDLE);[m
+                 } else if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_TOP_POSITION_ELEVATOR) ||[m
+                             mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_MIDDLE_POSITION_ELEVATOR)) {[m
+[31m-                    mElevator.setDesiredPosition(Elevator.EElevatorPosition.HATCH_TOP);[m
+[32m+[m[32m                    ElevatorSingle.getInstance().setDesiredPosition(ElevatorSingle.EElevatorPosition.HATCH_TOP);[m
+                 } else if (mData.driverinput.isSet(DriveTeamInputMap.OPERATOR_CONTROL_ELEVATOR)) {[m
+[31m-                    mElevator.setDesiredPower(manualThrottle);[m
+[32m+[m[32m                    ElevatorSingle.getInstance().setDesiredPower(manualThrottle);[m
+                 } else {[m
+[31m-                    mElevator.setDesiredPower(0d);[m
+[32m+[m[32m                    ElevatorSingle.getInstance().setDesiredPower(0d);[m
+                 }[m
+             }[m
+ [m
+[1mdiff --git a/robot/src/main/java/us/ilite/robot/hardware/NeoDriveHardware.java b/robot/src/main/java/us/ilite/robot/hardware/NeoDriveHardware.java[m
+[1mindex 40473a91..5733ce05 100644[m
+[1m--- a/robot/src/main/java/us/ilite/robot/hardware/NeoDriveHardware.java[m
+[1m+++ b/robot/src/main/java/us/ilite/robot/hardware/NeoDriveHardware.java[m
+[36m@@ -16,7 +16,7 @@[m [mimport us.ilite.lib.drivers.IMU;[m
+ import us.ilite.lib.drivers.Pigeon;[m
+ import us.ilite.lib.drivers.SparkMaxFactory;[m
+ import us.ilite.robot.modules.DriveMessage;[m
+[31m-import us.ilite.robot.modules.Elevator;[m
+[32m+[m[32mimport us.ilite.robot.modules.ElevatorSingle;[m
+ [m
+ public class NeoDriveHardware implements IDriveHardware {[m
+ [m
+[36m@@ -76,8 +76,8 @@[m [mpublic class NeoDriveHardware implements IDriveHardware {[m
+ [m
+         mRangeScale = new RangeScale(SystemSettings.kDriveMinOpenLoopVoltageRampRate,[m
+                 SystemSettings.kDriveMaxOpenLoopVoltageRampRate,[m
+[31m-                Elevator.EElevatorPosition.CARGO_BOTTOM.getEncoderRotations(),[m
+[31m-                Elevator.EElevatorPosition.CARGO_TOP.getEncoderRotations());[m
+[32m+[m[32m                ElevatorSingle.EElevatorPosition.CARGO_BOTTOM.getEncoderRotations(),[m
+[32m+[m[32m                ElevatorSingle.EElevatorPosition.CARGO_TOP.getEncoderRotations());[m
+     }[m
+ [m
+     @Override[m
+[1mdiff --git a/robot/src/main/java/us/ilite/robot/modules/Elevator.java b/robot/src/main/java/us/ilite/robot/modules/Elevator.java[m
+[1mindex 74f04c80..44117db3 100644[m
+[1m--- a/robot/src/main/java/us/ilite/robot/modules/Elevator.java[m
+[1m+++ b/robot/src/main/java/us/ilite/robot/modules/Elevator.java[m
+[36m@@ -1,218 +1,4 @@[m
+[31m-[m
+ package us.ilite.robot.modules;[m
+ [m
+[31m-import com.flybotix.hfr.util.log.ILog;[m
+[31m-import com.flybotix.hfr.util.log.Logger;[m
+[31m-import com.revrobotics.CANPIDController;[m
+[31m-import com.revrobotics.CANSparkMax;[m
+[31m-import com.revrobotics.CANSparkMax.IdleMode;[m
+[31m-import com.revrobotics.CANSparkMaxLowLevel.MotorType;[m
+[31m-import com.revrobotics.ControlType;[m
+[31m-import com.team254.lib.util.Util;[m
+[31m-import us.ilite.common.Data;[m
+[31m-import us.ilite.common.config.SystemSettings;[m
+[31m-import us.ilite.common.types.manipulator.EElevator;[m
+[31m-import us.ilite.common.types.sensor.EPowerDistPanel;[m
+[31m-import us.ilite.lib.drivers.SparkMaxFactory;[m
+[31m-[m
+[31m-[m
+[31m-public class Elevator extends Module {[m
+[31m-[m
+[31m-    private ILog mLog = Logger.createLog(Elevator.class);[m
+[31m-[m
+[31m-    private CANPIDController mCanController;[m
+[31m-    private Data mData;[m
+[31m-[m
+[31m-    private double mSetPoint = 0;[m
+[31m-    private double mDesiredPower = 0;[m
+[31m-    private boolean mRequestedStop = false;[m
+[31m-    EElevatorState mCurrentState;[m
+[31m-    EElevatorPosition mDesiredPosition;[m
+[31m-    CANSparkMax mMasterElevator;[m
+[31m-//    private boolean mDifferentAcceleration = true;[m
+[31m-//    private mLastUp;[m
+[31m-[m
+[31m-    public enum EElevatorState {[m
+[31m-[m
+[31m-        //TODO find all of the values for the power.[m
+[31m-        NORMAL(0),[m
+[31m-        STOP(0),[m
+[31m-        SET_POSITION(0.1);[m
+[31m-[m
+[31m-        private double mPower;[m
+[31m-[m
+[31m-        EElevatorState(double pPower) {[m
+[31m-            this.mPower = pPower;[m
+[31m-        }[m
+[31m-[m
+[31m-        double getPower() {[m
+[31m-            return mPower;[m
+[31m-        }[m
+[31m-[m
+[31m-    }[m
+[31m-[m
+[31m-    public enum EElevatorPosition {[m
+[31m-[m
+[31m-        //TODO find encoder threshold[m
+[31m-        HATCH_BOTTOM(1),[m
+[31m-        HATCH_MIDDLE(17),[m
+[31m-        HATCH_TOP(35),[m
+[31m-        CARGO_BOTTOM(10.5),[m
+[31m-        CARGO_LOADING_STATION(17),[m
+[31m-        CARGO_CARGO_SHIP(16.5),[m
+[31m-        CARGO_MIDDLE(27.5),[m
+[31m-        CARGO_TOP(45);[m
+[31m-[m
+[31m-        private double kEncoderRotations;[m
+[31m-[m
+[31m-        EElevatorPosition(double pEncoderRotations) {[m
+[31m-            this.kEncoderRotations = pEncoderRotations;[m
+[31m-[m
+[31m-        }[m
+[31m-[m
+[31m-        public double getEncoderRotations() {[m
+[31m-            return kEncoderRotations;[m
+[31m-        }[m
+[31m-    }[m
+[31m-[m
+[31m-    public Elevator(Data pData) {[m
+[31m-        this.mData = pData;[m
+[31m-[m
+[31m-        // Create default NEO[m
+[31m-        mMasterElevator = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kElevatorNEOAddress, MotorType.kBrushless);[m
+[31m-        mMasterElevator.setIdleMode(IdleMode.kBrake);[m
+[31m-        mMasterElevator.setClosedLoopRampRate(0);[m
+[31m-        mMasterElevator.setInverted(true);[m
+[31m-[m
+[31m-        this.mCanController = mMasterElevator.getPIDController();[m
+[31m-[m
+[31m-        mMasterElevator.setOpenLoopRampRate(SystemSettings.kElevatorOpenLoopRampRate);[m
+[31m-        mMasterElevator.setSmartCurrentLimit(SystemSettings.kElevatorSmartCurrentLimit);[m
+[31m-        mMasterElevator.setSecondaryCurrentLimit(SystemSettings.kElevatorSecondaryCurrentLimit);[m
+[31m-        mCanController.setOutputRange(SystemSettings.kElevatorClosedLoopMinPower, SystemSettings.kElevatorClosedLoopMaxPower, SystemSettings.kElevatorSmartMotionSlot);[m
+[31m-[m
+[31m-        //Setting PID Coefficients for Motion Magic[m
+[31m-        mCanController.setP(SystemSettings.kElevatorMotionP);[m
+[31m-        mCanController.setI(SystemSettings.kElevatorMotionI);[m
+[31m-        mCanController.setD(SystemSettings.kElevatorMotionD);[m
+[31m-        mCanController.setFF(SystemSettings.kElevatorMotionFF);[m
+[31m-[m
+[31m-        mCanController.setSmartMotionMaxAccel(SystemSettings.kMaxElevatorUpAcceleration, SystemSettings.kElevatorSmartMotionSlot);[m
+[31m-        mCanController.setSmartMotionMinOutputVelocity(SystemSettings.kMinElevatorVelocity, SystemSettings.kElevatorSmartMotionSlot);[m
+[31m-        mCanController.setSmartMotionMaxVelocity(SystemSettings.kMaxElevatorVelocity, SystemSettings.kElevatorSmartMotionSlot);[m
+[31m-        mCanController.setSmartMotionMinOutputVelocity(0, SystemSettings.kElevatorSmartMotionSlot);[m
+[31m-        mCanController.setSmartMotionAllowedClosedLoopError(SystemSettings.kElevatorClosedLoopAllowableError, SystemSettings.kElevatorSmartMotionSlot);[m
+[31m-[m
+[31m-        mMasterElevator.burnFlash();[m
+[31m-[m
+[31m-        zeroEncoder();[m
+[31m-[m
+[31m-        // Make sure the elevator is stopped upon initialization[m
+[31m-        mDesiredPosition = EElevatorPosition.HATCH_BOTTOM;[m
+[31m-        mCurrentState = EElevatorState.STOP;[m
+[31m-    }[m
+[31m-[m
+[31m-    public void shutdown(double pNow) {[m
+[31m-[m
+[31m-    }[m
+[31m-[m
+[31m-    public void modeInit(double pNow) {[m
+[31m-    }[m
+[31m-[m
+[31m-    public void periodicInput(double pNow) {[m
+[31m-[m
+[31m-        mData.elevator.set(EElevator.DESIRED_POWER, mDesiredPower);[m
+[31m-//        mData.elevator.set(EElevator.OUTPUT_POWER, mMasterElevator.getAppliedOutput());[m
+[31m-        mData.elevator.set(EElevator.DESIRED_ENCODER_TICKS, mSetPoint);[m
+[31m-        mData.elevator.set(EElevator.CURRENT_ENCODER_TICKS, getEncoderPosition());[m
+[31m-        mData.elevator.set(EElevator.CURRENT, mMasterElevator.getOutputCurrent());[m
+[31m-//        mData.elevator.set(EElevator.BUS_VOLTAGE, mMasterElevator.getBusVoltage());[m
+[31m-        mData.elevator.set(EElevator.DESIRED_POSITION_TYPE, (double) mDesiredPosition.ordinal());[m
+[31m-        mData.elevator.set(EElevator.CURRENT_STATE, (double) mCurrentState.ordinal());[m
+[31m-[m
+[31m-    }[m
+[31m-[m
+[31m-    public void update(double pNow) {[m
+[31m-[m
+[31m-        switch (mCurrentState) {[m
+[31m-            case NORMAL:[m
+[31m-                mDesiredPower = Util.limit(mDesiredPower, SystemSettings.kElevatorOpenLoopMinPower, SystemSettings.kElevatorOpenLoopMaxPower);[m
+[31m-                mMasterElevator.set(mDesiredPower);[m
+[31m-                break;[m
+[31m-            case STOP:[m
+[31m-                mDesiredPower = 0;[m
+[31m-                break;[m
+[31m-            case SET_POSITION:[m
+[31m-                mSetPoint = mRequestedStop ? mData.elevator.get(EElevator.CURRENT_ENCODER_TICKS) : mDesiredPosition.getEncoderRotations();[m
+[31m-                mDesiredPower = 0;[m
+[31m-                mCanController.setReference(mSetPoint, ControlType.kSmartMotion, 0, SystemSettings.kElevatorFrictionVoltage);[m
+[31m-                gainSchedule();[m
+[31m-                break;[m
+[31m-            default:[m
+[31m-                mLog.error("Somehow reached an unaccounted state with ", mCurrentState.toString());[m
+[31m-                mDesiredPower = 0;[m
+[31m-                break;[m
+[31m-        }[m
+[31m-[m
+[31m-        mRequestedStop = false;[m
+[31m-[m
+[31m-    }[m
+[31m-[m
+[31m-    /**[m
+[31m-     * Resets the encoder[m
+[31m-     * which sets the amount of ticks[m
+[31m-     * to zero[m
+[31m-     */[m
+[31m-    public void zeroEncoder() {[m
+[31m-        mMasterElevator.getEncoder().setPosition(0);[m
+[31m-        mData.elevator.set(EElevator.CURRENT_ENCODER_TICKS, 0.0);[m
+[31m-    }[m
+[31m-[m
+[31m-[m
+[31m-    public void setDesiredPower(double pPower) {[m
+[31m-        mCurrentState = EElevatorState.NORMAL;[m
+[31m-        mDesiredPower = pPower;[m
+[31m-    }[m
+[31m-[m
+[31m-    public double getDesiredPower() {[m
+[31m-        return mDesiredPower;[m
+[31m-    }[m
+[31m-[m
+[31m-    public double getEncoderPosition() {[m
+[31m-        return mMasterElevator.getEncoder().getPosition();[m
+[31m-    }[m
+[31m-[m
+[31m-    public EElevatorPosition getDesiredPosition() {[m
+[31m-        return mDesiredPosition;[m
+[31m-    }[m
+[31m-[m
+[31m-    public EElevatorState getCurrentState() {[m
+[31m-        return mCurrentState;[m
+[31m-    }[m
+[31m-[m
+[31m-    public void setDesiredPosition(EElevatorPosition pDesiredPosition) {[m
+[31m-        mCurrentState = EElevatorState.SET_POSITION;[m
+[31m-        mDesiredPosition = pDesiredPosition;[m
+[31m-    }[m
+[31m-[m
+[31m-    public boolean isAtPosition(EElevatorPosition pPosition) {[m
+[31m-        return mCurrentState == EElevatorState.SET_POSITION && (Math.abs(pPosition.getEncoderRotations() - mData.elevator.get(EElevator.CURRENT_ENCODER_TICKS)) <= SystemSettings.kElevatorAllowableError);[m
+[31m-    }[m
+[31m-[m
+[31m-    public boolean isCurrentLimiting() {[m
+[31m-        return mData.pdp.get(EPowerDistPanel.CURRENT9) > SystemSettings.kElevatorWarnCurrentLimitThreshold;[m
+[31m-    }[m
+[31m-[m
+[31m-    public void gainSchedule() {[m
+[31m-        if ( getDesiredPosition().getEncoderRotations() > getEncoderPosition() /*&& mDifferentAcceleration*/) {[m
+[31m-            mCanController.setSmartMotionMaxAccel(SystemSettings.kMaxElevatorUpAcceleration, SystemSettings.kElevatorSmartMotionSlot);[m
+[31m-        } else /*if ( mDifferentAcceleration ) */{[m
+[31m-            mCanController.setSmartMotionMaxAccel(SystemSettings.kMaxElevatorDownAcceleration, SystemSettings.kElevatorSmartMotionSlot);[m
+[31m-        }[m
+[31m-    }[m
+[31m-[m
+[31m-    public void stop() {[m
+[31m-        mRequestedStop = true;[m
+[31m-    }[m
+[31m-[m
+[31m-}[m
+\ No newline at end of file[m
+[32m+[m[32mpublic class Elevator {[m
+[32m+[m[32m}[m
+[1mdiff --git a/robot/src/main/java/us/ilite/robot/modules/LEDControl.java b/robot/src/main/java/us/ilite/robot/modules/LEDControl.java[m
+[1mindex 8e4cbf01..1fec9087 100644[m
+[1m--- a/robot/src/main/java/us/ilite/robot/modules/LEDControl.java[m
+[1m+++ b/robot/src/main/java/us/ilite/robot/modules/LEDControl.java[m
+[36m@@ -16,7 +16,7 @@[m [mpublic class LEDControl extends Module {[m
+     private Message mCurrentMessage;[m
+     [m
+     private final Drive mDrive;[m
+[31m-    private final Elevator mElevator;[m
+[32m+[m[32m//    private final Elevator mElevator;[m
+     private final PneumaticIntake mPneumaticIntake;[m
+ //    private final CargoSpit mCargoSpit;[m
+     private final HatchFlower mHatchFlower;[m
+[36m@@ -112,9 +112,9 @@[m [mpublic class LEDControl extends Module {[m
+         }[m
+     }[m
+ [m
+[31m-    public LEDControl(Drive mDrive, Elevator mElevator, PneumaticIntake mPneumaticIntake, /*CargoSpit mCargoSpit, */HatchFlower mHatchFlower, FourBar mFourBar, Limelight mLimelight, Data mData) {[m
+[32m+[m[32m    public LEDControl(Drive mDrive,/* Elevator mElevator, */PneumaticIntake mPneumaticIntake, /*CargoSpit mCargoSpit, */HatchFlower mHatchFlower, FourBar mFourBar, Limelight mLimelight, Data mData) {[m
+         this.mDrive = mDrive;[m
+[31m-        this.mElevator = mElevator;[m
+[32m+[m[32m//        this.mElevator = mElevator;[m
+         this.mPneumaticIntake = mPneumaticIntake;[m
+ //        this.mCargoSpit = mCargoSpit;[m
+         this.mHatchFlower = mHatchFlower;[m
+[36m@@ -149,7 +149,7 @@[m [mpublic class LEDControl extends Module {[m
+         this.mCurrentMessage = Message.NONE;[m
+         [m
+         if(CargoSpitSingle.getInstance().isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;[m
+[31m-        if(mElevator.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;[m
+[32m+[m[32m        if(ElevatorSingle.getInstance().isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;[m
+         if(mDrive.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;[m
+         if(mFourBar.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;[m
+         [m

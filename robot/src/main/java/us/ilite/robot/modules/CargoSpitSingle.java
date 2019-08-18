@@ -19,7 +19,7 @@ public class CargoSpitSingle extends Module {
     private final double kZero = 0.0;
     private final double kLaunchPower = 0.70;
 
-    private ILog mLog = Logger.createLog(CargoSpit.class);
+    private ILog mLog = Logger.createLog(CargoSpitSingle.class);
 
     private VictorSPX mLeftMotor, mRightMotor;
     private DigitalInput mBeambreak;

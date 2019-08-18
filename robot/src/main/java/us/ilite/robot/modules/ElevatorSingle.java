@@ -1,12 +1,10 @@
-
 package us.ilite.robot.modules;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
 import com.team254.lib.util.Util;
 import us.ilite.common.Data;
@@ -15,10 +13,10 @@ import us.ilite.common.types.manipulator.EElevator;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.SparkMaxFactory;
 
+public class ElevatorSingle extends Module{
+    private static ElevatorSingle elevatorInstance = new ElevatorSingle();
 
-public class Elevator extends Module {
-
-    private ILog mLog = Logger.createLog(Elevator.class);
+    private ILog mLog = Logger.createLog(ElevatorSingle.class);
 
     private CANPIDController mCanController;
     private Data mData;
@@ -26,11 +24,58 @@ public class Elevator extends Module {
     private double mSetPoint = 0;
     private double mDesiredPower = 0;
     private boolean mRequestedStop = false;
-    EElevatorState mCurrentState;
-    EElevatorPosition mDesiredPosition;
+    ElevatorSingle.EElevatorState mCurrentState;
+    ElevatorSingle.EElevatorPosition mDesiredPosition;
     CANSparkMax mMasterElevator;
 //    private boolean mDifferentAcceleration = true;
 //    private mLastUp;
+
+    public static ElevatorSingle getInstance() {
+        if ( elevatorInstance == null ) {
+            elevatorInstance = new ElevatorSingle();
+        }
+        return elevatorInstance;
+    }
+
+    private ElevatorSingle() {
+        // Create default NEO
+        mMasterElevator = SparkMaxFactory.createDefaultSparkMax( SystemSettings.kElevatorNEOAddress, CANSparkMaxLowLevel.MotorType.kBrushless);
+        mMasterElevator.setIdleMode( CANSparkMax.IdleMode.kBrake);
+        mMasterElevator.setClosedLoopRampRate(0);
+        mMasterElevator.setInverted(true);
+
+        this.mCanController = mMasterElevator.getPIDController();
+
+        mMasterElevator.setOpenLoopRampRate(SystemSettings.kElevatorOpenLoopRampRate);
+        mMasterElevator.setSmartCurrentLimit(SystemSettings.kElevatorSmartCurrentLimit);
+        mMasterElevator.setSecondaryCurrentLimit(SystemSettings.kElevatorSecondaryCurrentLimit);
+        mCanController.setOutputRange(SystemSettings.kElevatorClosedLoopMinPower, SystemSettings.kElevatorClosedLoopMaxPower, SystemSettings.kElevatorSmartMotionSlot);
+
+        //Setting PID Coefficients for Motion Magic
+        mCanController.setP(SystemSettings.kElevatorMotionP);
+        mCanController.setI(SystemSettings.kElevatorMotionI);
+        mCanController.setD(SystemSettings.kElevatorMotionD);
+        mCanController.setFF(SystemSettings.kElevatorMotionFF);
+
+        mCanController.setSmartMotionMaxAccel(SystemSettings.kMaxElevatorUpAcceleration, SystemSettings.kElevatorSmartMotionSlot);
+        mCanController.setSmartMotionMinOutputVelocity(SystemSettings.kMinElevatorVelocity, SystemSettings.kElevatorSmartMotionSlot);
+        mCanController.setSmartMotionMaxVelocity(SystemSettings.kMaxElevatorVelocity, SystemSettings.kElevatorSmartMotionSlot);
+        mCanController.setSmartMotionMinOutputVelocity(0, SystemSettings.kElevatorSmartMotionSlot);
+        mCanController.setSmartMotionAllowedClosedLoopError(SystemSettings.kElevatorClosedLoopAllowableError, SystemSettings.kElevatorSmartMotionSlot);
+
+        mMasterElevator.burnFlash();
+
+        zeroEncoder();
+
+        // Make sure the elevator is stopped upon initialization
+        mDesiredPosition = ElevatorSingle.EElevatorPosition.HATCH_BOTTOM;
+        mCurrentState = ElevatorSingle.EElevatorState.STOP;
+    }
+
+    public void setData( Data pData) {
+        this.mData = pData;
+    }
+
 
     public enum EElevatorState {
 
@@ -75,42 +120,6 @@ public class Elevator extends Module {
         }
     }
 
-    public Elevator(Data pData) {
-        this.mData = pData;
-
-        // Create default NEO
-        mMasterElevator = SparkMaxFactory.createDefaultSparkMax(SystemSettings.kElevatorNEOAddress, MotorType.kBrushless);
-        mMasterElevator.setIdleMode(IdleMode.kBrake);
-        mMasterElevator.setClosedLoopRampRate(0);
-        mMasterElevator.setInverted(true);
-
-        this.mCanController = mMasterElevator.getPIDController();
-
-        mMasterElevator.setOpenLoopRampRate(SystemSettings.kElevatorOpenLoopRampRate);
-        mMasterElevator.setSmartCurrentLimit(SystemSettings.kElevatorSmartCurrentLimit);
-        mMasterElevator.setSecondaryCurrentLimit(SystemSettings.kElevatorSecondaryCurrentLimit);
-        mCanController.setOutputRange(SystemSettings.kElevatorClosedLoopMinPower, SystemSettings.kElevatorClosedLoopMaxPower, SystemSettings.kElevatorSmartMotionSlot);
-
-        //Setting PID Coefficients for Motion Magic
-        mCanController.setP(SystemSettings.kElevatorMotionP);
-        mCanController.setI(SystemSettings.kElevatorMotionI);
-        mCanController.setD(SystemSettings.kElevatorMotionD);
-        mCanController.setFF(SystemSettings.kElevatorMotionFF);
-
-        mCanController.setSmartMotionMaxAccel(SystemSettings.kMaxElevatorUpAcceleration, SystemSettings.kElevatorSmartMotionSlot);
-        mCanController.setSmartMotionMinOutputVelocity(SystemSettings.kMinElevatorVelocity, SystemSettings.kElevatorSmartMotionSlot);
-        mCanController.setSmartMotionMaxVelocity(SystemSettings.kMaxElevatorVelocity, SystemSettings.kElevatorSmartMotionSlot);
-        mCanController.setSmartMotionMinOutputVelocity(0, SystemSettings.kElevatorSmartMotionSlot);
-        mCanController.setSmartMotionAllowedClosedLoopError(SystemSettings.kElevatorClosedLoopAllowableError, SystemSettings.kElevatorSmartMotionSlot);
-
-        mMasterElevator.burnFlash();
-
-        zeroEncoder();
-
-        // Make sure the elevator is stopped upon initialization
-        mDesiredPosition = EElevatorPosition.HATCH_BOTTOM;
-        mCurrentState = EElevatorState.STOP;
-    }
 
     public void shutdown(double pNow) {
 
@@ -121,7 +130,7 @@ public class Elevator extends Module {
 
     public void periodicInput(double pNow) {
 
-        mData.elevator.set(EElevator.DESIRED_POWER, mDesiredPower);
+        mData.elevator.set( EElevator.DESIRED_POWER, mDesiredPower);
 //        mData.elevator.set(EElevator.OUTPUT_POWER, mMasterElevator.getAppliedOutput());
         mData.elevator.set(EElevator.DESIRED_ENCODER_TICKS, mSetPoint);
         mData.elevator.set(EElevator.CURRENT_ENCODER_TICKS, getEncoderPosition());
@@ -155,7 +164,7 @@ public class Elevator extends Module {
         }
 
         mRequestedStop = false;
-
+        System.out.println("CURRENT STATE=================================================== " + mCurrentState );
     }
 
     /**
@@ -165,12 +174,12 @@ public class Elevator extends Module {
      */
     public void zeroEncoder() {
         mMasterElevator.getEncoder().setPosition(0);
-        mData.elevator.set(EElevator.CURRENT_ENCODER_TICKS, 0.0);
+//        mData.elevator.set( EElevator.CURRENT_ENCODER_TICKS, 0.0 );
     }
 
 
     public void setDesiredPower(double pPower) {
-        mCurrentState = EElevatorState.NORMAL;
+        mCurrentState = ElevatorSingle.EElevatorState.NORMAL;
         mDesiredPower = pPower;
     }
 
@@ -182,25 +191,25 @@ public class Elevator extends Module {
         return mMasterElevator.getEncoder().getPosition();
     }
 
-    public EElevatorPosition getDesiredPosition() {
+    public ElevatorSingle.EElevatorPosition getDesiredPosition() {
         return mDesiredPosition;
     }
 
-    public EElevatorState getCurrentState() {
+    public ElevatorSingle.EElevatorState getCurrentState() {
         return mCurrentState;
     }
 
-    public void setDesiredPosition(EElevatorPosition pDesiredPosition) {
-        mCurrentState = EElevatorState.SET_POSITION;
+    public void setDesiredPosition( ElevatorSingle.EElevatorPosition pDesiredPosition) {
+        mCurrentState = ElevatorSingle.EElevatorState.SET_POSITION;
         mDesiredPosition = pDesiredPosition;
     }
 
-    public boolean isAtPosition(EElevatorPosition pPosition) {
-        return mCurrentState == EElevatorState.SET_POSITION && (Math.abs(pPosition.getEncoderRotations() - mData.elevator.get(EElevator.CURRENT_ENCODER_TICKS)) <= SystemSettings.kElevatorAllowableError);
+    public boolean isAtPosition( ElevatorSingle.EElevatorPosition pPosition) {
+        return mCurrentState == ElevatorSingle.EElevatorState.SET_POSITION && (Math.abs(pPosition.getEncoderRotations() - mData.elevator.get(EElevator.CURRENT_ENCODER_TICKS)) <= SystemSettings.kElevatorAllowableError);
     }
 
     public boolean isCurrentLimiting() {
-        return mData.pdp.get(EPowerDistPanel.CURRENT9) > SystemSettings.kElevatorWarnCurrentLimitThreshold;
+        return mData.pdp.get( EPowerDistPanel.CURRENT9) > SystemSettings.kElevatorWarnCurrentLimitThreshold;
     }
 
     public void gainSchedule() {
@@ -214,5 +223,4 @@ public class Elevator extends Module {
     public void stop() {
         mRequestedStop = true;
     }
-
 }
