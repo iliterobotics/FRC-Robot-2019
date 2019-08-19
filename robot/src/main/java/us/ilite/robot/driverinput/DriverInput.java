@@ -36,7 +36,6 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     protected final Drive mDrive;
 //    protected final Elevator mElevator;
     protected final Intake mIntake;
-    protected final PneumaticIntake mPneumaticIntake;
 //    protected final CargoSpit mCargoSpit;
     protected final HatchFlower mHatchFlower;
     protected final FourBar mFourBar;
@@ -58,11 +57,10 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private ETrackingType mLastTrackingType = null;
     private ETrackingType mTrackingType = null;
 
-    public DriverInput(Drive pDrivetrain, /**/ HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, /**/ HatchFlower pHatchFlower, Intake pIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar, boolean pSimulated) {
         this.mDrive = pDrivetrain;
 //        this.mElevator = pElevator;
         this.mIntake = pIntake;
-        this.mPneumaticIntake = pPneumaticIntake;
 //        this.mCargoSpit = pCargoSpit;
         this.mHatchFlower = pHatchFlower;
         this.mLimelight = pLimelight;
@@ -87,8 +85,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 ElevatorSingle.EElevatorPosition.CARGO_TOP.getEncoderRotations());
     }
 
-    public DriverInput(Drive pDrivetrain, /**/ HatchFlower pHatchFlower, Intake pIntake, PneumaticIntake pPneumaticIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar) {
-        this(pDrivetrain, pHatchFlower, pIntake, pPneumaticIntake, /**/ pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, pFourBar, false);
+    public DriverInput(Drive pDrivetrain, /**/ HatchFlower pHatchFlower, Intake pIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar) {
+        this(pDrivetrain, pHatchFlower, pIntake, /**/ pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, pFourBar, false);
     }
 
     @Override
@@ -206,16 +204,16 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
                 // If both ground intake and score are held, reverse the roller
                 if( mData.operatorinput.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
-                    mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.OUTTAKING);
+                    PneumaticSingle.getInstance().setDesiredPosition( PneumaticSingle.EPneumaticIntakePosition.OUTTAKING);
                 } else {
-                    mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.INTAKING);
+                    PneumaticSingle.getInstance().setDesiredPosition( PneumaticSingle.EPneumaticIntakePosition.INTAKING);
                 }
 
             } else {
-                mPneumaticIntake.setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition.STOWED );
+                PneumaticSingle.getInstance().setDesiredPosition( PneumaticSingle.EPneumaticIntakePosition.STOWED );
             }
         } else {
-            mPneumaticIntake.setDesiredPosition(PneumaticIntake.EPneumaticIntakePosition.STOWED);
+            PneumaticSingle.getInstance().setDesiredPosition(PneumaticSingle.EPneumaticIntakePosition.STOWED);
         }
     }
 

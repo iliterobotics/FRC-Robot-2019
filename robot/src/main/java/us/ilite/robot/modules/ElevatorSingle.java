@@ -24,6 +24,7 @@ public class ElevatorSingle extends Module{
     private double mSetPoint = 0;
     private double mDesiredPower = 0;
     private boolean mRequestedStop = false;
+    private boolean firstTime = true;
     ElevatorSingle.EElevatorState mCurrentState;
     ElevatorSingle.EElevatorPosition mDesiredPosition;
     CANSparkMax mMasterElevator;
@@ -65,7 +66,6 @@ public class ElevatorSingle extends Module{
 
         mMasterElevator.burnFlash();
 
-        zeroEncoder();
 
         // Make sure the elevator is stopped upon initialization
         mDesiredPosition = ElevatorSingle.EElevatorPosition.HATCH_BOTTOM;
@@ -143,6 +143,10 @@ public class ElevatorSingle extends Module{
 
     public void update(double pNow) {
 
+        if ( firstTime ) {
+            zeroEncoder();
+        }
+
         switch (mCurrentState) {
             case NORMAL:
                 mDesiredPower = Util.limit(mDesiredPower, SystemSettings.kElevatorOpenLoopMinPower, SystemSettings.kElevatorOpenLoopMaxPower);
@@ -164,6 +168,7 @@ public class ElevatorSingle extends Module{
         }
 
         mRequestedStop = false;
+        firstTime = false;
         System.out.println("CURRENT STATE=================================================== " + mCurrentState );
     }
 
@@ -174,7 +179,7 @@ public class ElevatorSingle extends Module{
      */
     public void zeroEncoder() {
         mMasterElevator.getEncoder().setPosition(0);
-//        mData.elevator.set( EElevator.CURRENT_ENCODER_TICKS, 0.0 );
+        mData.elevator.set( EElevator.CURRENT_ENCODER_TICKS, 0.0 );
     }
 
 

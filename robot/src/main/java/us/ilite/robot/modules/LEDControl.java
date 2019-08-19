@@ -17,7 +17,7 @@ public class LEDControl extends Module {
     
     private final Drive mDrive;
 //    private final Elevator mElevator;
-    private final PneumaticIntake mPneumaticIntake;
+//    private final PneumaticIntake mPneumaticIntake;
 //    private final CargoSpit mCargoSpit;
     private final HatchFlower mHatchFlower;
     private final FourBar mFourBar;
@@ -112,10 +112,10 @@ public class LEDControl extends Module {
         }
     }
 
-    public LEDControl(Drive mDrive,/* Elevator mElevator, */PneumaticIntake mPneumaticIntake, /*CargoSpit mCargoSpit, */HatchFlower mHatchFlower, FourBar mFourBar, Limelight mLimelight, Data mData) {
+    public LEDControl(Drive mDrive,/* Elevator mElevator, */ /*CargoSpit mCargoSpit, */HatchFlower mHatchFlower, FourBar mFourBar, Limelight mLimelight, Data mData) {
         this.mDrive = mDrive;
 //        this.mElevator = mElevator;
-        this.mPneumaticIntake = mPneumaticIntake;
+//        this.mPneumaticIntake = mPneumaticIntake;
 //        this.mCargoSpit = mCargoSpit;
         this.mHatchFlower = mHatchFlower;
         this.mFourBar = mFourBar;

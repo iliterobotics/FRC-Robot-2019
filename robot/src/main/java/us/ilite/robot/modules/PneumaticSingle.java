@@ -11,8 +11,8 @@ import us.ilite.robot.hardware.SolenoidWrapper;
 public class PneumaticSingle extends Module {
     private static PneumaticSingle pneumaticInstance = new PneumaticSingle();
 
-    PneumaticIntake.EPneumaticIntakePosition mDesiredPosition;
-    PneumaticIntake.EPneumaticIntakePosition mCurrentPosition;
+    PneumaticSingle.EPneumaticIntakePosition mDesiredPosition;
+    PneumaticSingle.EPneumaticIntakePosition mCurrentPosition;
     VictorSPX mRollerVictor;
 
     private Solenoid mIntake;
@@ -21,11 +21,15 @@ public class PneumaticSingle extends Module {
     private double mPower = 0;
 
     private PneumaticSingle () {
-        this.mDesiredPosition = PneumaticIntake.EPneumaticIntakePosition.STOWED;
-        this.mCurrentPosition = PneumaticIntake.EPneumaticIntakePosition.STOWED;
+        this.mDesiredPosition = PneumaticSingle.EPneumaticIntakePosition.STOWED;
+        this.mCurrentPosition = PneumaticSingle.EPneumaticIntakePosition.STOWED;
         this.mIntake = new Solenoid( SystemSettings.kCANAddressPCM, 1 );
         this.mIntakeSolenoid = new SolenoidWrapper(mIntake);
         mRollerVictor = TalonSRXFactory.createDefaultVictor( SystemSettings.kCargoIntakeSPXLowerAddress );
+    }
+
+    public void setData( Data pData ) {
+        this.mData = pData;
     }
 
     public enum EPneumaticIntakePosition {
@@ -85,7 +89,7 @@ public class PneumaticSingle extends Module {
         mPower = 0;
     }
 
-    public void setDesiredPosition( PneumaticIntake.EPneumaticIntakePosition pDesiredPosition) {
+    public void setDesiredPosition( PneumaticSingle.EPneumaticIntakePosition pDesiredPosition) {
         mDesiredPosition = pDesiredPosition;
     }
 

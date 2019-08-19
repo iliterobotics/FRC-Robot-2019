@@ -59,9 +59,8 @@ public class Robot extends TimedRobot {
     private final HatchFlower mHatchFlower = new HatchFlower(mData);
     private final Limelight mLimelight = new Limelight(mData);
     private final VisionGyro mVisionGyro = new VisionGyro(mData);
-    private final PneumaticIntake mPneumaticIntake = new PneumaticIntake(mData);
-    private final LEDControl mLEDControl = new LEDControl(mDrive, mPneumaticIntake,/* mCargoSpit,*/ mHatchFlower, mFourBar, mLimelight, mData);
-    private final DriverInput mDriverInput = new DriverInput( mDrive, mHatchFlower, mIntake, mPneumaticIntake,/* mCargoSpit,*/ mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, false  );
+    private final LEDControl mLEDControl = new LEDControl(mDrive, /* mCargoSpit,*/ mHatchFlower, mFourBar, mLimelight, mData);
+    private final DriverInput mDriverInput = new DriverInput( mDrive, mHatchFlower, mIntake, /* mCargoSpit,*/ mLimelight, mData, mTeleopCommandManager, mAutonomousCommandManager, mFourBar, false  );
 
     private final TrajectoryGenerator mTrajectoryGenerator = new TrajectoryGenerator(mDriveController);
     private final AutonomousRoutines mAutonomousRoutines = new AutonomousRoutines(mTrajectoryGenerator, mDrive,
@@ -101,6 +100,7 @@ public class Robot extends TimedRobot {
         mRunningModules.setModules();
         CargoSpitSingle.getInstance().setData( mData );
         ElevatorSingle.getInstance().setData( mData );
+        PneumaticSingle.getInstance().setData( mData );
 
         // Generate trajectories on power-on on there's no delay when autonomous is started
         try {
@@ -137,7 +137,7 @@ public class Robot extends TimedRobot {
         mSettings.loadFromNetworkTables();
 
         // Init modules after commands are set
-        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mTeleopCommandManager, mHatchFlower, /*mIntake,*/ CargoSpitSingle.getInstance(), mPneumaticIntake, mFourBar/*, mLEDControl*/);
+        mRunningModules.setModules(mDriverInput, mAutonomousCommandManager, mTeleopCommandManager, mHatchFlower, /*mIntake,*/ CargoSpitSingle.getInstance(), PneumaticSingle.getInstance(), mFourBar/*, mLEDControl*/, ElevatorSingle.getInstance());
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
@@ -161,7 +161,7 @@ public class Robot extends TimedRobot {
 
         mSettings.loadFromNetworkTables();
 
-        mRunningModules.setModules(mDriverInput, mTeleopCommandManager, mHatchFlower, /*mIntake,*/ CargoSpitSingle.getInstance(), mPneumaticIntake, mFourBar, mLEDControl, ElevatorSingle.getInstance());
+        mRunningModules.setModules(mDriverInput, mTeleopCommandManager, mHatchFlower, /*mIntake,*/ CargoSpitSingle.getInstance(), PneumaticSingle.getInstance(), mFourBar, mLEDControl, ElevatorSingle.getInstance());
         mRunningModules.modeInit(mClock.getCurrentTime());
         mRunningModules.periodicInput(mClock.getCurrentTime());
 
