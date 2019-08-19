@@ -2,7 +2,6 @@ package us.ilite.robot.modules;
 
 import com.flybotix.hfr.util.log.ILog;
 import com.flybotix.hfr.util.log.Logger;
-
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import us.ilite.common.Data;
@@ -10,17 +9,10 @@ import us.ilite.common.config.SystemSettings;
 import us.ilite.common.types.drive.EDriveData;
 import us.ilite.robot.hardware.SolenoidWrapper;
 
-/**
- * Control the Hatch Flower
- *
- * The Hatch Capture button will take precedence over the Hatch Push button.
- * Once the Hatch Capture button is pressed, the hatch flower will transition to
- * the CAPTURE state and stay there until the Hatch Push button is pressed.
- * Then the Hatch Flower will push the hatch and go to the RELEASE configuration.
- */
-public class HatchFlower extends Module {
+public class HatchFlowerSingle extends Module{
+    private static HatchFlowerSingle HatchFlowerInstance = new HatchFlowerSingle();
 
-    private ILog mLog = Logger.createLog(HatchFlower.class);
+    private ILog mLog = Logger.createLog(HatchFlowerSingle.class);
 
     private Data mData;
 
@@ -30,8 +22,8 @@ public class HatchFlower extends Module {
     private SolenoidWrapper mGrabSolenoid;
     private SolenoidWrapper mExtendSolenoid;
 
-    private GrabberState mLastGrabberState, mGrabberState;
-    private ExtensionState mExtensionState;
+    private HatchFlowerSingle.GrabberState mLastGrabberState, mGrabberState;
+    private HatchFlowerSingle.ExtensionState mExtensionState;
 
     private double mReleaseDistance = 0;
 
@@ -61,28 +53,25 @@ public class HatchFlower extends Module {
         }
     }
 
-    public HatchFlower(Data pData) {
-        mData = pData;
+    public static HatchFlowerSingle getInstance() {
+        return HatchFlowerInstance;
+    }
 
-        // TODO Do we need to pass the CAN Addresses in via the constructor?
-        mGrab = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
+    private HatchFlowerSingle() {
+        mGrab = new Solenoid( SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerOpenCloseSolenoidAddress);
         mExtend = new Solenoid(SystemSettings.kCANAddressPCM, SystemSettings.kHatchFlowerExtensionSolenoidAddress);
         mGrabSolenoid = new SolenoidWrapper(mGrab);
         mExtendSolenoid = new SolenoidWrapper(mExtend);
 
         // Init Hatch Flower to grab state - Per JKnight we will start with a hatch or cargo onboard
-        this.mLastGrabberState = GrabberState.GRAB;
-        this.mGrabberState = GrabberState.GRAB;
-        this.mExtensionState = ExtensionState.UP;
+        this.mLastGrabberState = HatchFlowerSingle.GrabberState.GRAB;
+        this.mGrabberState = HatchFlowerSingle.GrabberState.GRAB;
+        this.mExtensionState = HatchFlowerSingle.ExtensionState.UP;
 
-        this.mGrabSolenoid.set(GrabberState.GRAB.grabber);
-        this.mExtendSolenoid.set(ExtensionState.UP.extension);
-
+        this.mGrabSolenoid.set( HatchFlowerSingle.GrabberState.GRAB.grabber);
+        this.mExtendSolenoid.set( HatchFlowerSingle.ExtensionState.UP.extension);
     }
 
-    /**
-     *
-     */
     @Override
     public void modeInit(double pNow) {
         mLog.error("MODE INIT");
@@ -99,7 +88,7 @@ public class HatchFlower extends Module {
         mGrabSolenoid.set(mGrabberState.grabber);
         mExtendSolenoid.set(mExtensionState.extension);
 
-        if(hasGrabberStateChanged() && mGrabberState == GrabberState.RELEASE && mExtensionState == ExtensionState.DOWN) {
+        if(hasGrabberStateChanged() && mGrabberState == HatchFlowerSingle.GrabberState.RELEASE && mExtensionState == HatchFlowerSingle.ExtensionState.DOWN) {
             mReleaseDistance = getAverageDistanceTraveled();
             mBackupTimer.reset();
             mBackupTimer.start();
@@ -121,14 +110,14 @@ public class HatchFlower extends Module {
      * Configure the solenoids to capture a hatch
      */
     public void captureHatch() {
-        mGrabberState = GrabberState.GRAB;
+        mGrabberState = HatchFlowerSingle.GrabberState.GRAB;
     }
 
     /**
      * Configure the solenoids to push the hatch
      */
     public void pushHatch() {
-        mGrabberState = GrabberState.RELEASE;
+        mGrabberState = HatchFlowerSingle.GrabberState.RELEASE;
     }
 
     public boolean shouldBackUp() {
@@ -136,10 +125,10 @@ public class HatchFlower extends Module {
         double distanceDelta = mReleaseDistance - getAverageDistanceTraveled();
 
         return
-            mGrabberState == GrabberState.RELEASE &&
-            mExtensionState == ExtensionState.DOWN &&
-            distanceDelta <= SystemSettings.kHatchFlowerReleaseDistance &&
-            distanceDelta > 0;
+                mGrabberState == HatchFlowerSingle.GrabberState.RELEASE &&
+                        mExtensionState == HatchFlowerSingle.ExtensionState.DOWN &&
+                        distanceDelta <= SystemSettings.kHatchFlowerReleaseDistance &&
+                        distanceDelta > 0;
 
 //        return mBackupTimer.get() <= SystemSettings.kHatchFlowerReleaseTime;
     }
@@ -149,22 +138,22 @@ public class HatchFlower extends Module {
     }
 
     private double getAverageDistanceTraveled() {
-        return (mData.drive.get(EDriveData.LEFT_POS_INCHES) + mData.drive.get(EDriveData.LEFT_POS_INCHES)) / 2.0;
+        return (mData.drive.get( EDriveData.LEFT_POS_INCHES) + mData.drive.get(EDriveData.LEFT_POS_INCHES)) / 2.0;
     }
 
     /**
      * Sets whether hatch grabber is up or down
      * @param pExtensionState
      */
-    public void setFlowerExtended(ExtensionState pExtensionState) {
+    public void setFlowerExtended( HatchFlowerSingle.ExtensionState pExtensionState) {
         mExtensionState = pExtensionState;
     }
 
-    public ExtensionState getExtensionState() {
+    public HatchFlowerSingle.ExtensionState getExtensionState() {
         return mExtensionState;
     }
 
-    public GrabberState getGrabberState() {
+    public HatchFlowerSingle.GrabberState getGrabberState() {
         return mGrabberState;
     }
 
@@ -176,4 +165,7 @@ public class HatchFlower extends Module {
         return false;
     }
 
+    public void setData( Data pData) {
+        this.mData = pData;
+    }
 }

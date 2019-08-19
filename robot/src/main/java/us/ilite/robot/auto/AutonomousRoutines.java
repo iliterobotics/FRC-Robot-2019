@@ -29,7 +29,6 @@ public class AutonomousRoutines {
 //    private Elevator mElevator;
     private Intake mIntake;
 //    private CargoSpit mCargoSpit;
-    private HatchFlower mHatchFlower;
     private Limelight mLimelight;
     private VisionGyro mVisionGyro;
     private Data mData;
@@ -37,18 +36,17 @@ public class AutonomousRoutines {
     private MiddleToMiddleCargoToSideRocket mMiddleToMiddleCargoToSideRocket;
     private ICommand[] mMiddleToMiddleCargoToSideRocketSequence;
 
-    public AutonomousRoutines(TrajectoryGenerator mTrajectoryGenerator, Drive mDrive, Intake mIntake, /**/ HatchFlower mHatchFlower, Limelight mLimelight, VisionGyro mVisionGyro, Data mData) {
+    public AutonomousRoutines(TrajectoryGenerator mTrajectoryGenerator, Drive mDrive, Intake mIntake, /**/ Limelight mLimelight, VisionGyro mVisionGyro, Data mData) {
         this.mTrajectoryGenerator = mTrajectoryGenerator;
         this.mDrive = mDrive;
 //        this.mElevator = mElevator;
         this.mIntake = mIntake;
 //        this.mCargoSpit = mCargoSpit;
-        this.mHatchFlower = mHatchFlower;
         this.mLimelight = mLimelight;
         this.mVisionGyro = mVisionGyro;
         this.mData = mData;
 
-        this.mMiddleToMiddleCargoToSideRocket = new MiddleToMiddleCargoToSideRocket(mTrajectoryGenerator, mData, mDrive, mHatchFlower, mLimelight, mVisionGyro);
+        this.mMiddleToMiddleCargoToSideRocket = new MiddleToMiddleCargoToSideRocket(mTrajectoryGenerator, mData, mDrive, mLimelight, mVisionGyro);
     }
 
     public void generateTrajectories() {

@@ -1,11 +1,11 @@
 package us.ilite.robot.commands;
 
-import us.ilite.robot.modules.HatchFlower;
+import us.ilite.robot.modules.HatchFlowerSingle;
 
 public class GrabHatch extends FunctionalCommand {
 
-    public GrabHatch(HatchFlower pHatchFlower) {
-        super(pHatchFlower::captureHatch, () -> pHatchFlower.getGrabberState() == HatchFlower.GrabberState.GRAB);
+    public GrabHatch() {
+        super( HatchFlowerSingle.getInstance()::captureHatch, () -> HatchFlowerSingle.getInstance().getGrabberState() == HatchFlowerSingle.GrabberState.GRAB);
     }
 
 }

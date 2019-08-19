@@ -19,7 +19,7 @@ public class LEDControl extends Module {
 //    private final Elevator mElevator;
 //    private final PneumaticIntake mPneumaticIntake;
 //    private final CargoSpit mCargoSpit;
-    private final HatchFlower mHatchFlower;
+//    private final HatchFlower mHatchFlower;
     private final FourBar mFourBar;
     private final Limelight mLimelight;
     private final Data mData;
@@ -112,12 +112,12 @@ public class LEDControl extends Module {
         }
     }
 
-    public LEDControl(Drive mDrive,/* Elevator mElevator, */ /*CargoSpit mCargoSpit, */HatchFlower mHatchFlower, FourBar mFourBar, Limelight mLimelight, Data mData) {
+    public LEDControl(Drive mDrive,/* Elevator mElevator, */ /*CargoSpit mCargoSpit, */FourBar mFourBar, Limelight mLimelight, Data mData) {
         this.mDrive = mDrive;
 //        this.mElevator = mElevator;
 //        this.mPneumaticIntake = mPneumaticIntake;
 //        this.mCargoSpit = mCargoSpit;
-        this.mHatchFlower = mHatchFlower;
+//        this.mHatchFlower = mHatchFlower;
         this.mFourBar = mFourBar;
         this.mLimelight = mLimelight;
         this.mData = mData;
@@ -154,10 +154,10 @@ public class LEDControl extends Module {
         if(mFourBar.isCurrentLimiting()) mCurrentMessage = Message.CURRENT_LIMITING;
         
         if(CargoSpitSingle.getInstance().hasCargo()) mCurrentMessage = Message.HAS_CARGO;
-        if(mHatchFlower.hasHatch()) mCurrentMessage = Message.HAS_HATCH;
+        if(HatchFlowerSingle.getInstance().hasHatch()) mCurrentMessage = Message.HAS_HATCH;
 
         if(CargoSpitSingle.getInstance().isOuttaking()) mCurrentMessage = Message.SPITTING_CARGO;
-        if(mHatchFlower.shouldBackUp()) mCurrentMessage = Message.KICKING_HATCH;
+        if(HatchFlowerSingle.getInstance().shouldBackUp()) mCurrentMessage = Message.KICKING_HATCH;
 
         if(mLimelight.getTracking() != ETrackingType.NONE) mCurrentMessage = Message.VISION_TRACKING;
 

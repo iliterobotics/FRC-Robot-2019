@@ -21,7 +21,6 @@ import us.ilite.lib.drivers.ECommonNeutralMode;
 import us.ilite.robot.commands.LimelightTargetLock;
 import us.ilite.robot.modules.Drive;
 import us.ilite.robot.modules.DriveMessage;
-import us.ilite.robot.modules.HatchFlower;
 import us.ilite.robot.modules.*;
 import us.ilite.robot.modules.Module;
 import us.ilite.robot.modules.Intake.EIntakeState;
@@ -37,7 +36,6 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 //    protected final Elevator mElevator;
     protected final Intake mIntake;
 //    protected final CargoSpit mCargoSpit;
-    protected final HatchFlower mHatchFlower;
     protected final FourBar mFourBar;
     private final CommandManager mTeleopCommandManager;
     private final CommandManager mAutonomousCommandManager;
@@ -57,12 +55,11 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
     private ETrackingType mLastTrackingType = null;
     private ETrackingType mTrackingType = null;
 
-    public DriverInput(Drive pDrivetrain, /**/ HatchFlower pHatchFlower, Intake pIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar, boolean pSimulated) {
+    public DriverInput(Drive pDrivetrain, /**/ Intake pIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar, boolean pSimulated) {
         this.mDrive = pDrivetrain;
 //        this.mElevator = pElevator;
         this.mIntake = pIntake;
 //        this.mCargoSpit = pCargoSpit;
-        this.mHatchFlower = pHatchFlower;
         this.mLimelight = pLimelight;
         this.mData = pData;
         this.mTeleopCommandManager = pTeleopCommandManager;
@@ -85,8 +82,8 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
                 ElevatorSingle.EElevatorPosition.CARGO_TOP.getEncoderRotations());
     }
 
-    public DriverInput(Drive pDrivetrain, /**/ HatchFlower pHatchFlower, Intake pIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar) {
-        this(pDrivetrain, pHatchFlower, pIntake, /**/ pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, pFourBar, false);
+    public DriverInput(Drive pDrivetrain, /**/ Intake pIntake/* */, Limelight pLimelight, Data pData, CommandManager pTeleopCommandManager, CommandManager pAutonomousCommandManager, FourBar pFourBar) {
+        this(pDrivetrain, pIntake, /**/ pLimelight, pData, pTeleopCommandManager, pAutonomousCommandManager, pFourBar, false);
     }
 
     @Override
@@ -176,21 +173,21 @@ public class DriverInput extends Module implements IThrottleProvider, ITurnProvi
 
         if (mIsCargo) {
             // Hatch grabber up so we can recieve cargo
-            mHatchFlower.setFlowerExtended(HatchFlower.ExtensionState.UP);
+            HatchFlowerSingle.getInstance().setFlowerExtended(HatchFlowerSingle.ExtensionState.UP);
             // Keep hatch grabber open so we can use cargo mode to bring hatch grabber up
 //            mHatchFlower.pushHatch();
         } else {
             // Hatch grabber down
-            mHatchFlower.setFlowerExtended(HatchFlower.ExtensionState.DOWN);
+            HatchFlowerSingle.getInstance().setFlowerExtended(HatchFlowerSingle.ExtensionState.DOWN);
 
             if (mData.operatorinput.isSet(DriveTeamInputMap.OPERATOR_INTAKE_LOADING_STATION)) {
                 // Intake from loading station - grab hatch
-                mHatchFlower.captureHatch();
+                HatchFlowerSingle.getInstance().captureHatch();
             } else if (mData.operatorinput.get(DriveTeamInputMap.OPERATOR_INTAKE_GROUND) > 0.5) {
                 // Grabbing is handled automagically
             } else if (mData.operatorinput.get(DriveTeamInputMap.OPERATOR_SCORE) > 0.5) {
                 // Score - release hatch
-                mHatchFlower.pushHatch();
+                HatchFlowerSingle.getInstance().pushHatch();
             } else {
                 // Do nothing
             }

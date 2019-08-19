@@ -12,16 +12,14 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimedState;
 import us.ilite.common.Data;
 import us.ilite.common.lib.trajectory.TrajectoryGenerator;
-import us.ilite.common.types.ETrackingType;
 import us.ilite.lib.drivers.VisionGyro;
 import us.ilite.robot.auto.AutonomousRoutines;
 import us.ilite.robot.auto.paths.AutoSequence;
 import us.ilite.robot.auto.paths.FieldElementLocations;
-import us.ilite.robot.auto.paths.RobotDimensions;
 import us.ilite.robot.auto.paths.StartingPoses;
 import us.ilite.robot.commands.*;
 import us.ilite.robot.modules.Drive;
-import us.ilite.robot.modules.HatchFlower;
+import us.ilite.robot.modules.HatchFlowerSingle;
 import us.ilite.robot.modules.Limelight;
 
 /**
@@ -31,15 +29,13 @@ public class MiddleToMiddleCargoToSideRocket extends AutoSequence {
 
     private final Data mData;
     private final Drive mDrive;
-    private final HatchFlower mHatchFlower;
     private final Limelight mLimelight;
     private final VisionGyro mVisionGyro;
 
-    public MiddleToMiddleCargoToSideRocket(TrajectoryGenerator pTrajectoryGenerator, Data mData, Drive mDrive, HatchFlower mHatchFlower, Limelight mLimelight, VisionGyro mVisionGyro) {
+    public MiddleToMiddleCargoToSideRocket(TrajectoryGenerator pTrajectoryGenerator, Data mData, Drive mDrive, Limelight mLimelight, VisionGyro mVisionGyro) {
         super(pTrajectoryGenerator);
         this.mData = mData;
         this.mDrive = mDrive;
-        this.mHatchFlower = mHatchFlower;
         this.mLimelight = mLimelight;
         this.mVisionGyro = mVisionGyro;
     }
@@ -96,7 +92,7 @@ public class MiddleToMiddleCargoToSideRocket extends AutoSequence {
                 new FunctionalCommand(() -> System.out.println("TRAJECTORY DONE")),
                 new Delay(1),
                 new FunctionalCommand(() -> System.out.println("DELAY DONE")),
-                new ReleaseHatch(mHatchFlower),
+                new ReleaseHatch(),
                 new FunctionalCommand(() -> System.out.println("RELEASE DONE")),
                 new FollowTrajectory(getMiddleLeftHatchToLoadingStationPath(), mDrive, true)
                 /*new DriveStraight(mDrive, mData, DriveStraight.EDriveControlMode.PERCENT_OUTPUT,

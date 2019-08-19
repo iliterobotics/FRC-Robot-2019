@@ -1,11 +1,11 @@
 package us.ilite.robot.commands;
 
-import us.ilite.robot.modules.HatchFlower;
+import us.ilite.robot.modules.HatchFlowerSingle;
 
 public class SetHatchGrabberExtension extends FunctionalCommand {
 
-    public SetHatchGrabberExtension(HatchFlower pHatchFlower, HatchFlower.ExtensionState pExtensionState) {
-        super(() -> pHatchFlower.setFlowerExtended(pExtensionState), () -> pHatchFlower.getExtensionState() == pExtensionState);
+    public SetHatchGrabberExtension( HatchFlowerSingle.ExtensionState pExtensionState) {
+        super(() -> HatchFlowerSingle.getInstance().setFlowerExtended(pExtensionState), () -> HatchFlowerSingle.getInstance().getExtensionState() == pExtensionState);
     }
 
 }
