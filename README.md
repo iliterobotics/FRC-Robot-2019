@@ -206,7 +206,7 @@ To update your PR, just push to the branch you made before.
 If you're having trouble with IntelliJ, run `./gradlew clean build`. This
 deletes any compiled Java files and rebuilds the project.
 
-### Tools
+### Internal Tools
 
 You can run any of these with `./gradlew <insert-tool-name-here>`
 
@@ -221,6 +221,8 @@ You can run any of these with `./gradlew <insert-tool-name-here>`
 #### OutlineViewer
 - Like ShuffleBoard, but you can only view raw values and can't set values. Useful for fast debugging. Lets you run a NetworkTables server locally without extra code **or** a robot.
 
+### External Tools
+- How to program the radio: https://wpilib.screenstepslive.com/s/currentCS/m/getting_started/l/144986-programming-your-radio
 ### Other remotes
 
 You can add "remotes" to github that refer to other people's robot code repos. This allows you to, for example, take a look at someone else's code to look over it, you would be able to `git checkout wesley/branch-that-breaks-everything` to see it. To add a remote, just do `git remote add <name_of_person> https://github.com/<username>/robot-code`. Once you've done this, you can use `git fetch <name_of_person>` to get updated code from other people's repos!
