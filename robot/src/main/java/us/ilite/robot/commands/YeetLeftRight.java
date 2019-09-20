@@ -13,16 +13,18 @@ public class YeetLeftRight implements ICommand {
     private Drive mDrive;
 
     private double mElevatorTicks;
-    private double mCurrentVelocity;
-    private double mDesiredVelocity;
+    private double mCurrentLeftVelocity;
+    private double mDesiredLeftVelocity;
+    private double mCurrentRightVelocity;
+    private double mDesiredRightVelocity;
 
     //Temporary constant, varies when considering elevator position
     private double kRampRate = .06; //percent per cycle | 0 to .75 in .25 seconds
     private double kCruiseVelocity = 0.75;
 
-    private YeetSide mSideToTurn;
+    private EYeetSide mSideToTurn;
 
-    public enum YeetSide {
+    public enum EYeetSide {
         LEFT,
         RIGHT
     }
@@ -45,24 +47,45 @@ public class YeetLeftRight implements ICommand {
 
         switch(mSideToTurn) {
             case LEFT:
-                mCurrentVelocity = mData.drive.get(EDriveData.LEFT_MESSAGE_OUTPUT);
-                mDesiredVelocity = mCurrentVelocity;
+                mCurrentLeftVelocity = mData.drive.get(EDriveData.LEFT_MESSAGE_OUTPUT);
+                mDesiredLeftVelocity = mCurrentLeftVelocity;
+                mDesiredRightVelocity = 0.0;
                 ramp();
-                mDrive.setDriveMessage(new DriveMessage(mDesiredVelocity, 0.0, ECommonControlMode.PERCENT_OUTPUT)); // Keep right 0.0
+                break;
 
             case RIGHT:
-                mCurrentVelocity = mData.drive.get(EDriveData.RIGHT_MESSAGE_OUTPUT);
-                mDesiredVelocity = mCurrentVelocity;
+                mCurrentRightVelocity = mData.drive.get(EDriveData.RIGHT_MESSAGE_OUTPUT);
+                mDesiredRightVelocity = mCurrentRightVelocity;
+                mDesiredLeftVelocity = 0.0;
                 ramp();
-                mDrive.setDriveMessage(new DriveMessage(0.0, mDesiredVelocity, ECommonControlMode.PERCENT_OUTPUT)); // Keep left 0.0
+                break;
+
+            default:
+                mDesiredLeftVelocity = 0.0;
+                mDesiredRightVelocity = 0.0;
+                break;
         }
+
+        mDrive.setDriveMessage(new DriveMessage(mDesiredLeftVelocity, mDesiredRightVelocity, ECommonControlMode.PERCENT_OUTPUT));
 
         return false;
     }
 
+    public void setSideToTurn(EYeetSide pSideToTurn) {
+        mSideToTurn = pSideToTurn;
+    }
+
     public void ramp() {
-        if (mCurrentVelocity == kCruiseVelocity || mDesiredVelocity + kRampRate <= kCruiseVelocity) {
-            mDesiredVelocity += kRampRate;
+        switch(mSideToTurn){
+            case LEFT:
+                if (mCurrentLeftVelocity == kCruiseVelocity || mDesiredLeftVelocity + kRampRate <= kCruiseVelocity) {
+                    mDesiredLeftVelocity += kRampRate;
+                }
+
+            case RIGHT:
+                if (mCurrentRightVelocity == kCruiseVelocity || mDesiredRightVelocity + kRampRate <= kCruiseVelocity) {
+                    mDesiredRightVelocity += kRampRate;
+                }
         }
     }
 
