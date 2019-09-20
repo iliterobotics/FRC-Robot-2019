@@ -13,14 +13,14 @@ public class YeetLeftRight implements ICommand {
     private Drive mDrive;
 
     private double mElevatorTicks;
-    private double mCurrentLeftVelocity;
-    private double mDesiredLeftVelocity;
-    private double mCurrentRightVelocity;
-    private double mDesiredRightVelocity;
+    private double mCurrentLeftPercentOutput;
+    private double mDesiredLeftPercentOutput;
+    private double mCurrentRightPercentOutput;
+    private double mDesiredRightPercentOutput;
 
     //Temporary constant, varies when considering elevator position
     private double kRampRate = .06; //percent per cycle | 0 to .75 in .25 seconds
-    private double kCruiseVelocity = 0.75;
+    private double kCruisePercentOutput = 0.75;
 
     private EYeetSide mSideToTurn;
 
@@ -47,26 +47,26 @@ public class YeetLeftRight implements ICommand {
 
         switch(mSideToTurn) {
             case LEFT:
-                mCurrentLeftVelocity = mData.drive.get(EDriveData.LEFT_MESSAGE_OUTPUT);
-                mDesiredLeftVelocity = mCurrentLeftVelocity;
-                mDesiredRightVelocity = 0.0;
+                mCurrentLeftPercentOutput = mData.drive.get(EDriveData.LEFT_MESSAGE_OUTPUT);
+                mDesiredLeftPercentOutput = mCurrentLeftPercentOutput;
+                mDesiredRightPercentOutput = 0.0;
                 ramp();
                 break;
 
             case RIGHT:
-                mCurrentRightVelocity = mData.drive.get(EDriveData.RIGHT_MESSAGE_OUTPUT);
-                mDesiredRightVelocity = mCurrentRightVelocity;
-                mDesiredLeftVelocity = 0.0;
+                mCurrentRightPercentOutput = mData.drive.get(EDriveData.RIGHT_MESSAGE_OUTPUT);
+                mDesiredRightPercentOutput = mCurrentRightPercentOutput;
+                mDesiredLeftPercentOutput = 0.0;
                 ramp();
                 break;
 
             default:
-                mDesiredLeftVelocity = 0.0;
-                mDesiredRightVelocity = 0.0;
+                mDesiredLeftPercentOutput = 0.0;
+                mDesiredRightPercentOutput = 0.0;
                 break;
         }
 
-        mDrive.setDriveMessage(new DriveMessage(mDesiredLeftVelocity, mDesiredRightVelocity, ECommonControlMode.PERCENT_OUTPUT));
+        mDrive.setDriveMessage(new DriveMessage(mDesiredLeftPercentOutput, mDesiredRightPercentOutput, ECommonControlMode.PERCENT_OUTPUT));
 
         return false;
     }
@@ -78,13 +78,13 @@ public class YeetLeftRight implements ICommand {
     public void ramp() {
         switch(mSideToTurn){
             case LEFT:
-                if (mCurrentLeftVelocity == kCruiseVelocity || mDesiredLeftVelocity + kRampRate <= kCruiseVelocity) {
-                    mDesiredLeftVelocity += kRampRate;
+                if (mCurrentLeftPercentOutput == kCruisePercentOutput || mDesiredLeftPercentOutput + kRampRate <= kCruisePercentOutput) {
+                    mDesiredLeftPercentOutput += kRampRate;
                 }
 
             case RIGHT:
-                if (mCurrentRightVelocity == kCruiseVelocity || mDesiredRightVelocity + kRampRate <= kCruiseVelocity) {
-                    mDesiredRightVelocity += kRampRate;
+                if (mCurrentRightPercentOutput == kCruisePercentOutput || mDesiredRightPercentOutput + kRampRate <= kCruisePercentOutput) {
+                    mDesiredRightPercentOutput += kRampRate;
                 }
         }
     }
