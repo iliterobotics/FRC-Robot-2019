@@ -1,6 +1,7 @@
 package us.ilite.robot.commands;
 
 import us.ilite.common.Data;
+import us.ilite.common.types.drive.EDriveData;
 import us.ilite.common.types.manipulator.EElevator;
 import us.ilite.lib.drivers.ECommonControlMode;
 import us.ilite.robot.modules.Drive;
@@ -12,8 +13,12 @@ public class YeetLeftRight implements ICommand {
     private Drive mDrive;
 
     private double mElevatorTicks;
-    private double mVelocityRampRate;
-    private double mCruiseVelocity;
+    private double mCurrentVelocity;
+    private double mDesiredVelocity;
+
+    //Temporary constant, varies when considering elevator position
+    private double kRampRate = .06; //percent per cycle | 0 to .75 in .25 seconds
+    private double kCruiseVelocity = 0.75;
 
     private YeetSide mSideToTurn;
 
@@ -40,13 +45,25 @@ public class YeetLeftRight implements ICommand {
 
         switch(mSideToTurn) {
             case LEFT:
-                mDrive.setDriveMessage(new DriveMessage(0, 0.0, ECommonControlMode.PERCENT_OUTPUT)); // Keep right 0.0
+                mCurrentVelocity = mData.drive.get(EDriveData.LEFT_MESSAGE_OUTPUT);
+                mDesiredVelocity = mCurrentVelocity;
+                ramp();
+                mDrive.setDriveMessage(new DriveMessage(mDesiredVelocity, 0.0, ECommonControlMode.PERCENT_OUTPUT)); // Keep right 0.0
 
             case RIGHT:
-                mDrive.setDriveMessage(new DriveMessage(0.0, 0, ECommonControlMode.PERCENT_OUTPUT)); // Keep left 0.0
+                mCurrentVelocity = mData.drive.get(EDriveData.RIGHT_MESSAGE_OUTPUT);
+                mDesiredVelocity = mCurrentVelocity;
+                ramp();
+                mDrive.setDriveMessage(new DriveMessage(0.0, mDesiredVelocity, ECommonControlMode.PERCENT_OUTPUT)); // Keep left 0.0
         }
 
         return false;
+    }
+
+    public void ramp() {
+        if (mCurrentVelocity == kCruiseVelocity || mDesiredVelocity + kRampRate <= kCruiseVelocity) {
+            mDesiredVelocity += kRampRate;
+        }
     }
 
 
