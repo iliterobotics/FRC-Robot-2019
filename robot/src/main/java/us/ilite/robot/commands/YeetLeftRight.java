@@ -49,17 +49,15 @@ public class YeetLeftRight implements ICommand {
         return false;
     }
 
-    /**
-     * Given the current position of the elevator, return the maximum output
-     * @return max output given elevator ticks
-     */
-    public double getMaxOutput() {
-        return 0.0;
-    }
 
-    public void setRampRate() {
-
-    }
+    // Output and ramp rate methods based on elevator ticks
+//    public void getMaxOutput() {
+//
+//    }
+//
+//    public void setRampRate() {
+//
+//    }
 
     @Override
     public void shutdown(double pNow) {
