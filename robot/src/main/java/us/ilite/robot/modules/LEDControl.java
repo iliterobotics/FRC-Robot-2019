@@ -161,7 +161,7 @@ public class LEDControl extends Module {
 
 //        if(mLimelight.getTracking() != ETrackingType.NONE) mCurrentMessage = Message.VISION_TRACKING;
 
-        if(mData.limelight.isSet(ETargetingData.tx) && Math.abs(mData.limelight.get(ETargetingData.tx)) <= 3d) mCurrentMessage = Message.VISION_TRACKING;
+//        if(mData.limelight.isSet(ETargetingData.tx) && Math.abs(mData.limelight.get(ETargetingData.tx)) <= 3d) mCurrentMessage = Message.VISION_TRACKING;
 
         // Did the message change?
         if ( lastMsg != this.mCurrentMessage ) {
