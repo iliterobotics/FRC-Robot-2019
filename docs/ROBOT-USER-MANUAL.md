@@ -11,12 +11,15 @@ or the top, middle, and bottom **cargo** ports. Note that the button **must** be
 One button is always elevator to ground, regardless of mode.
 The elevator can also be controlled manually with a joystick. 
 
+'#ad00a8'
+
 | Button | Function |
 | :-: | :-: |
-| A | Elevator to ground (Hold) |
-| X | Elevator to bottom position (Hold) |
-| Y | Elevator to middle position (Hold) |
-| B | Elevator to top position (Hold) | 
+| X | Elevator to ground |
+| A | Rocket bottom hatch and cargo (Hold) |
+| B | Cargo ship cargo and hatch middle(Hold) |
+| Y | Rocket mid cargo and top hatch (Hold) |
+| Right Bumper | Rocket top cargo (Hold) |
 
 | Axis | Function |
 | :-: | :-: |
@@ -35,5 +38,6 @@ Mode buttons do not have to be held. Intaking and scoring buttons must be held.
 
 | Axis | Function |
 | :-: | :-: |
-| Left Trigger | Get game piece |
+| Left Trigger | Cargo intake out |
+| Left Bumper | Flower open |
 | Right Trigger | Score game piece |
