@@ -11,6 +11,7 @@ import com.revrobotics.ControlType;
 import com.team254.lib.util.Util;
 import us.ilite.common.Data;
 import us.ilite.common.config.SystemSettings;
+import us.ilite.common.lib.util.Conversions;
 import us.ilite.common.types.manipulator.EElevator;
 import us.ilite.common.types.sensor.EPowerDistPanel;
 import us.ilite.lib.drivers.SparkMaxFactory;
@@ -54,6 +55,9 @@ public class Elevator extends Module {
     public enum EElevatorPosition {
 
         //TODO find encoder threshold
+        // Difference of 1 inch is around .5 rotations
+        // + Conversions.inchesToRotations(1)
+
         HATCH_BOTTOM(1),
         HATCH_MIDDLE(17),
         HATCH_TOP(35),
