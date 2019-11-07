@@ -239,7 +239,7 @@ public class Drive extends Loop {
 
 					//if there is a target in the limelight's fov, lock onto target using feedback loop
 					pidOutput = mTargetAngleLockPid.calculate(-1.0 * targetData.get(ETargetingData.tx), pNow - mPreviousTime);
-					pidOutput = pidOutput + (Math.signum(pidOutput) * SystemSettings.kTargetAngleLockFrictionFeedforward);
+					pidOutput = pidOutput + (Math.signum(pidOutput) * (SystemSettings.kTargetAngleLockFrictionFeedforward));
 
 					mDriveMessage = DriveMessage.getClampedTurnDrive(mTargetTrackingThrottle, pidOutput);
 					// If we've already seen the target and lose tracking, exit.

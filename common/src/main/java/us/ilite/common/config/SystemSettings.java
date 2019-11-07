@@ -65,7 +65,7 @@ public class SystemSettings extends NetworkTablesConstantsBase {
     // =============================================================================
     // Input Constants
     // =============================================================================
-	public static double kNormalPercentThrottleReduction = 0.8;
+	public static double kNormalPercentThrottleReduction = 0.85;
 	
 	// These are applied AFTER the normal throttle reduction
     public static double kSnailModePercentThrottleReduction = 0.5;
