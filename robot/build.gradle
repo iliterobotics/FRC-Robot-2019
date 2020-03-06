@@ -1,3 +1,91 @@
+//apply plugin: "edu.wpi.first.GradleRIO"
+//
+//def ROBOT_MAIN_CLASS = "us.ilite.robot.Main"
+////apply plugin: "edu.wpi.first.GradleRIO"
+//
+//// Define my targets (RoboRIO) and artifacts (deployable files)
+//// This is added by GradleRIO's backing project EmbeddedTools.
+//deploy {
+//    targets {
+//        roboRIO("roborio") {
+//            // Team number is loaded either from the .wpilib/wpilib_preferences.json
+//            // or from command line. If not found an exception will be thrown.
+//            // You can use getTeamOrDefault(team) instead of getTeamNumber if you
+//            // want to store a team number in this file.
+//            team = frc.getTeamNumber()
+//        }
+//    }
+//    artifacts {
+//        frcJavaArtifact('frcJava') {
+//            targets << "roborio"
+//            // Debug can be overridden by command line, for use with VSCode
+//            debug = frc.getDebugOrDefault(false)
+//
+////            jvmArgs = [ "-Dcom.sun.management.jmxremote=true",
+////                        "-Dcom.sun.management.jmxremote.port=1099",
+////                        "-Dcom.sun.management.jmxremote.local.only=false",
+////                        "-Dcom.sun.management.jmxremote.ssl=false",
+////                        "-Dcom.sun.management.jmxremote.authenticate=false",
+////                        "-Djava.rmi.server.hostname=10.18.85.2"
+////            ]
+////            jvmArgs = [
+////                    "-agentpath:/U/YourKit-JavaProfiler-2019.1/bin/linux-armv5-sf/libyjpagent.so"
+////            ]
+//        }
+//        // Built in artifact to deploy arbitrary files to the roboRIO.
+//        fileTreeArtifact('frcStaticFileDeploy') {
+//            // The directory below is the local directory to deploy
+//            files = fileTree(dir: 'src/main/deploy')
+//            // Deploy to RoboRIO target, into /home/lvuser/deploy
+//            targets << "roborio"
+//            directory = '/home/lvuser/deploy'
+//        }
+//    }
+//}
+//
+//// Defining my dependencies. In this case, WPILib (+ friends), CTRE Toolsuite (Talon SRX)
+//// and NavX.
+//def includeDesktopSupport = false
+//
+//dependencies {
+//
+//    compile project(':common')
+//    implementation 'com.github.flybotix:highfrequencyrobots:' + HFRVER
+//    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+//    implementation wpi.deps.wpilib()
+//
+//
+//    testCompile "org.mockito:mockito-core:2.+"
+//
+//    compile wpi.deps.vendor.java()
+//    implementation wpi.deps.wpilib()
+//    nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
+//    nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
+//    implementation wpi.deps.vendor.java()
+//    nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
+//    nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+//    testImplementation 'junit:junit:4.12'
+//
+////    testRuntime group: "edu.wpi.first.ntcore", name: "ntcore-jni", version: "2019.+", classifier: "all"
+////    testCompile group: "edu.wpi.first.ntcore", name: "ntcore-java", version: "2019.+"
+////    testCompile group: "edu.wpi.first.wpiutil", name: "wpiutil-java", version: "2019.+"
+//
+////    simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
+//
+//
+//}
+//
+//// Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
+//// in order to make them all available at runtime. Also adding the manifest so WPILib
+//// knows where to look for our Robot Class.
+//jar {
+////    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+////    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+//    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+//    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+//}
+//
+
 apply plugin: "edu.wpi.first.GradleRIO"
 
 def ROBOT_MAIN_CLASS = "us.ilite.robot.Main"
@@ -41,6 +129,9 @@ deploy {
         }
     }
 }
+// Set this to true to enable desktop support.
+def includeDesktopSupport = false
+
 
 // Defining my dependencies. In this case, WPILib (+ friends), CTRE Toolsuite (Talon SRX)
 // and NavX.
@@ -49,25 +140,28 @@ dependencies {
     compile project(':common')
     implementation 'com.github.flybotix:highfrequencyrobots:' + HFRVER
     implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+    implementation wpi.deps.wpilib()
 
-    
     testCompile "org.mockito:mockito-core:2.+"
 
-    compile wpi.deps.vendor.java()
+    //The following code is used to get the native code to work on a desktop.
+    //Be sure to use the JDK that came with WPILIB because it has additional libraries.
+    implementation wpi.deps.wpilib()
+    nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
+    nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
+    implementation wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
-
-    testRuntime group: "edu.wpi.first.ntcore", name: "ntcore-jni", version: "2019.+", classifier: "all"
-    testCompile group: "edu.wpi.first.ntcore", name: "ntcore-java", version: "2019.+"
-    testCompile group: "edu.wpi.first.wpiutil", name: "wpiutil-java", version: "2019.+"
-
+    testImplementation 'junit:junit:4.12'
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
 // in order to make them all available at runtime. Also adding the manifest so WPILib
 // knows where to look for our Robot Class.
 jar {
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
 }
+
+
 

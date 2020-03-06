@@ -1,6 +1,60 @@
+//plugins {
+//    id "java"
+//    id "edu.wpi.first.GradleRIO" version "2019.4.1" apply false
+//    id 'org.openjfx.javafxplugin' version '0.0.5' apply false
+//    id 'pmd'
+//}
+//
+//// Set this to true to enable desktop support.
+//def includeDesktopSupport = true
+//
+//allprojects {
+//
+//    // We want the entire project to be openable in an IDE
+//	apply plugin: "idea"
+//	apply plugin: "eclipse"
+//	
+//	sourceCompatibility = JavaVersion.VERSION_1_8
+//	targetCompatibility = JavaVersion.VERSION_1_8
+//
+//}
+//
+//subprojects {
+//    apply plugin: "java"
+//    apply plugin: "edu.wpi.first.GradleRIO"
+//    apply plugin: 'pmd'
+//    pmd {
+//        ignoreFailures = true
+//    }
+//    // Maven central needed for JUnit
+//    repositories {
+//        mavenCentral()
+//        mavenLocal()
+//        jcenter()
+//        flatDir {
+//                // The directory lib is available as a source for dependencies - we put any JAR files here
+//                // The directory lib will always be one folder "above" a subproject folder - thus the ".."
+//                dirs '../lib'
+//            }
+//	maven { url 'https://jitpack.io' }
+//    }
+//
+//    dependencies {
+//        compile wpi.deps.wpilib()
+//        testCompile 'junit:junit:4.12'
+//    }
+//
+//    test {
+//        testLogging {
+//            events "passed", "skipped", "failed"
+//            exceptionFormat "full"
+//        }
+//    }
+//
+//}
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2019.4.1" apply false
+    id "edu.wpi.first.GradleRIO" version "2020.1.2"
     id 'org.openjfx.javafxplugin' version '0.0.5' apply false
     id 'pmd'
 }
@@ -11,11 +65,11 @@ def includeDesktopSupport = true
 allprojects {
 
     // We want the entire project to be openable in an IDE
-	apply plugin: "idea"
-	apply plugin: "eclipse"
-	
-	sourceCompatibility = JavaVersion.VERSION_1_8
-	targetCompatibility = JavaVersion.VERSION_1_8
+    apply plugin: "idea"
+    apply plugin: "eclipse"
+
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 
 }
 
@@ -32,11 +86,11 @@ subprojects {
         mavenLocal()
         jcenter()
         flatDir {
-                // The directory lib is available as a source for dependencies - we put any JAR files here
-                // The directory lib will always be one folder "above" a subproject folder - thus the ".."
-                dirs '../lib'
-            }
-	maven { url 'https://jitpack.io' }
+            // The directory lib is available as a source for dependencies - we put any JAR files here
+            // The directory lib will always be one folder "above" a subproject folder - thus the ".."
+            dirs '../lib'
+        }
+        maven { url 'https://jitpack.io' }
     }
 
     dependencies {
